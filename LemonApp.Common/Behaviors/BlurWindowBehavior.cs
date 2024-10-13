@@ -3,6 +3,7 @@ using System.Windows.Media;
 using System.Windows.Shell;
 using Microsoft.Xaml.Behaviors;
 using LemonApp.Common.WinAPI;
+using LemonApp.Common.Configs;
 
 namespace LemonApp.Common.Behaviors;
 
@@ -130,7 +131,8 @@ public class BlurWindowBehavior : Behavior<Window>
         wac.UseWindowComposition = IsToolWindow;
         if (WindowChromeEx != null)
             wac.WindowChromeEx = WindowChromeEx;
-        UpdateWindowBlurMode(wac, GlobalConstants.IsDarkMode);
+        var isDarkMode = GlobalConstants.ConfigManager?.GetConfigMgr<Appearence>()?.Data?.GetIsDarkMode()==true;
+        UpdateWindowBlurMode(wac, isDarkMode);
         WindowMaterial.SetMaterial(AssociatedObject, wac);
         return wac;
     }

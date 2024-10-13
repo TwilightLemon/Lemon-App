@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
-	 <PackageReference Include="EleCho.WpfSuite" Version="0.8.1" />
+	  <PackageReference Include="EleCho.WpfSuite" Version="0.8.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
     <PackageReference Include="NLog" Version="5.3.4" />
@@ -25,6 +25,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LemonApp.Common\LemonApp.Common.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Update="nlog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

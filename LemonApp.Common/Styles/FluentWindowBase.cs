@@ -14,7 +14,7 @@ namespace LemonApp.Common.Styles
     /// </summary>
     public class FluentWindowBase : Window
     {
-        private  wsButton CloseBtn, MaxmizeBtn, MinimizeBtn;
+        private  wsButton? CloseBtn, MaxmizeBtn, MinimizeBtn;
         private readonly BehaviorCollection _behaviors;
         private readonly BlurWindowBehavior _blurBehavior;
         private readonly WindowChrome _windowChrome;
@@ -66,7 +66,7 @@ namespace LemonApp.Common.Styles
         private void ApplyResizeMode()
         {
             bool allShown= ResizeMode != ResizeMode.NoResize;
-            MinimizeBtn.Visibility = MaxmizeBtn.Visibility = allShown ? Visibility.Visible : Visibility.Collapsed;
+            MinimizeBtn!.Visibility = MaxmizeBtn!.Visibility = allShown ? Visibility.Visible : Visibility.Collapsed;
             MaxmizeBtn.IsEnabled = ResizeMode!= ResizeMode.CanMinimize;
             MaxmizeBtn.SetResourceReference(ForegroundProperty, MaxmizeBtn.IsEnabled ? "ForeColor" : "FocusMaskColor");
 

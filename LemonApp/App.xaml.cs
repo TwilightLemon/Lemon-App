@@ -6,6 +6,7 @@ using System.Windows;
 using LemonApp.Services;
 using LemonApp.Views.Windows;
 using NLog.Extensions.Logging;
+using LemonApp.Common.Configs;
 
 namespace LemonApp
 {
@@ -23,6 +24,16 @@ namespace LemonApp
                 //host
                 services.AddSingleton<ApplicationService>();
                 services.AddHostedService(p => p.GetRequiredService<ApplicationService>());
+                services.AddSingleton<AppSettingsService>();
+                services.AddHostedService(
+                    p=>p.GetRequiredService<AppSettingsService>()
+                        .AddConfig<UserProfile>()
+                        .AddConfig<Appearence>()
+                );
+
+                //services
+                services.AddSingleton<UIResourceService>();
+
 
                 //window
                 services.AddSingleton<MainWindow>();

@@ -5,7 +5,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/LemonApp.Common;component/Styles/ThemeColor_Light.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/LemonApp.Common;component/Styles/ThemeColor_Dark.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/LemonApp.Common;component/Styles/UITemplate.xaml" />
 
             </ResourceDictionary.MergedDictionaries>
