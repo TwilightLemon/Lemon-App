@@ -7,7 +7,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/LemonApp.Common;component/Styles/ThemeColor_Dark.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/LemonApp.Common;component/Styles/UITemplate.xaml" />
-
+                <ResourceDictionary Source="pack://application:,,,/LemonApp.Common;component/Styles/AccentColor.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

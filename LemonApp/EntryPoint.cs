@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace LemonApp;
 
@@ -13,7 +10,7 @@ internal class EntryPoint
     static Mutex? _appMutex = null;
     static bool IsAppRunning()
     {
-        _appMutex = new Mutex(false, Assembly.GetExecutingAssembly().GetName().Name, out bool firstInstant);
+        _appMutex = new Mutex(false, Assembly.GetExecutingAssembly().GetName().Name+"_DEBUG", out bool firstInstant);
         return !firstInstant;
     }
 

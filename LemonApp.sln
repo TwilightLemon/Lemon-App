@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LemonApp", "LemonApp\LemonA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LemonApp.Common", "LemonApp.Common\LemonApp.Common.csproj", "{B0915655-2BB0-47B5-BE1E-19A877364F95}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LemonApp.MusicLib.Abstraction", "LemonApp.MusicLib.Abstraction\LemonApp.MusicLib.Abstraction.csproj", "{DAAF2865-A6C3-49C9-B121-4353BA9B55BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LemonApp.MusicLib", "LemonApp.MusicLib\LemonApp.MusicLib.csproj", "{FE3D959E-E2DE-4B81-A593-E51D36E2777B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LemonApp.MusicLib", "LemonApp.MusicLib\LemonApp.MusicLib.csproj", "{FE3D959E-E2DE-4B81-A593-E51D36E2777B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LemonApp.MusicLib.Abstraction", "LemonApp.MusicLib.Abstraction\LemonApp.MusicLib.Abstraction.csproj", "{0CE8BB96-6987-4601-9C70-557185FDAD41}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,14 +25,14 @@ Global
 		{B0915655-2BB0-47B5-BE1E-19A877364F95}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0915655-2BB0-47B5-BE1E-19A877364F95}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0915655-2BB0-47B5-BE1E-19A877364F95}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DAAF2865-A6C3-49C9-B121-4353BA9B55BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DAAF2865-A6C3-49C9-B121-4353BA9B55BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DAAF2865-A6C3-49C9-B121-4353BA9B55BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DAAF2865-A6C3-49C9-B121-4353BA9B55BC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FE3D959E-E2DE-4B81-A593-E51D36E2777B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FE3D959E-E2DE-4B81-A593-E51D36E2777B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE3D959E-E2DE-4B81-A593-E51D36E2777B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE3D959E-E2DE-4B81-A593-E51D36E2777B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CE8BB96-6987-4601-9C70-557185FDAD41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CE8BB96-6987-4601-9C70-557185FDAD41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CE8BB96-6987-4601-9C70-557185FDAD41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CE8BB96-6987-4601-9C70-557185FDAD41}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

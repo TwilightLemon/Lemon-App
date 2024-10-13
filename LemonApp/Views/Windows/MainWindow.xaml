@@ -1,17 +1,401 @@
-﻿<style:FluentWindowBase x:Class="LemonApp.Views.Windows.MainWindow"
-                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                        xmlns:local="clr-namespace:LemonApp.Views.Windows"
-                        xmlns:style="clr-namespace:LemonApp.Common.Styles;assembly=LemonApp.Common"
-                        mc:Ignorable="d"
-                        Background="{DynamicResource WindowBackgroundColor}"
-                        Foreground="{DynamicResource ForeColor}"
-                        Title="MainWindow"
-                        Height="450"
-                        Width="800">
+﻿<base:FluentWindowBase x:Class="LemonApp.Views.Windows.MainWindow"
+                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                       xmlns:local="clr-namespace:LemonApp.Views.Windows"
+                       xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
+                       xmlns:ws="https://schemas.elecho.dev/wpfsuite"
+                       xmlns:viewmodels="clr-namespace:LemonApp.ViewModels"
+                       d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
+                       mc:Ignorable="d"
+                       Background="Transparent"
+                       Mode="MicaAlt"
+                       Foreground="{DynamicResource ForeColor}"
+                       Title="MainWindow"
+                       Height="750"
+                       Width="1080">
+    <base:FluentWindowBase.Resources>
+        <Storyboard x:Key="OpenLyricPageAni">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="MainPage"
+                                           Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000"
+                                      Value="0" />
+            </DoubleAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="MainPage"
+                                           Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00.3000000"
+                                        Value="{x:Static Visibility.Collapsed}" />
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LyricPage"
+                                           Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00"
+                                        Value="{x:Static Visibility.Visible}" />
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="LyricPage_Background"
+                                           Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00"
+                                      Value="0" />
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000"
+                                      Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="LyricPage_Img"
+                                           Storyboard.TargetProperty="(FrameworkElement.Width)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00"
+                                      Value="60">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut" />
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000"
+                                      Value="360">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut" />
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="LyricPage_Img"
+                                           Storyboard.TargetProperty="(FrameworkElement.Height)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00"
+                                      Value="60">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut" />
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000"
+                                      Value="360">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut" />
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="LyricPage_Img"
+                                              Storyboard.TargetProperty="(FrameworkElement.Margin)">
+                <EasingThicknessKeyFrame KeyTime="00:00:00"
+                                         Value="13,656,0,0">
+                    <EasingThicknessKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut" />
+                    </EasingThicknessKeyFrame.EasingFunction>
+                </EasingThicknessKeyFrame>
+                <EasingThicknessKeyFrame KeyTime="00:00:00.3000000"
+                                         Value="60,0,0,110">
+                    <EasingThicknessKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut" />
+                    </EasingThicknessKeyFrame.EasingFunction>
+                </EasingThicknessKeyFrame>
+            </ThicknessAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="MusicControl_Img"
+                                           Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00"
+                                        Value="{x:Static Visibility.Collapsed}" />
+            </ObjectAnimationUsingKeyFrames>
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="textBlock"
+                                              Storyboard.TargetProperty="(FrameworkElement.Margin)">
+                <EasingThicknessKeyFrame KeyTime="00:00:00.3000000"
+                                         Value="10,0,10,0">
+                    <EasingThicknessKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut" />
+                    </EasingThicknessKeyFrame.EasingFunction>
+                </EasingThicknessKeyFrame>
+            </ThicknessAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="CloseLyricPageAni">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="LyricPage_Background"
+                                           Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000"
+                                      Value="0" />
+            </DoubleAnimationUsingKeyFrames>
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="textBlock"
+                                              Storyboard.TargetProperty="(FrameworkElement.Margin)">
+                <EasingThicknessKeyFrame KeyTime="00:00:00"
+                                         Value="0,0,10,0">
+                    <EasingThicknessKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut" />
+                    </EasingThicknessKeyFrame.EasingFunction>
+                </EasingThicknessKeyFrame>
+                <EasingThicknessKeyFrame KeyTime="00:00:00.3000000"
+                                         Value="72,0,10,0">
+                    <EasingThicknessKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut" />
+                    </EasingThicknessKeyFrame.EasingFunction>
+                </EasingThicknessKeyFrame>
+            </ThicknessAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="LyricPage_Img"
+                                           Storyboard.TargetProperty="(FrameworkElement.Width)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000"
+                                      Value="60">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut" />
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="LyricPage_Img"
+                                           Storyboard.TargetProperty="(FrameworkElement.Height)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000"
+                                      Value="60">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut" />
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="LyricPage_Img"
+                                              Storyboard.TargetProperty="(FrameworkElement.Margin)">
+                <EasingThicknessKeyFrame KeyTime="00:00:00.3000000"
+                                         Value="13,656,0,0">
+                    <EasingThicknessKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut" />
+                    </EasingThicknessKeyFrame.EasingFunction>
+                </EasingThicknessKeyFrame>
+            </ThicknessAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LyricPage"
+                                           Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00.3000000"
+                                        Value="{x:Static Visibility.Collapsed}" />
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="MainPage"
+                                           Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000"
+                                      Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="MainPage"
+                                           Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00"
+                                        Value="{x:Static Visibility.Visible}" />
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="MusicControl_Img"
+                                           Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00.3000000"
+                                        Value="{x:Static Visibility.Visible}" />
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+    </base:FluentWindowBase.Resources>
     <Grid>
-        
+        <Grid x:Name="MainPage"
+              Margin="0 0 0 110">
+            <Grid x:Name="TitleBar"
+                  WindowChrome.IsHitTestVisibleInChrome="True"
+                  VerticalAlignment="Top">
+                <!--中部功能区-->
+                <!--三大按钮占位 Width:144-->
+                <!--左侧Icon-->
+                <Image HorizontalAlignment="Left"
+                       Width="22"
+                       Height="22"
+                       Margin="16 0 0 0"
+                       RenderOptions.BitmapScalingMode="HighQuality"
+                       Source="/Resources/icon.ico" />
+                <TextBlock VerticalAlignment="Center"
+                           HorizontalAlignment="Left"
+                           Margin="50 0 0 0"
+                           FontSize="14"
+                           Text="Lemon App" />
+                <ws:TextBox x:Name="SearchBox"
+                            Background="{DynamicResource MaskColor}"
+                            HoverBackground="{DynamicResource FocusMaskColor}"
+                            FocusedBackground="{DynamicResource FocusMaskColor}"
+                            BorderBrush="{DynamicResource BorderColor}"
+                            FocusedBorderBrush="{DynamicResource FocusMaskColor}"
+                            HoverBorderBrush="{DynamicResource FocusMaskColor}"
+                            SelectionBrush="{DynamicResource HighlightThemeColor}"
+                            CaretBrush="{DynamicResource ForeColor}"
+                            Foreground="{DynamicResource ForeColor}"
+                            Height="32"
+                            Padding="6 7 0 0"
+                            MaxWidth="380"
+                            Placeholder="搜索"
+                            HorizontalAlignment="Stretch"
+                            CornerRadius="6"
+                            Margin="220,8,220,8" />
+                <!--用户头像&菜单-->
+                <ws:Button x:Name="UserProfileBtn"
+                           HorizontalAlignment="Right"
+                           Cursor="Hand"
+                           CornerRadius="18"
+                           BorderThickness="0"
+                           Background="{DynamicResource MaskColor}"
+                           HoverBackground="{DynamicResource FocusMaskColor}"
+                           PressedBackground="{DynamicResource FocusMaskColor}"
+                           Width="36"
+                           Height="36"
+                           Margin="0 0 180 0"
+                           Click="UserProfileBtn_Click">
+                    <Border Background="#FFFDAAAA"
+                            Width="30"
+                            CornerRadius="15"
+                            Height="30" />
+                </ws:Button>
+            </Grid>
+            <Grid x:Name="ContentPage"
+                  Margin="0,48,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"
+                                      MaxWidth="320"
+                                      MinWidth="50" />
+                    <ColumnDefinition Width="3*" />
+                </Grid.ColumnDefinitions>
+                <Grid x:Name="MainMenuGrid">
+                    <ws:ListBox ItemsSource="{Binding MainMenus}"
+                                d:ItemsSource="{d:SampleData ItemCount=5}"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}"
+                                VerticalAlignment="Top">
+                        <ws:ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <ws:Border Height="40"
+                                           Padding="10 0"
+                                           d:Background="#3C000000"
+                                           Background="Transparent">
+                                    <ws:StackPanel Orientation="Horizontal"
+                                                   VerticalAlignment="Center"
+                                                   Spacing="8">
+                                        <Border x:Name="FocusedIcon"
+                                                Width="3"
+                                                Margin="-18 0 0 0"
+                                                Background="{DynamicResource HighlightThemeColor}"
+                                                CornerRadius="1.5"
+                                                Height="16"
+                                                Visibility="Hidden"
+                                                d:Visibility="Visible" />
+                                        <Path VerticalAlignment="Center"
+                                              Fill="{DynamicResource ForeColor}"
+                                              Data="{Binding Icon}"
+                                              Stretch="Uniform"
+                                              Width="15"
+                                              Height="15" />
+                                        <TextBlock Text="{Binding Name}"
+                                                   VerticalAlignment="Center" />
+                                    </ws:StackPanel>
+                                </ws:Border>
+                                <DataTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}, Mode=FindAncestor}}"
+                                                 Value="True">
+                                        <DataTrigger.EnterActions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetName="FocusedIcon"
+                                                                     Storyboard.TargetProperty="Height"
+                                                                     From="0"
+                                                                     To="16"
+                                                                     Duration="0:0:0.3">
+                                                        <DoubleAnimation.EasingFunction>
+                                                            <CubicEase EasingMode="EaseOut" />
+                                                        </DoubleAnimation.EasingFunction>
+                                                    </DoubleAnimation>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </DataTrigger.EnterActions>
+                                        <Setter TargetName="FocusedIcon"
+                                                Property="Visibility"
+                                                Value="Visible" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}, Mode=FindAncestor}}"
+                                                 Value="False">
+                                        <Setter TargetName="FocusedIcon"
+                                                Property="Visibility"
+                                                Value="Hidden" />
+                                    </DataTrigger>
+                                </DataTemplate.Triggers>
+                            </DataTemplate>
+                        </ws:ListBox.ItemTemplate>
+                    </ws:ListBox>
+                </Grid>
+                <Border x:Name="ContentHost"
+                        Margin="8 4 8 8"
+                        Grid.Column="1"
+                        BorderBrush="{DynamicResource BorderColor}"
+                        BorderThickness="1"
+                        Background="{DynamicResource MaskColor}"
+                        CornerRadius="8" />
+            </Grid>
+        </Grid>
+        <Grid x:Name="LyricPage"
+              Visibility="Collapsed">
+            <Border x:Name="LyricPage_Background"
+                    Background="#0C000000" />
+            <Border x:Name="LyricPage_Img"
+                    HorizontalAlignment="Left"
+                    Width="360"
+                    Height="360"
+                    Background="Pink"
+                    CornerRadius="8"
+                    Margin="60,0,0,110" />
+
+        </Grid>
+        <Border x:Name="MusicControl"
+                BorderThickness="0 1 0 0"
+                Height="110"
+                VerticalAlignment="Bottom"
+                BorderBrush="{DynamicResource BorderColor}"
+                Background="{DynamicResource TabMaskColor}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="2*" />
+                    <RowDefinition Height="5*" />
+                </Grid.RowDefinitions>
+                <Grid>
+                    <TextBlock Text="00:00"
+                               HorizontalAlignment="Left"
+                               VerticalAlignment="Center"
+                               Margin="14 0 0 0" />
+                    <TextBlock Text="00:00"
+                               HorizontalAlignment="Right"
+                               VerticalAlignment="Center"
+                               Margin="0 0 14 0" />
+                    <Slider  Margin="60 0"
+                             VerticalAlignment="Center" />
+                </Grid>
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="1*" />
+                    </Grid.ColumnDefinitions>
+                    <ws:Button x:Name="MusicControl_Info"
+                               Margin="6,4,0,4"
+                               Height="70"
+                               HorizontalAlignment="Left"
+                               Background="Transparent"
+                               HoverBackground="{DynamicResource MaskColor}"
+                               PressedBackground="{DynamicResource MaskColor}"
+                               BorderThickness="0"
+                               CornerRadius="8"
+                               Click="MusicControl_Info_Click">
+                        <Grid>
+                            <Border x:Name="MusicControl_Img"
+                                    Margin="6 0 0 0"
+                                    HorizontalAlignment="Left"
+                                    Width="60"
+                                    Height="60"
+                                    Background="Pink"
+                                    CornerRadius="8" />
+                            <TextBlock x:Name="textBlock"
+                                       Margin="72 0 10 0"
+                                       VerticalAlignment="Center"
+                                       LineHeight="24"
+                                       HorizontalAlignment="Left">
+                                <Run Text="Dancing With Our Hands Tied"
+                                     FontWeight="Bold"
+                                     FontSize="16" />
+                                <LineBreak />
+                                <Run Text="Taylor Swift · reputation"
+                                     FontSize="12" />
+                            </TextBlock>
+                        </Grid>
+                    </ws:Button>
+
+                </Grid>
+            </Grid>
+        </Border>
+        <Grid x:Name="PlayListPage"
+              Background="#3C000000"
+              Visibility="Collapsed">
+            <Grid x:Name="PlayListBar"
+                  Width="400"
+                  HorizontalAlignment="Right"
+                  Background="{DynamicResource BackgroundColor}">
+
+            </Grid>
+        </Grid>
     </Grid>
-</style:FluentWindowBase>
+</base:FluentWindowBase>

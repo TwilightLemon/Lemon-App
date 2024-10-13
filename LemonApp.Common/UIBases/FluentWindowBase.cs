@@ -6,21 +6,29 @@ using System.Windows.Shell;
 using LemonApp.Common.WinAPI;
 using wsButton = EleCho.WpfSuite.Controls.Button;
 using System.ComponentModel;
+using System.Windows.Media;
 
-namespace LemonApp.Common.Styles
+namespace LemonApp.Common.UIBases
 {
     /// <summary>
     /// 提供含有标题栏的FluentWindow样式基类
     /// </summary>
     public class FluentWindowBase : Window
     {
-        private  wsButton? CloseBtn, MaxmizeBtn, MinimizeBtn;
+        private wsButton? CloseBtn, MaxmizeBtn, MinimizeBtn;
         private readonly BehaviorCollection _behaviors;
         private readonly BlurWindowBehavior _blurBehavior;
         private readonly WindowChrome _windowChrome;
 
         private readonly int _captionHeight = 48;
         private readonly Thickness _resizeBorderThickness = new(12);
+
+        public MaterialType Mode
+        {
+            get => (MaterialType)_blurBehavior.GetValue(BlurWindowBehavior.ModeProperty);
+            set => _blurBehavior.SetCurrentValue(BlurWindowBehavior.ModeProperty, value);
+        }
+
 
         public FluentWindowBase()
         {
@@ -33,8 +41,8 @@ namespace LemonApp.Common.Styles
             _behaviors.Add(new WindowDragMoveBehavior());
             _windowChrome = new()
             {
-                CaptionHeight=_captionHeight,
-                ResizeBorderThickness=_resizeBorderThickness
+                CaptionHeight = _captionHeight,
+                ResizeBorderThickness = _resizeBorderThickness
             };
             _blurBehavior = new()
             {
@@ -65,15 +73,27 @@ namespace LemonApp.Common.Styles
         }
         private void ApplyResizeMode()
         {
-            bool allShown= ResizeMode != ResizeMode.NoResize;
+            bool allShown = ResizeMode != ResizeMode.NoResize;
             MinimizeBtn!.Visibility = MaxmizeBtn!.Visibility = allShown ? Visibility.Visible : Visibility.Collapsed;
-            MaxmizeBtn.IsEnabled = ResizeMode!= ResizeMode.CanMinimize;
+            MaxmizeBtn.IsEnabled = ResizeMode != ResizeMode.CanMinimize;
             MaxmizeBtn.SetResourceReference(ForegroundProperty, MaxmizeBtn.IsEnabled ? "ForeColor" : "FocusMaskColor");
+            CloseBtn!.MouseEnter += CloseBtn_MouseEnter;
+            CloseBtn!.MouseLeave += FluentWindowBase_MouseLeave;
 
             _windowChrome.ResizeBorderThickness =
-                (ResizeMode != ResizeMode.CanResize && ResizeMode != ResizeMode.CanResizeWithGrip)
+                ResizeMode != ResizeMode.CanResize && ResizeMode != ResizeMode.CanResizeWithGrip
                 ? default : _resizeBorderThickness;
             _blurBehavior.WindowChromeEx = _windowChrome;
+        }
+
+        private void FluentWindowBase_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            CloseBtn!.SetResourceReference(wsButton.ForegroundProperty, "ForeColor");
+        }
+
+        private void CloseBtn_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            CloseBtn!.Foreground = Brushes.White;
         }
 
         private void ResizeModeChanged(object? sender, EventArgs e)

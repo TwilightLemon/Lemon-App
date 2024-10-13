@@ -1,0 +1,94 @@
+﻿<base:PopupWindowBase x:Class="LemonApp.Views.Windows.UserMenuPopupWindow"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:local="clr-namespace:LemonApp.Views.Windows"
+                      xmlns:ws="https://schemas.elecho.dev/wpfsuite"
+                      xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
+                      xmlns:viewmodel="clr-namespace:LemonApp.ViewModels"
+                      d:DataContext="{d:DesignInstance Type=viewmodel:UserMenuViewModel}"
+                      mc:Ignorable="d"
+                      d:WindowStyle="None"
+                      Background="{DynamicResource WindowBackgroundColor}"
+                      Foreground="{DynamicResource ForeColor}"
+                      Title="UserMenuPopupWindow"
+                      Height="330"
+                      Width="280">
+    <StackPanel>
+        <Grid Height="108"
+              Width="280">
+            <Border Width="72"
+                    Height="72"
+                    HorizontalAlignment="Left"
+                    Margin="14"
+                    Background="pink"
+                    CornerRadius="36">
+                <Ellipse HorizontalAlignment="Right"
+                         VerticalAlignment="Bottom"
+                         Fill="GreenYellow"
+                         Margin="4"
+                         Height="12"
+                         Width="12" />
+            </Border>
+            <TextBlock  Margin="100 30 20 0"
+                        VerticalAlignment="Top"
+                        LineHeight="25"><Run  d:Text="TwlmGatito"
+                                              FontSize="16" /><LineBreak /><InlineUIContainer>
+                    <TextBlock Opacity="0.8"
+                               FontSize="12"><Run Text="Id: " /><Run d:Text="0x00000" /></TextBlock>
+                </InlineUIContainer></TextBlock>
+        </Grid>
+        <Grid Height="108"
+              Width="280">
+            <Border Width="72"
+                    Height="72"
+                    HorizontalAlignment="Left"
+                    Margin="14"
+                    Background="pink"
+                    CornerRadius="36">
+                <Ellipse HorizontalAlignment="Right"
+                         VerticalAlignment="Bottom"
+                         Fill="OrangeRed"
+                         Margin="0,0,4,4"
+                         Height="12"
+                         Width="12" />
+            </Border>
+            <TextBlock  Margin="100 30 20 0"
+                        VerticalAlignment="Top"
+                        LineHeight="25"><Run  d:Text="TwlmGatito"
+                                              FontSize="16" /><LineBreak /><InlineUIContainer>
+                    <TextBlock Opacity="0.8"
+                               FontSize="12"><Run Text="Id: " /><Run d:Text="0x00000" /></TextBlock>
+                </InlineUIContainer></TextBlock>
+        </Grid>
+        <Border Height="1" Background="{DynamicResource BorderColor}"/>
+        <ws:ListBox ItemsSource="{Binding Menus}"
+                    d:DataContext="{d:SampleData ItemCount=2}"
+                    SelectedItem="{Binding SelectedMenuItem}"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}">
+            <ws:ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid Height="40">
+                        <Path Width="14"
+                              Height="14"
+                              Data="{Binding Icon}"
+                              Fill="{DynamicResource ForeColor}"
+                              Stretch="Uniform"
+                              HorizontalAlignment="Left"
+                              VerticalAlignment="Center"
+                              Margin="20 0 0 0" />
+                        <TextBlock Height="auto"
+                                   Text="{Binding Name}"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Center"
+                                   Margin="50 0 10 0" />
+                    </Grid>
+                </DataTemplate>
+            </ws:ListBox.ItemTemplate>
+
+        </ws:ListBox>
+    </StackPanel>
+</base:PopupWindowBase>

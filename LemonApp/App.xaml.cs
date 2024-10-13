@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using System.Configuration;
-using System.Data;
 using System.Windows;
 using LemonApp.Services;
 using LemonApp.Views.Windows;
 using NLog.Extensions.Logging;
 using LemonApp.Common.Configs;
+using System.Net.Http;
+using LemonApp.ViewModels;
 
 namespace LemonApp
 {
@@ -21,6 +21,15 @@ namespace LemonApp
             var builder = new HostBuilder();
             Host = builder.ConfigureServices(services =>
             {
+                services.AddHttpClient("PublicClient")
+                .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler()
+                {
+                    AutomaticDecompression = System.Net.DecompressionMethods.GZip,
+                    UseCookies=true,
+                    UseProxy = true
+                });
+
+
                 //host
                 services.AddSingleton<ApplicationService>();
                 services.AddHostedService(p => p.GetRequiredService<ApplicationService>());
@@ -34,9 +43,14 @@ namespace LemonApp
                 //services
                 services.AddSingleton<UIResourceService>();
 
-
                 //window
                 services.AddSingleton<MainWindow>();
+                services.AddTransient<LoginWindow>();
+                services.AddTransient<UserMenuPopupWindow>();
+
+                //ViewModels
+                services.AddSingleton<MainWindowViewModel>();
+                services.AddTransient<UserMenuViewModel>();
 
                 //Logger
                 services.AddLogging(builder =>

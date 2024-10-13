@@ -5,10 +5,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LemonApp.Services;
-internal class AppSettingsService(
+public class AppSettingsService(
     ILogger<AppSettingsService> logger
     ) :IHostedService,IConfigManager
 {
