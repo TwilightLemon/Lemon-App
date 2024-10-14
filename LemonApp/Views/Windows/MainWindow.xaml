@@ -15,6 +15,16 @@
                        Title="MainWindow"
                        Height="750"
                        Width="1080">
+    <base:FluentWindowBase.Triggers>
+        <EventTrigger SourceName="OpenPlayListBtn"
+                      RoutedEvent="ws:Button.Click">
+            <BeginStoryboard Storyboard="{DynamicResource OpenPlaylistAni}" />
+        </EventTrigger>
+        <EventTrigger SourceName="PlayListPageMask"
+                      RoutedEvent="MouseDown">
+            <BeginStoryboard Storyboard="{DynamicResource ClosePlaylistAni}" />
+        </EventTrigger>
+    </base:FluentWindowBase.Triggers>
     <base:FluentWindowBase.Resources>
         <Storyboard x:Key="OpenLyricPageAni">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="MainPage"
@@ -89,7 +99,7 @@
                 <DiscreteObjectKeyFrame KeyTime="00:00:00"
                                         Value="{x:Static Visibility.Collapsed}" />
             </ObjectAnimationUsingKeyFrames>
-            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="textBlock"
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="MusicControl_Title"
                                               Storyboard.TargetProperty="(FrameworkElement.Margin)">
                 <EasingThicknessKeyFrame KeyTime="00:00:00.3000000"
                                          Value="10,0,10,0">
@@ -105,10 +115,10 @@
                 <EasingDoubleKeyFrame KeyTime="00:00:00.3000000"
                                       Value="0" />
             </DoubleAnimationUsingKeyFrames>
-            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="textBlock"
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="MusicControl_Title"
                                               Storyboard.TargetProperty="(FrameworkElement.Margin)">
                 <EasingThicknessKeyFrame KeyTime="00:00:00"
-                                         Value="0,0,10,0">
+                                         Value="13,0,10,0">
                     <EasingThicknessKeyFrame.EasingFunction>
                         <CircleEase EasingMode="EaseOut" />
                     </EasingThicknessKeyFrame.EasingFunction>
@@ -168,234 +178,383 @@
                                         Value="{x:Static Visibility.Visible}" />
             </ObjectAnimationUsingKeyFrames>
         </Storyboard>
+        <Storyboard x:Key="OpenPlaylistAni">
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PlayListPage"
+                                           Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00"
+                                        Value="{x:Static Visibility.Visible}" />
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PlayListBar"
+                                           Storyboard.TargetProperty="(FrameworkElement.Width)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00"
+                                      Value="0" />
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000"
+                                      Value="400">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CubicEase EasingMode="EaseOut" />
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PlayListPageMask"
+                                           Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00"
+                                      Value="0" />
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000"
+                                      Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="ClosePlaylistAni">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PlayListBar"
+                                           Storyboard.TargetProperty="(FrameworkElement.Width)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000"
+                                      Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CubicEase EasingMode="EaseOut" />
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PlayListPage"
+                                           Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00.3000000"
+                                        Value="{x:Static Visibility.Collapsed}" />
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PlayListPageMask"
+                                           Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000"
+                                      Value="0" />
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
     </base:FluentWindowBase.Resources>
-    <Grid>
-        <Grid x:Name="MainPage"
-              Margin="0 0 0 110">
-            <Grid x:Name="TitleBar"
-                  WindowChrome.IsHitTestVisibleInChrome="True"
-                  VerticalAlignment="Top">
-                <!--中部功能区-->
-                <!--三大按钮占位 Width:144-->
-                <!--左侧Icon-->
-                <Image HorizontalAlignment="Left"
-                       Width="22"
-                       Height="22"
-                       Margin="16 0 0 0"
-                       RenderOptions.BitmapScalingMode="HighQuality"
-                       Source="/Resources/icon.ico" />
-                <TextBlock VerticalAlignment="Center"
-                           HorizontalAlignment="Left"
-                           Margin="50 0 0 0"
-                           FontSize="14"
-                           Text="Lemon App" />
-                <ws:TextBox x:Name="SearchBox"
-                            Background="{DynamicResource MaskColor}"
-                            HoverBackground="{DynamicResource FocusMaskColor}"
-                            FocusedBackground="{DynamicResource FocusMaskColor}"
-                            BorderBrush="{DynamicResource BorderColor}"
-                            FocusedBorderBrush="{DynamicResource FocusMaskColor}"
-                            HoverBorderBrush="{DynamicResource FocusMaskColor}"
-                            SelectionBrush="{DynamicResource HighlightThemeColor}"
-                            CaretBrush="{DynamicResource ForeColor}"
-                            Foreground="{DynamicResource ForeColor}"
-                            Height="32"
-                            Padding="6 7 0 0"
-                            MaxWidth="380"
-                            Placeholder="搜索"
-                            HorizontalAlignment="Stretch"
-                            CornerRadius="6"
-                            Margin="220,8,220,8" />
-                <!--用户头像&菜单-->
-                <ws:Button x:Name="UserProfileBtn"
-                           HorizontalAlignment="Right"
-                           Cursor="Hand"
-                           CornerRadius="18"
-                           BorderThickness="0"
-                           Background="{DynamicResource MaskColor}"
-                           HoverBackground="{DynamicResource FocusMaskColor}"
-                           PressedBackground="{DynamicResource FocusMaskColor}"
-                           Width="36"
-                           Height="36"
-                           Margin="0 0 180 0"
-                           Click="UserProfileBtn_Click">
-                    <Border Background="#FFFDAAAA"
-                            Width="30"
-                            CornerRadius="15"
-                            Height="30" />
-                </ws:Button>
-            </Grid>
-            <Grid x:Name="ContentPage"
-                  Margin="0,48,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*"
-                                      MaxWidth="320"
-                                      MinWidth="50" />
-                    <ColumnDefinition Width="3*" />
-                </Grid.ColumnDefinitions>
-                <Grid x:Name="MainMenuGrid">
-                    <ws:ListBox ItemsSource="{Binding MainMenus}"
-                                d:ItemsSource="{d:SampleData ItemCount=5}"
-                                Background="Transparent"
-                                BorderThickness="0"
-                                ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}"
-                                VerticalAlignment="Top">
-                        <ws:ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <ws:Border Height="40"
-                                           Padding="10 0"
-                                           d:Background="#3C000000"
-                                           Background="Transparent">
-                                    <ws:StackPanel Orientation="Horizontal"
-                                                   VerticalAlignment="Center"
-                                                   Spacing="8">
-                                        <Border x:Name="FocusedIcon"
-                                                Width="3"
-                                                Margin="-18 0 0 0"
-                                                Background="{DynamicResource HighlightThemeColor}"
-                                                CornerRadius="1.5"
-                                                Height="16"
-                                                Visibility="Hidden"
-                                                d:Visibility="Visible" />
-                                        <Path VerticalAlignment="Center"
-                                              Fill="{DynamicResource ForeColor}"
-                                              Data="{Binding Icon}"
-                                              Stretch="Uniform"
-                                              Width="15"
-                                              Height="15" />
-                                        <TextBlock Text="{Binding Name}"
-                                                   VerticalAlignment="Center" />
-                                    </ws:StackPanel>
-                                </ws:Border>
-                                <DataTemplate.Triggers>
-                                    <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}, Mode=FindAncestor}}"
-                                                 Value="True">
-                                        <DataTrigger.EnterActions>
-                                            <BeginStoryboard>
-                                                <Storyboard>
-                                                    <DoubleAnimation Storyboard.TargetName="FocusedIcon"
-                                                                     Storyboard.TargetProperty="Height"
-                                                                     From="0"
-                                                                     To="16"
-                                                                     Duration="0:0:0.3">
-                                                        <DoubleAnimation.EasingFunction>
-                                                            <CubicEase EasingMode="EaseOut" />
-                                                        </DoubleAnimation.EasingFunction>
-                                                    </DoubleAnimation>
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                        </DataTrigger.EnterActions>
-                                        <Setter TargetName="FocusedIcon"
-                                                Property="Visibility"
-                                                Value="Visible" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}, Mode=FindAncestor}}"
-                                                 Value="False">
-                                        <Setter TargetName="FocusedIcon"
-                                                Property="Visibility"
-                                                Value="Hidden" />
-                                    </DataTrigger>
-                                </DataTemplate.Triggers>
-                            </DataTemplate>
-                        </ws:ListBox.ItemTemplate>
-                    </ws:ListBox>
-                </Grid>
-                <Border x:Name="ContentHost"
-                        Margin="8 4 8 8"
-                        Grid.Column="1"
-                        BorderBrush="{DynamicResource BorderColor}"
-                        BorderThickness="1"
-                        Background="{DynamicResource MaskColor}"
-                        CornerRadius="8" />
-            </Grid>
-        </Grid>
-        <Grid x:Name="LyricPage"
-              Visibility="Collapsed">
-            <Border x:Name="LyricPage_Background"
-                    Background="#0C000000" />
-            <Border x:Name="LyricPage_Img"
-                    HorizontalAlignment="Left"
-                    Width="360"
-                    Height="360"
-                    Background="Pink"
-                    CornerRadius="8"
-                    Margin="60,0,0,110" />
-
-        </Grid>
-        <Border x:Name="MusicControl"
-                BorderThickness="0 1 0 0"
-                Height="110"
-                VerticalAlignment="Bottom"
-                BorderBrush="{DynamicResource BorderColor}"
-                Background="{DynamicResource TabMaskColor}">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="2*" />
-                    <RowDefinition Height="5*" />
-                </Grid.RowDefinitions>
-                <Grid>
-                    <TextBlock Text="00:00"
+    <ws:BoxPanel>
+        <Grid x:Name="MainContentPage">
+            <Grid x:Name="MainPage"
+                  Margin="0 0 0 110">
+                <Grid x:Name="TitleBar"
+                      WindowChrome.IsHitTestVisibleInChrome="True"
+                      VerticalAlignment="Top">
+                    <!--中部功能区-->
+                    <!--三大按钮占位 Width:144-->
+                    <!--左侧Icon-->
+                    <Image HorizontalAlignment="Left"
+                           Width="22"
+                           Height="22"
+                           Margin="16 0 0 0"
+                           RenderOptions.BitmapScalingMode="HighQuality"
+                           Source="/Resources/icon.ico" />
+                    <TextBlock VerticalAlignment="Center"
                                HorizontalAlignment="Left"
-                               VerticalAlignment="Center"
-                               Margin="14 0 0 0" />
-                    <TextBlock Text="00:00"
+                               Margin="50 0 0 0"
+                               FontSize="14"
+                               Text="Lemon App" />
+                    <ws:TextBox x:Name="SearchBox"
+                                Background="{DynamicResource MaskColor}"
+                                HoverBackground="{DynamicResource FocusMaskColor}"
+                                FocusedBackground="{DynamicResource FocusMaskColor}"
+                                BorderBrush="{DynamicResource BorderColor}"
+                                FocusedBorderBrush="{DynamicResource FocusMaskColor}"
+                                HoverBorderBrush="{DynamicResource FocusMaskColor}"
+                                SelectionBrush="{DynamicResource HighlightThemeColor}"
+                                CaretBrush="{DynamicResource ForeColor}"
+                                Foreground="{DynamicResource ForeColor}"
+                                Height="32"
+                                Padding="6 7 0 0"
+                                MaxWidth="380"
+                                Placeholder="搜索"
+                                HorizontalAlignment="Stretch"
+                                CornerRadius="6"
+                                Margin="220,8,220,8" />
+                    <!--用户头像&菜单-->
+                    <ws:Button x:Name="UserProfileBtn"
                                HorizontalAlignment="Right"
-                               VerticalAlignment="Center"
-                               Margin="0 0 14 0" />
-                    <Slider  Margin="60 0"
-                             VerticalAlignment="Center" />
-                </Grid>
-                <Grid Grid.Row="1">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*" />
-                        <ColumnDefinition Width="1*" />
-                        <ColumnDefinition Width="1*" />
-                    </Grid.ColumnDefinitions>
-                    <ws:Button x:Name="MusicControl_Info"
-                               Margin="6,4,0,4"
-                               Height="70"
-                               HorizontalAlignment="Left"
-                               Background="Transparent"
-                               HoverBackground="{DynamicResource MaskColor}"
-                               PressedBackground="{DynamicResource MaskColor}"
+                               Cursor="Hand"
+                               CornerRadius="18"
                                BorderThickness="0"
-                               CornerRadius="8"
-                               Click="MusicControl_Info_Click">
-                        <Grid>
-                            <Border x:Name="MusicControl_Img"
-                                    Margin="6 0 0 0"
-                                    HorizontalAlignment="Left"
-                                    Width="60"
-                                    Height="60"
-                                    Background="Pink"
-                                    CornerRadius="8" />
-                            <TextBlock x:Name="textBlock"
-                                       Margin="72 0 10 0"
-                                       VerticalAlignment="Center"
-                                       LineHeight="24"
-                                       HorizontalAlignment="Left">
-                                <Run Text="Dancing With Our Hands Tied"
-                                     FontWeight="Bold"
-                                     FontSize="16" />
-                                <LineBreak />
-                                <Run Text="Taylor Swift · reputation"
-                                     FontSize="12" />
-                            </TextBlock>
-                        </Grid>
+                               Background="{DynamicResource MaskColor}"
+                               HoverBackground="{DynamicResource FocusMaskColor}"
+                               PressedBackground="{DynamicResource FocusMaskColor}"
+                               Width="36"
+                               Height="36"
+                               Margin="0 0 180 0"
+                               Click="UserProfileBtn_Click">
+                        <Border Background="#FFFDAAAA"
+                                Width="30"
+                                CornerRadius="15"
+                                Height="30" />
                     </ws:Button>
-
+                </Grid>
+                <Grid x:Name="ContentPage"
+                      Margin="0,48,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"
+                                          MaxWidth="320"
+                                          MinWidth="50" />
+                        <ColumnDefinition Width="3*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid x:Name="MainMenuGrid">
+                        <ws:ListBox ItemsSource="{Binding MainMenus}"
+                                    d:ItemsSource="{d:SampleData ItemCount=5}"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}"
+                                    VerticalAlignment="Top">
+                            <ws:ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <ws:Border Height="40"
+                                               Padding="10 0"
+                                               d:Background="#3C000000"
+                                               Background="Transparent">
+                                        <ws:StackPanel Orientation="Horizontal"
+                                                       VerticalAlignment="Center"
+                                                       Spacing="8">
+                                            <Border x:Name="FocusedIcon"
+                                                    Width="3"
+                                                    Margin="-18 0 0 0"
+                                                    Background="{DynamicResource HighlightThemeColor}"
+                                                    CornerRadius="1.5"
+                                                    Height="16"
+                                                    Visibility="Hidden"
+                                                    d:Visibility="Visible" />
+                                            <Path VerticalAlignment="Center"
+                                                  Fill="{DynamicResource ForeColor}"
+                                                  Data="{Binding Icon}"
+                                                  Stretch="Uniform"
+                                                  Width="15"
+                                                  Height="15" />
+                                            <TextBlock Text="{Binding Name}"
+                                                       VerticalAlignment="Center" />
+                                        </ws:StackPanel>
+                                    </ws:Border>
+                                    <DataTemplate.Triggers>
+                                        <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}, Mode=FindAncestor}}"
+                                                     Value="True">
+                                            <DataTrigger.EnterActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetName="FocusedIcon"
+                                                                         Storyboard.TargetProperty="Height"
+                                                                         From="0"
+                                                                         To="16"
+                                                                         Duration="0:0:0.3">
+                                                            <DoubleAnimation.EasingFunction>
+                                                                <CubicEase EasingMode="EaseOut" />
+                                                            </DoubleAnimation.EasingFunction>
+                                                        </DoubleAnimation>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.EnterActions>
+                                            <Setter TargetName="FocusedIcon"
+                                                    Property="Visibility"
+                                                    Value="Visible" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}, Mode=FindAncestor}}"
+                                                     Value="False">
+                                            <Setter TargetName="FocusedIcon"
+                                                    Property="Visibility"
+                                                    Value="Hidden" />
+                                        </DataTrigger>
+                                    </DataTemplate.Triggers>
+                                </DataTemplate>
+                            </ws:ListBox.ItemTemplate>
+                        </ws:ListBox>
+                    </Grid>
+                    <Border x:Name="ContentHost"
+                            Margin="8 4 8 8"
+                            Grid.Column="1"
+                            BorderBrush="{DynamicResource BorderColor}"
+                            BorderThickness="1"
+                            Background="{DynamicResource MaskColor}"
+                            CornerRadius="8" />
                 </Grid>
             </Grid>
-        </Border>
+            <Grid x:Name="LyricPage"
+                  Visibility="Collapsed">
+                <Border x:Name="LyricPage_Background"
+                        Background="#0C000000" />
+                <Border x:Name="LyricPage_Img"
+                        HorizontalAlignment="Left"
+                        Width="360"
+                        Height="360"
+                        Background="Pink"
+                        CornerRadius="8"
+                        Margin="60,0,0,110" />
+
+            </Grid>
+            <Border x:Name="MusicControl"
+                    BorderThickness="0 1 0 0"
+                    Height="110"
+                    VerticalAlignment="Bottom"
+                    BorderBrush="{DynamicResource BorderColor}"
+                    Background="{DynamicResource TabMaskColor}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="2*" />
+                        <RowDefinition Height="5*" />
+                    </Grid.RowDefinitions>
+                    <Grid>
+                        <TextBlock x:Name="PlayingTimeTb"
+                                   Text="00:00"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center"
+                                   Margin="14 0 0 0" />
+                        <TextBlock x:Name="TotalTimeTb"
+                                   Text="00:00"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center"
+                                   Margin="0 0 14 0" />
+                        <Slider Style="{DynamicResource FluentSliderStyle}"
+                                x:Name="PlaySlider"
+                                Margin="60 0"
+                                VerticalAlignment="Center"
+                                Value="1" />
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+                        <!--Left -->
+                        <ws:Button x:Name="MusicControl_Info"
+                                   Margin="6,4,0,4"
+                                   Height="70"
+                                   HorizontalAlignment="Left"
+                                   Background="Transparent"
+                                   HoverBackground="{DynamicResource MaskColor}"
+                                   PressedBackground="{DynamicResource MaskColor}"
+                                   BorderThickness="0"
+                                   CornerRadius="8"
+                                   Click="MusicControl_Info_Click">
+                            <Grid>
+                                <Border x:Name="MusicControl_Img"
+                                        Margin="6 0 0 0"
+                                        HorizontalAlignment="Left"
+                                        Width="60"
+                                        Height="60"
+                                        Background="Pink"
+                                        CornerRadius="8" />
+                                <TextBlock x:Name="MusicControl_Title"
+                                           Margin="72 0 10 0"
+                                           Foreground="{DynamicResource ForeColor}"
+                                           VerticalAlignment="Center"
+                                           LineHeight="24"
+                                           HorizontalAlignment="Left">
+                                    <Run Text="Dancing With Our Hands Tied"
+                                         FontWeight="Bold"
+                                         FontSize="16" />
+                                    <LineBreak />
+                                    <Run Text="Taylor Swift · reputation"
+                                         FontSize="12" />
+                                </TextBlock>
+                            </Grid>
+                        </ws:Button>
+                        <!--Center-->
+                        <Grid Grid.Column="1"
+                              Width="250">
+                            <ws:Button x:Name="PlayBtn"
+                                       Width="45"
+                                       Height="45"
+                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
+                                <Path Data="{DynamicResource PlayIcon_Play}"
+                                      Fill="{DynamicResource HighlightThemeColor}"
+                                      Stretch="Uniform" />
+                            </ws:Button>
+                            <ws:Button x:Name="PlayLastBtn"
+                                       Width="32"
+                                       Height="32"
+                                       Margin="48 0 0 0"
+                                       HorizontalAlignment="Left"
+                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
+                                <Path Data="{DynamicResource PlayIcon_Last}"
+                                      Height="18"
+                                      Fill="{DynamicResource ForeColor}"
+                                      Stretch="Uniform" />
+                            </ws:Button>
+                            <ws:Button x:Name="PlayNextBtn"
+                                       Width="32"
+                                       Height="32"
+                                       Margin="0 0 48 0"
+                                       HorizontalAlignment="Right"
+                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
+                                <Path Data="{DynamicResource PlayIcon_Next}"
+                                      Height="18"
+                                      Fill="{DynamicResource ForeColor}"
+                                      Stretch="Uniform" />
+                            </ws:Button>
+                            <ws:Button x:Name="CircleModeBtn"
+                                       Width="32"
+                                       Height="32"
+                                       HorizontalAlignment="Right"
+                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
+                                <Path Data="{DynamicResource CircleMode_Circle}"
+                                      Height="18"
+                                      Fill="{DynamicResource ForeColor}"
+                                      Stretch="Uniform" />
+                            </ws:Button>
+                            <ws:Button x:Name="OpenDesktopLyricBtn"
+                                       Width="32"
+                                       Height="32"
+                                       HorizontalAlignment="Left"
+                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
+                                <Path Data="{DynamicResource OpenDesktopLyric}"
+                                      Height="18"
+                                      Fill="{DynamicResource ForeColor}"
+                                      Stretch="Uniform" />
+                            </ws:Button>
+                        </Grid>
+                        <ws:WrapPanel Grid.Column="2"
+                                      HorizontalAlignment="Right"
+                                      VerticalAlignment="Center"
+                                      Margin="0 0 32 0"
+                                      HorizontalSpacing="24">
+                            <ws:Button x:Name="FavoriteBtn"
+                                       Width="32"
+                                       Height="32"
+                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
+                                <Path Data="{DynamicResource HeartIcon}"
+                                      Height="18"
+                                      Fill="{DynamicResource ForeColor}"
+                                      Stretch="Uniform" />
+                            </ws:Button>
+                            <ws:Button x:Name="MoreMenuBtn"
+                                       Width="32"
+                                       Height="32"
+                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
+                                <Path Data="{DynamicResource MoreMenu}"
+                                      Height="18"
+                                      Fill="{DynamicResource ForeColor}"
+                                      Stretch="Uniform" />
+                            </ws:Button>
+                            <ws:Button x:Name="AudioBtn"
+                                       Width="32"
+                                       Height="32"
+                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
+                                <Path Data="{DynamicResource AudioIcon}"
+                                      Height="18"
+                                      Fill="{DynamicResource ForeColor}"
+                                      Stretch="Uniform" />
+                            </ws:Button>
+                            <ws:Button x:Name="OpenPlayListBtn"
+                                       Width="32"
+                                       Height="32"
+                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
+                                <Path Data="{DynamicResource OpenPlaylist}"
+                                      Height="16"
+                                      Fill="{DynamicResource ForeColor}"
+                                      Stretch="Uniform" />
+                            </ws:Button>
+                        </ws:WrapPanel>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
         <Grid x:Name="PlayListPage"
-              Background="#3C000000"
               Visibility="Collapsed">
+            <Border x:Name="PlayListPageMask"
+                    Background="#7F000000" />
             <Grid x:Name="PlayListBar"
                   Width="400"
                   HorizontalAlignment="Right"
-                  Background="{DynamicResource BackgroundColor}">
-
-            </Grid>
+                  Background="{DynamicResource BackgroundColor}" />
         </Grid>
-    </Grid>
+    </ws:BoxPanel>
 </base:FluentWindowBase>

@@ -23,14 +23,7 @@
                     HorizontalAlignment="Left"
                     Margin="14"
                     Background="pink"
-                    CornerRadius="36">
-                <Ellipse HorizontalAlignment="Right"
-                         VerticalAlignment="Bottom"
-                         Fill="GreenYellow"
-                         Margin="4"
-                         Height="12"
-                         Width="12" />
-            </Border>
+                    CornerRadius="36" />
             <TextBlock  Margin="100 30 20 0"
                         VerticalAlignment="Top"
                         LineHeight="25"><Run  d:Text="TwlmGatito"
@@ -47,12 +40,15 @@
                     Margin="14"
                     Background="pink"
                     CornerRadius="36">
-                <Ellipse HorizontalAlignment="Right"
+                <Border HorizontalAlignment="Right"
                          VerticalAlignment="Bottom"
-                         Fill="OrangeRed"
+                         Background="OrangeRed"
+                         CornerRadius="9"
                          Margin="0,0,4,4"
-                         Height="12"
-                         Width="12" />
+                         Height="18"
+                         Width="18">
+                    <Path Data="{StaticResource NeteaseIcon}" Fill="#FFF"  Stretch="Uniform" Width="10"/>
+                </Border>
             </Border>
             <TextBlock  Margin="100 30 20 0"
                         VerticalAlignment="Top"

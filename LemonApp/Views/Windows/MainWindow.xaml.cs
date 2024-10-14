@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Shapes;
 using LemonApp.Common.Configs;
 using LemonApp.Common.UIBases;
 using LemonApp.Services;
@@ -65,6 +67,10 @@ namespace LemonApp.Views.Windows
             }
             else
             {
+                var point = MusicControl_Img.TranslatePoint(new Point(0, 0), this);
+                (_closeLyricPageAni.Children[4] as ThicknessAnimationUsingKeyFrames)!.KeyFrames[0].Value =
+                (_openLyricPageAni.Children[6] as ThicknessAnimationUsingKeyFrames)!.KeyFrames[0].Value =
+                            new Thickness(point.X, (double)656 / 681 * point.Y, 0, 0);
                 _openLyricPageAni.Begin();
                 _vm.IsLyricPageOpen=true;
 

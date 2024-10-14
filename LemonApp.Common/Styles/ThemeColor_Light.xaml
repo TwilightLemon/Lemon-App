@@ -20,5 +20,5 @@
                      Color="#19000000"/>
     <!--纯色背景-->
     <SolidColorBrush x:Key="BackgroundColor"
-                     Color="#FFF" />
+                     Color="#FFF0F0F0" />
 </ResourceDictionary>
