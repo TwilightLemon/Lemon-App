@@ -325,7 +325,7 @@
         <Setter Property="PressedBackground"
                 Value="{DynamicResource MaskColor}" />
         <Setter Property="CornerRadius"
-                Value="8" />
+                Value="4" />
         <Setter Property="BorderThickness"
                 Value="0" />
         <Setter Property="Cursor"

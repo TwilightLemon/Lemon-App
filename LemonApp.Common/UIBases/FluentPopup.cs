@@ -6,6 +6,8 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
+using System.Windows.Threading;
 
 namespace LemonApp.Common.UIBases;
 
@@ -48,17 +50,78 @@ public static class FluentTooltip
         if(sender is ToolTip tip&& tip.Background is SolidColorBrush cb)
         {
             var hwnd = tip.GetNativeWindowHwnd();
-            FluentPopupFunc.SetPopupWindowMaterial(hwnd, cb.Color);
+            FluentPopupFunc.SetPopupWindowMaterial(hwnd, cb.Color,MaterialApis.WindowCorner.RoundSmall);
         }
     }
 }
 
 public class FluentPopup:Popup
 {
+    public enum ExPopupAnimation
+    {
+        None,
+        SlideUp,
+        SlideDown
+    }
+    private DoubleAnimation? _slideAni;
     public FluentPopup()
     {
         Opened += FluentPopup_Opened;
+        Closed += FluentPopup_Closed;
     }
+
+    #region 启动动画控制
+    private void FluentPopup_Closed(object? sender, EventArgs e)
+    {
+        ResetAnimation();
+    }
+
+    public new bool IsOpen { get => base.IsOpen;
+        set 
+        {
+            if (value)
+            {
+                BuildAnimation();
+                base.IsOpen = value;
+                // Run Animation in Opened Event
+            }
+            else
+            {
+                base.IsOpen = value;
+                ResetAnimation();
+            }
+        }
+    }
+    public uint SlideAnimationOffset { get; set; } = 50;
+    private void ResetAnimation()
+    {
+        if (ExtPopupAnimation is ExPopupAnimation.SlideUp or ExPopupAnimation.SlideDown)
+        {
+            BeginAnimation(VerticalOffsetProperty, null);
+            VerticalOffset -= ExtPopupAnimation == ExPopupAnimation.SlideUp ? SlideAnimationOffset : -SlideAnimationOffset;
+        }
+    }
+    public void BuildAnimation()
+    {
+        if (ExtPopupAnimation is ExPopupAnimation.SlideUp or ExPopupAnimation.SlideDown)
+        {
+            _slideAni = new DoubleAnimation(VerticalOffset, TimeSpan.FromMilliseconds(300))
+            {
+                EasingFunction = new CubicEase()
+            };
+            VerticalOffset += ExtPopupAnimation ==ExPopupAnimation.SlideUp ? SlideAnimationOffset : -SlideAnimationOffset;
+        }
+    }
+    public void RunPopupAnimation()
+    {
+        if (_slideAni != null)
+        {
+            BeginAnimation(VerticalOffsetProperty, _slideAni);
+        }
+    }
+
+    #endregion
+    #region Fluent Style
     public SolidColorBrush Background
     {
         get { return (SolidColorBrush)GetValue(BackgroundProperty); }
@@ -78,16 +141,28 @@ public class FluentPopup:Popup
         }
     }
 
+    public ExPopupAnimation ExtPopupAnimation
+    {
+        get { return (ExPopupAnimation)GetValue(ExtPopupAnimationProperty); }
+        set { SetValue(ExtPopupAnimationProperty, value); }
+    }
+
+    public static readonly DependencyProperty ExtPopupAnimationProperty =
+        DependencyProperty.Register("ExtPopupAnimation", typeof(ExPopupAnimation), typeof(FluentPopup),
+            new PropertyMetadata(ExPopupAnimation.None));
+
     private IntPtr _windowHandle= IntPtr.Zero;
     private void FluentPopup_Opened(object? sender, EventArgs e)
     {
         _windowHandle = this.GetNativeWindowHwnd();
         ApplyFluentHwnd();
+        Dispatcher.Invoke(RunPopupAnimation);
     }
     public void ApplyFluentHwnd()
     {
         FluentPopupFunc.SetPopupWindowMaterial(_windowHandle, Background.Color);
     }
+    #endregion
 }
 
 internal static class FluentPopupFunc
@@ -123,7 +198,8 @@ internal static class FluentPopupFunc
         }
         return IntPtr.Zero;
     }
-    public static void SetPopupWindowMaterial(IntPtr hwnd,Color compositionColor)
+    public static void SetPopupWindowMaterial(IntPtr hwnd,Color compositionColor,
+        MaterialApis.WindowCorner corner=MaterialApis.WindowCorner.Round)
     {
         if (hwnd != IntPtr.Zero)
         {
@@ -131,7 +207,7 @@ internal static class FluentPopupFunc
             var hwndSource = HwndSource.FromHwnd(hwnd);
             MaterialApis.SetWindowProperties(hwndSource, 0);
             MaterialApis.SetWindowComposition(hwnd, true, hexColor);
-            MaterialApis.SetWindowCorner(hwnd, MaterialApis.WindowCorner.Round);
+            MaterialApis.SetWindowCorner(hwnd, corner);
         }
     }
 }

@@ -25,7 +25,7 @@
                     <Setter Property="base:FluentTooltip.UseFluentStyle"
                             Value="True" />
                     <Setter Property="Background"
-                            Value="{DynamicResource WindowBackgroundColor}" />
+                            Value="{DynamicResource TabMaskColor}" />
                     <Setter Property="Foreground"
                             Value="{DynamicResource ForeColor}" />
                 </Style.Setters>

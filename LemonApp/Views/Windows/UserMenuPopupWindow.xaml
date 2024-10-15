@@ -1,4 +1,4 @@
-﻿<base:PopupWindowBase x:Class="LemonApp.Views.Windows.UserMenuPopupWindow"
+﻿<UserControl x:Class="LemonApp.Views.Windows.UserMenuPopupWindow"
                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -9,15 +9,15 @@
                       xmlns:viewmodel="clr-namespace:LemonApp.ViewModels"
                       d:DataContext="{d:DesignInstance Type=viewmodel:UserMenuViewModel}"
                       mc:Ignorable="d"
-                      d:WindowStyle="None"
                       Background="{DynamicResource WindowBackgroundColor}"
                       Foreground="{DynamicResource ForeColor}"
-                      Title="UserMenuPopupWindow"
-                      Height="330"
-                      Width="280">
-    <StackPanel>
-        <Grid Height="108"
-              Width="280">
+                      Height="{Binding ElementName=Body,Path=ActualHeight}"
+                      Width="240">
+    <StackPanel x:Name="Body" VerticalAlignment="Top">
+        <Grid x:Name="TencProfile"
+              Height="108"
+              d:Visibility="Visible"
+              Visibility="{Binding IsLoginQQ}">
             <Border Width="72"
                     Height="72"
                     HorizontalAlignment="Left"
@@ -26,44 +26,46 @@
                     CornerRadius="36" />
             <TextBlock  Margin="100 30 20 0"
                         VerticalAlignment="Top"
-                        LineHeight="25"><Run  d:Text="TwlmGatito"
-                                              FontSize="16" /><LineBreak /><InlineUIContainer>
-                    <TextBlock Opacity="0.8"
-                               FontSize="12"><Run Text="Id: " /><Run d:Text="0x00000" /></TextBlock>
-                </InlineUIContainer></TextBlock>
+                        LineHeight="25">
+                <Run  d:Text="TwlmGatito" Text="{Binding UserProfile.UserName}" FontSize="16" />
+                <LineBreak />
+                <InlineUIContainer>
+                    <TextBlock Opacity="0.8" FontSize="12">
+                        <Run Text="Id: " />
+                        <Run Text="{Binding UserProfile.TencUserAuth.Id}"/>
+                    </TextBlock>
+                </InlineUIContainer>
+            </TextBlock>
         </Grid>
-        <Grid Height="108"
-              Width="280">
-            <Border Width="72"
-                    Height="72"
-                    HorizontalAlignment="Left"
-                    Margin="14"
-                    Background="pink"
-                    CornerRadius="36">
-                <Border HorizontalAlignment="Right"
-                         VerticalAlignment="Bottom"
-                         Background="OrangeRed"
-                         CornerRadius="9"
-                         Margin="0,0,4,4"
-                         Height="18"
-                         Width="18">
-                    <Path Data="{StaticResource NeteaseIcon}" Fill="#FFF"  Stretch="Uniform" Width="10"/>
-                </Border>
+        <Grid x:Name="NeteaseProfile"
+              Height="48"
+              d:Visibility="Visible"
+              Visibility="{Binding IsLoginNetease}">
+            <Border HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Background="OrangeRed"
+                    CornerRadius="9"
+                    Margin="28 0 0 0"
+                    Height="18"
+                    Width="18">
+                <Path Data="{StaticResource NeteaseIcon}"
+                      Fill="#FFF"
+                      Stretch="Uniform"
+                      Width="10" />
             </Border>
-            <TextBlock  Margin="100 30 20 0"
-                        VerticalAlignment="Top"
-                        LineHeight="25"><Run  d:Text="TwlmGatito"
-                                              FontSize="16" /><LineBreak /><InlineUIContainer>
-                    <TextBlock Opacity="0.8"
-                               FontSize="12"><Run Text="Id: " /><Run d:Text="0x00000" /></TextBlock>
-                </InlineUIContainer></TextBlock>
+            <TextBlock  Margin="58 16 0  0"
+                        Opacity="0.8"
+                        VerticalAlignment="Top">
+                Id: <Run Text="{Binding UserProfile.NeteaseUserAuth.Id}"/>
+            </TextBlock>
         </Grid>
-        <Border Height="1" Background="{DynamicResource BorderColor}"/>
+        <Border Height="1" Margin="0 5"
+                Background="{DynamicResource BorderColor}" />
         <ws:ListBox ItemsSource="{Binding Menus}"
-                    d:DataContext="{d:SampleData ItemCount=2}"
                     SelectedItem="{Binding SelectedMenuItem}"
                     Background="Transparent"
                     BorderThickness="0"
+                    Margin="0 0 0 10"
                     ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}">
             <ws:ListBox.ItemTemplate>
                 <DataTemplate>
@@ -87,4 +89,4 @@
 
         </ws:ListBox>
     </StackPanel>
-</base:PopupWindowBase>
+</UserControl>

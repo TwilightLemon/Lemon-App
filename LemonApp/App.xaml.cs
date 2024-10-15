@@ -16,7 +16,7 @@ namespace LemonApp
     public partial class App : Application
     {
         public static IHost? Host { get; private set; } = null;
-        private void BuildHost()
+        private static void BuildHost()
         {
             var builder = new HostBuilder();
             Host = builder.ConfigureServices(services =>

@@ -37,33 +37,37 @@ namespace LemonApp.Views.Windows
         private readonly UIResourceService _uiResourceService;
         private readonly AppSettingsService _appSettingsService;
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            var loginWindow = _serviceProvider.GetRequiredService<LoginWindow>();
-            loginWindow.OnLogin = (auth) =>
-            {
-                MessageBox.Show(auth.Cookie);
-            };
-            loginWindow.Show();
-        }
-
-        private void UserProfileBtn_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// 打开UserProfile菜单
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void UserProfileBtn_Click(object sender, RoutedEventArgs e)
         {
             var popup = _serviceProvider.GetRequiredService<UserMenuPopupWindow>();
-            //获取控件相对于窗口位置
-            var point = UserProfileBtn.TranslatePoint(new Point(0, 0), this);
-            popup.Left =this.Left+ point.X-popup.Width+UserProfileBtn.Width;
-            popup.Top =this.Top+ point.Y + UserProfileBtn.ActualHeight;
-            popup.Show();
+            UserProfilePopup.Child = popup;
+            UserProfilePopup.HorizontalOffset = -popup.Width;
+            await Task.Yield();
+            UserProfilePopup.IsOpen = true;
         }
-        private Storyboard? _openLyricPageAni, _closeLyricPageAni;
 
+        /// <summary>
+        /// 打开音量调节
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void AudioBtn_Click(object sender, RoutedEventArgs e)
         {
             await Task.Yield();
-            testPopup.IsOpen = true;
+            AudioAdjustPopup.IsOpen = true;
         }
 
+        private Storyboard? _openLyricPageAni, _closeLyricPageAni;
+        /// <summary>
+        /// 打开/关闭歌词页
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MusicControl_Info_Click(object sender, RoutedEventArgs e)
         {
             _openLyricPageAni ??= (Storyboard)Resources["OpenLyricPageAni"];

@@ -9,6 +9,12 @@ namespace LemonApp.Common.UIBases
 {
     public class PopupWindowBase:Window
     {
+        public enum SlideAnimation
+        {
+            None,
+            Up,
+            Down
+        }
         public PopupWindowBase()
         {
             //Set basic style for popup window
@@ -39,14 +45,22 @@ namespace LemonApp.Common.UIBases
 
 
 
+        public SlideAnimation ExPopupAnimation
+        {
+            get { return (SlideAnimation)GetValue(ExPopupAnimationProperty); }
+            set { SetValue(ExPopupAnimationProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ExPopupAnimation.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ExPopupAnimationProperty =
+            DependencyProperty.Register("ExPopupAnimation", typeof(SlideAnimation),
+                typeof(PopupWindowBase), new PropertyMetadata(SlideAnimation.Down));
+
+        public uint SlideAnimationOffset = 30;
+
+
         private void PopWindowBase_Initialized(object? sender, EventArgs e)
         {
-            _openAni = new(0, Height, TimeSpan.FromMilliseconds(200))
-            {
-                EasingFunction = new CubicEase()
-            };
-            Height = 0;
-
             //remove local resource dic, reflect ThemeConf to main App domain
             if (Resources.MergedDictionaries.FirstOrDefault(d => d.Source.ToString().Contains("Styles/ThemeColor"))
                 is ResourceDictionary defResDic)
@@ -54,14 +68,23 @@ namespace LemonApp.Common.UIBases
                 Resources.MergedDictionaries.Remove(defResDic);
             }
         }
-        DoubleAnimation _openAni;
+        DoubleAnimation? _openAni;
         private void PopWindowBase_ContentRendered(object? sender, EventArgs e)
         {
-            BeginAnimation(HeightProperty, _openAni);
+            if (_openAni != null)
+                BeginAnimation(TopProperty, _openAni);
         }
 
         private void PopWindowBase_Loaded(object sender, RoutedEventArgs e)
         {
+            if (ExPopupAnimation != SlideAnimation.None)
+            {
+                _openAni = new(Top, TimeSpan.FromMilliseconds(400))
+                {
+                    EasingFunction = new CubicEase()
+                };
+                Top += ExPopupAnimation == SlideAnimation.Up ? SlideAnimationOffset : -SlideAnimationOffset;
+            }
             WindowLongAPI.SetToolWindow(this);
             BehaviorCollection behaviors = Interaction.GetBehaviors(this);
             behaviors.Add(new BlurWindowBehavior());
