@@ -413,6 +413,16 @@
                             <ColumnDefinition Width="1*" />
                             <ColumnDefinition Width="1*" />
                         </Grid.ColumnDefinitions>
+                        <!--Popup-->
+                        <base:FluentPopup x:Name="testPopup"
+                                          PopupAnimation="Fade"
+                                          Placement="MousePoint"
+                                          Background="{DynamicResource WindowBackgroundColor}"
+                                          StaysOpen="False">
+                            <Grid Height="130" Width="180" Margin="12">
+                                <TextBlock Text="hh"/>
+                            </Grid>
+                        </base:FluentPopup>
                         <!--Left -->
                         <ws:Button x:Name="MusicControl_Info"
                                    Margin="6,4,0,4"
@@ -453,6 +463,7 @@
                             <ws:Button x:Name="PlayBtn"
                                        Width="45"
                                        Height="45"
+                                       ToolTip="播放"
                                        Style="{StaticResource SimpleIconButtonStyleForWs}">
                                 <Path Data="{DynamicResource PlayIcon_Play}"
                                       Fill="{DynamicResource HighlightThemeColor}"
@@ -527,6 +538,7 @@
                             <ws:Button x:Name="AudioBtn"
                                        Width="32"
                                        Height="32"
+                                       Click="AudioBtn_Click"
                                        Style="{StaticResource SimpleIconButtonStyleForWs}">
                                 <Path Data="{DynamicResource AudioIcon}"
                                       Height="18"

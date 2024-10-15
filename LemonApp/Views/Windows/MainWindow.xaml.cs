@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -56,6 +57,13 @@ namespace LemonApp.Views.Windows
             popup.Show();
         }
         private Storyboard? _openLyricPageAni, _closeLyricPageAni;
+
+        private async void AudioBtn_Click(object sender, RoutedEventArgs e)
+        {
+            await Task.Yield();
+            testPopup.IsOpen = true;
+        }
+
         private void MusicControl_Info_Click(object sender, RoutedEventArgs e)
         {
             _openLyricPageAni ??= (Storyboard)Resources["OpenLyricPageAni"];
