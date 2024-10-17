@@ -22,7 +22,7 @@
                     Height="72"
                     HorizontalAlignment="Left"
                     Margin="14"
-                    Background="pink"
+                    Background="{Binding Avator}"
                     CornerRadius="36" />
             <TextBlock  Margin="100 30 20 0"
                         VerticalAlignment="Top"

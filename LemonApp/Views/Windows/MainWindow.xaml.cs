@@ -2,14 +2,11 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Shapes;
-using LemonApp.Common.Configs;
 using LemonApp.Common.UIBases;
 using LemonApp.Services;
 using LemonApp.ViewModels;
+using LemonApp.Views.Pages;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LemonApp.Views.Windows
@@ -22,20 +19,47 @@ namespace LemonApp.Views.Windows
         public MainWindow( 
            MainWindowViewModel mainWindowViewModel,
             IServiceProvider serviceProvider,
-            UIResourceService uiResourceService,
-            AppSettingsService appSettingsService
-        )
+            MainNavigationService mainNavigationService)
         {
             InitializeComponent();
             DataContext = _vm = mainWindowViewModel;
             _serviceProvider = serviceProvider;
-            _uiResourceService = uiResourceService;
-            _appSettingsService = appSettingsService;
+            _mainNavigationService = mainNavigationService;
+            _mainNavigationService.OnNavigatingRequsted += MainNavigationService_OnNavigatingRequsted;
+            Loaded += MainWindow_Loaded;
         }
+
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            _vm.SelectedMenu = _vm.MainMenus.FirstOrDefault();
+        }
+
         private readonly MainWindowViewModel _vm;
         private readonly IServiceProvider _serviceProvider;
-        private readonly UIResourceService _uiResourceService;
-        private readonly AppSettingsService _appSettingsService;
+        private readonly MainNavigationService _mainNavigationService;
+
+        private void MainNavigationService_OnNavigatingRequsted(PageType type, object? arg)
+        {
+            switch (type)
+            {
+                case PageType.SettingsPage:
+                    NavigateToSettingsPage();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void NavigateToSettingsPage()
+        {
+            var sp = _serviceProvider.GetRequiredService<SettingsPage>();
+            if (sp != null)
+            {
+                MainContentFrame.Navigate(sp);
+            }
+            _vm.SelectedMenu = null;
+        }
+
 
         /// <summary>
         /// 打开UserProfile菜单
@@ -45,6 +69,9 @@ namespace LemonApp.Views.Windows
         private async void UserProfileBtn_Click(object sender, RoutedEventArgs e)
         {
             var popup = _serviceProvider.GetRequiredService<UserMenuPopupWindow>();
+            popup.RequestClose = () => {
+                UserProfilePopup.IsOpen = false;
+            };
             UserProfilePopup.Child = popup;
             UserProfilePopup.HorizontalOffset = -popup.Width;
             await Task.Yield();
@@ -63,6 +90,18 @@ namespace LemonApp.Views.Windows
         }
 
         private Storyboard? _openLyricPageAni, _closeLyricPageAni;
+
+        private void MainPageMenu_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (_vm.CurrentPage != null)
+                MainContentFrame.Navigate(_vm.CurrentPage);
+        }
+
+        private void GoBackBtn_Click(object sender, RoutedEventArgs e)
+        {
+            MainContentFrame.GoBack();
+        }
+
         /// <summary>
         /// 打开/关闭歌词页
         /// </summary>
@@ -88,6 +127,8 @@ namespace LemonApp.Views.Windows
 
             }
         }
+
+
         // private void Border_MouseDown(object sender, MouseButtonEventArgs e){
         //     _appSettingsService.GetConfigMgr<Appearence>().Data.AccentColorMode=Appearence.AccentColorType.Custome;
         //     _appSettingsService.GetConfigMgr<Appearence>().Data.AccentColor=Colors.LightYellow;

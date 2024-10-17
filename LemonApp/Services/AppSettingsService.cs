@@ -13,7 +13,6 @@ public class AppSettingsService(
     ILogger<AppSettingsService> logger
     ) :IHostedService,IConfigManager
 {
-    private readonly ILogger<AppSettingsService> _logger=logger;
     private Dictionary<Type, object> _settingsMgrs = [];
 
     public AppSettingsService AddConfig<T>() where T : class{

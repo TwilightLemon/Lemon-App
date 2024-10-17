@@ -1,5 +1,6 @@
 ﻿using LemonApp.Common.UIBases;
 using LemonApp.ViewModels;
+using System;
 using System.Windows.Controls;
 
 namespace LemonApp.Views.Windows
@@ -12,7 +13,9 @@ namespace LemonApp.Views.Windows
         public UserMenuPopupWindow(UserMenuViewModel userMenuViewModel)
         {
             InitializeComponent();
-            DataContext= userMenuViewModel;
+            DataContext = _userMenuViewModel = userMenuViewModel;
         }
+        private readonly UserMenuViewModel _userMenuViewModel;
+        public Action? RequestClose { set => _userMenuViewModel.RequestClose = value; }
     }
 }

@@ -64,7 +64,7 @@ public static class TextHelper
     /// <param name="l">后面的文本</param>
     /// <param name="t"></param>
     /// <returns></returns>
-    public static string FindTextByAB(string all, string r, string l, int t)
+    public static string? FindTextByAB(string all, string r, string l, int t)
     {
 
         int A = all.IndexOf(r, t);

@@ -1,4 +1,5 @@
-﻿using LemonApp.Views.Windows;
+﻿using LemonApp.Common.Configs;
+using LemonApp.Views.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -15,29 +16,30 @@ namespace LemonApp.Services
          IServiceProvider serviceProvider,
         ILogger<ApplicationService> logger,
         AppSettingsService appSettingsService,
-        UIResourceService uiResourceService
+        UIResourceService uiResourceService,
+        UserProfileService userProfileService
         ) : IHostedService
     {
-        private readonly ILogger _logger = logger;
-        private readonly IServiceProvider _serviceProvider = serviceProvider;
-        private readonly AppSettingsService _appSettingsService = appSettingsService;
-        private readonly UIResourceService _uiResourceService = uiResourceService;
         public Task StartAsync(CancellationToken cancellationToken)
         {
             // Load settings
-            _appSettingsService.LoadAsync((success)=>{
+            appSettingsService.LoadAsync(async(success)=>{
                 if(!success){
-                    _logger.LogError("Failed to load settings.");
+                    logger.LogError("Failed to load settings.");
                     return;
                 }
                 //apply settings
-                _uiResourceService.UpdateColorMode();
-                _uiResourceService.UpdateAccentColor();
+                uiResourceService.UpdateColorMode();
+                uiResourceService.UpdateAccentColor();
                 
                 //show main window
-                var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
+                var mainWindow = serviceProvider.GetRequiredService<MainWindow>();
                 App.Current.MainWindow = mainWindow;
                 mainWindow.Show();
+
+                //check & update user profile
+                if (appSettingsService.GetConfigMgr<UserProfile>()?.Data?.TencUserAuth is { } auth)
+                    await userProfileService.UpdateAuthAndNotify(auth);
             });
 
             return Task.CompletedTask;

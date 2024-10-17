@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -22,7 +23,10 @@ public partial class UserMenuViewModel:ObservableObject
 {
     public record ActionMenu(string Name,Geometry? Icon,Action? Action);
     private readonly SettingsMgr<UserProfile>? profileMgr;
-    public UserMenuViewModel(AppSettingsService appSettingsService)
+    public Action? RequestClose;
+    public UserMenuViewModel(
+        AppSettingsService appSettingsService,
+        UserProfileService userProfileService)
     {
         profileMgr = appSettingsService.GetConfigMgr<UserProfile>();
         userProfile = profileMgr?.Data;
@@ -31,6 +35,11 @@ public partial class UserMenuViewModel:ObservableObject
             IsLoginQQ = Visibility.Visible;
             //只有登录到QQ音乐之后才能绑定网易云
             Menus.Insert(1, new ActionMenu("登录到网易云音乐",null, Menu_LoginNetease));
+            //载入profile info
+            if (userProfileService.GetAvatorImg() is { } img)
+            {
+                Avator = new ImageBrush(img);
+            }
         }
         if (!string.IsNullOrEmpty(userProfile?.NeteaseUserAuth?.Id))
         {
@@ -38,6 +47,9 @@ public partial class UserMenuViewModel:ObservableObject
         }
 
     }
+    [ObservableProperty]
+    public Brush avator=Brushes.LightPink;
+
     [ObservableProperty]
     public UserProfile? userProfile;
 
@@ -52,36 +64,25 @@ public partial class UserMenuViewModel:ObservableObject
 
     partial void OnSelectedMenuItemChanged(ActionMenu? value)
     {
-        if (value != null && value.Action is { } action)
+        if (value != null && value.Action is { } action){
             action.Invoke();
+            RequestClose?.Invoke();
+        }
     }
 
     public ObservableCollection<ActionMenu> Menus { get; set; } = [
         new ActionMenu("登录到QQ音乐",null,Menu_LoginQQ),
-        new ActionMenu("设置",(Geometry)App.Current.FindResource("Icon_Settings"),null),
+        new ActionMenu("设置",(Geometry)App.Current.FindResource("Icon_Settings"),Menu_GotoSettingsPage),
         new ActionMenu("退出",null,Menu_Exit)
     ];
-
-    //TODO: 统一的账号管理服务，用于调用登录和完成通知
-
     static void Menu_LoginQQ()
     {
-        var loginWindow = App.Host!.Services.GetRequiredService<LoginWindow>();
-        var settings = App.Host!.Services.GetRequiredService<AppSettingsService>();
-        var mgr=settings.GetConfigMgr<UserProfile>()!;
+        var sp = App.Host!.Services;
+        var loginWindow = sp.GetRequiredService<LoginWindow>();
+        var user=sp.GetRequiredService<UserProfileService>();
         loginWindow.OnLogin = async (auth) =>
         {
-            Debug.WriteLine("Login qq:"+auth.Id);
-            var up = new TencUserProfileGetter();
-            await up.Fetch(auth);
-            mgr.Data = new UserProfile()
-            {
-                TencUserAuth = auth,
-                NeteaseUserAuth = mgr.Data?.NeteaseUserAuth,
-                UserName = up.UserName,
-                AvatarUrl = up.AvatarUrl
-            };
-            await mgr.Save();
+            await user.UpdateAuthAndNotify(auth);
         };
         loginWindow.Show();
     }
@@ -91,6 +92,11 @@ public partial class UserMenuViewModel:ObservableObject
         var mgr = settings.GetConfigMgr<UserProfile>()!;
         mgr.Data!.NeteaseUserAuth = new NeteaseUserAuth() { Id = "100101010" };
         await mgr.Save();
+    }
+    static void Menu_GotoSettingsPage()
+    {
+        var navigator = App.Host!.Services.GetRequiredService<MainNavigationService>();
+        navigator.RequstNavigation(PageType.SettingsPage);
     }
     static void Menu_Exit()
     {

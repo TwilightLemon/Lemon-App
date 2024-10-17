@@ -25,7 +25,7 @@ namespace LemonApp.Views.Windows
             };
             wb.DocumentTitleChanged += Wb_DocumentTitleChanged;
             host.Child = wb;
-            loginAPI = new TencLogin(clientFactory.CreateClient("PublicClient"));
+            loginAPI = new TencLogin(clientFactory.CreateClient(App.PublicClientFlag));
             loginAPI.OnAuthCompleted += LoginAPI_OnAuthCompleted;
             Loaded += LoginWindow_Loaded;
         }

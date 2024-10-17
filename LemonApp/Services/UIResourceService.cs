@@ -10,13 +10,11 @@ namespace LemonApp.Services;
 /// 设置全局UI资源
 /// </summary>
 public class UIResourceService(
-    AppSettingsService appSettingsService
-)
+    AppSettingsService appSettingsService)
 {
-    private readonly AppSettingsService _appSettingsService=appSettingsService;
     public void UpdateColorMode()
     {
-        bool IsDarkMode= _appSettingsService.GetConfigMgr<Appearence>()?.Data?.GetIsDarkMode()==true;
+        bool IsDarkMode= appSettingsService.GetConfigMgr<Appearence>()?.Data?.GetIsDarkMode()==true;
         string uri = $"pack://application:,,,/LemonApp.Common;component/Styles/ThemeColor_{IsDarkMode switch
         {
             true => "Dark",
@@ -31,7 +29,7 @@ public class UIResourceService(
     }
 
     public void UpdateAccentColor(){
-        var accentColor=_appSettingsService.GetConfigMgr<Appearence>()?.Data?.GetAccentColor();
+        var accentColor=appSettingsService.GetConfigMgr<Appearence>()?.Data?.GetAccentColor();
         if(accentColor.HasValue){
             App.Current.Resources["HighlightThemeColor"]=new SolidColorBrush(accentColor.Value);
         }

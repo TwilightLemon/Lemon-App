@@ -1,5 +1,6 @@
 ﻿using LemonApp.Common.Funcs;
 using LemonApp.MusicLib.Abstraction.UserAuth;
+using LemonApp.MusicLib.Http;
 using System.Text;
 using System.Text.Json.Nodes;
 
@@ -50,13 +51,9 @@ public class TencLogin(HttpClient httpClient)
         string g_tk = (hash & 0x7fffffff).ToString();
         //POST music.fcg to log in
         string postData = "{\"comm\":{\"g_tk\":" + g_tk + ",\"platform\":\"yqq\",\"ct\":24,\"cv\":0},\"req\":{\"module\":\"QQConnectLogin.LoginServer\",\"method\":\"QQLogin\",\"param\":{\"code\":\"" + l_code + "\"}}}";
-        _hc.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "*/*");
-        _hc.DefaultRequestHeaders.TryAddWithoutValidation("AcceptLanguage", "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6");
-        _hc.DefaultRequestHeaders.Add("Referer", "https://y.qq.com/");
-        _hc.DefaultRequestHeaders.Host = "u.y.qq.com";
-        _hc.DefaultRequestHeaders.UserAgent.TryParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0");
-        _hc.DefaultRequestHeaders.Add("Cookie", _referCookie);
-        var result = await _hc.PostAsync("https://u.y.qq.com/cgi-bin/musicu.fcg", new StringContent(postData, Encoding.UTF8));
+        var result = await _hc.SetForMusicuFcg(_referCookie!)
+                                        .PostAsync("https://u.y.qq.com/cgi-bin/musicu.fcg",
+                                        new StringContent(postData, Encoding.UTF8));
         bool hasValue = result.Headers.TryGetValues("Set-Cookie", out var nc);
         if (hasValue&&nc!=null)
         {

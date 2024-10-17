@@ -26,6 +26,7 @@
         </EventTrigger>
     </base:FluentWindowBase.Triggers>
     <base:FluentWindowBase.Resources>
+        <BooleanToVisibilityConverter  x:Key="BoolToVisibility"/>
         <Storyboard x:Key="OpenLyricPageAni">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="MainPage"
                                            Storyboard.TargetProperty="(UIElement.Opacity)">
@@ -242,10 +243,11 @@
                                   Orientation="Horizontal">
                         <ws:Button x:Name="GoBackBtn"
                                    d:Visibility="Visible"
-                                   Visibility="Collapsed"
+                                   Visibility="{Binding ElementName=MainContentFrame, Path=CanGoBack,Converter={StaticResource BoolToVisibility}}"
                                    Style="{StaticResource SimpleIconButtonStyleForWs}"
                                    Width="28"
-                                   Height="28">
+                                   Height="28"
+                                   Click="GoBackBtn_Click">
                             <Path Fill="{DynamicResource ForeColor}"
                                   Width="12"
                                   Height="12"
@@ -301,7 +303,7 @@
                                Height="36"
                                Margin="0 0 180 0"
                                Click="UserProfileBtn_Click">
-                        <Border Background="#FFFDAAAA"
+                        <Border Background="{Binding Avator}" d:Background="LightPink"
                                 Width="30"
                                 CornerRadius="15"
                                 Height="30" />
@@ -316,8 +318,11 @@
                         <ColumnDefinition Width="3*" />
                     </Grid.ColumnDefinitions>
                     <Grid x:Name="MainMenuGrid">
-                        <ws:ListBox ItemsSource="{Binding MainMenus}"
+                        <ws:ListBox x:Name="MainPageMenu"
+                                    ItemsSource="{Binding MainMenus}"
                                     d:ItemsSource="{d:SampleData ItemCount=5}"
+                                    SelectedItem="{Binding SelectedMenu}"
+                                    SelectionChanged="MainPageMenu_SelectionChanged"
                                     Background="Transparent"
                                     BorderThickness="0"
                                     ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}"
@@ -388,7 +393,16 @@
                             BorderBrush="{DynamicResource BorderColor}"
                             BorderThickness="1"
                             Background="{DynamicResource MaskColor}"
-                            CornerRadius="8" />
+                            CornerRadius="8">
+                        <ws:Frame Name="MainContentFrame"
+                                  NavigationUIVisibility="Hidden">
+                            <ws:Frame.Transition>
+                                <ws:SlideFadeTransition Orientation="Vertical"
+                                                        Duration="0:0:0.200"
+                                                        Distance="50" />
+                            </ws:Frame.Transition>
+                        </ws:Frame>
+                    </Border>
                 </Grid>
             </Grid>
             <Grid x:Name="LyricPage"

@@ -7,6 +7,7 @@ using NLog.Extensions.Logging;
 using LemonApp.Common.Configs;
 using System.Net.Http;
 using LemonApp.ViewModels;
+using LemonApp.Views.Pages;
 
 namespace LemonApp
 {
@@ -16,12 +17,13 @@ namespace LemonApp
     public partial class App : Application
     {
         public static IHost? Host { get; private set; } = null;
+        public const string PublicClientFlag = "PublicClient";
         private static void BuildHost()
         {
             var builder = new HostBuilder();
             Host = builder.ConfigureServices(services =>
             {
-                services.AddHttpClient("PublicClient")
+                services.AddHttpClient(PublicClientFlag)
                 .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler()
                 {
                     AutomaticDecompression = System.Net.DecompressionMethods.GZip,
@@ -42,11 +44,17 @@ namespace LemonApp
 
                 //services
                 services.AddSingleton<UIResourceService>();
+                services.AddSingleton<UserProfileService>();
+                services.AddSingleton<MainNavigationService>();
 
                 //window
                 services.AddSingleton<MainWindow>();
                 services.AddTransient<LoginWindow>();
                 services.AddTransient<UserMenuPopupWindow>();
+
+                //pages
+                services.AddTransient<SettingsPage>();
+                services.AddTransient<HomePage>();
 
                 //ViewModels
                 services.AddSingleton<MainWindowViewModel>();
