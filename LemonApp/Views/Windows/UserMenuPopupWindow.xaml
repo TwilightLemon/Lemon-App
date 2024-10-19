@@ -11,7 +11,6 @@
                       mc:Ignorable="d"
                       Background="{DynamicResource WindowBackgroundColor}"
                       Foreground="{DynamicResource ForeColor}"
-                      Height="{Binding ElementName=Body,Path=ActualHeight}"
                       Width="240">
     <StackPanel x:Name="Body" VerticalAlignment="Top">
         <Grid x:Name="TencProfile"

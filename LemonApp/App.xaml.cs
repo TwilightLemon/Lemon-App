@@ -55,6 +55,7 @@ namespace LemonApp
                 //pages
                 services.AddTransient<SettingsPage>();
                 services.AddTransient<HomePage>();
+                services.AddTransient<RankPage>();
 
                 //ViewModels
                 services.AddSingleton<MainWindowViewModel>();

@@ -331,6 +331,23 @@
         <Setter Property="Cursor"
                 Value="Hand" />
     </Style>
+    <Style x:Key="LOAniIconButtonStyleForWs"
+           TargetType="{x:Type ws:Button}">
+        <Setter Property="Foreground"
+                Value="{DynamicResource ForeColor}" />
+        <Setter Property="Background"
+                Value="Transparent" />
+        <Setter Property="HoverBackground"
+                Value="{DynamicResource MaskColor}" />
+        <Setter Property="PressedBackground"
+                Value="{DynamicResource MaskColor}" />
+        <Setter Property="CornerRadius"
+                Value="4" />
+        <Setter Property="BorderThickness"
+                Value="0" />
+        <Setter Property="Cursor"
+                Value="Hand" />
+    </Style>
     <Style x:Key="SimpleComboBoxStyleForWs"
            TargetType="{x:Type ws:ComboBox}">
         <Setter Property="Background"
@@ -411,7 +428,7 @@
                                        HorizontalAlignment="Right"
                                        VerticalAlignment="Top"
                                        BorderThickness="0">
-                                <ws:ConditionalControl Condition="{Binding WindowState,Converter={x:Static ws:NotEqualConverter.Instance},ConverterParameter={x:Static WindowState.Maximized}}">
+                                <ws:ConditionalControl Condition="{TemplateBinding WindowState,Converter={x:Static ws:NotEqualConverter.Instance},ConverterParameter={x:Static WindowState.Maximized}}">
                                     <ws:ConditionalControl.ContentWhenTrue>
                                         <TextBlock Text="&#xE922;" />
                                     </ws:ConditionalControl.ContentWhenTrue>

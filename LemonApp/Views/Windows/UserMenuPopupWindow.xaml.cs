@@ -14,7 +14,14 @@ namespace LemonApp.Views.Windows
         {
             InitializeComponent();
             DataContext = _userMenuViewModel = userMenuViewModel;
+            Initialized += UserMenuPopupWindow_Initialized;
         }
+
+        private void UserMenuPopupWindow_Initialized(object? sender, EventArgs e)
+        {
+            this.Height = Body.ActualHeight;
+        }
+
         private readonly UserMenuViewModel _userMenuViewModel;
         public Action? RequestClose { set => _userMenuViewModel.RequestClose = value; }
     }

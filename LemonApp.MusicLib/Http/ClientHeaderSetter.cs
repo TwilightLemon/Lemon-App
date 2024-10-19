@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 
 namespace LemonApp.MusicLib.Http;
 
+/*
+ TODO: re-design HttpClientFactory for each header, and use DI to inject them.
+ */
+
 internal static class ClientHeaderSetter
 {
     /// <summary>
@@ -42,5 +46,22 @@ internal static class ClientHeaderSetter
         _hc.DefaultRequestHeaders.UserAgent.TryParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0");
         _hc.DefaultRequestHeaders.Add("Cookie", cookie);
         return _hc;
+    }
+
+    /// <summary>
+    /// set for music.163.com
+    /// </summary>
+    /// <param name="hc"></param>
+    /// <param name="cookie"></param>
+    /// <returns></returns>
+    public static HttpClient SetForNetease(this HttpClient hc,string cookie)
+    {
+        hc.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "*/*");
+        hc.DefaultRequestHeaders.TryAddWithoutValidation("AcceptLanguage", "zh-CN,zh;q=0.9");
+        hc.DefaultRequestHeaders.TryAddWithoutValidation("ContentType", "application/x-www-form-urlencoded; charset=UTF-8");
+        hc.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", cookie);
+        hc.DefaultRequestHeaders.TryAddWithoutValidation("Referer", "https://music.163.com/");
+        hc.DefaultRequestHeaders.TryAddWithoutValidation("UserAgent", "Mozilla/5.0 (Linux; Android 8.0.0; SM-G955U Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/");
+        hc.DefaultRequestHeaders.TryAddWithoutValidation("Host", "music.163.com");
     }
 }

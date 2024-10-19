@@ -2,12 +2,15 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Animation;
+using System.Windows.Navigation;
 using LemonApp.Common.UIBases;
 using LemonApp.Services;
 using LemonApp.ViewModels;
 using LemonApp.Views.Pages;
 using Microsoft.Extensions.DependencyInjection;
+using static LemonApp.ViewModels.MainWindowViewModel;
 
 namespace LemonApp.Views.Windows
 {
@@ -91,15 +94,48 @@ namespace LemonApp.Views.Windows
 
         private Storyboard? _openLyricPageAni, _closeLyricPageAni;
 
-        private void MainPageMenu_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void MainPageMenu_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (_vm.CurrentPage != null)
+            if (_vm.CurrentPage is { } page&&_vm.CurrentPage!=MainContentFrame.Content)
+            {
                 MainContentFrame.Navigate(_vm.CurrentPage);
+            }
         }
 
         private void GoBackBtn_Click(object sender, RoutedEventArgs e)
         {
             MainContentFrame.GoBack();
+        }
+
+        private Storyboard? _showGoBackBtnAni = null;
+        private bool _isGoBackBtnShow = false;
+        private void MainContentFrame_Navigated(object sender, NavigationEventArgs e)
+        {
+            _showGoBackBtnAni ??= (Storyboard)Resources["ShowGoBackBtnAni"];
+            if (MainContentFrame.CanGoBack)
+            {
+                if (!_isGoBackBtnShow)
+                {
+                    _showGoBackBtnAni.Begin();
+                    _isGoBackBtnShow = true;
+                }
+            }
+            else
+            {
+                _showGoBackBtnAni.Stop();
+                _isGoBackBtnShow = false;
+            }
+
+            if (MainContentFrame.CanGoForward)
+            {
+                //处理来自GoBack的Navigation
+                _vm.CurrentPage = MainContentFrame.Content;
+                var selected = _vm.MainMenus.FirstOrDefault(page => page.PageType == e.Content?.GetType());
+                //退回时不生成新页面
+                if (selected != null)
+                    selected.RequireCreateNewPage = false;
+                _vm.SelectedMenu= selected;
+            }
         }
 
         /// <summary>

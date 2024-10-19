@@ -88,7 +88,8 @@ public class FluentPopup:Popup
             else
             {
                 base.IsOpen = value;
-                ResetAnimation();
+                //closed event will reset animation
+                //ResetAnimation();
             }
         }
     }
