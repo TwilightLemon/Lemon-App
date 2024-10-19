@@ -56,10 +56,12 @@ namespace LemonApp
                 services.AddTransient<SettingsPage>();
                 services.AddTransient<HomePage>();
                 services.AddTransient<RankPage>();
+                services.AddTransient<PlaylistPage>();
 
                 //ViewModels
                 services.AddSingleton<MainWindowViewModel>();
                 services.AddTransient<UserMenuViewModel>();
+                services.AddTransient<PlaylistPageViewModel>();
 
                 //Logger
                 services.AddLogging(builder =>

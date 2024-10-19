@@ -16,12 +16,13 @@ public static class DataTypes
         public string Photo { set; get; } = string.Empty;
         public string Mid { set; get; } = string.Empty;
     }
-    public class TrackInfo
+    public class AlbumInfo
     {
         public Platform Source { set; get; } = Platform.qq;
-        public string Name { set; get; }
-        public string Photo { set; get; }
-        public string Id { set; get; }
+        public Profile? Creator { set; get; }
+        public string Name { set; get; }=string.Empty;
+        public string Photo { set; get; }= string.Empty;
+        public string Id { set; get; } = string.Empty;
         public string? Description { set; get; }
     }
     public enum MusicQuality
@@ -37,7 +38,7 @@ public static class DataTypes
         public List<Profile> Singer { set; get; } = [];
         public string SingerText { get; set; } = "";
         public string MusicID { set; get; } = "";
-        public TrackInfo? Album { set; get; }
+        public AlbumInfo? Album { set; get; }
         public string? Mvmid { set; get; }
         public MusicQuality Quality { set; get; }
 

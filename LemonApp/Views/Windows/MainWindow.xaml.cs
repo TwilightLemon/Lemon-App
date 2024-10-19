@@ -11,6 +11,9 @@ using LemonApp.ViewModels;
 using LemonApp.Views.Pages;
 using Microsoft.Extensions.DependencyInjection;
 using static LemonApp.ViewModels.MainWindowViewModel;
+using static LemonApp.MusicLib.Abstraction.Music.DataTypes;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace LemonApp.Views.Windows
 {
@@ -48,6 +51,14 @@ namespace LemonApp.Views.Windows
                 case PageType.SettingsPage:
                     NavigateToSettingsPage();
                     break;
+                case PageType.AlbumPage:
+                    if (arg is AlbumInfo info)
+                        NavigateToAlbumPage(info);
+                    break;
+                case PageType.SearchPage:
+                    if(arg is string { } keyword)
+                        NavigateToSearchPage(keyword);
+                    break;
                 default:
                     break;
             }
@@ -62,14 +73,46 @@ namespace LemonApp.Views.Windows
             }
             _vm.SelectedMenu = null;
         }
+        private void NavigateToAlbumPage(AlbumInfo info)
+        {
+            var sp = _serviceProvider.GetRequiredService<PlaylistPage>();
+            PlaylistPageViewModel vm = new()
+            {
+                Cover = new ImageBrush(new BitmapImage(new Uri(info.Photo))),
+                CreatorAvatar = info.Creator != null ? new ImageBrush(new BitmapImage(new Uri(info.Creator.Photo))) : null,
+                CreatorName = info.Creator != null ? info.Creator.Name : "",
+                Description = info.Description ?? "",
+                ListName = info.Name
+            };
+            if (sp != null)
+            {
+                sp.ViewModel = vm;
+                MainContentFrame.Navigate(sp);
+            }
+            _vm.SelectedMenu = null;
+        }
+        private void NavigateToSearchPage(string keyword)
+        {
+            var sp = _serviceProvider.GetRequiredService<PlaylistPage>();
+            PlaylistPageViewModel vm = new()
+            {
+                ShowInfoView = false
+            };
+            if (sp != null)
+            {
+                sp.ViewModel = vm;
+                MainContentFrame.Navigate(sp);
+            }
+            _vm.SelectedMenu = null;
+        }
 
 
-        /// <summary>
-        /// 打开UserProfile菜单
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private async void UserProfileBtn_Click(object sender, RoutedEventArgs e)
+            /// <summary>
+            /// 打开UserProfile菜单
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
+            private async void UserProfileBtn_Click(object sender, RoutedEventArgs e)
         {
             var popup = _serviceProvider.GetRequiredService<UserMenuPopupWindow>();
             popup.RequestClose = () => {

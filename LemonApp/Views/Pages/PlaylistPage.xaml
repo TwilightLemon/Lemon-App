@@ -1,14 +1,176 @@
 ﻿<Page x:Class="LemonApp.Views.Pages.PlaylistPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:LemonApp.Views.Pages"
-      mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      xmlns:ws="https://schemas.elecho.dev/wpfsuite"
+      xmlns:vm="clr-namespace:LemonApp.ViewModels"
+      mc:Ignorable="d"
+      d:DataContext="{d:DesignInstance Type=vm:PlaylistPageViewModel}"
+      d:DesignHeight="450"
+      d:DesignWidth="800"
+      Foreground="{DynamicResource ForeColor}"
       Title="PlaylistPage">
+    <Page.Resources>
+        <Storyboard x:Key="HideInfoViewAni">
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="CreatorView"
+                                           Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00"
+                                        Value="{x:Static Visibility.Collapsed}" />
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TitleTb"
+                                           Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00"
+                                        Value="{x:Static Visibility.Collapsed}" />
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="InfoView"
+                                           Storyboard.TargetProperty="(FrameworkElement.Height)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.2000000"
+                                      Value="120">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut" />
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="FuncView"
+                                              Storyboard.TargetProperty="(FrameworkElement.Margin)">
+                <EasingThicknessKeyFrame KeyTime="00:00:00.2000000"
+                                         Value="100,0,0,25">
+                    <EasingThicknessKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut" />
+                    </EasingThicknessKeyFrame.EasingFunction>
+                </EasingThicknessKeyFrame>
+            </ThicknessAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="ShowInfoViewAni">
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="CreatorView"
+                                           Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00.2000000"
+                                        Value="{x:Static Visibility.Visible}" />
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TitleTb"
+                                           Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00.2000000"
+                                        Value="{x:Static Visibility.Visible}" />
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="InfoView"
+                                           Storyboard.TargetProperty="(FrameworkElement.Height)">
+                <SplineDoubleKeyFrame KeyTime="00:00:00.2000000"
+                                      Value="200" />
+            </DoubleAnimationUsingKeyFrames>
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="FuncView"
+                                              Storyboard.TargetProperty="(FrameworkElement.Margin)">
+                <SplineThicknessKeyFrame KeyTime="00:00:00.2000000"
+                                         Value="180,0,0,4" />
+            </ThicknessAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="CollapseInfoViewAction">
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="CoverImg"
+                                           Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00"
+                                        Value="{x:Static Visibility.Collapsed}" />
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TitleTb"
+                                           Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00"
+                                        Value="{x:Static Visibility.Collapsed}" />
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="CreatorView"
+                                           Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00"
+                                        Value="{x:Static Visibility.Collapsed}" />
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="InfoView"
+                                           Storyboard.TargetProperty="(FrameworkElement.Height)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00"
+                                      Value="64" />
+            </DoubleAnimationUsingKeyFrames>
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="FuncView"
+                                              Storyboard.TargetProperty="(FrameworkElement.Margin)">
+                <EasingThicknessKeyFrame KeyTime="00:00:00"
+                                         Value="10,0,0,4" />
+            </ThicknessAnimationUsingKeyFrames>
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="InfoView"
+                                              Storyboard.TargetProperty="(Border.Padding)">
+                <EasingThicknessKeyFrame KeyTime="00:00:00"
+                                         Value="8,8,8,8" />
+            </ThicknessAnimationUsingKeyFrames>
+        </Storyboard>
+    </Page.Resources>
 
-    <Grid>
-        
-    </Grid>
+    <DockPanel>
+        <Border x:Name="InfoView"
+                BorderThickness="1"
+                BorderBrush="{DynamicResource BorderColor}"
+                DockPanel.Dock="Top"
+                CornerRadius="8"
+                Margin="8"
+                Padding="16"
+                Background="{DynamicResource TabMaskColor}"
+                Height="200"
+                VerticalAlignment="Top">
+            <Grid Visibility="Visible">
+                <Border x:Name="CoverImg"
+                        Margin="4"
+                        Width="{Binding ElementName=CoverImg, Path=ActualHeight}"
+                        HorizontalAlignment="Left"
+                        CornerRadius="8"
+                        d:Background="Pink"
+                        Background="{Binding Cover}" />
+                <TextBlock x:Name="TitleTb"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Top"
+                           Margin="180,8,0,0">
+                    <Run d:Text="Twlm's Music World"
+                         Text="{Binding ListName}"
+                         FontSize="32"
+                         FontWeight="Bold" />
+                     <LineBreak />
+                    <Run d:Text="Desc"
+                         Text="{Binding Description}"
+                         FontSize="14" />
+                </TextBlock>
+                <Grid x:Name="CreatorView"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Top"
+                      Margin="180,83,0,0">
+                    <Border HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Height="32"
+                            Width="32"
+                            CornerRadius="16"
+                            Background="{Binding CreatorAvatar}"
+                            d:Background="Pink" />
+                    <TextBlock HorizontalAlignment="Left"
+                               VerticalAlignment="Center"
+                               d:Text="Creator"
+                               Text="{Binding CreatorName}"
+                               Margin="40,0,0,0" />
+                </Grid>
+                <ws:WrapPanel x:Name="FuncView"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Bottom"
+                              Height="36"
+                              HorizontalSpacing="16"
+                              ItemHeight="36"
+                              Margin="180,0,0,4">
+                    <ws:Button Style="{StaticResource SimpleButtonStyleForWs}"
+                               Padding="16 0">
+                        Play All
+                    </ws:Button>
+                    <ws:Button Style="{StaticResource SimpleButtonStyleForWs}"
+                               Padding="16 0">
+                        Add to Favorite
+                    </ws:Button>
+                    <ws:Button Style="{StaticResource SimpleButtonStyleForWs}"
+                               Padding="16 0">
+                        Share
+                    </ws:Button>
+                </ws:WrapPanel>
+            </Grid>
+        </Border>
+        <ws:ScrollViewer DockPanel.Dock="Bottom"
+                         Style="{StaticResource SimpleVerticalScrollViewerStyle}" />
+    </DockPanel>
 </Page>

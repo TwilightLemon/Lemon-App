@@ -281,7 +281,7 @@
                                    d:Visibility="Visible"
                                    Visibility="{Binding ElementName=MainContentFrame,
                                                     Path=CanGoBack,Converter={StaticResource BoolToVisibility}}"
-                                   Style="{StaticResource LOAniIconButtonStyleForWs}"
+                                   Style="{StaticResource SimpleIconButtonStyleForWs}"
                                    Width="28"
                                    Height="28"
                                    Click="GoBackBtn_Click"
