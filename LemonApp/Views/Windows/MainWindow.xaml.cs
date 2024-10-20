@@ -14,6 +14,9 @@ using static LemonApp.ViewModels.MainWindowViewModel;
 using static LemonApp.MusicLib.Abstraction.Music.DataTypes;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using LemonApp.MusicLib.Search;
+using System.Net.Http;
+using System.Windows.Input;
 
 namespace LemonApp.Views.Windows
 {
@@ -52,8 +55,8 @@ namespace LemonApp.Views.Windows
                     NavigateToSettingsPage();
                     break;
                 case PageType.AlbumPage:
-                    if (arg is AlbumInfo info)
-                        NavigateToAlbumPage(info);
+                    if (arg is string{ } id)
+                        NavigateToAlbumPage(id);
                     break;
                 case PageType.SearchPage:
                     if(arg is string { } keyword)
@@ -73,33 +76,43 @@ namespace LemonApp.Views.Windows
             }
             _vm.SelectedMenu = null;
         }
-        private void NavigateToAlbumPage(AlbumInfo info)
+        private void NavigateToAlbumPage(string AlbumId)
         {
             var sp = _serviceProvider.GetRequiredService<PlaylistPage>();
-            PlaylistPageViewModel vm = new()
-            {
-                Cover = new ImageBrush(new BitmapImage(new Uri(info.Photo))),
-                CreatorAvatar = info.Creator != null ? new ImageBrush(new BitmapImage(new Uri(info.Creator.Photo))) : null,
-                CreatorName = info.Creator != null ? info.Creator.Name : "",
-                Description = info.Description ?? "",
-                ListName = info.Name
-            };
+            PlaylistPageViewModel vm = _serviceProvider.GetRequiredService<PlaylistPageViewModel>();
             if (sp != null)
             {
+/*                vm.Cover = new ImageBrush(new BitmapImage(new Uri(info.Photo)));
+                vm.CreatorAvatar = info.Creator != null ? new ImageBrush(new BitmapImage(new Uri(info.Creator.Photo))) : null;
+                vm.CreatorName = info.Creator != null ? info.Creator.Name : "";
+                vm.Description = info.Description ?? "";
+                vm.ListName = info.Name;*/
+
                 sp.ViewModel = vm;
                 MainContentFrame.Navigate(sp);
             }
             _vm.SelectedMenu = null;
         }
-        private void NavigateToSearchPage(string keyword)
+        private async void NavigateToSearchPage(string keyword)
         {
+            if(string.IsNullOrWhiteSpace(keyword))
+                return;
+
             var sp = _serviceProvider.GetRequiredService<PlaylistPage>();
-            PlaylistPageViewModel vm = new()
+            var hc = _serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
+            var auth = _serviceProvider.GetRequiredService<UserProfileService>().GetAuth();
+            if (sp != null&&hc!=null&&auth!=null)
             {
-                ShowInfoView = false
-            };
-            if (sp != null)
-            {
+                PlaylistPageViewModel vm = new()
+                {
+                    ShowInfoView = false
+                };
+                var search = await SearchAPI.SearchMusicAsync(hc, auth, keyword);
+                foreach(var item in search)
+                {
+                    vm.Musics.Add(item);
+                }
+
                 sp.ViewModel = vm;
                 MainContentFrame.Navigate(sp);
             }
@@ -179,6 +192,12 @@ namespace LemonApp.Views.Windows
                     selected.RequireCreateNewPage = false;
                 _vm.SelectedMenu= selected;
             }
+        }
+
+        private void SearchBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+                _mainNavigationService.RequstNavigation(PageType.SearchPage, SearchBox.Text);
         }
 
         /// <summary>

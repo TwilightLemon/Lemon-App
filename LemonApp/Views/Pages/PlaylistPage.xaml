@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:LemonApp.Views.Pages"
+      xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
       xmlns:ws="https://schemas.elecho.dev/wpfsuite"
       xmlns:vm="clr-namespace:LemonApp.ViewModels"
       mc:Ignorable="d"
@@ -98,30 +99,29 @@
             </ThicknessAnimationUsingKeyFrames>
         </Storyboard>
     </Page.Resources>
-
     <DockPanel>
-        <Border x:Name="InfoView"
-                BorderThickness="1"
-                BorderBrush="{DynamicResource BorderColor}"
-                DockPanel.Dock="Top"
-                CornerRadius="8"
-                Margin="8"
-                Padding="16"
-                Background="{DynamicResource TabMaskColor}"
-                Height="200"
-                VerticalAlignment="Top">
-            <Grid Visibility="Visible">
-                <Border x:Name="CoverImg"
-                        Margin="4"
-                        Width="{Binding ElementName=CoverImg, Path=ActualHeight}"
-                        HorizontalAlignment="Left"
-                        CornerRadius="8"
-                        d:Background="Pink"
-                        Background="{Binding Cover}" />
-                <TextBlock x:Name="TitleTb"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Top"
-                           Margin="180,8,0,0">
+            <Border x:Name="InfoView"
+                    BorderThickness="1"
+                    BorderBrush="{DynamicResource BorderColor}"
+                    DockPanel.Dock="Top"
+                    CornerRadius="8"
+                    Margin="8"
+                    Padding="16"
+                    Background="{DynamicResource TabMaskColor}"
+                    Height="200"
+                    VerticalAlignment="Top">
+                <Grid Visibility="Visible">
+                    <Border x:Name="CoverImg"
+                            Margin="4"
+                            Width="{Binding ElementName=CoverImg, Path=ActualHeight}"
+                            HorizontalAlignment="Left"
+                            CornerRadius="8"
+                            d:Background="Pink"
+                            Background="{Binding Cover}" />
+                    <TextBlock x:Name="TitleTb"
+                               HorizontalAlignment="Left"
+                               VerticalAlignment="Top"
+                               Margin="180,8,0,0">
                     <Run d:Text="Twlm's Music World"
                          Text="{Binding ListName}"
                          FontSize="32"
@@ -130,47 +130,98 @@
                     <Run d:Text="Desc"
                          Text="{Binding Description}"
                          FontSize="14" />
-                </TextBlock>
-                <Grid x:Name="CreatorView"
-                      HorizontalAlignment="Stretch"
-                      VerticalAlignment="Top"
-                      Margin="180,83,0,0">
-                    <Border HorizontalAlignment="Left"
-                            VerticalAlignment="Center"
-                            Height="32"
-                            Width="32"
-                            CornerRadius="16"
-                            Background="{Binding CreatorAvatar}"
-                            d:Background="Pink" />
-                    <TextBlock HorizontalAlignment="Left"
-                               VerticalAlignment="Center"
-                               d:Text="Creator"
-                               Text="{Binding CreatorName}"
-                               Margin="40,0,0,0" />
+                    </TextBlock>
+                    <Grid x:Name="CreatorView"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Top"
+                          Margin="180,83,0,0">
+                        <Border HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Height="32"
+                                Width="32"
+                                CornerRadius="16"
+                                Background="{Binding CreatorAvatar}"
+                                d:Background="Pink" />
+                        <TextBlock HorizontalAlignment="Left"
+                                   VerticalAlignment="Center"
+                                   d:Text="Creator"
+                                   Text="{Binding CreatorName}"
+                                   Margin="40,0,0,0" />
+                    </Grid>
+                    <ws:WrapPanel x:Name="FuncView"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Bottom"
+                                  Height="36"
+                                  HorizontalSpacing="16"
+                                  ItemHeight="36"
+                                  Margin="180,0,0,4">
+                        <ws:Button Style="{StaticResource SimpleButtonStyleForWs}"
+                                   Padding="16 0">
+                            Play All
+                        </ws:Button>
+                        <ws:Button Style="{StaticResource SimpleButtonStyleForWs}"
+                                   Padding="16 0">
+                            Add to Favorite
+                        </ws:Button>
+                        <ws:Button Style="{StaticResource SimpleButtonStyleForWs}"
+                                   Padding="16 0">
+                            Share
+                        </ws:Button>
+                    </ws:WrapPanel>
                 </Grid>
-                <ws:WrapPanel x:Name="FuncView"
-                              HorizontalAlignment="Stretch"
-                              VerticalAlignment="Bottom"
-                              Height="36"
-                              HorizontalSpacing="16"
-                              ItemHeight="36"
-                              Margin="180,0,0,4">
-                    <ws:Button Style="{StaticResource SimpleButtonStyleForWs}"
-                               Padding="16 0">
-                        Play All
-                    </ws:Button>
-                    <ws:Button Style="{StaticResource SimpleButtonStyleForWs}"
-                               Padding="16 0">
-                        Add to Favorite
-                    </ws:Button>
-                    <ws:Button Style="{StaticResource SimpleButtonStyleForWs}"
-                               Padding="16 0">
-                        Share
-                    </ws:Button>
-                </ws:WrapPanel>
+            </Border>
+            <ws:ListBox DockPanel.Dock="Bottom"
+                        ItemsSource="{Binding Musics}"
+                        d:ItemsSource="{d:SampleData ItemCount=5}"
+                        Style="{DynamicResource SimpleListBoxStyle}"
+                        ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}"
+                        Background="Transparent"
+                        ScrollViewer.PanningMode="VerticalOnly"
+                        VirtualizingPanel.ScrollUnit="Pixel"
+                        HorizontalContentAlignment="Stretch"
+                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                        BorderThickness="0">
+                <ws:ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Height="40"
+                              Margin="8 0"
+                              Background="Transparent">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="3*" />
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock VerticalAlignment="Center"
+                                       HorizontalAlignment="Left">
+                            <Run Text="{Binding MusicName}" />
+                            <Run Text="{Binding MusicName_Lyric}"
+                                 FontSize="10" />
+                            </TextBlock>
+                            <ws:Button Margin="4"
+                                       HorizontalAlignment="Left"
+                                       Padding="8 4"
+                                       Grid.Column="1"
+                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
+                                <TextBlock Text="{Binding SingerText}" />
+                            </ws:Button>
+                            <ws:Button Margin="4"
+                                       HorizontalAlignment="Left"
+                                       Padding="8 4"
+                                       Grid.Column="2"
+                                       Command="{Binding DataContext.GotoAlbumPageCommand ,RelativeSource={RelativeSource AncestorType=ws:ListBox}}"
+                                       CommandParameter="{Binding Album.Id}"
+                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
+                                <TextBlock Text="{Binding Album.Name}" />
+                            </ws:Button>
+                        </Grid>
+                    </DataTemplate>
+                </ws:ListBox.ItemTemplate>
+            </ws:ListBox>
+        <!--TODO:作为打开歌手页面选择弹窗，ListBox.Item绑定ViewModel的Command 由其决定如果数量为1则直接打开，数量>1则打开弹窗，弹窗绑定新的数据以选择歌手-->
+        <base:FluentPopup StaysOpen="False" ExtPopupAnimation="SlideUp">
+            <Grid >
+                
             </Grid>
-        </Border>
-        <ws:ScrollViewer DockPanel.Dock="Bottom"
-                         Style="{StaticResource SimpleVerticalScrollViewerStyle}" />
+        </base:FluentPopup>
     </DockPanel>
 </Page>

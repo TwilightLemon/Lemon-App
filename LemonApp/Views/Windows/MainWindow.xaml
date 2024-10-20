@@ -319,7 +319,8 @@
                                 Placeholder="搜索"
                                 HorizontalAlignment="Stretch"
                                 CornerRadius="6"
-                                Margin="220,8,220,8" />
+                                Margin="220,8,220,8" 
+                                PreviewKeyDown="SearchBox_PreviewKeyDown"/>
                     <!--用户头像&菜单-->
                     <Border HorizontalAlignment="Right"
                             Margin="0 0 144 0"

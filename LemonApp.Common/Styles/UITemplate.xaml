@@ -84,7 +84,7 @@
                                  Value="True">
                             <Setter TargetName="border"
                                     Property="Background"
-                                    Value="{DynamicResource SystemThemeColor}" />
+                                    Value="{DynamicResource HighlightThemeColor}" />
                             <Setter TargetName="border"
                                     Property="BorderThickness"
                                     Value="0" />
@@ -92,6 +92,29 @@
                                     Property="Fill"
                                     Value="{DynamicResource BackgroundColor}" />
                         </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="SimpleListBoxStyle"
+           TargetType="{x:Type ws:ListBox}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBox}">
+                    <Border x:Name="Bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="1" SnapsToDevicePixels="true">
+                        <ws:ScrollViewer Focusable="false" Padding="{TemplateBinding Padding}" Style="{StaticResource SimpleVerticalScrollViewerStyle}">
+                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                        </ws:ScrollViewer>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsGrouping" Value="true"/>
+                                <Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="false"/>
+                            </MultiTrigger.Conditions>
+                            <Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
+                        </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

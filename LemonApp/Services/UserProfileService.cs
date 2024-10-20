@@ -50,6 +50,15 @@ public class UserProfileService(
             OnAuthExpired?.Invoke();
         }
     }
+
+    public TencUserAuth? GetAuth()
+    {
+        if(appSettingsService.GetConfigMgr<UserProfile>() is { } mgr)
+        {
+            return mgr.Data?.TencUserAuth;
+        }
+        return null;
+    }
     
     public BitmapImage? GetAvatorImg()
     {
