@@ -1,4 +1,6 @@
-﻿namespace LemonApp.MusicLib.Abstraction.Music;
+﻿using static LemonApp.MusicLib.Abstraction.Album.DataTypes;
+
+namespace LemonApp.MusicLib.Abstraction.Music;
 public static class DataTypes
 {
     public class MusicUrlData
@@ -15,15 +17,6 @@ public static class DataTypes
         public string Name { set; get; } = string.Empty;
         public string Photo { set; get; } = string.Empty;
         public string Mid { set; get; } = string.Empty;
-    }
-    public class AlbumInfo
-    {
-        public Platform Source { set; get; } = Platform.qq;
-        public Profile? Creator { set; get; }
-        public string Name { set; get; }=string.Empty;
-        public string Photo { set; get; }= string.Empty;
-        public string Id { set; get; } = string.Empty;
-        public string? Description { set; get; }
     }
     public enum MusicQuality
     {

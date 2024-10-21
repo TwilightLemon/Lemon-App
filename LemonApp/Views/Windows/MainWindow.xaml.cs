@@ -8,14 +8,7 @@ using System.Windows.Navigation;
 using LemonApp.Common.UIBases;
 using LemonApp.Services;
 using LemonApp.ViewModels;
-using LemonApp.Views.Pages;
 using Microsoft.Extensions.DependencyInjection;
-using static LemonApp.ViewModels.MainWindowViewModel;
-using static LemonApp.MusicLib.Abstraction.Music.DataTypes;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using LemonApp.MusicLib.Search;
-using System.Net.Http;
 using System.Windows.Input;
 
 namespace LemonApp.Views.Windows
@@ -25,17 +18,24 @@ namespace LemonApp.Views.Windows
     /// </summary>
     public partial class MainWindow : FluentWindowBase
     {
-        public MainWindow( 
+        public MainWindow(
            MainWindowViewModel mainWindowViewModel,
-            IServiceProvider serviceProvider,
-            MainNavigationService mainNavigationService)
+           MainNavigationService mainNavigationService,
+           IServiceProvider serviceProvider)
         {
             InitializeComponent();
-            DataContext = _vm = mainWindowViewModel;
             _serviceProvider = serviceProvider;
             _mainNavigationService = mainNavigationService;
-            _mainNavigationService.OnNavigatingRequsted += MainNavigationService_OnNavigatingRequsted;
+            DataContext = _vm = mainWindowViewModel;
+            _vm.RequireNavigateToPage += _vm_RequireNavigateToPage;
             Loaded += MainWindow_Loaded;
+        }
+        private readonly IServiceProvider _serviceProvider;
+        private readonly MainNavigationService _mainNavigationService;
+        private readonly MainWindowViewModel _vm;
+        private void _vm_RequireNavigateToPage(Page page)
+        {
+            MainContentFrame.Navigate(page);
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -43,92 +43,17 @@ namespace LemonApp.Views.Windows
             _vm.SelectedMenu = _vm.MainMenus.FirstOrDefault();
         }
 
-        private readonly MainWindowViewModel _vm;
-        private readonly IServiceProvider _serviceProvider;
-        private readonly MainNavigationService _mainNavigationService;
 
-        private void MainNavigationService_OnNavigatingRequsted(PageType type, object? arg)
-        {
-            switch (type)
-            {
-                case PageType.SettingsPage:
-                    NavigateToSettingsPage();
-                    break;
-                case PageType.AlbumPage:
-                    if (arg is string{ } id)
-                        NavigateToAlbumPage(id);
-                    break;
-                case PageType.SearchPage:
-                    if(arg is string { } keyword)
-                        NavigateToSearchPage(keyword);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        private void NavigateToSettingsPage()
-        {
-            var sp = _serviceProvider.GetRequiredService<SettingsPage>();
-            if (sp != null)
-            {
-                MainContentFrame.Navigate(sp);
-            }
-            _vm.SelectedMenu = null;
-        }
-        private void NavigateToAlbumPage(string AlbumId)
-        {
-            var sp = _serviceProvider.GetRequiredService<PlaylistPage>();
-            PlaylistPageViewModel vm = _serviceProvider.GetRequiredService<PlaylistPageViewModel>();
-            if (sp != null)
-            {
-/*                vm.Cover = new ImageBrush(new BitmapImage(new Uri(info.Photo)));
-                vm.CreatorAvatar = info.Creator != null ? new ImageBrush(new BitmapImage(new Uri(info.Creator.Photo))) : null;
-                vm.CreatorName = info.Creator != null ? info.Creator.Name : "";
-                vm.Description = info.Description ?? "";
-                vm.ListName = info.Name;*/
-
-                sp.ViewModel = vm;
-                MainContentFrame.Navigate(sp);
-            }
-            _vm.SelectedMenu = null;
-        }
-        private async void NavigateToSearchPage(string keyword)
-        {
-            if(string.IsNullOrWhiteSpace(keyword))
-                return;
-
-            var sp = _serviceProvider.GetRequiredService<PlaylistPage>();
-            var hc = _serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
-            var auth = _serviceProvider.GetRequiredService<UserProfileService>().GetAuth();
-            if (sp != null&&hc!=null&&auth!=null)
-            {
-                PlaylistPageViewModel vm = new()
-                {
-                    ShowInfoView = false
-                };
-                var search = await SearchAPI.SearchMusicAsync(hc, auth, keyword);
-                foreach(var item in search)
-                {
-                    vm.Musics.Add(item);
-                }
-
-                sp.ViewModel = vm;
-                MainContentFrame.Navigate(sp);
-            }
-            _vm.SelectedMenu = null;
-        }
-
-
-            /// <summary>
-            /// 打开UserProfile菜单
-            /// </summary>
-            /// <param name="sender"></param>
-            /// <param name="e"></param>
-            private async void UserProfileBtn_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// 打开UserProfile菜单
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void UserProfileBtn_Click(object sender, RoutedEventArgs e)
         {
             var popup = _serviceProvider.GetRequiredService<UserMenuPopupWindow>();
-            popup.RequestClose = () => {
+            popup.RequestClose = () =>
+            {
                 UserProfilePopup.IsOpen = false;
             };
             UserProfilePopup.Child = popup;
@@ -152,7 +77,7 @@ namespace LemonApp.Views.Windows
 
         private void MainPageMenu_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (_vm.CurrentPage is { } page&&_vm.CurrentPage!=MainContentFrame.Content)
+            if (_vm.CurrentPage is { } page && _vm.CurrentPage != MainContentFrame.Content)
             {
                 MainContentFrame.Navigate(_vm.CurrentPage);
             }
@@ -190,7 +115,7 @@ namespace LemonApp.Views.Windows
                 //退回时不生成新页面
                 if (selected != null)
                     selected.RequireCreateNewPage = false;
-                _vm.SelectedMenu= selected;
+                _vm.SelectedMenu = selected;
             }
         }
 
@@ -221,7 +146,7 @@ namespace LemonApp.Views.Windows
                 (_openLyricPageAni.Children[6] as ThicknessAnimationUsingKeyFrames)!.KeyFrames[0].Value =
                             new Thickness(point.X, (double)656 / 681 * point.Y, 0, 0);
                 _openLyricPageAni.Begin();
-                _vm.IsLyricPageOpen=true;
+                _vm.IsLyricPageOpen = true;
 
             }
         }

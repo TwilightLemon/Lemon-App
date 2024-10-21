@@ -36,10 +36,14 @@ public partial class UserMenuViewModel:ObservableObject
             //只有登录到QQ音乐之后才能绑定网易云
             Menus.Insert(1, new ActionMenu("登录到网易云音乐",(Geometry)App.Current.FindResource("NeteaseIcon"), Menu_LoginNetease));
             //载入profile info
-            if (userProfileService.GetAvatorImg() is { } img)
+            var a = async () =>
             {
-                Avator = new ImageBrush(img);
-            }
+                if (await userProfileService.GetAvatorImg() is { } img)
+                {
+                    Avator = new ImageBrush(img);
+                }
+            };
+            a();
         }
         if (!string.IsNullOrEmpty(userProfile?.NeteaseUserAuth?.Id))
         {

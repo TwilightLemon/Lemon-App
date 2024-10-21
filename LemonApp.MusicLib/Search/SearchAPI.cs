@@ -3,6 +3,7 @@ using System.Web;
 using LemonApp.MusicLib.Abstraction.UserAuth;
 using LemonApp.MusicLib.Http;
 using System.Text.Json.Nodes;
+using static LemonApp.MusicLib.Abstraction.Album.DataTypes;
 
 namespace LemonApp.MusicLib.Search;
 public static class SearchAPI
@@ -34,7 +35,7 @@ public static class SearchAPI
                         lm.Add(new Profile() { 
                             Name = name,
                             Mid = mid ,
-                            Photo= "https://y.gtimg.cn/music/photo_new/T001R500x500M000" + mid + ".jpg"
+                            Photo= "https://y.gtimg.cn/music/photo_new/T001R500x500M000" + mid + ".jpg?max_age=2592000"
                         });
                     }
                     m.Singer = lm;

@@ -60,10 +60,10 @@ public class UserProfileService(
         return null;
     }
     
-    public BitmapImage? GetAvatorImg()
+    public async  Task<BitmapImage?> GetAvatorImg()
     {
         if(appSettingsService.GetConfigMgr<UserProfile>() is { } mgr && mgr.Data?.AvatarUrl is { } url)
-            return new BitmapImage(new Uri(url));
+            return await ImageCacheHelper.FetchData(url);
 
         return null;
     }

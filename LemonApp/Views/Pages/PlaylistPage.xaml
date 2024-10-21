@@ -43,6 +43,15 @@
                     </EasingThicknessKeyFrame.EasingFunction>
                 </EasingThicknessKeyFrame>
             </ThicknessAnimationUsingKeyFrames>
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="listBox"
+                                              Storyboard.TargetProperty="(FrameworkElement.Margin)">
+                <EasingThicknessKeyFrame KeyTime="00:00:00.2000000"
+                                         Value="0,128,0,0">
+                    <EasingThicknessKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut" />
+                    </EasingThicknessKeyFrame.EasingFunction>
+                </EasingThicknessKeyFrame>
+            </ThicknessAnimationUsingKeyFrames>
         </Storyboard>
         <Storyboard x:Key="ShowInfoViewAni">
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="CreatorView"
@@ -57,13 +66,30 @@
             </ObjectAnimationUsingKeyFrames>
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="InfoView"
                                            Storyboard.TargetProperty="(FrameworkElement.Height)">
-                <SplineDoubleKeyFrame KeyTime="00:00:00.2000000"
-                                      Value="200" />
+                <EasingDoubleKeyFrame KeyTime="00:00:00.2000000"
+                                      Value="200">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut" />
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
             </DoubleAnimationUsingKeyFrames>
             <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="FuncView"
                                               Storyboard.TargetProperty="(FrameworkElement.Margin)">
-                <SplineThicknessKeyFrame KeyTime="00:00:00.2000000"
-                                         Value="180,0,0,4" />
+                <EasingThicknessKeyFrame KeyTime="00:00:00.2000000"
+                                         Value="180,0,0,4">
+                    <EasingThicknessKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut" />
+                    </EasingThicknessKeyFrame.EasingFunction>
+                </EasingThicknessKeyFrame>
+            </ThicknessAnimationUsingKeyFrames>
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="listBox"
+                                              Storyboard.TargetProperty="(FrameworkElement.Margin)">
+                <EasingThicknessKeyFrame KeyTime="00:00:00.2000000"
+                                         Value="0,208,0,0">
+                    <EasingThicknessKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut" />
+                    </EasingThicknessKeyFrame.EasingFunction>
+                </EasingThicknessKeyFrame>
             </ThicknessAnimationUsingKeyFrames>
         </Storyboard>
         <Storyboard x:Key="CollapseInfoViewAction">
@@ -97,131 +123,168 @@
                 <EasingThicknessKeyFrame KeyTime="00:00:00"
                                          Value="8,8,8,8" />
             </ThicknessAnimationUsingKeyFrames>
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="listBox"
+                                              Storyboard.TargetProperty="(FrameworkElement.Margin)">
+                <EasingThicknessKeyFrame KeyTime="00:00:00"
+                                         Value="0,72,0,0" />
+            </ThicknessAnimationUsingKeyFrames>
         </Storyboard>
     </Page.Resources>
-    <DockPanel>
-            <Border x:Name="InfoView"
-                    BorderThickness="1"
-                    BorderBrush="{DynamicResource BorderColor}"
-                    DockPanel.Dock="Top"
-                    CornerRadius="8"
-                    Margin="8"
-                    Padding="16"
-                    Background="{DynamicResource TabMaskColor}"
-                    Height="200"
-                    VerticalAlignment="Top">
-                <Grid Visibility="Visible">
-                    <Border x:Name="CoverImg"
-                            Margin="4"
-                            Width="{Binding ElementName=CoverImg, Path=ActualHeight}"
+    <Grid>
+        <Border x:Name="InfoView"
+                BorderThickness="1"
+                BorderBrush="{DynamicResource BorderColor}"
+                CornerRadius="8"
+                Margin="8"
+                Padding="16"
+                Background="{DynamicResource TabMaskColor}"
+                Height="200"
+                VerticalAlignment="Top">
+            <Grid Visibility="Visible">
+                <Border x:Name="CoverImg"
+                        Margin="4"
+                        Width="{Binding ElementName=CoverImg, Path=ActualHeight}"
+                        RenderOptions.BitmapScalingMode="HighQuality"
+                        HorizontalAlignment="Left"
+                        CornerRadius="8"
+                        d:Background="Pink"
+                        Background="{Binding Cover}" />
+                <StackPanel x:Name="TitleTb"
+                            Orientation="Vertical"
                             HorizontalAlignment="Left"
-                            CornerRadius="8"
-                            d:Background="Pink"
-                            Background="{Binding Cover}" />
-                    <TextBlock x:Name="TitleTb"
-                               HorizontalAlignment="Left"
-                               VerticalAlignment="Top"
-                               Margin="180,8,0,0">
-                    <Run d:Text="Twlm's Music World"
-                         Text="{Binding ListName}"
-                         FontSize="32"
-                         FontWeight="Bold" />
-                     <LineBreak />
-                    <Run d:Text="Desc"
-                         Text="{Binding Description}"
-                         FontSize="14" />
-                    </TextBlock>
-                    <Grid x:Name="CreatorView"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Top"
-                          Margin="180,83,0,0">
-                        <Border HorizontalAlignment="Left"
-                                VerticalAlignment="Center"
-                                Height="32"
-                                Width="32"
-                                CornerRadius="16"
-                                Background="{Binding CreatorAvatar}"
-                                d:Background="Pink" />
-                        <TextBlock HorizontalAlignment="Left"
-                                   VerticalAlignment="Center"
-                                   d:Text="Creator"
-                                   Text="{Binding CreatorName}"
-                                   Margin="40,0,0,0" />
-                    </Grid>
-                    <ws:WrapPanel x:Name="FuncView"
-                                  HorizontalAlignment="Stretch"
-                                  VerticalAlignment="Bottom"
-                                  Height="36"
-                                  HorizontalSpacing="16"
-                                  ItemHeight="36"
-                                  Margin="180,0,0,4">
-                        <ws:Button Style="{StaticResource SimpleButtonStyleForWs}"
-                                   Padding="16 0">
-                            Play All
-                        </ws:Button>
-                        <ws:Button Style="{StaticResource SimpleButtonStyleForWs}"
-                                   Padding="16 0">
-                            Add to Favorite
-                        </ws:Button>
-                        <ws:Button Style="{StaticResource SimpleButtonStyleForWs}"
-                                   Padding="16 0">
-                            Share
-                        </ws:Button>
-                    </ws:WrapPanel>
+                            VerticalAlignment="Stretch"
+                            Margin="180,0,0,86">
+                    <TextBlock  d:Text="Twlm's Music World"
+                                TextWrapping="NoWrap"
+                                Text="{Binding ListName}"
+                                FontSize="32"
+                                FontWeight="Bold" />
+                    <TextBlock d:Text="Desc"
+                               TextWrapping="WrapWithOverflow"
+                               ToolTip="{Binding Description}"
+                               Text="{Binding Description}"
+                               FontSize="12" />
+                </StackPanel>
+                <Grid x:Name="CreatorView"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Top"
+                      Margin="180,83,0,0">
+                    <Border HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Height="32"
+                            Width="32"
+                            CornerRadius="16"
+                            RenderOptions.BitmapScalingMode="HighQuality"
+                            Background="{Binding CreatorAvatar}"
+                            d:Background="Pink" />
+                    <TextBlock HorizontalAlignment="Left"
+                               VerticalAlignment="Center"
+                               d:Text="Creator"
+                               Text="{Binding CreatorName}"
+                               Margin="40,0,0,0" />
                 </Grid>
-            </Border>
-            <ws:ListBox DockPanel.Dock="Bottom"
-                        ItemsSource="{Binding Musics}"
-                        d:ItemsSource="{d:SampleData ItemCount=5}"
-                        Style="{DynamicResource SimpleListBoxStyle}"
-                        ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}"
-                        Background="Transparent"
-                        ScrollViewer.PanningMode="VerticalOnly"
-                        VirtualizingPanel.ScrollUnit="Pixel"
-                        HorizontalContentAlignment="Stretch"
-                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                        BorderThickness="0">
-                <ws:ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid Height="40"
-                              Margin="8 0"
-                              Background="Transparent">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="3*" />
-                                <ColumnDefinition Width="2*" />
-                                <ColumnDefinition Width="2*" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock VerticalAlignment="Center"
-                                       HorizontalAlignment="Left">
+                <ws:WrapPanel x:Name="FuncView"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Bottom"
+                              Height="36"
+                              HorizontalSpacing="16"
+                              ItemHeight="36"
+                              Margin="180,0,0,4">
+                    <ws:Button Style="{StaticResource SimpleButtonStyleForWs}"
+                               Padding="16 0">
+                        Play All
+                    </ws:Button>
+                    <ws:Button Style="{StaticResource SimpleButtonStyleForWs}"
+                               Padding="16 0">
+                        Add to Favorite
+                    </ws:Button>
+                    <ws:Button Style="{StaticResource SimpleButtonStyleForWs}"
+                               Padding="16 0">
+                        Select
+                    </ws:Button>
+                    <ws:Button Style="{StaticResource SimpleButtonStyleForWs}"
+                               Padding="16 0">
+                        Share
+                    </ws:Button>
+                </ws:WrapPanel>
+            </Grid>
+        </Border>
+        <ws:ListBox x:Name="listBox"
+                    ItemsSource="{Binding Musics}"
+                    ScrollViewer.ScrollChanged="listBox_ScrollChanged"
+                    VerticalAlignment="Stretch"
+                    Margin="0 200 0 0"
+                    d:ItemsSource="{d:SampleData ItemCount=5}"
+                    Style="{DynamicResource SimpleListBoxStyle}"
+                    ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}"
+                    Background="Transparent"
+                    ScrollViewer.PanningMode="VerticalOnly"
+                    VirtualizingPanel.ScrollUnit="Pixel"
+                    HorizontalContentAlignment="Stretch"
+                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                    BorderThickness="0">
+            <ws:ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid Height="40"
+                          Margin="8 0"
+                          Background="Transparent">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*" />
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="2*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock VerticalAlignment="Center"
+                                   HorizontalAlignment="Left">
                             <Run Text="{Binding MusicName}" />
                             <Run Text="{Binding MusicName_Lyric}"
                                  FontSize="10" />
-                            </TextBlock>
-                            <ws:Button Margin="4"
-                                       HorizontalAlignment="Left"
-                                       Padding="8 4"
-                                       Grid.Column="1"
-                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
-                                <TextBlock Text="{Binding SingerText}" />
-                            </ws:Button>
-                            <ws:Button Margin="4"
-                                       HorizontalAlignment="Left"
-                                       Padding="8 4"
-                                       Grid.Column="2"
-                                       Command="{Binding DataContext.GotoAlbumPageCommand ,RelativeSource={RelativeSource AncestorType=ws:ListBox}}"
-                                       CommandParameter="{Binding Album.Id}"
-                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
-                                <TextBlock Text="{Binding Album.Name}" />
-                            </ws:Button>
-                        </Grid>
-                    </DataTemplate>
-                </ws:ListBox.ItemTemplate>
-            </ws:ListBox>
+                        </TextBlock>
+                        <ws:Button Margin="4"
+                                   HorizontalAlignment="Left"
+                                   Padding="8 4"
+                                   Grid.Column="1"
+                                   Command="{Binding DataContext.CheckIfGotoArtistsPopupCommand,RelativeSource={RelativeSource AncestorType=ws:ListBox}}"
+                                   CommandParameter="{Binding}"
+                                   Style="{StaticResource SimpleIconButtonStyleForWs}">
+                            <TextBlock Text="{Binding SingerText}" />
+                        </ws:Button>
+                        <ws:Button Margin="4"
+                                   HorizontalAlignment="Left"
+                                   Padding="8 4"
+                                   Grid.Column="2"
+                                   Command="{Binding DataContext.GotoAlbumPageCommand ,RelativeSource={RelativeSource AncestorType=ws:ListBox}}"
+                                   CommandParameter="{Binding Album.Id}"
+                                   Style="{StaticResource SimpleIconButtonStyleForWs}">
+                            <TextBlock Text="{Binding Album.Name}" />
+                        </ws:Button>
+                    </Grid>
+                </DataTemplate>
+            </ws:ListBox.ItemTemplate>
+        </ws:ListBox>
         <!--TODO:作为打开歌手页面选择弹窗，ListBox.Item绑定ViewModel的Command 由其决定如果数量为1则直接打开，数量>1则打开弹窗，弹窗绑定新的数据以选择歌手-->
-        <base:FluentPopup StaysOpen="False" ExtPopupAnimation="SlideUp">
-            <Grid >
-                
+        <base:FluentPopup IsOpen="{Binding ShowCheckArtistsPopup}"
+                          StaysOpen="False"
+                          Placement="Mouse">
+            <Grid Width="200">
+                <ws:ListBox ItemsSource="{Binding ToChoosenArtists}"
+                            SelectedItem="{Binding ChoosenArtist}"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}">
+                    <ws:ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Height="40"
+                                  Margin="8 0"
+                                  Background="Transparent">
+                                <TextBlock VerticalAlignment="Center"
+                                           HorizontalAlignment="Center"
+                                           Text="{Binding Name}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ws:ListBox.ItemTemplate>
+
+                </ws:ListBox>
             </Grid>
         </base:FluentPopup>
-    </DockPanel>
+    </Grid>
 </Page>

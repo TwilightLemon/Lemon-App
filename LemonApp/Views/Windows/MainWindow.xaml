@@ -345,6 +345,7 @@
                                Click="UserProfileBtn_Click">
                         <Border Background="{Binding Avator}"
                                 d:Background="LightPink"
+                                RenderOptions.BitmapScalingMode="HighQuality"
                                 Width="28"
                                 CornerRadius="14"
                                 Height="28" />
@@ -435,6 +436,7 @@
                             BorderThickness="1"
                             Background="{DynamicResource MaskColor}"
                             CornerRadius="8">
+                        <!--待修复：ws:Frame在最大化窗口时不会重新计算页面大小-->
                         <ws:Frame Name="MainContentFrame"
                                   Navigated="MainContentFrame_Navigated"
                                   NavigationUIVisibility="Hidden">
@@ -445,6 +447,11 @@
                             </ws:Frame.Transition>
                         </ws:Frame>
                     </Border>
+                    <base:LoadingIcon x:Name="LoadingIcon"
+                                      Grid.Column="1"
+                                      Visibility="{Binding IsLoading,Converter={StaticResource BoolToVisibility}}"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center" />
                 </Grid>
             </Grid>
             <Grid x:Name="LyricPage"

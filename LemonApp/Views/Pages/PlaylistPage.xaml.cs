@@ -1,19 +1,7 @@
 ﻿using LemonApp.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace LemonApp.Views.Pages
 {
@@ -25,21 +13,65 @@ namespace LemonApp.Views.Pages
         public PlaylistPage()
         {
             InitializeComponent();
-            _hideInfoViewAni??= FindResource("HideInfoViewAni") as Storyboard;
+            _hideInfoViewAni ??= FindResource("HideInfoViewAni") as Storyboard;
             _showInfoViewAni ??= FindResource("ShowInfoViewAni") as Storyboard;
+            if (_hideInfoViewAni is { } && _showInfoViewAni is { })
+            {
+                _hideInfoViewAni.Completed += delegate
+                {
+                    _isHideInfoView = true;
+                };
+                _showInfoViewAni.Completed += delegate
+                {
+                    _isHideInfoView = false;
+                };
+            }
             DataContextChanged += PlaylistPage_DataContextChanged;
         }
         private Storyboard? _hideInfoViewAni, _showInfoViewAni;
+        private bool _isHideInfoView = false;
+        private PlaylistPageViewModel? _vm;
         private void PlaylistPage_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if(e.NewValue is PlaylistPageViewModel { } vm)
+            if (e.NewValue is PlaylistPageViewModel { } vm)
             {
+                _vm = vm;
                 if (!vm.ShowInfoView)
                 {
-                    if(FindResource("CollapseInfoViewAction") is Storyboard{ } sb)
+                    if (FindResource("CollapseInfoViewAction") is Storyboard { } sb)
                     {
                         sb.Begin();
                     }
+                }
+            }
+        }
+
+        private void listBox_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+           /* if (_vm is { } && _vm.ShowInfoView)
+            {
+                if (e.VerticalOffset > 0)
+                {
+                    if (_hideInfoViewAni != null && !_isHideInfoView)
+                    {
+                        _hideInfoViewAni?.Begin();
+                    }
+                }
+                else
+                {
+                    if (_showInfoViewAni != null && _isHideInfoView)
+                    {
+                        _showInfoViewAni?.Begin();
+                        _isHideInfoView = false;
+                    }
+                }
+            }*/
+
+            if (e.VerticalChange > 0)
+            {
+                if (e.VerticalOffset + e.ViewportHeight >= e.ExtentHeight)
+                {
+                    ViewModel?.LoadMore();
                 }
             }
         }
