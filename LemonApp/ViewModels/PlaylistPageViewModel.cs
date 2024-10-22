@@ -3,16 +3,19 @@ using CommunityToolkit.Mvvm.Input;
 using LemonApp.Services;
 using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using static LemonApp.MusicLib.Abstraction.Music.DataTypes;
 
 namespace LemonApp.ViewModels;
 
 public partial class PlaylistPageViewModel(
-    MainNavigationService navigationService
+    MainNavigationService navigationService,
+    MediaPlayerService mediaPlayerService
     ) :ObservableObject
 {
     private readonly MainNavigationService _navigationService =navigationService;
+    private readonly MediaPlayerService _mediaPlayerService = mediaPlayerService;
     [ObservableProperty]
     private string _listName= "";
     [ObservableProperty]
@@ -74,5 +77,11 @@ public partial class PlaylistPageViewModel(
     }
     public ObservableCollection<Profile> ToChoosenArtists { get; set; } = [];
 
+    [RelayCommand]
+    private async Task PlayMusic(Music m)
+    {
+        await _mediaPlayerService.Load(m);
+        _mediaPlayerService.Play();
+    }
 
 }

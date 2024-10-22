@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
+using static LemonApp.MusicLib.Abstraction.Music.DataTypes;
 
 namespace LemonApp.Views.Pages
 {
@@ -74,6 +75,12 @@ namespace LemonApp.Views.Pages
                     ViewModel?.LoadMore();
                 }
             }
+        }
+
+        private void listBox_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (listBox.SelectedItem is Music { } m)
+                _vm!.PlayMusicCommand.Execute(m);
         }
 
         public PlaylistPageViewModel? ViewModel

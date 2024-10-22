@@ -11,7 +11,7 @@ using System.Text.Json.Nodes;
 
 namespace LemonApp.MusicLib.Lyric;
 #pragma warning disable CS8602
-public static class GetRomajiLyric
+public static class RomajiLyric
 {
     public static async Task<List<string>> Trans(HttpClient hc, string text)
     {

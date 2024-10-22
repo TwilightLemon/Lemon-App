@@ -18,7 +18,8 @@ namespace LemonApp.Services
         ILogger<ApplicationService> logger,
         AppSettingsService appSettingsService,
         UIResourceService uiResourceService,
-        UserProfileService userProfileService
+        UserProfileService userProfileService,
+        MediaPlayerService mediaPlayerService
         ) : IHostedService
     {
         public Task StartAsync(CancellationToken cancellationToken)
@@ -31,6 +32,9 @@ namespace LemonApp.Services
                 }
                 //load cache manager
                 await CacheManager.LoadPath();
+
+                //init media player
+                mediaPlayerService.Init();
 
                 //apply settings
                 uiResourceService.UpdateColorMode();

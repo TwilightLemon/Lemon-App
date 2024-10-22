@@ -43,13 +43,11 @@ namespace LemonApp
                         .AddConfig<Appearence>()
                 );
 
-                services.AddSingleton<MediaPlayerService>();
-                services.AddHostedService(p=>p.GetRequiredService<MediaPlayerService>());
-
                 //services
                 services.AddSingleton<UIResourceService>();
                 services.AddSingleton<UserProfileService>();
                 services.AddSingleton<MainNavigationService>();
+                services.AddSingleton<MediaPlayerService>();
 
                 //window
                 services.AddSingleton<MainWindow>();

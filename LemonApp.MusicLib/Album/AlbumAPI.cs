@@ -18,6 +18,7 @@ public static class AlbumAPI
                             .GetStringAsync(url);
         JsonNode o= JsonNode.Parse(data);
         AlbumInfo md = new();
+        md.Id = albumId;
         md.Photo = $"https://y.gtimg.cn/music/photo_new/T002R500x500M000{albumId}.jpg?max_age=2592000";
         md.Name = o["data"]["name"].ToString();
         var musics = new List<Music>();

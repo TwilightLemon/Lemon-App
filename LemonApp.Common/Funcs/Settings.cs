@@ -12,7 +12,7 @@ public class SettingsMgr<T> where T : class
 {
     public string? Sign { get; set; }
     public string? PackageName { get; set; }
-    public T? Data { get; set; }
+    public T Data { get; set; } = null;
     [JsonIgnore]
     private FileSystemWatcher? _watcher;
     /// <summary>

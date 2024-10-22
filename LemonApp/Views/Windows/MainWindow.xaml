@@ -126,7 +126,7 @@
                     </EasingThicknessKeyFrame.EasingFunction>
                 </EasingThicknessKeyFrame>
                 <EasingThicknessKeyFrame KeyTime="00:00:00.2500"
-                                         Value="72,0,10,0">
+                                         Value="78,0,10,0">
                     <EasingThicknessKeyFrame.EasingFunction>
                         <CircleEase EasingMode="EaseOut" />
                     </EasingThicknessKeyFrame.EasingFunction>
@@ -343,7 +343,7 @@
                                Height="32"
                                Margin="0 0 156 0"
                                Click="UserProfileBtn_Click">
-                        <Border Background="{Binding Avator}"
+                        <Border Background="{Binding Avator,TargetNullValue={StaticResource HighlightThemeColor}}"
                                 d:Background="LightPink"
                                 RenderOptions.BitmapScalingMode="HighQuality"
                                 Width="28"
@@ -462,7 +462,9 @@
                         HorizontalAlignment="Left"
                         Width="360"
                         Height="360"
-                        Background="Pink"
+                        d:Background="Pink"
+                        RenderOptions.BitmapScalingMode="HighQuality"
+                        Background="{Binding CurrentPlayingCover,TargetNullValue={StaticResource HighlightThemeColor}}"
                         CornerRadius="8"
                         Margin="60,0,0,110" />
 
@@ -518,20 +520,27 @@
                                         HorizontalAlignment="Left"
                                         Width="60"
                                         Height="60"
-                                        Background="Pink"
+                                        RenderOptions.BitmapScalingMode="HighQuality"
+                                        d:Background="Pink"
+                                        Background="{Binding CurrentPlayingCover,TargetNullValue=Pink}"
                                         CornerRadius="8" />
                                 <TextBlock x:Name="MusicControl_Title"
-                                           Margin="72 0 10 0"
+                                           Margin="78 0 10 0"
                                            Foreground="{DynamicResource ForeColor}"
                                            VerticalAlignment="Center"
                                            LineHeight="24"
                                            HorizontalAlignment="Left">
-                                    <Run Text="Dancing With Our Hands Tied"
+                                    <Run Text="{Binding CurrentPlaying.MusicName, TargetNullValue='暂无播放'}"
+                                         d:Text="Dancing With Our Hands Tied"
                                          FontWeight="Bold"
                                          FontSize="16" />
                                     <LineBreak />
-                                    <Run Text="Taylor Swift · reputation"
+                                    <Run Text="{Binding CurrentPlaying.SingerText ,TargetNullValue='Lemon App'}"
+                                         d:Text="Taylor Swift"
                                          FontSize="12" />
+                                     · <Run Text="{Binding CurrentPlaying.Album.Name}"
+                                            d:Text="reputation"
+                                          FontSize="12" />
                                 </TextBlock>
                             </Grid>
                         </ws:Button>

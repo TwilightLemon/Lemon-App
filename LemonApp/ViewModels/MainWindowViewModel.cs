@@ -13,8 +13,11 @@ using System.Linq;
 using System.Net.Http;
 using System.Windows.Controls;
 using System.Windows.Media;
+using MusicDT = LemonApp.MusicLib.Abstraction.Music.DataTypes;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using LemonApp.Common.Configs;
+using LemonApp.MusicLib.Media;
 
 namespace LemonApp.ViewModels;
 public partial class MainWindowViewModel : ObservableObject
@@ -22,18 +25,36 @@ public partial class MainWindowViewModel : ObservableObject
     public MainWindowViewModel(
         UserProfileService userProfileService,
         IServiceProvider serviceProvider,
-        MainNavigationService mainNavigationService)
+        MainNavigationService mainNavigationService,
+        MediaPlayerService mediaPlayerService,
+        AppSettingsService appSettingsService)
     {
         _userProfileService = userProfileService;
         _serviceProvider = serviceProvider;
         _mainNavigationService = mainNavigationService;
+        _mediaPlayerService = mediaPlayerService;
+        _appSettingsService = appSettingsService;
+
+        _mediaPlayerService.OnLoaded += _mediaPlayerService_OnLoaded;
+
         _mainNavigationService.OnNavigatingRequsted += MainNavigationService_OnNavigatingRequsted;
         userProfileService.OnAuth += UserProfileService_OnAuth;
         userProfileService.OnAuthExpired += UserProfileService_OnAuthExpired;
     }
+
+    private void _mediaPlayerService_OnLoaded(MusicDT.Music m)
+    {
+        CurrentPlaying = m;
+    }
+
     private readonly IServiceProvider _serviceProvider;
     private readonly UserProfileService _userProfileService;
     private readonly MainNavigationService _mainNavigationService;
+    private readonly MediaPlayerService _mediaPlayerService;
+    private readonly AppSettingsService _appSettingsService;
+
+    private SettingsMgr<CurrentPlaying>? _currentPlayingMgr;
+    #region userprofile
     private void UserProfileService_OnAuthExpired()
     {
         //TODO: notify main window to show msg
@@ -47,8 +68,28 @@ public partial class MainWindowViewModel : ObservableObject
         {
             Avator = new ImageBrush(img);
         }
+        //update current playing
+        _currentPlayingMgr = _appSettingsService.GetConfigMgr<CurrentPlaying>();
+        if (_currentPlayingMgr is { } mgr)
+        {
+            if (mgr.Data?.Music is {MusicID:not "" } music)
+            {
+                await _mediaPlayerService.Load(music);
+                CurrentPlayingVolume = mgr.Data.Volume;
+            }
+        }
+        else
+        {
+            CurrentPlaying = new() {
+            MusicName="暂无播放",
+            SingerText="Lemon App"
+            };
+        }
     }
-
+    #endregion
+    #region main menu
+    [ObservableProperty]
+    private Brush? avator;
     public class MainMenu(string name, Geometry icon, Type pageType)
     {
         public string Name { get; } = name;
@@ -86,12 +127,9 @@ public partial class MainWindowViewModel : ObservableObject
             CurrentPage = null;
         }
     }
-
-
+    #endregion
+    #region navigation
     public bool IsLyricPageOpen { get; set; } = false;
-
-    [ObservableProperty]
-    private Brush avator = Brushes.LightPink;
 
     [ObservableProperty]
     private bool _isLoading = false;
@@ -133,18 +171,18 @@ public partial class MainWindowViewModel : ObservableObject
         var sp = _serviceProvider.GetRequiredService<PlaylistPage>();
         PlaylistPageViewModel vm = _serviceProvider.GetRequiredService<PlaylistPageViewModel>();
         var hc = _serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
-        var auth = _serviceProvider.GetRequiredService<UserProfileService>().GetAuth();
+        var auth = _userProfileService.GetAuth();
         if (sp != null && hc != null && auth != null)
         {
             var data = await AlbumAPI.GetAlbumTracksByIdAync(hc, auth, AlbumId);
             vm.Cover = new ImageBrush(await ImageCacheHelper.FetchData(data.Photo));
             vm.Description = data.Description ?? "";
             vm.ListName = data.Name;
-            foreach (var item in data.Musics)
+            foreach (var item in data.Musics!)
             {
                 vm.Musics.Add(item);
             }
-            vm.CreatorAvatar = new ImageBrush(await ImageCacheHelper.FetchData(data.Creator.Photo));
+            vm.CreatorAvatar = new ImageBrush(await ImageCacheHelper.FetchData(data.Creator!.Photo));
             vm.CreatorName = data.Creator.Name;
 
             sp.ViewModel = vm;
@@ -160,7 +198,7 @@ public partial class MainWindowViewModel : ObservableObject
         IsLoading = true;
         var sp = _serviceProvider.GetRequiredService<PlaylistPage>();
         var hc = _serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
-        var auth = _serviceProvider.GetRequiredService<UserProfileService>().GetAuth();
+        var auth = _userProfileService.GetAuth();
         var vm = _serviceProvider.GetRequiredService<PlaylistPageViewModel>();
         if (sp != null && hc != null && auth != null && vm != null)
         {
@@ -177,5 +215,29 @@ public partial class MainWindowViewModel : ObservableObject
         SelectedMenu = null;
         IsLoading = false;
     }
+    #endregion
+    #region playing
+    [ObservableProperty]
+    private bool _isPlaying = false;
+    [ObservableProperty]
+    private MusicDT.Music? _currentPlaying = null;
+    [ObservableProperty]
+    private string _currentPlayingTimeAt = "00:00";
+    [ObservableProperty]
+    private string _currentPlayingDuration = "00:00";
+    [ObservableProperty]
+    private double _currentPlayingProgress = 0;
+    [ObservableProperty]
+    private double _currentPlayingVolume = 0.5;
+    [ObservableProperty]
+    private Brush? _currentPlayingCover;
 
+    async partial void OnCurrentPlayingChanged(MusicDT.Music? value)
+    {
+        //只负责更新UI的ViewModel
+        if (value == null||string.IsNullOrEmpty(value.MusicID)) return;
+        var hc= _serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
+        CurrentPlayingCover = new ImageBrush(await ImageCacheHelper.FetchData(await CoverGetter.GetCoverImgUrl(hc, value)));
+    }
+    #endregion
 }

@@ -11,11 +11,19 @@ using static LemonApp.MusicLib.Abstraction.Music.DataTypes;
 
 namespace LemonApp.MusicLib.Media;
 
-public class AudioGetter(HttpClient hc,TencUserAuth tencAuth,NeteaseUserAuth neteAuth)
+public class AudioGetter(HttpClient hc,TencUserAuth tencAuth,NeteaseUserAuth? neteAuth)
 {
-    private readonly TencUserAuth _tencAuth = tencAuth!;
-    private readonly NeteaseUserAuth _neteaseAuth = neteAuth!;
+    private TencUserAuth _tencAuth = tencAuth!;
+    private NeteaseUserAuth? _neteaseAuth = neteAuth;
     private readonly HttpClient _hc = hc!;
+    public void UpdateAuth(TencUserAuth auth)
+    {
+        _tencAuth = auth;
+    }
+    public void UpdateAuth(NeteaseUserAuth auth)
+    {
+        _neteaseAuth = auth;
+    }
 
     /// <summary>
     /// 获取音质对应文件拓展名
@@ -66,7 +74,7 @@ public class AudioGetter(HttpClient hc,TencUserAuth tencAuth,NeteaseUserAuth net
     private  async Task<string?> GetUrlFromWYY(string id)
     {
         string url = $"http://music.163.com/api/song/enhance/player/url?ids=[{id}]&br=320000";
-        string data= await _hc.SetForNetease(_neteaseAuth.Cookie!)
+        string data= await _hc.SetForNetease(_neteaseAuth?.Cookie??"")
                                .GetStringAsync(url);
         if(JsonNode.Parse(data)is { } obj)
         {

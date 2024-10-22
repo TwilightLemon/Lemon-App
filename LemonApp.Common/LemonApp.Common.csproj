@@ -13,10 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Configs\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\LemonApp.MusicLib.Abstraction\LemonApp.MusicLib.Abstraction.csproj" />
   </ItemGroup>
 

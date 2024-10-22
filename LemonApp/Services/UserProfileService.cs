@@ -51,13 +51,13 @@ public class UserProfileService(
         }
     }
 
-    public TencUserAuth? GetAuth()
+    public TencUserAuth GetAuth()
     {
         if(appSettingsService.GetConfigMgr<UserProfile>() is { } mgr)
         {
             return mgr.Data?.TencUserAuth;
         }
-        return null;
+        return new();
     }
     
     public async  Task<BitmapImage?> GetAvatorImg()

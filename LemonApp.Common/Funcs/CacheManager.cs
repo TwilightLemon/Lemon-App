@@ -3,6 +3,7 @@
 namespace LemonApp.Common.Funcs;
 public static class CacheManager
 {
+    private const string RootName= "LemonApp";
     public enum CacheType
     {
         Music,Lyric,Other
@@ -26,7 +27,7 @@ public static class CacheManager
                 break;
             }
         }
-        return dir;
+        return Path.Combine(dir, RootName);
     }
     public static  async Task LoadPath()
     {

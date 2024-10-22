@@ -9,4 +9,16 @@ public static class DataTypes
         public string? Trans { get; set; }
         public string? Romaji { get; set; }
     }
+    public class LrcLine
+    {
+        public string Lyric { get; set; } = string.Empty;
+        public double Time { get; set; } = 0;
+        public string? Trans { get; set; }
+        public string? Romaji { get; set; }
+    }
+    public class  LocalLyricData
+    {
+        public string Id { get; set; } = string.Empty;
+        public List<LrcLine> LyricData { get; set; } = [];
+    }
 }

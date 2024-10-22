@@ -7,11 +7,13 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <ScrollViewer VerticalScrollBarVisibility="Hidden"
+        <ScrollViewer x:Name="scrollviewer"
+                      VerticalScrollBarVisibility="Hidden"
                       HorizontalScrollBarVisibility="Hidden"
                       FocusVisualStyle="{x:Null}">
-            <VirtualizingStackPanel Name="c_lrc_items"
-                                    VirtualizingPanel.IsVirtualizing="True" />
+            <VirtualizingStackPanel Name="LyricPanel"
+                                    VirtualizingPanel.IsVirtualizing="True">
+            </VirtualizingStackPanel>
         </ScrollViewer>
     </Grid>
 </UserControl>
