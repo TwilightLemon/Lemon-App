@@ -124,18 +124,25 @@ public static class Settings
         try
         {
             string path = GetPathBySign(Sign, type);
-            var fs = File.Create(path);
-            await JsonSerializer.SerializeAsync<T>(fs, Data, _options);
-            fs.Close();
+            await SaveAsJsonAsync<T>(Data, path);
         }
-        catch
-        {
-
-        }
+        catch { }
+    }
+    public static async Task SaveAsJsonAsync<T>(T Data,string path) where T : class
+    {
+        var fs = File.Create(path);
+        await JsonSerializer.SerializeAsync<T>(fs, Data, _options);
+        fs.Close();
     }
     public static async Task<T?> Load<T>(string Sign, sType t) where T : class
     {
         string path = GetPathBySign(Sign, t);
+        var data = await LoadFromJsonAsync<T>(path);
+        return data;
+    }
+
+    public static async Task<T?> LoadFromJsonAsync<T>(string path) where T : class
+    {
         if (!File.Exists(path))
             return null;
         var fs = File.OpenRead(path);

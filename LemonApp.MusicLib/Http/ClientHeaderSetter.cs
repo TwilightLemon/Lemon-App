@@ -65,4 +65,15 @@ internal static class ClientHeaderSetter
         hc.DefaultRequestHeaders.TryAddWithoutValidation("Host", "music.163.com");
         return hc;
     }
+    public static HttpClient SetForEzlang(this HttpClient hc) {
+        hc.DefaultRequestHeaders.Host = "www.ezlang.net";
+        hc.DefaultRequestHeaders.Add("Origin", "https://www.ezlang.net");
+        hc.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36 Core/1.77.119.400 QQBrowser/10.9.4817.400");
+        hc.DefaultRequestHeaders.Add("Referer", "https://www.ezlang.net/zh-Hans/tool/romaji");
+        hc.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9");
+        hc.DefaultRequestHeaders.Add("sec-fetch-mode", "cors");
+        hc.DefaultRequestHeaders.Add("sec-fetch-site", "same-origin");
+        hc.DefaultRequestHeaders.Add("X-Requested-With", "XMLHttpRequest");
+        return hc;
+    }
 }

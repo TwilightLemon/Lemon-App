@@ -27,22 +27,84 @@ namespace LemonApp.Views.Windows
             _serviceProvider = serviceProvider;
             _mainNavigationService = mainNavigationService;
             DataContext = _vm = mainWindowViewModel;
-            _vm.RequireNavigateToPage += _vm_RequireNavigateToPage;
+            _vm.RequireNavigateToPage += Vm_RequireNavigateToPage;
             Loaded += MainWindow_Loaded;
         }
         private readonly IServiceProvider _serviceProvider;
         private readonly MainNavigationService _mainNavigationService;
         private readonly MainWindowViewModel _vm;
-        private void _vm_RequireNavigateToPage(Page page)
+
+        #region MainContentFrame
+        /// <summary>
+        /// ViewModel请求跳转页面
+        /// </summary>
+        /// <param name="page"></param>
+        private void Vm_RequireNavigateToPage(Page page)
         {
             MainContentFrame.Navigate(page);
         }
-
+        /// <summary>
+        /// Loaded->Load First Page
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             _vm.SelectedMenu = _vm.MainMenus.FirstOrDefault();
         }
+        /// <summary>
+        /// Menu Selected -> Navigate to some page
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MainPageMenu_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_vm.CurrentPage is { } page && _vm.CurrentPage != MainContentFrame.Content)
+            {
+                MainContentFrame.Navigate(_vm.CurrentPage);
+            }
+        }
 
+        private void GoBackBtn_Click(object sender, RoutedEventArgs e)
+        {
+            MainContentFrame.GoBack();
+        }
+
+        private Storyboard? _showGoBackBtnAni = null;
+        private bool _isGoBackBtnShow = false;
+        private void MainContentFrame_Navigated(object sender, NavigationEventArgs e)
+        {
+            //GoBackBtn Animation
+            _showGoBackBtnAni ??= (Storyboard)Resources["ShowGoBackBtnAni"];
+            if (MainContentFrame.CanGoBack)
+            {
+                if (!_isGoBackBtnShow)
+                {
+                    _showGoBackBtnAni.Begin();
+                    _isGoBackBtnShow = true;
+                }
+            }
+            else
+            {
+                _showGoBackBtnAni.Stop();
+                _isGoBackBtnShow = false;
+            }
+
+            //sync page with menu
+            if (MainContentFrame.CanGoForward)
+            {
+                //处理来自GoBack的Navigation
+                _vm.CurrentPage = MainContentFrame.Content;
+                var selected = _vm.MainMenus.FirstOrDefault(page => page.PageType == e.Content?.GetType());
+                //退回时不生成新页面
+                if (selected != null)
+                    selected.RequireCreateNewPage = false;
+                _vm.SelectedMenu = selected;
+            }
+        }
+        #endregion
+
+        #region  Open Popups
 
         /// <summary>
         /// 打开UserProfile菜单
@@ -75,56 +137,6 @@ namespace LemonApp.Views.Windows
 
         private Storyboard? _openLyricPageAni, _closeLyricPageAni;
 
-        private void MainPageMenu_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (_vm.CurrentPage is { } page && _vm.CurrentPage != MainContentFrame.Content)
-            {
-                MainContentFrame.Navigate(_vm.CurrentPage);
-            }
-        }
-
-        private void GoBackBtn_Click(object sender, RoutedEventArgs e)
-        {
-            MainContentFrame.GoBack();
-        }
-
-        private Storyboard? _showGoBackBtnAni = null;
-        private bool _isGoBackBtnShow = false;
-        private void MainContentFrame_Navigated(object sender, NavigationEventArgs e)
-        {
-            _showGoBackBtnAni ??= (Storyboard)Resources["ShowGoBackBtnAni"];
-            if (MainContentFrame.CanGoBack)
-            {
-                if (!_isGoBackBtnShow)
-                {
-                    _showGoBackBtnAni.Begin();
-                    _isGoBackBtnShow = true;
-                }
-            }
-            else
-            {
-                _showGoBackBtnAni.Stop();
-                _isGoBackBtnShow = false;
-            }
-
-            if (MainContentFrame.CanGoForward)
-            {
-                //处理来自GoBack的Navigation
-                _vm.CurrentPage = MainContentFrame.Content;
-                var selected = _vm.MainMenus.FirstOrDefault(page => page.PageType == e.Content?.GetType());
-                //退回时不生成新页面
-                if (selected != null)
-                    selected.RequireCreateNewPage = false;
-                _vm.SelectedMenu = selected;
-            }
-        }
-
-        private void SearchBox_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-                _mainNavigationService.RequstNavigation(PageType.SearchPage, SearchBox.Text);
-        }
-
         /// <summary>
         /// 打开/关闭歌词页
         /// </summary>
@@ -150,7 +162,12 @@ namespace LemonApp.Views.Windows
 
             }
         }
-
+        #endregion
+        private void SearchBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+                _mainNavigationService.RequstNavigation(PageType.SearchPage, SearchBox.Text);
+        }
 
         // private void Border_MouseDown(object sender, MouseButtonEventArgs e){
         //     _appSettingsService.GetConfigMgr<Appearence>().Data.AccentColorMode=Appearence.AccentColorType.Custome;

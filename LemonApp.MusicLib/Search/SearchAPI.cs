@@ -6,6 +6,7 @@ using System.Text.Json.Nodes;
 using static LemonApp.MusicLib.Abstraction.Album.DataTypes;
 
 namespace LemonApp.MusicLib.Search;
+#pragma warning disable CS8602 // 解引用可能出现空引用。
 public static class SearchAPI
 {
     public static async Task<List<Music>> SearchMusicAsync(HttpClient hc,TencUserAuth auth, string Content, int osx = 1)

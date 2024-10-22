@@ -35,12 +35,16 @@ namespace LemonApp
                 //host
                 services.AddSingleton<ApplicationService>();
                 services.AddHostedService(p => p.GetRequiredService<ApplicationService>());
+
                 services.AddSingleton<AppSettingsService>();
                 services.AddHostedService(
                     p=>p.GetRequiredService<AppSettingsService>()
                         .AddConfig<UserProfile>()
                         .AddConfig<Appearence>()
                 );
+
+                services.AddSingleton<MediaPlayerService>();
+                services.AddHostedService(p=>p.GetRequiredService<MediaPlayerService>());
 
                 //services
                 services.AddSingleton<UIResourceService>();

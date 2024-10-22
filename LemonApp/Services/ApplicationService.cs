@@ -1,4 +1,5 @@
 ﻿using LemonApp.Common.Configs;
+using LemonApp.Common.Funcs;
 using LemonApp.Views.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -28,6 +29,9 @@ namespace LemonApp.Services
                     logger.LogError("Failed to load settings.");
                     return;
                 }
+                //load cache manager
+                await CacheManager.LoadPath();
+
                 //apply settings
                 uiResourceService.UpdateColorMode();
                 uiResourceService.UpdateAccentColor();

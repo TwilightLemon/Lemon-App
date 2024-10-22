@@ -213,7 +213,7 @@
                     ItemsSource="{Binding Musics}"
                     ScrollViewer.ScrollChanged="listBox_ScrollChanged"
                     VerticalAlignment="Stretch"
-                    Margin="0 200 0 0"
+                    Margin="0 208 0 0"
                     d:ItemsSource="{d:SampleData ItemCount=5}"
                     Style="{DynamicResource SimpleListBoxStyle}"
                     ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}"

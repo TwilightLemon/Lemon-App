@@ -32,7 +32,7 @@ public class AudioGetter(HttpClient hc,TencUserAuth tencAuth,NeteaseUserAuth net
         _ => throw new NotImplementedException("insupported quality.")
     };
     //TODO: cache & reflect qid to netease
-    public static string FindExistingFile(Music m, MusicQuality PQ)
+    public static string? FindExistingFile(Music m, MusicQuality PQ)
     {
         return null;
     }

@@ -615,9 +615,6 @@
                 <Setter Property="Visibility"
                         TargetName="TopTick"
                         Value="Visible" />
-                <Setter Property="Template"
-                        TargetName="Thumb"
-                        Value="{StaticResource SliderThumbHorizontalTop}" />
                 <Setter Property="Margin"
                         TargetName="TrackBackground"
                         Value="5,2,5,0" />
@@ -627,9 +624,6 @@
                 <Setter Property="Visibility"
                         TargetName="BottomTick"
                         Value="Visible" />
-                <Setter Property="Template"
-                        TargetName="Thumb"
-                        Value="{StaticResource SliderThumbHorizontalBottom}" />
                 <Setter Property="Margin"
                         TargetName="TrackBackground"
                         Value="5,0,5,2" />

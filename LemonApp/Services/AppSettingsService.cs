@@ -23,7 +23,7 @@ public class AppSettingsService(
     }
     public SettingsMgr<T>? GetConfigMgr<T>() where T : class{
         if(_settingsMgrs.TryGetValue(typeof(T),out var mgr))
-            return (SettingsMgr<T>)mgr as SettingsMgr<T>;
+            return (SettingsMgr<T>)mgr;
         return null;
     }
     public async void LoadAsync(Action<bool> callback){
