@@ -35,21 +35,25 @@ public class MediaPlayerService(UserProfileService userProfileService,IHttpClien
     }
     private void CommandManager_PreviousReceived(MediaPlaybackCommandManager sender, MediaPlaybackCommandManagerPreviousReceivedEventArgs args)
     {
+        if(CurrentMusic!=null)
         OnPlayLast?.Invoke(CurrentMusic);
     }
     private void CommandManager_NextReceived(MediaPlaybackCommandManager sender, MediaPlaybackCommandManagerNextReceivedEventArgs args)
     {
-        OnPlayNext?.Invoke(CurrentMusic);
+        if (CurrentMusic != null)
+            OnPlayNext?.Invoke(CurrentMusic);
     }
 
     private void CommandManager_PauseReceived(MediaPlaybackCommandManager sender, MediaPlaybackCommandManagerPauseReceivedEventArgs args)
     {
-        OnPaused?.Invoke(CurrentMusic);
+        if (CurrentMusic != null)
+            OnPaused?.Invoke(CurrentMusic);
     }
 
     private void CommandManager_PlayReceived(MediaPlaybackCommandManager sender, MediaPlaybackCommandManagerPlayReceivedEventArgs args)
     {
-        OnPlay?.Invoke(CurrentMusic);
+        if (CurrentMusic != null)
+            OnPlay?.Invoke(CurrentMusic);
     }
 
     public async Task Load(MusicDT.Music music)
@@ -81,6 +85,12 @@ public class MediaPlayerService(UserProfileService userProfileService,IHttpClien
     {
         get => _mediaPlayer.Volume;
         set => _mediaPlayer.Volume = value;
+    }
+    public TimeSpan Duration => _mediaPlayer.NaturalDuration;
+    public TimeSpan Position
+    {
+        get => _mediaPlayer.Position;
+        set => _mediaPlayer.Position = value;
     }
     public void Play()
     {

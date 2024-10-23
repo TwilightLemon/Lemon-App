@@ -1,16 +1,18 @@
 ﻿using EleCho.WpfSuite;
-using EleCho.WpfSuite.Controls;
 using LemonApp.Common.Funcs;
 using LemonApp.MusicLib.Abstraction.UserAuth;
 using LemonApp.MusicLib.Lyric;
+using LemonApp.Services;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Effects;
@@ -34,11 +36,31 @@ namespace LemonApp.Views.UserControls
     /// </summary>
     public partial class LyricView : UserControl
     {
-        public LyricView()
+        public LyricView(IHttpClientFactory httpClientFactory,UserProfileService userProfileService)
         {
             InitializeComponent();
+            UpdateColorMode();
+
+            _hc = httpClientFactory.CreateClient(App.PublicClientFlag);
+            _auth=userProfileService.GetAuth();
+
+            SizeChanged += LyricView_SizeChanged;
+        }
+
+        private void LyricView_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            RefreshCurrentLrcStyle();
         }
         #region Apperance
+        public void UpdateColorMode()
+        {
+            if(Foreground is SolidColorBrush color)
+            {
+                Hightlighter = new DropShadowEffect() { BlurRadius = 20, Color = color.Color, Opacity = 0.5, ShadowDepth = 0, Direction = 0 };
+            }
+        }
+
+        private  Thickness LyricMargin = new Thickness(20,12,0,12);
         /// <summary>
         /// 非高亮歌词的透明度
         /// </summary>
@@ -46,13 +68,8 @@ namespace LemonApp.Views.UserControls
         /// <summary>
         /// 高亮歌词效果
         /// </summary>
-        public Effect Hightlighter = new DropShadowEffect() { BlurRadius = 20, Color = Colors.White, Opacity = 0.5, ShadowDepth = 0, Direction = 0 };
-        public Effect? NomalTextEffect = null;
-        /// <summary>
-        /// 非高亮歌词的颜色
-        /// </summary>
-        public SolidColorBrush NormalLrcColor= Brushes.White;
-        public SolidColorBrush HighlightLrcColor = Brushes.White;
+        public Effect? Hightlighter;
+        public Effect? NomalTextEffect = new BlurEffect() { Radius = 3.5 };
         /// <summary>
         /// 歌词的文本对齐方式
         /// </summary>
@@ -93,21 +110,26 @@ namespace LemonApp.Views.UserControls
                         if (data.Trans != null)
                         {
                              trans = LyricHelper.Format(data.Trans);
-                            if (LyricHelper.IsJapanese(data.Lyric))
+                            //TODO:重新考虑romaji翻译的加载和储存方式，不要让其影响主要部件加载
+                           /* if (LyricHelper.IsJapanese(data.Lyric))
                             {
                                 StringBuilder sb = new();
                                 foreach(var line in lyrics)
-                                    sb.AppendLine(line.Value);
-                                 romaji =await RomajiLyric.Trans(_hc, sb.ToString());
-                            }
+                                    sb.AppendLine(line.Value.Contains('：')?"":line.Value);
+                                var temp = sb.ToString();
+                                romaji =await RomajiLyric.Trans(_hc,temp);
+                            }*/
                         }
                         int i = 0;
                         foreach(var line in lyrics)
                         {
+                            var transText = trans?.FirstOrDefault(m => m.Key >= line.Key - 2).Value;
+                            if (transText == "//")
+                                transText = null;
                             LrcLine lrcLine = new() {
                                 Time = line.Key,
                                 Lyric = line.Value,
-                                Trans=trans?.First(p=>p.Key<=line.Key).Value,
+                                Trans=transText,
                                 Romaji=romaji?[i]
                             };
                             i++;
@@ -121,35 +143,48 @@ namespace LemonApp.Views.UserControls
         }
         private void LoadLrc(LocalLyricData data)
         {
-            foreach(var line in data.LyricData)
+            scrollviewer.BeginAnimation(ScrollViewerUtils.VerticalOffsetProperty, null);
+            scrollviewer.ScrollToTop();
+            LyricPanel.Children.Clear();
+            LrcItems.Clear();
+            //占位
+            LyricPanel.Children.Add(new Border() { Height = 200,Background=Brushes.Transparent });
+            foreach (var line in data.LyricData)
             {
                 LrcItem item = new();
                 item.Time = line.Time;
                 TextBlock tb = new()
                 {
                     FontSize = LyricFontSize,
-                    Foreground = NormalLrcColor,
-                    TextWrapping = TextWrapping.Wrap,
+                    //Foreground = NormalLrcColor,
                     TextAlignment = TextAlignment,
                     Opacity = LyricOpacity,
+                    TextWrapping = TextWrapping.Wrap,
                     TextTrimming = TextTrimming.None,
+                    Margin= LyricMargin,
+                    Effect= NomalTextEffect
                 };
                 item.LrcTb = tb;
                 if (line.Romaji != null)
                 {
                     TextBlock romaji = new()
                     {
-                        Text = line.Romaji+"\r\n",
+                        Text = line.Romaji,
                         FontSize = LyricFontSize-5,
                         FontWeight = FontWeights.Regular,
-                        Foreground = NormalLrcColor
+                        //Foreground = NormalLrcColor,
+                        TextWrapping = TextWrapping.Wrap,
+                        TextTrimming = TextTrimming.None
                     };
                     item.Romaji = romaji;
                     tb.Inlines.Add(romaji);
+                    tb.Inlines.Add(new LineBreak());
                 }
                 TextBlock lyric = new()
                 {
-                    Text = line.Lyric
+                    Text = line.Lyric,
+                    TextWrapping = TextWrapping.Wrap,
+                    TextTrimming = TextTrimming.None
                 };
                 item.LrcMain = lyric;
                 item.Lyric = line.Lyric;
@@ -158,53 +193,56 @@ namespace LemonApp.Views.UserControls
                 {
                     TextBlock trans = new() {
                         FontWeight = FontWeights.Regular,
-                        Text="\r\n"+line.Trans,
+                        Text=line.Trans,
+                        Opacity=0.5,
                         FontSize = LyricFontSize - 6,
-                        Foreground = NormalLrcColor
+                        //Foreground = NormalLrcColor,
+                        TextWrapping = TextWrapping.Wrap,
+                        TextTrimming = TextTrimming.None
                     };
                     item.LrcTrans = trans;
+                    tb.Inlines.Add(new LineBreak());
                     tb.Inlines.Add(trans);
                 }
                 LrcItems.Add(item);
                 LyricPanel.Children.Add(tb);
             }
+            LyricPanel.Children.Add(new Border() { Height = 200, Background = Brushes.Transparent });
         }
-        private static double pixelsPerDip = VisualTreeHelper.GetDpi(Application.Current.MainWindow).PixelsPerDip;
-        public string InsertLineBreaks(TextBlock tb, double fontSize, double maxWidth)
+        private static double? pixelsPerDip;
+        private static string InsertLineBreaks(TextBlock tb,string preText, double fontSize, double maxWidth)
         {
-            string result = string.Empty;
-            string line = string.Empty;
-            string text = tb.Text;
-            bool hasBlank = text.Contains(' ');
-            var list = hasBlank ? text.Split(' ') : text.Split();
-            foreach (var word in list)
+            var typeface = new Typeface(tb.FontFamily, tb.FontStyle, FontWeights.Bold, tb.FontStretch);
+            pixelsPerDip ??= VisualTreeHelper.GetDpi(Application.Current.MainWindow).PixelsPerDip;
+            double GetWidth(string text)
             {
-                var typeface = new Typeface(tb.FontFamily, tb.FontStyle, FontWeights.Bold, tb.FontStretch);
-                var formattedLine = new FormattedText(line + " " + word,
-                    System.Globalization.CultureInfo.CurrentCulture,
-                    FlowDirection.LeftToRight,
-                    typeface,
-                    fontSize,
-                    Brushes.Black,
-                    pixelsPerDip);
+                var formattedLine = new FormattedText(text, CultureInfo.CurrentCulture,
+                                                                                    FlowDirection.LeftToRight,typeface,fontSize,Brushes.Black,pixelsPerDip!.Value);
+                return formattedLine.WidthIncludingTrailingWhitespace;
+            }
+            StringBuilder temp = new();
+            string[] blocks;
+            bool spaceSplit = preText.Contains(' ');
+            if (spaceSplit)
+                blocks = preText.Split(' ');
+            else blocks = preText.Select(c=>c.ToString()).ToArray();
 
-                if (formattedLine.WidthIncludingTrailingWhitespace > maxWidth)
+
+            foreach(var block in blocks)
+            {
+                if(string.IsNullOrWhiteSpace(block)) continue;
+                temp.Append(block);
+                if(spaceSplit)temp.Append(' ');
+                if (GetWidth(temp.ToString()) > maxWidth)
                 {
-                    result += line + "\n";
-                    line = hasBlank ? word + " " : word;
-                }
-                else
-                {
-                    line += hasBlank ? word + " " : word;
+                    int undoLength=block.Length+(spaceSplit? 1:0);
+                    temp.Remove(temp.Length-undoLength,undoLength);
+                    temp.AppendLine();
+                    temp.Append(block);
+                    if (spaceSplit) temp.Append(' ');
                 }
             }
-
-            result += line;
-            //去除result的第一个换行符
-            if (result.StartsWith("\n"))
-            {
-                result = result.Substring(1);
-            }
+            string result = temp.ToString();
             return result;
         }
 
@@ -213,7 +251,7 @@ namespace LemonApp.Views.UserControls
             void reset(LrcItem? item)
             {
                 if(item==null|| item.LrcTb == null) return;
-                item.LrcTb.Foreground = NormalLrcColor;
+                //item.LrcTb.Foreground = NormalLrcColor;
                 item.LrcTb.FontWeight = FontWeights.Regular;
                 item.LrcTb.BeginAnimation(FontSizeProperty, null);
                 item.LrcTb.Opacity = LyricOpacity;
@@ -222,12 +260,20 @@ namespace LemonApp.Views.UserControls
                 item.LrcMain!.Text=item.Lyric;
                 item.LrcMain!.TextWrapping= TextWrapping.Wrap;
             }
-            reset(_currentLrc);
-            _currentLrc = LrcItems.FirstOrDefault(p => p.Time <= ms);
-            if (_currentLrc == null) return;
+            var temp = LrcItems.LastOrDefault(p => p.Time <= ms);
+            if (temp == null || temp == _currentLrc) return;
 
+            reset(_currentLrc);
+            _currentLrc = temp;
+
+            RefreshCurrentLrcStyle();
+        }
+
+        private void RefreshCurrentLrcStyle()
+        {
+            if (_currentLrc == null) return;
             var container = _currentLrc.LrcTb!;
-            container.Foreground = HighlightLrcColor;
+            //container.Foreground = HighlightLrcColor;
             container.FontWeight = FontWeights.Bold;
             container.Opacity = 1;
             container.Effect = Hightlighter;
@@ -235,7 +281,7 @@ namespace LemonApp.Views.UserControls
             double targetFontsize = LyricFontSize + 8;
             var mainLine = _currentLrc.LrcMain!;
             mainLine.TextWrapping = TextWrapping.NoWrap;
-            mainLine.Text = InsertLineBreaks(mainLine, targetFontsize, mainLine.ActualWidth);
+            mainLine.Text = InsertLineBreaks(mainLine,_currentLrc.Lyric, targetFontsize, ActualWidth - LyricMargin.Left - LyricMargin.Right - 1);
             var da = new DoubleAnimation(targetFontsize, TimeSpan.FromSeconds(0.3))
             {
                 EasingFunction = new CircleEase { EasingMode = EasingMode.EaseOut }

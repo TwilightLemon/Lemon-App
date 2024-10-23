@@ -277,6 +277,7 @@ internal static class MaterialApis
     }
     public static void SetWindowProperties(HwndSource hwndSource,int margin)
     {
+        if (hwndSource == null) return;
         hwndSource.CompositionTarget.BackgroundColor = Colors.Transparent;
         var margins = new Margins()
         {

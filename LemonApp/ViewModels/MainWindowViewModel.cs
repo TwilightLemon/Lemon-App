@@ -18,6 +18,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using LemonApp.Common.Configs;
 using LemonApp.MusicLib.Media;
+using CommunityToolkit.Mvvm.Input;
+using System.Timers;
+using LemonApp.Views.UserControls;
 
 namespace LemonApp.ViewModels;
 public partial class MainWindowViewModel : ObservableObject
@@ -27,7 +30,8 @@ public partial class MainWindowViewModel : ObservableObject
         IServiceProvider serviceProvider,
         MainNavigationService mainNavigationService,
         MediaPlayerService mediaPlayerService,
-        AppSettingsService appSettingsService)
+        AppSettingsService appSettingsService,
+        LyricView lyricView)
     {
         _userProfileService = userProfileService;
         _serviceProvider = serviceProvider;
@@ -36,15 +40,87 @@ public partial class MainWindowViewModel : ObservableObject
         _appSettingsService = appSettingsService;
 
         _mediaPlayerService.OnLoaded += _mediaPlayerService_OnLoaded;
+        _mediaPlayerService.OnPlay += _mediaPlayerService_OnPlay;
+        _mediaPlayerService.OnPaused += _mediaPlayerService_OnPaused;
+
+        LyricView= lyricView;
 
         _mainNavigationService.OnNavigatingRequsted += MainNavigationService_OnNavigatingRequsted;
         userProfileService.OnAuth += UserProfileService_OnAuth;
         userProfileService.OnAuthExpired += UserProfileService_OnAuthExpired;
+
+        _timer = new();
+        _timer.Elapsed += _timer_Elapsed;
+        _timer.Interval = 1000;
+
+        LoadComponent();
     }
 
-    private void _mediaPlayerService_OnLoaded(MusicDT.Music m)
+    private async void LoadComponent()
+    {
+        //update current playing
+        _currentPlayingMgr = _appSettingsService.GetConfigMgr<CurrentPlaying>();
+        if (_currentPlayingMgr is { } mgr)
+        {
+            if (mgr.Data?.Music is { MusicID: not "" } music)
+            {
+                await _mediaPlayerService.Load(music);
+                CurrentPlayingVolume = mgr.Data.Volume;
+            }
+        }
+        else
+        {
+            CurrentPlaying = new()
+            {
+                MusicName = "暂无播放",
+                SingerText = "Lemon App"
+            };
+        }
+    }
+
+    private void _timer_Elapsed(object? sender, ElapsedEventArgs e)
+    {
+        var dur = _mediaPlayerService.Duration;
+        CurrentPlayingDuration = dur.TotalMilliseconds;
+        CurrentPlayingDurationText = $"{dur.Minutes:D2}:{dur.Seconds:D2}";
+
+        var pos = _mediaPlayerService.Position;
+        CurrentPlayingPosition = pos.TotalMilliseconds;
+        CurrentPlayingPositionText = $"{pos.Minutes:D2}:{pos.Seconds:D2}";
+
+        LyricView!.Dispatcher.Invoke(() => {
+            LyricView.UpdateTime(pos.TotalMilliseconds);
+        });
+    }
+
+    private void _mediaPlayerService_OnPaused(MusicDT.Music obj)
+    {
+        IsPlaying = false;
+        _timer?.Stop();
+    }
+
+    private void _mediaPlayerService_OnPlay(MusicDT.Music m)
+    {
+        IsPlaying = true;
+        _timer?.Start();
+    }
+
+    private async void _mediaPlayerService_OnLoaded(MusicDT.Music m)
     {
         CurrentPlaying = m;
+        await LyricView!.LoadFromMusic(m);
+    }
+    [RelayCommand]
+    private void PlayPause()
+    {
+        if (IsPlaying)
+        {
+            _mediaPlayerService.Pause();
+        }
+        else
+        {
+            _mediaPlayerService.Play();
+        }
     }
 
     private readonly IServiceProvider _serviceProvider;
@@ -53,6 +129,7 @@ public partial class MainWindowViewModel : ObservableObject
     private readonly MediaPlayerService _mediaPlayerService;
     private readonly AppSettingsService _appSettingsService;
 
+    private readonly Timer _timer;
     private SettingsMgr<CurrentPlaying>? _currentPlayingMgr;
     #region userprofile
     private void UserProfileService_OnAuthExpired()
@@ -67,23 +144,6 @@ public partial class MainWindowViewModel : ObservableObject
         if (await _userProfileService.GetAvatorImg() is { } img)
         {
             Avator = new ImageBrush(img);
-        }
-        //update current playing
-        _currentPlayingMgr = _appSettingsService.GetConfigMgr<CurrentPlaying>();
-        if (_currentPlayingMgr is { } mgr)
-        {
-            if (mgr.Data?.Music is {MusicID:not "" } music)
-            {
-                await _mediaPlayerService.Load(music);
-                CurrentPlayingVolume = mgr.Data.Volume;
-            }
-        }
-        else
-        {
-            CurrentPlaying = new() {
-            MusicName="暂无播放",
-            SingerText="Lemon App"
-            };
         }
     }
     #endregion
@@ -222,22 +282,39 @@ public partial class MainWindowViewModel : ObservableObject
     [ObservableProperty]
     private MusicDT.Music? _currentPlaying = null;
     [ObservableProperty]
-    private string _currentPlayingTimeAt = "00:00";
+    private string _currentPlayingPositionText = "00:00";
     [ObservableProperty]
-    private string _currentPlayingDuration = "00:00";
+    private string _currentPlayingDurationText = "00:00";
     [ObservableProperty]
-    private double _currentPlayingProgress = 0;
+    private double _currentPlayingPosition = 0;
+    [ObservableProperty]
+    private double _currentPlayingDuration = 0;
     [ObservableProperty]
     private double _currentPlayingVolume = 0.5;
     [ObservableProperty]
     private Brush? _currentPlayingCover;
+    [ObservableProperty]
+    private LyricView? _lyricView;
 
     async partial void OnCurrentPlayingChanged(MusicDT.Music? value)
     {
         //只负责更新UI的ViewModel
         if (value == null||string.IsNullOrEmpty(value.MusicID)) return;
+
         var hc= _serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
         CurrentPlayingCover = new ImageBrush(await ImageCacheHelper.FetchData(await CoverGetter.GetCoverImgUrl(hc, value)));
+
+        CurrentPlayingPosition = 0;
+        CurrentPlayingPositionText = "00:00";
+        CurrentPlayingVolume = _mediaPlayerService.Volume;
+    }
+    partial void OnCurrentPlayingVolumeChanged(double value)
+    {
+        _mediaPlayerService.Volume = value;
+    }
+    public void SetCurrentPlayingPosition(double value)
+    {
+        _mediaPlayerService.Position = TimeSpan.FromMilliseconds(value);
     }
     #endregion
 }

@@ -12,9 +12,10 @@ namespace LemonApp.Services;
 public class UIResourceService(
     AppSettingsService appSettingsService)
 {
+    public bool GetIsDarkMode() =>appSettingsService.GetConfigMgr<Appearence>()?.Data?.GetIsDarkMode()==true;
     public void UpdateColorMode()
     {
-        bool IsDarkMode= appSettingsService.GetConfigMgr<Appearence>()?.Data?.GetIsDarkMode()==true;
+        bool IsDarkMode = GetIsDarkMode();
         string uri = $"pack://application:,,,/LemonApp.Common;component/Styles/ThemeColor_{IsDarkMode switch
         {
             true => "Dark",

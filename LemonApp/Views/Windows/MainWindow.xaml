@@ -8,10 +8,11 @@
                        xmlns:ws="https://schemas.elecho.dev/wpfsuite"
                        xmlns:viewmodels="clr-namespace:LemonApp.ViewModels"
                        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+                       xmlns:uc="clr-namespace:LemonApp.Views.UserControls"
                        d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
                        mc:Ignorable="d"
-                       Background="Transparent"
-                       Mode="Mica"
+                       Background="{DynamicResource WindowBackgroundColor}"
+                       Mode="Acrylic"
                        Foreground="{DynamicResource ForeColor}"
                        Title="MainWindow"
                        Height="750"
@@ -110,6 +111,11 @@
                     </EasingThicknessKeyFrame.EasingFunction>
                 </EasingThicknessKeyFrame>
             </ThicknessAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LyricViewHost"
+                                           Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00.0"
+                                        Value="{x:Static Visibility.Visible}" />
+            </ObjectAnimationUsingKeyFrames>
         </Storyboard>
         <Storyboard x:Key="CloseLyricPageAni">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="LyricPage_Background"
@@ -179,6 +185,11 @@
                 <DiscreteObjectKeyFrame KeyTime="00:00:00.2500"
                                         Value="{x:Static Visibility.Visible}" />
             </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LyricViewHost"
+                                           Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00.0"
+                                        Value="{x:Static Visibility.Collapsed}" />
+            </ObjectAnimationUsingKeyFrames>
         </Storyboard>
         <Storyboard x:Key="OpenPlaylistAni">
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PlayListPage"
@@ -235,11 +246,11 @@
                                         Value="{x:Static Visibility.Visible}" />
             </ObjectAnimationUsingKeyFrames>
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GoBackBtn"
-                                              Storyboard.TargetProperty="(FrameworkElement.Width)">
+                                           Storyboard.TargetProperty="(FrameworkElement.Width)">
                 <EasingDoubleKeyFrame KeyTime="00:00:00"
-                                         Value="0" />
+                                      Value="0" />
                 <EasingDoubleKeyFrame KeyTime="00:00:00.1500000"
-                                         Value="28">
+                                      Value="28">
                     <EasingDoubleKeyFrame.EasingFunction>
                         <CircleEase EasingMode="EaseOut" />
                     </EasingDoubleKeyFrame.EasingFunction>
@@ -319,8 +330,8 @@
                                 Placeholder="搜索"
                                 HorizontalAlignment="Stretch"
                                 CornerRadius="6"
-                                Margin="220,8,220,8" 
-                                PreviewKeyDown="SearchBox_PreviewKeyDown"/>
+                                Margin="220,8,220,8"
+                                PreviewKeyDown="SearchBox_PreviewKeyDown" />
                     <!--用户头像&菜单-->
                     <Border HorizontalAlignment="Right"
                             Margin="0 0 144 0"
@@ -447,17 +458,27 @@
                             </ws:Frame.Transition>
                         </ws:Frame>
                     </Border>
-                    <base:LoadingIcon x:Name="LoadingIcon"
-                                      Grid.Column="1"
-                                      Visibility="{Binding IsLoading,Converter={StaticResource BoolToVisibility}}"
-                                      HorizontalAlignment="Center"
-                                      VerticalAlignment="Center" />
+                    <ws:ConditionalControl Condition="{Binding IsLoading}"
+                                           Grid.Column="1"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center">
+                        <ws:ConditionalControl.ContentWhenTrue>
+                            <base:LoadingIcon x:Name="LoadingIcon"
+                                              Grid.Column="1"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </ws:ConditionalControl.ContentWhenTrue>
+                    </ws:ConditionalControl>
                 </Grid>
             </Grid>
             <Grid x:Name="LyricPage"
                   Visibility="Collapsed">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="5*" />
+                    <ColumnDefinition Width="6*" />
+                </Grid.ColumnDefinitions>
                 <Border x:Name="LyricPage_Background"
-                        Background="#0C000000" />
+                        Grid.ColumnSpan="2" />
                 <Border x:Name="LyricPage_Img"
                         HorizontalAlignment="Left"
                         Width="360"
@@ -466,7 +487,27 @@
                         RenderOptions.BitmapScalingMode="HighQuality"
                         Background="{Binding CurrentPlayingCover,TargetNullValue={StaticResource HighlightThemeColor}}"
                         CornerRadius="8"
-                        Margin="60,0,0,110" />
+                        Margin="60,132,0,242">
+                    <Border.Effect>
+                        <DropShadowEffect Color="Black" Direction="0" ShadowDepth="0" Opacity="0.6" BlurRadius="30"/>
+                    </Border.Effect>
+                </Border>
+                <Border x:Name="LyricViewHost"
+                        Grid.Column="1"
+                        Margin="10 80 120 150">
+                    <Border.OpacityMask>
+                        <LinearGradientBrush EndPoint="0.5,1"
+                                             StartPoint="0.5,0">
+                            <GradientStop Color="Transparent" />
+                            <GradientStop Color="Transparent"
+                                          Offset="1" />
+                            <GradientStop Color="Black"
+                                          Offset="0.2" />
+                            <GradientStop Color="Black"
+                                          Offset="0.8" />
+                        </LinearGradientBrush>
+                    </Border.OpacityMask>
+                </Border>
 
             </Grid>
             <Border x:Name="MusicControl"
@@ -482,20 +523,25 @@
                     </Grid.RowDefinitions>
                     <Grid>
                         <TextBlock x:Name="PlayingTimeTb"
-                                   Text="00:00"
+                                   d:Text="00:00"
+                                   Text="{Binding CurrentPlayingPositionText}"
                                    HorizontalAlignment="Left"
                                    VerticalAlignment="Center"
                                    Margin="14 0 0 0" />
                         <TextBlock x:Name="TotalTimeTb"
-                                   Text="00:00"
+                                   d:Text="00:00"
+                                   Text="{Binding CurrentPlayingDurationText}"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Center"
                                    Margin="0 0 14 0" />
                         <Slider Style="{DynamicResource FluentSliderStyle}"
                                 x:Name="PlaySlider"
+                                PreviewMouseDown="PlaySlider_PreviewMouseDown"
+                                PreviewMouseUp="PlaySlider_PreviewMouseUp"
+                                Maximum="{Binding CurrentPlayingDuration}"
                                 Margin="60 0"
                                 VerticalAlignment="Center"
-                                Value="1" />
+                                Value="{Binding CurrentPlayingPosition,IsAsync=True}" />
                     </Grid>
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
@@ -540,7 +586,7 @@
                                          FontSize="12" />
                                      · <Run Text="{Binding CurrentPlaying.Album.Name}"
                                             d:Text="reputation"
-                                          FontSize="12" />
+                                            FontSize="12" />
                                 </TextBlock>
                             </Grid>
                         </ws:Button>
@@ -551,10 +597,20 @@
                                        Width="45"
                                        Height="45"
                                        ToolTip="播放"
+                                       Command="{Binding PlayPauseCommand}"
                                        Style="{StaticResource SimpleIconButtonStyleForWs}">
-                                <Path Data="{DynamicResource PlayIcon_Play}"
-                                      Fill="{DynamicResource HighlightThemeColor}"
-                                      Stretch="Uniform" />
+                                <ws:ConditionalControl Condition="{Binding IsPlaying}">
+                                    <ws:ConditionalControl.ContentWhenFalse>
+                                        <Path Data="{DynamicResource PlayIcon_Play}"
+                                              Fill="{DynamicResource HighlightThemeColor}"
+                                              Stretch="Uniform" />
+                                    </ws:ConditionalControl.ContentWhenFalse>
+                                    <ws:ConditionalControl.ContentWhenTrue>
+                                        <Path Data="{DynamicResource PlayIcon_Pause}"
+                                              Fill="{DynamicResource HighlightThemeColor}"
+                                              Stretch="Uniform" />
+                                    </ws:ConditionalControl.ContentWhenTrue>
+                                </ws:ConditionalControl>
                             </ws:Button>
                             <ws:Button x:Name="PlayLastBtn"
                                        Width="32"
@@ -634,8 +690,10 @@
                                     <Slider x:Name="AudioAdjustSlider"
                                             VerticalAlignment="Center"
                                             Margin="16 0"
+                                            PreviewMouseDown="AudioAdjustSlider_PreviewMouseDown"
+                                            Value="{Binding CurrentPlayingVolume}"
                                             Style="{StaticResource FluentSliderStyle}"
-                                            Maximum="100" />
+                                            Maximum="1" />
                                 </Grid>
                             </base:FluentPopup>
                             <ws:Button x:Name="AudioBtn"

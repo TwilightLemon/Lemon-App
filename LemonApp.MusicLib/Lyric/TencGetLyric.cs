@@ -12,8 +12,8 @@ public static  class TencGetLyric
     public static async Task<LyricData?> GetLyricDataAsync(
         HttpClient hc,TencUserAuth auth,string mid)
     {
-        string url = $"https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg?songmid={mid}&g_tk={auth.G_tk}&loginUin={auth.Id}&hostUin=0&format=json&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq.json&needNewCode=0";
-        string data = await hc.SetForCYQ(auth.Cookie!)
+        string url = $"https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg?songmid={mid}&g_tk=5381&loginUin=0&hostUin=0&format=json&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq.json&needNewCode=0";
+        string data = await hc.SetForCYQ(auth.Cookie!, "https://y.qq.com/portal/player.html")
             .GetStringAsync(url);
         if(JsonNode.Parse(data) is { } json)
         {

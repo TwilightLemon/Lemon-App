@@ -13,35 +13,43 @@ namespace LemonApp.MusicLib.Lyric;
 #pragma warning disable CS8602
 public static class RomajiLyric
 {
-    public static async Task<List<string>> Trans(HttpClient hc, string text)
+    public static async Task<List<string>?> Trans(HttpClient hc, string text)
     {
-        string url = "https://www.ezlang.net/ajax/tool_data.php";
-        string postData = $"txt={HttpUtility.UrlDecode(text.ToString())}&sn=romaji";
-        var post =await hc.SetForEzlang().PostAsync(url,new StringContent(postData, Encoding.UTF8, "application/x-www-form-urlencoded"));
-        string data = await post.Content.ReadAsStringAsync();
-
-        List<string> vs = [];
-        if (JsonArray.Parse(data) is { } arr)
+        try
         {
-            string doc = "<List>" + arr[1] + "</List>";
-            XmlDocument xd = new();
-            xd.LoadXml(doc);
-            var root = xd.SelectSingleNode("List");
-            foreach (XmlElement div in root)
+            string url = "https://www.ezlang.net/ajax/tool_data.php";
+            string postData = $"txt={HttpUtility.UrlDecode(text.ToString())}&sn=romaji";
+            var post = await hc.SetForEzlang().PostAsync(url, new StringContent(postData, Encoding.UTF8, "application/x-www-form-urlencoded"));
+            string data = await post.Content.ReadAsStringAsync();
+
+            if (JsonArray.Parse(data) is { } arr)
             {
-                string line = "";
-                var spans = div.SelectNodes("span");
-                foreach (XmlElement span in spans)
+                List<string> vs = [];
+                string doc = "<List>" + arr[1] + "</List>";
+                XmlDocument xd = new();
+                xd.LoadXml(doc);
+                var root = xd.SelectSingleNode("List");
+                foreach (XmlElement div in root)
                 {
-                    if (span.InnerXml.Contains("ruby"))
+                    string line = "";
+                    var spans = div.SelectNodes("span");
+                    foreach (XmlElement span in spans)
                     {
-                        var d = span.SelectSingleNode("ruby").SelectSingleNode("rt").InnerText;
-                        line += " " + d;
+                        if (span.InnerXml.Contains("ruby"))
+                        {
+                            var d = span.SelectSingleNode("ruby").SelectSingleNode("rt").InnerText;
+                            line += " " + d;
+                        }
                     }
+                    vs.Add(line);
                 }
-                vs.Add(line);
+                return vs;
             }
+            return null;
         }
-        return vs;
+        catch
+        {
+            return null;
+        }
     }
 }

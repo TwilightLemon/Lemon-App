@@ -25,7 +25,7 @@ public class ImageCacheHelper
         _client.DefaultRequestHeaders.UserAgent.TryParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.110 Safari/537.36");
     }
 
-    public static async Task<BitmapImage> FetchData(string url)
+    public static async Task<BitmapImage?> FetchData(string url)
     {
         var img = GetFromMem(url);
         if (img is { })
@@ -33,8 +33,12 @@ public class ImageCacheHelper
             return img;
         }
         img = await GetFromWeb(url);
-        _cache.Add(url, img);
-        return img;
+        if (img != null)
+        {
+            _cache.Add(url, img);
+            return img;
+        }
+        return null;
     }
     private static BitmapImage? GetFromMem(string url)
     {
@@ -44,14 +48,20 @@ public class ImageCacheHelper
         }
         return null;
     }
-    private static async Task<BitmapImage> GetFromWeb(string url)
+    private static async Task<BitmapImage?> GetFromWeb(string url)
     {
-        var stream = await _client.GetStreamAsync(url);
-        var img = new BitmapImage();
-        img.BeginInit();
-        img.StreamSource = stream;
-        img.CacheOption = BitmapCacheOption.OnLoad;
-        img.EndInit();
-        return img;
+        try
+        {
+            var stream = await _client.GetStreamAsync(url);
+            var img = new BitmapImage();
+            img.BeginInit();
+            img.StreamSource = stream;
+            img.CacheOption = BitmapCacheOption.OnLoad;
+            img.EndInit();
+            return img;
+        }
+        catch {
+            return null;
+        }
     }
 }

@@ -18,13 +18,13 @@ internal static class ClientHeaderSetter
     /// </summary>
     /// <param name="hc"></param>
     /// <param name="cookie"></param>
-    public static HttpClient SetForCYQ(this HttpClient hc,string cookie)
+    public static HttpClient SetForCYQ(this HttpClient hc,string cookie,string? referer=null)
     {
         hc.DefaultRequestHeaders.Clear();
         hc.DefaultRequestHeaders.Add("CacheControl", "max-age=0");
         hc.DefaultRequestHeaders.Add("Upgrade", "1");
         hc.DefaultRequestHeaders.UserAgent.TryParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.110 Safari/537.36");
-        hc.DefaultRequestHeaders.Add("Referer", "https://y.qq.com/");
+        hc.DefaultRequestHeaders.Add("Referer", referer??"https://y.qq.com/");
         hc.DefaultRequestHeaders.Host = "c.y.qq.com";
         hc.DefaultRequestHeaders.TryAddWithoutValidation("AcceptLanguage", "zh-CN,zh;q=0.8");
         hc.DefaultRequestHeaders.Add("Cookie", cookie);

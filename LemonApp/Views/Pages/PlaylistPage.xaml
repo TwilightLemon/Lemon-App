@@ -149,22 +149,26 @@
                         CornerRadius="8"
                         d:Background="Pink"
                         Background="{Binding Cover}" />
-                <StackPanel x:Name="TitleTb"
-                            Orientation="Vertical"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Stretch"
-                            Margin="180,0,0,86">
+                <Grid x:Name="TitleTb"
+                      Margin="180,0,0,86">
                     <TextBlock  d:Text="Twlm's Music World"
                                 TextWrapping="NoWrap"
                                 Text="{Binding ListName}"
+                                ToolTip="{Binding ListName}"
                                 FontSize="32"
-                                FontWeight="Bold" />
+                                FontWeight="Bold"
+                                VerticalAlignment="Top" />
                     <TextBlock d:Text="Desc"
-                               TextWrapping="WrapWithOverflow"
-                               ToolTip="{Binding Description}"
                                Text="{Binding Description}"
-                               FontSize="12" />
-                </StackPanel>
+                               Margin="0 46 0 0"
+                               FontSize="12">
+                        <TextBlock.ToolTip>
+                            <ToolTip MaxWidth="420">
+                                <TextBlock Margin="8" Text="{Binding Description}" TextWrapping="Wrap"/>
+                            </ToolTip>
+                        </TextBlock.ToolTip>
+                    </TextBlock>
+                </Grid>
                 <Grid x:Name="CreatorView"
                       HorizontalAlignment="Stretch"
                       VerticalAlignment="Top"
@@ -237,7 +241,7 @@
                         <TextBlock VerticalAlignment="Center"
                                    HorizontalAlignment="Left">
                             <Run Text="{Binding MusicName}" />
-                            <Run Text="{Binding MusicName_Lyric}"
+                            <TextBlock Text="{Binding MusicName_Lyric}" Opacity="0.6"
                                  FontSize="10" />
                         </TextBlock>
                         <ws:Button Margin="4"

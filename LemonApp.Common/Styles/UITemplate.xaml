@@ -491,13 +491,17 @@
     <!--滑块Thumb-->
     <ControlTemplate x:Key="SliderThumbHorizontalDefault"
                      TargetType="{x:Type Thumb}">
-        <Border CornerRadius="10"
-                x:Name="border"
-                BorderThickness="4"
-                BorderBrush="{DynamicResource BackgroundColor}"
+        <Border BorderBrush="{DynamicResource BorderColor}"
+                BorderThickness="1"
                 Height="20"
                 Width="20"
-                Background="{DynamicResource HighlightThemeColor}" />
+                CornerRadius="10">
+            <Border CornerRadius="10"
+                    x:Name="border"
+                    BorderThickness="4"
+                    BorderBrush="{DynamicResource BackgroundColor}"
+                    Background="{DynamicResource HighlightThemeColor}" />
+        </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="IsDragging"
                      Value="true">

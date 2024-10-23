@@ -10,6 +10,8 @@ using LemonApp.Services;
 using LemonApp.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows.Input;
+using System.Windows.Data;
+using LemonApp.Common.WinAPI;
 
 namespace LemonApp.Views.Windows
 {
@@ -21,19 +23,31 @@ namespace LemonApp.Views.Windows
         public MainWindow(
            MainWindowViewModel mainWindowViewModel,
            MainNavigationService mainNavigationService,
-           IServiceProvider serviceProvider)
+           IServiceProvider serviceProvider,
+           UIResourceService uiResourceService)
         {
             InitializeComponent();
             _serviceProvider = serviceProvider;
             _mainNavigationService = mainNavigationService;
+            _uiResourceService= uiResourceService;
             DataContext = _vm = mainWindowViewModel;
             _vm.RequireNavigateToPage += Vm_RequireNavigateToPage;
             Loaded += MainWindow_Loaded;
         }
         private readonly IServiceProvider _serviceProvider;
+        private readonly UIResourceService _uiResourceService;
         private readonly MainNavigationService _mainNavigationService;
         private readonly MainWindowViewModel _vm;
 
+        private void OnThemeChanged()
+        {
+            _uiResourceService.UpdateColorMode();
+            _vm.LyricView?.UpdateColorMode();
+        }
+        private void OnSystemColorChanged()
+        {
+            _uiResourceService.UpdateAccentColor();
+        }
         #region MainContentFrame
         /// <summary>
         /// ViewModel请求跳转页面
@@ -51,6 +65,9 @@ namespace LemonApp.Views.Windows
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             _vm.SelectedMenu = _vm.MainMenus.FirstOrDefault();
+            LyricViewHost.Child = _vm.LyricView;
+
+            SystemThemeAPI.RegesterOnThemeChanged(this, OnThemeChanged, OnSystemColorChanged);
         }
         /// <summary>
         /// Menu Selected -> Navigate to some page
@@ -163,6 +180,36 @@ namespace LemonApp.Views.Windows
             }
         }
         #endregion
+        private void PlaySlider_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            double perc = e.GetPosition(PlaySlider).X / PlaySlider.ActualWidth;
+            double value = perc * PlaySlider.Maximum;
+            //暂时移除PlaySlider的Value binding
+            BindingOperations.ClearBinding(PlaySlider, Slider.ValueProperty);
+            PlaySlider.Value = value;
+        }
+
+        private void PlaySlider_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            //提交value
+            _vm.SetCurrentPlayingPosition(PlaySlider.Value);
+            //重新绑定PlaySlider的Value
+            var binding = new Binding("CurrentPlayingPosition")
+            {
+                Source = _vm,
+                Mode = BindingMode.TwoWay,
+                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+            };
+            PlaySlider.SetBinding(Slider.ValueProperty, binding);
+        }
+
+        private void AudioAdjustSlider_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            double perc = e.GetPosition(AudioAdjustSlider).X / AudioAdjustSlider.ActualWidth;
+            double value = perc * AudioAdjustSlider.Maximum;
+            _vm.CurrentPlayingVolume = value;
+        }
+
         private void SearchBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)

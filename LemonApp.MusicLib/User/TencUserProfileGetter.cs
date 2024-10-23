@@ -19,19 +19,26 @@ namespace LemonApp.MusicLib.User
         {
             if(auth is TencUserAuth{Id:not null,Cookie:not null} au)
             {
-                string qq = au.Id;
-                string url = $"https://c.y.qq.com/rsc/fcgi-bin/fcg_get_profile_homepage.fcg?loginUin={qq}&hostUin=0&format=json&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq&needNewCode=0&cid=205360838&ct=20&userid={qq}&reqfrom=1&reqtype=0";
-                string data = await  (await client.SetForCYQ(au.Cookie)
-                                            .GetAsync(url)).Content.ReadAsStringAsync();
-                if(JsonNode.Parse(data) is { } json)
+                try
                 {
-                    var per=json["data"]?["creator"];
-                    if(per != null)
+                    string qq = au.Id;
+                    string url = $"https://c.y.qq.com/rsc/fcgi-bin/fcg_get_profile_homepage.fcg?loginUin={qq}&hostUin=0&format=json&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq&needNewCode=0&cid=205360838&ct=20&userid={qq}&reqfrom=1&reqtype=0";
+                    string data = await (await client.SetForCYQ(au.Cookie)
+                                                .GetAsync(url)).Content.ReadAsStringAsync();
+                    if (JsonNode.Parse(data) is { } json)
                     {
-                        UserName = per["nick"].ToString();
-                        AvatarUrl = per["headpic"].ToString().Replace("http://", "https://");
-                        return true;
+                        var per = json["data"]?["creator"];
+                        if (per != null)
+                        {
+                            UserName = per["nick"].ToString();
+                            AvatarUrl = per["headpic"].ToString().Replace("http://", "https://");
+                            return true;
+                        }
                     }
+                }
+                catch
+                {
+                    return false;
                 }
             }
             return false;

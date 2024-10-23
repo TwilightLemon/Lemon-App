@@ -5,14 +5,16 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:LemonApp.Views.UserControls"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="200" d:DesignWidth="100">
     <Grid>
         <ScrollViewer x:Name="scrollviewer"
                       VerticalScrollBarVisibility="Hidden"
                       HorizontalScrollBarVisibility="Hidden"
                       FocusVisualStyle="{x:Null}">
-            <VirtualizingStackPanel Name="LyricPanel"
+            <VirtualizingStackPanel Name="LyricPanel" Orientation="Vertical"
+                                    Width="{Binding ElementName=scrollviewer, Path=ActualWidth}"
                                     VirtualizingPanel.IsVirtualizing="True">
+
             </VirtualizingStackPanel>
         </ScrollViewer>
     </Grid>

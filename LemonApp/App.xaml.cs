@@ -8,6 +8,7 @@ using LemonApp.Common.Configs;
 using System.Net.Http;
 using LemonApp.ViewModels;
 using LemonApp.Views.Pages;
+using LemonApp.Views.UserControls;
 
 namespace LemonApp
 {
@@ -24,11 +25,12 @@ namespace LemonApp
             Host = builder.ConfigureServices(services =>
             {
                 services.AddHttpClient(PublicClientFlag)
-                .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler()
+                .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler()
                 {
                     AutomaticDecompression = System.Net.DecompressionMethods.GZip,
                     UseCookies=true,
-                    UseProxy = true
+                    UseProxy = true,
+                    KeepAlivePingPolicy=HttpKeepAlivePingPolicy.Always
                 });
 
 
@@ -59,6 +61,7 @@ namespace LemonApp
                 services.AddTransient<HomePage>();
                 services.AddTransient<RankPage>();
                 services.AddTransient<PlaylistPage>();
+                services.AddSingleton<LyricView>();
 
                 //ViewModels
                 services.AddSingleton<MainWindowViewModel>();
