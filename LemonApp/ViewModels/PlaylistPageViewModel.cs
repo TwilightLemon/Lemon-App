@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using LemonApp.Services;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using static LemonApp.MusicLib.Abstraction.Music.DataTypes;
@@ -31,6 +32,8 @@ public partial class PlaylistPageViewModel(
     private bool _showInfoView = true;
 
     public ObservableCollection<Music> Musics { get; set; } = [];
+
+    //TODO: 接入LoadMore
     public event Action? OnLoadMoreRequired;
     public void LoadMore()
     {
@@ -80,8 +83,21 @@ public partial class PlaylistPageViewModel(
     [RelayCommand]
     private async Task PlayMusic(Music m)
     {
+        _mediaPlayerService.ReplacePlayList(Musics);
+
         await _mediaPlayerService.Load(m);
         _mediaPlayerService.Play();
     }
+    public void UpdateCurrentPlaying(string? musicId)
+    {
+        if (!string.IsNullOrEmpty(musicId))
+            Playing = Musics.FirstOrDefault(m => m.MusicID == musicId);
+    }
+
+    /// <summary>
+    /// for display only
+    /// </summary>
+    [ObservableProperty]
+    private Music? _playing = null;
 
 }

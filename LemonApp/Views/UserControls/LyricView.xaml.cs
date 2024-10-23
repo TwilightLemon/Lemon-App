@@ -45,6 +45,15 @@ namespace LemonApp.Views.UserControls
             _auth=userProfileService.GetAuth();
 
             SizeChanged += LyricView_SizeChanged;
+            IsVisibleChanged += LyricView_IsVisibleChanged;
+        }
+
+        private void LyricView_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if(e.NewValue is true)
+            {
+                RefreshCurrentLrcStyle();
+            }
         }
 
         private void LyricView_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -69,13 +78,13 @@ namespace LemonApp.Views.UserControls
         /// 高亮歌词效果
         /// </summary>
         public Effect? Hightlighter;
-        public Effect? NomalTextEffect = new BlurEffect() { Radius = 3.5 };
+        public Effect? NomalTextEffect = new BlurEffect() { Radius = 5 };
         /// <summary>
         /// 歌词的文本对齐方式
         /// </summary>
         public TextAlignment TextAlignment = TextAlignment.Left;
 
-        public double LyricFontSize = 20;
+        public double LyricFontSize = 22;
         #endregion
         public void Init(HttpClient hc,TencUserAuth auth)
         {
@@ -265,8 +274,9 @@ namespace LemonApp.Views.UserControls
 
             reset(_currentLrc);
             _currentLrc = temp;
-
-            RefreshCurrentLrcStyle();
+            //next lyric 
+            if (IsVisible)
+                RefreshCurrentLrcStyle();
         }
 
         private void RefreshCurrentLrcStyle()

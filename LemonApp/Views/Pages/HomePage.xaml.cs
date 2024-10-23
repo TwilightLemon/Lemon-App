@@ -17,9 +17,9 @@ namespace LemonApp.Views.Pages
         }
         private readonly MainNavigationService _mainNavigationService;
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+/*        private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             _mainNavigationService.RequstNavigation(PageType.SearchPage,"Taylor Swift");
-        }
+        }*/
     }
 }

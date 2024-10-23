@@ -215,19 +215,14 @@
         </Border>
         <ws:ListBox x:Name="listBox"
                     ItemsSource="{Binding Musics}"
+                    SelectedItem="{Binding Playing}"
                     ScrollViewer.ScrollChanged="listBox_ScrollChanged"
                     VerticalAlignment="Stretch"
                     Margin="0 208 0 0"
                     MouseDoubleClick="listBox_MouseDoubleClick"
                     d:ItemsSource="{d:SampleData ItemCount=5}"
                     Style="{DynamicResource SimpleListBoxStyle}"
-                    ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}"
-                    Background="Transparent"
-                    ScrollViewer.PanningMode="VerticalOnly"
-                    VirtualizingPanel.ScrollUnit="Pixel"
-                    HorizontalContentAlignment="Stretch"
-                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                    BorderThickness="0">
+                    ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}">
             <ws:ListBox.ItemTemplate>
                 <DataTemplate>
                     <Grid Height="40"
@@ -241,7 +236,7 @@
                         <TextBlock VerticalAlignment="Center"
                                    HorizontalAlignment="Left">
                             <Run Text="{Binding MusicName}" />
-                            <TextBlock Text="{Binding MusicName_Lyric}" Opacity="0.6"
+                            <Run Text="{Binding MusicName_Lyric}"
                                  FontSize="10" />
                         </TextBlock>
                         <ws:Button Margin="4"

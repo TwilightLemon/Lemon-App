@@ -14,12 +14,5 @@
                    HorizontalAlignment="Center">
             Home Page
         </TextBlock>
-        <Button Content="Button"
-                HorizontalAlignment="Left"
-                Height="40"
-                Margin="240,90,0,0"
-                VerticalAlignment="Top"
-                Width="90"
-                Click="Button_Click_1" />
     </Grid>
 </Page>

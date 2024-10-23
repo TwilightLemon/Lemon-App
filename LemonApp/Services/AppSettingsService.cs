@@ -14,6 +14,7 @@ public class AppSettingsService(
     ) :IHostedService,IConfigManager
 {
     private Dictionary<Type, object> _settingsMgrs = [];
+    public event Action? OnExiting;
 
     public AppSettingsService AddConfig<T>() where T : class{
         if(Activator.CreateInstance(typeof(SettingsMgr<>).MakeGenericType(typeof(T)),
@@ -40,10 +41,18 @@ public class AppSettingsService(
 
     public async Task StopAsync(CancellationToken cancellationToken)
     {
-        foreach(var mgr in _settingsMgrs.Values){
-            var saveMethod = mgr.GetType().GetMethod("Save");
-            if(saveMethod?.Invoke(mgr,null) is Task<bool> task)
-                await task;
+        try
+        {
+            OnExiting?.Invoke();
+        }
+        finally
+        {
+            foreach (var mgr in _settingsMgrs.Values)
+            {
+                var saveMethod = mgr.GetType().GetMethod("Save");
+                if (saveMethod?.Invoke(mgr, null) is Task<bool> task)
+                    await task;
+            }
         }
     }
 }

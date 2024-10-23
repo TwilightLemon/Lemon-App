@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Windows.Input;
 using System.Windows.Data;
 using LemonApp.Common.WinAPI;
+using LemonApp.Views.Pages;
 
 namespace LemonApp.Views.Windows
 {
@@ -32,8 +33,10 @@ namespace LemonApp.Views.Windows
             _uiResourceService= uiResourceService;
             DataContext = _vm = mainWindowViewModel;
             _vm.RequireNavigateToPage += Vm_RequireNavigateToPage;
+            _vm.SyncCurrentPlayingWithPlayListPage += Vm_SyncCurrentPlayingWithPlayListPage;
             Loaded += MainWindow_Loaded;
         }
+
         private readonly IServiceProvider _serviceProvider;
         private readonly UIResourceService _uiResourceService;
         private readonly MainNavigationService _mainNavigationService;
@@ -49,6 +52,13 @@ namespace LemonApp.Views.Windows
             _uiResourceService.UpdateAccentColor();
         }
         #region MainContentFrame
+        private void Vm_SyncCurrentPlayingWithPlayListPage(string mid)
+        {
+            if(MainContentFrame.Content is PlaylistPage page&&page.ViewModel is { } vm)
+            {
+                vm.UpdateCurrentPlaying(mid);
+            }
+        }
         /// <summary>
         /// ViewModel请求跳转页面
         /// </summary>
@@ -180,6 +190,8 @@ namespace LemonApp.Views.Windows
             }
         }
         #endregion
+
+        #region Play Control
         private void PlaySlider_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             double perc = e.GetPosition(PlaySlider).X / PlaySlider.ActualWidth;
@@ -209,13 +221,15 @@ namespace LemonApp.Views.Windows
             double value = perc * AudioAdjustSlider.Maximum;
             _vm.CurrentPlayingVolume = value;
         }
+        #endregion
 
+        #region Functional Button Navigation
         private void SearchBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
                 _mainNavigationService.RequstNavigation(PageType.SearchPage, SearchBox.Text);
         }
-
+        #endregion
         // private void Border_MouseDown(object sender, MouseButtonEventArgs e){
         //     _appSettingsService.GetConfigMgr<Appearence>().Data.AccentColorMode=Appearence.AccentColorType.Custome;
         //     _appSettingsService.GetConfigMgr<Appearence>().Data.AccentColor=Colors.LightYellow;

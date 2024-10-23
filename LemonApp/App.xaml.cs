@@ -43,6 +43,7 @@ namespace LemonApp
                     p=>p.GetRequiredService<AppSettingsService>()
                         .AddConfig<UserProfile>()
                         .AddConfig<Appearence>()
+                        .AddConfig<PlayingPreference>()
                 );
 
                 //services

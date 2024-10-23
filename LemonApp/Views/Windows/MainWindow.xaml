@@ -7,6 +7,7 @@
                        xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
                        xmlns:ws="https://schemas.elecho.dev/wpfsuite"
                        xmlns:viewmodels="clr-namespace:LemonApp.ViewModels"
+                       xmlns:converters="clr-namespace:LemonApp.Converters"
                        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
                        xmlns:uc="clr-namespace:LemonApp.Views.UserControls"
                        d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
@@ -572,6 +573,7 @@
                                         CornerRadius="8" />
                                 <TextBlock x:Name="MusicControl_Title"
                                            Margin="78 0 10 0"
+                                           MinWidth="150"
                                            Foreground="{DynamicResource ForeColor}"
                                            VerticalAlignment="Center"
                                            LineHeight="24"
@@ -616,6 +618,7 @@
                                        Width="32"
                                        Height="32"
                                        Margin="48 0 0 0"
+                                       Command="{Binding PlayLastCommand}"
                                        HorizontalAlignment="Left"
                                        Style="{StaticResource SimpleIconButtonStyleForWs}">
                                 <Path Data="{DynamicResource PlayIcon_Last}"
@@ -627,6 +630,7 @@
                                        Width="32"
                                        Height="32"
                                        Margin="0 0 48 0"
+                                       Command="{Binding PlayNextCommand}"
                                        HorizontalAlignment="Right"
                                        Style="{StaticResource SimpleIconButtonStyleForWs}">
                                 <Path Data="{DynamicResource PlayIcon_Next}"
@@ -637,9 +641,11 @@
                             <ws:Button x:Name="CircleModeBtn"
                                        Width="32"
                                        Height="32"
+                                       Command="{Binding ChangeCircleModeCommand}"
                                        HorizontalAlignment="Right"
                                        Style="{StaticResource SimpleIconButtonStyleForWs}">
-                                <Path Data="{DynamicResource CircleMode_Circle}"
+                                <Path Data="{Binding CircleMode,Converter={x:Static converters:CircleModeToPathDataConverter.Instance}}"
+                                      d:Data="{DynamicResource CircleMode_Circle}"
                                       Height="18"
                                       Fill="{DynamicResource ForeColor}"
                                       Stretch="Uniform" />
@@ -727,7 +733,71 @@
             <Grid x:Name="PlayListBar"
                   Width="400"
                   HorizontalAlignment="Right"
-                  Background="{DynamicResource BackgroundColor}" />
+                  Background="{DynamicResource BackgroundColor}">
+                <TextBlock Margin="18"
+                           VerticalAlignment="Top">
+                    <Run Text="播放列表" FontSize="22"/>
+                    <LineBreak />
+                    一共<Run Text="{Binding Playlist.Count,Mode=OneWay}" d:Text="0"/>首
+                </TextBlock>
+                <ws:ListBox Margin="0 80 0 0" Style="{StaticResource SimpleListBoxStyle}"
+                            ItemsSource="{Binding Playlist,Mode=OneWay}"
+                            SelectedItem="{Binding PlaylistChoosen}"
+                            ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}"
+                            d:ItemsSource="{d:SampleData ItemCount=5}">
+                    <ws:ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Height="60"
+                                  d:Background="#3C000000"
+                                  Background="Transparent">
+                                <Border x:Name="FocusedIcon"
+                                        Width="3"
+                                        HorizontalAlignment="Left"
+                                        Background="{DynamicResource HighlightThemeColor}"
+                                        CornerRadius="1.5"
+                                        Height="28"
+                                        Visibility="Hidden"
+                                        d:Visibility="Visible" />
+                                <TextBlock  VerticalAlignment="Center"
+                                            Margin="12 0 0 0">
+                                    <Run Text="{Binding MusicName}"/>
+                                    <LineBreak />
+                                    <Run Text="{Binding SingerText}"/>
+                                </TextBlock>
+                            </Grid>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}, Mode=FindAncestor}}"
+                                             Value="True">
+                                    <DataTrigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetName="FocusedIcon"
+                                                                 Storyboard.TargetProperty="Height"
+                                                                 From="0"
+                                                                 To="16"
+                                                                 Duration="0:0:0.3">
+                                                    <DoubleAnimation.EasingFunction>
+                                                        <CubicEase EasingMode="EaseOut" />
+                                                    </DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.EnterActions>
+                                    <Setter TargetName="FocusedIcon"
+                                            Property="Visibility"
+                                            Value="Visible" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}, Mode=FindAncestor}}"
+                                             Value="False">
+                                    <Setter TargetName="FocusedIcon"
+                                            Property="Visibility"
+                                            Value="Hidden" />
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
+                        </DataTemplate>
+                    </ws:ListBox.ItemTemplate>
+                </ws:ListBox>
+            </Grid>
         </Grid>
     </ws:BoxPanel>
 </base:FluentWindowBase>

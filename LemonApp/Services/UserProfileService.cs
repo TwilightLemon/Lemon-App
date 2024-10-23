@@ -3,14 +3,10 @@ using LemonApp.Common.Funcs;
 using LemonApp.MusicLib.Abstraction.UserAuth;
 using LemonApp.MusicLib.User;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
-using Windows.Media.Protection.PlayReady;
 
 namespace LemonApp.Services;
 

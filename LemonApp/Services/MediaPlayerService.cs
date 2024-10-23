@@ -1,11 +1,8 @@
 ﻿using LemonApp.MusicLib.Media;
-using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Windows.Media;
 using Windows.Media.Core;
@@ -23,25 +20,32 @@ public class MediaPlayerService(UserProfileService userProfileService,IHttpClien
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
     private HttpClient? hc;
     public MusicDT.Music? CurrentMusic { get; private set; }
-    public event Action<MusicDT.Music>? OnLoaded,OnPlay,OnPaused,OnPlayNext,OnPlayLast;
+    public event Action<MusicDT.Music>? OnLoaded,OnPlay,OnPaused, OnAddToPlayNext;
+    public event Action? OnEnd, OnPlayNext, OnPlayLast;
+    public event Action<IEnumerable<MusicDT.Music>>? OnNewPlaylistReceived;
     public void Init()
     {
         hc = _httpClientFactory.CreateClient(App.PublicClientFlag);
         audioGetter = new(hc, _userProfileService.GetAuth(), null);
+        _mediaPlayer.MediaEnded += _mediaPlayer_MediaEnded;
         _mediaPlayer.CommandManager.PlayReceived += CommandManager_PlayReceived;
         _mediaPlayer.CommandManager.PauseReceived += CommandManager_PauseReceived;
         _mediaPlayer.CommandManager.NextReceived += CommandManager_NextReceived;
         _mediaPlayer.CommandManager.PreviousReceived += CommandManager_PreviousReceived;
     }
+
+    private void _mediaPlayer_MediaEnded(MediaPlayer sender, object args)
+    {
+        OnEnd?.Invoke();
+    }
+
     private void CommandManager_PreviousReceived(MediaPlaybackCommandManager sender, MediaPlaybackCommandManagerPreviousReceivedEventArgs args)
     {
-        if(CurrentMusic!=null)
-        OnPlayLast?.Invoke(CurrentMusic);
+        PlayLast();
     }
     private void CommandManager_NextReceived(MediaPlaybackCommandManager sender, MediaPlaybackCommandManagerNextReceivedEventArgs args)
     {
-        if (CurrentMusic != null)
-            OnPlayNext?.Invoke(CurrentMusic);
+        PlayNext();
     }
 
     private void CommandManager_PauseReceived(MediaPlaybackCommandManager sender, MediaPlaybackCommandManagerPauseReceivedEventArgs args)
@@ -107,10 +111,21 @@ public class MediaPlayerService(UserProfileService userProfileService,IHttpClien
     }
     public void PlayNext()
     {
-        OnPlayNext?.Invoke(CurrentMusic!);
+        OnPlayNext?.Invoke();
     }
     public void PlayLast()
     {
-        OnPlayLast?.Invoke(CurrentMusic!);
+        OnPlayLast?.Invoke();
+    }
+    public void ReplacePlayList(IEnumerable<MusicDT.Music> list)
+    {
+        if(list!=null&&list.Any())
+        {
+            OnNewPlaylistReceived?.Invoke(list);
+        }
+    }
+    public void AddToPlayNext(MusicDT.Music music)
+    {
+        OnAddToPlayNext?.Invoke(music);
     }
 }

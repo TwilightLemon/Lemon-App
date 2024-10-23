@@ -14,17 +14,26 @@ using System.Net.Http;
 using System.Windows.Controls;
 using System.Windows.Media;
 using MusicDT = LemonApp.MusicLib.Abstraction.Music.DataTypes;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using LemonApp.Common.Configs;
 using LemonApp.MusicLib.Media;
 using CommunityToolkit.Mvvm.Input;
 using System.Timers;
 using LemonApp.Views.UserControls;
+using System.Collections.Generic;
 
 namespace LemonApp.ViewModels;
 public partial class MainWindowViewModel : ObservableObject
 {
+    #region fields & constructor
+    private readonly IServiceProvider _serviceProvider;
+    private readonly UserProfileService _userProfileService;
+    private readonly MainNavigationService _mainNavigationService;
+    private readonly MediaPlayerService _mediaPlayerService;
+    private readonly AppSettingsService _appSettingsService;
+
+    private readonly Timer _timer;
+    private SettingsMgr<PlayingPreference>? _currentPlayingMgr;
+
     public MainWindowViewModel(
         UserProfileService userProfileService,
         IServiceProvider serviceProvider,
@@ -38,12 +47,18 @@ public partial class MainWindowViewModel : ObservableObject
         _mainNavigationService = mainNavigationService;
         _mediaPlayerService = mediaPlayerService;
         _appSettingsService = appSettingsService;
+        _appSettingsService.OnExiting += _appSettingsService_OnExiting;
 
         _mediaPlayerService.OnLoaded += _mediaPlayerService_OnLoaded;
         _mediaPlayerService.OnPlay += _mediaPlayerService_OnPlay;
         _mediaPlayerService.OnPaused += _mediaPlayerService_OnPaused;
+        _mediaPlayerService.OnNewPlaylistReceived += _mediaPlayerService_OnNewPlaylistReceived;
+        _mediaPlayerService.OnAddToPlayNext += _mediaPlayerService_OnAddToPlayNext;
+        _mediaPlayerService.OnEnd += _mediaPlayerService_OnEnd;
+        _mediaPlayerService.OnPlayNext += PlayNext;
+        _mediaPlayerService.OnPlayLast += PlayLast;
 
-        LyricView= lyricView;
+        LyricView = lyricView;
 
         _mainNavigationService.OnNavigatingRequsted += MainNavigationService_OnNavigatingRequsted;
         userProfileService.OnAuth += UserProfileService_OnAuth;
@@ -55,26 +70,39 @@ public partial class MainWindowViewModel : ObservableObject
 
         LoadComponent();
     }
-
+    #endregion
+    #region common components
     private async void LoadComponent()
     {
         //update current playing
-        _currentPlayingMgr = _appSettingsService.GetConfigMgr<CurrentPlaying>();
+        _currentPlayingMgr = _appSettingsService.GetConfigMgr<PlayingPreference>();
         if (_currentPlayingMgr is { } mgr)
         {
             if (mgr.Data?.Music is { MusicID: not "" } music)
             {
                 await _mediaPlayerService.Load(music);
                 CurrentPlayingVolume = mgr.Data.Volume;
+                CircleMode = mgr.Data.PlayMode;
+
+                if (_currentPlayingMgr!.Data.Playlist != null)
+                {
+                    Playlist.Clear();
+                    foreach (var item in _currentPlayingMgr!.Data.Playlist)
+                    {
+                        Playlist.Add(item);
+                    }
+                    PlaylistChoosen = Playlist.FirstOrDefault(p => p.MusicID == music.MusicID);
+                    _currentPlayingMgr!.Data.Playlist = null;
+                }
             }
-        }
-        else
-        {
-            CurrentPlaying = new()
+            else
             {
-                MusicName = "暂无播放",
-                SingerText = "Lemon App"
-            };
+                CurrentPlaying = new()
+                {
+                    MusicName = "暂无播放",
+                    SingerText = "Lemon App"
+                };
+            }
         }
     }
 
@@ -93,6 +121,123 @@ public partial class MainWindowViewModel : ObservableObject
         });
     }
 
+    #endregion
+    #region playlist
+    private Random? _random;
+    private List<int>? _randomIndexList;
+    private int GetIndexOfPlaylist(string? musicId)
+    {
+        if (musicId == null) return -1;
+        int index = 0;
+        foreach(var item in Playlist)
+        {
+            if (item.MusicID == musicId)
+                break;
+            index++;
+        }
+        return index;
+    }
+    [RelayCommand]
+    private void PlayNext()
+    {
+        if (CircleMode == PlayingPreference.CircleMode.Circle)
+        {
+            if (CurrentPlaying != null)
+            {
+                int index = GetIndexOfPlaylist(CurrentPlaying.MusicID);
+                index = index == Playlist.Count - 1 ? 0 : index + 1;
+                PlaylistChoosen = Playlist[index];
+            }
+        }
+        else if (CircleMode == PlayingPreference.CircleMode.Random)
+        {
+            _random ??= new();
+            _randomIndexList ??= [];
+            int currentIndex = GetIndexOfPlaylist(CurrentPlaying?.MusicID);
+            if (currentIndex != -1)
+            {
+                _randomIndexList.Add(currentIndex);
+            }
+
+            var index = _random.Next(0, Playlist.Count);
+            while (_randomIndexList.Contains(index))
+            {
+                index = _random.Next(0, Playlist.Count);
+            }
+            if (_randomIndexList.Count == Playlist.Count)
+            {
+                _randomIndexList.RemoveAt(0);
+            }
+            PlaylistChoosen = Playlist[index];
+        }
+    }
+    [RelayCommand]
+    private void PlayLast()
+    {
+        if (CircleMode == PlayingPreference.CircleMode.Circle)
+        {
+            if (CurrentPlaying != null)
+            {
+                int index = GetIndexOfPlaylist(CurrentPlaying.MusicID);
+                index = index == 0 ? Playlist.Count - 1 : index - 1;
+                PlaylistChoosen = Playlist[index];
+            }
+        }
+        else if (CircleMode == PlayingPreference.CircleMode.Random)
+        {
+            if (_randomIndexList != null && _randomIndexList.Count > 0)
+            {
+                var index = _randomIndexList[^1];
+                _randomIndexList.RemoveAt(_randomIndexList.Count - 1);
+                PlaylistChoosen = Playlist[index];
+            }
+        }
+    }
+
+    private void _mediaPlayerService_OnEnd()
+    {
+        if (CircleMode == PlayingPreference.CircleMode.Single)
+        {
+            CurrentPlayingPosition = 0;
+            _mediaPlayerService.Play();
+        }else PlayNext();
+    }
+
+    private void _appSettingsService_OnExiting()
+    {
+        _currentPlayingMgr!.Data ??= new();
+        _currentPlayingMgr!.Data.Music = CurrentPlaying;
+        _currentPlayingMgr!.Data.Volume = CurrentPlayingVolume;
+        _currentPlayingMgr!.Data.PlayMode = CircleMode;
+        var temp = Playlist.ToList();
+        foreach(var item in temp)
+        {
+            if(item.Album!=null)
+            item.Album = new() { 
+                Name=item.Album.Name,
+                Id=item.Album.Id
+            };
+        }
+        _currentPlayingMgr!.Data.Playlist = temp;
+    }
+
+    private void _mediaPlayerService_OnAddToPlayNext(MusicDT.Music obj)
+    {
+        var current=Playlist.FirstOrDefault(m=>m.MusicID==obj.MusicID);
+        int index = current!=null? Playlist.IndexOf(current) : 0;
+        Playlist.Insert(index + 1, obj);
+    }
+
+    private void _mediaPlayerService_OnNewPlaylistReceived(IEnumerable<MusicDT.Music> obj)
+    {
+        Playlist.Clear();
+        foreach (var item in obj)
+        {
+            Playlist.Add(item);
+        }
+    }
+    #endregion
+    #region respond to media player controller
     private void _mediaPlayerService_OnPaused(MusicDT.Music obj)
     {
         IsPlaying = false;
@@ -104,11 +249,15 @@ public partial class MainWindowViewModel : ObservableObject
         IsPlaying = true;
         _timer?.Start();
     }
-
-    private async void _mediaPlayerService_OnLoaded(MusicDT.Music m)
+    public event Action<string>? SyncCurrentPlayingWithPlayListPage;
+    private void _mediaPlayerService_OnLoaded(MusicDT.Music m)
     {
-        CurrentPlaying = m;
-        await LyricView!.LoadFromMusic(m);
+        App.Current.Dispatcher.Invoke(async () =>
+        {
+            CurrentPlaying = m;
+            SyncCurrentPlayingWithPlayListPage?.Invoke(m.MusicID);
+            await LyricView!.LoadFromMusic(m);
+        });
     }
     [RelayCommand]
     private void PlayPause()
@@ -122,15 +271,7 @@ public partial class MainWindowViewModel : ObservableObject
             _mediaPlayerService.Play();
         }
     }
-
-    private readonly IServiceProvider _serviceProvider;
-    private readonly UserProfileService _userProfileService;
-    private readonly MainNavigationService _mainNavigationService;
-    private readonly MediaPlayerService _mediaPlayerService;
-    private readonly AppSettingsService _appSettingsService;
-
-    private readonly Timer _timer;
-    private SettingsMgr<CurrentPlaying>? _currentPlayingMgr;
+    #endregion
     #region userprofile
     private void UserProfileService_OnAuthExpired()
     {
@@ -245,6 +386,8 @@ public partial class MainWindowViewModel : ObservableObject
             vm.CreatorAvatar = new ImageBrush(await ImageCacheHelper.FetchData(data.Creator!.Photo));
             vm.CreatorName = data.Creator.Name;
 
+            vm.UpdateCurrentPlaying(CurrentPlaying?.MusicID);
+
             sp.ViewModel = vm;
             RequireNavigateToPage?.Invoke(sp);
         }
@@ -268,6 +411,7 @@ public partial class MainWindowViewModel : ObservableObject
             {
                 vm.Musics.Add(item);
             }
+            vm.UpdateCurrentPlaying(CurrentPlaying?.MusicID);
 
             sp.ViewModel = vm;
             RequireNavigateToPage?.Invoke(sp);
@@ -295,6 +439,31 @@ public partial class MainWindowViewModel : ObservableObject
     private Brush? _currentPlayingCover;
     [ObservableProperty]
     private LyricView? _lyricView;
+    [ObservableProperty]
+    private PlayingPreference.CircleMode _circleMode = PlayingPreference.CircleMode.Circle;
+    public ObservableCollection<MusicDT.Music> Playlist { get;private set; } = [];
+    [ObservableProperty]
+    private MusicDT.Music? _playlistChoosen = null;
+    async partial void OnPlaylistChoosenChanged(MusicDT.Music? value)
+    {
+        if (value != null&&value.MusicID!=CurrentPlaying?.MusicID)
+        {
+            await _mediaPlayerService.Load(value);
+            _mediaPlayerService.Play();
+        }
+    }
+
+    [RelayCommand]
+    private void ChangeCircleMode()
+    {
+        CircleMode = CircleMode switch
+        {
+            PlayingPreference.CircleMode.Circle => PlayingPreference.CircleMode.Single,
+            PlayingPreference.CircleMode.Single => PlayingPreference.CircleMode.Random,
+            PlayingPreference.CircleMode.Random => PlayingPreference.CircleMode.Circle,
+            _ => PlayingPreference.CircleMode.Circle
+        };
+    }
 
     async partial void OnCurrentPlayingChanged(MusicDT.Music? value)
     {
@@ -307,10 +476,12 @@ public partial class MainWindowViewModel : ObservableObject
         CurrentPlayingPosition = 0;
         CurrentPlayingPositionText = "00:00";
         CurrentPlayingVolume = _mediaPlayerService.Volume;
+
+        PlaylistChoosen = value;
     }
     partial void OnCurrentPlayingVolumeChanged(double value)
     {
-        _mediaPlayerService.Volume = value;
+       _mediaPlayerService.Volume = value;      
     }
     public void SetCurrentPlayingPosition(double value)
     {
