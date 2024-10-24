@@ -5,7 +5,7 @@ using static LemonApp.MusicLib.Abstraction.Album.DataTypes;
 using static LemonApp.MusicLib.Abstraction.Music.DataTypes;
 
 namespace LemonApp.MusicLib.Album;
-
+#pragma warning disable CS8600 // 将 null 字面量或可能为 null 的值转换为非 null 类型。
 public static class AlbumAPI
 {
     public static async Task<AlbumInfo> GetAlbumTracksByIdAync(

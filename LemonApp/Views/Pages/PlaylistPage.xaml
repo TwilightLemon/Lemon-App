@@ -226,7 +226,7 @@
             <ws:ListBox.ItemTemplate>
                 <DataTemplate>
                     <Grid Height="40"
-                          Margin="8 0"
+                          Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ws:ListBox},Mode=OneWay}"
                           Background="Transparent">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="3*" />
@@ -234,6 +234,7 @@
                             <ColumnDefinition Width="2*" />
                         </Grid.ColumnDefinitions>
                         <TextBlock VerticalAlignment="Center"
+                                   Margin="8 0"
                                    HorizontalAlignment="Left">
                             <Run Text="{Binding MusicName}" />
                             <Run Text="{Binding MusicName_Lyric}"

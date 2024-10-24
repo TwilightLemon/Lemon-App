@@ -16,6 +16,7 @@ public class UserProfileService(
 {
     public event Action<TencUserAuth>? OnAuth;
     public event Action? OnAuthExpired;
+    public TencUserProfileGetter UserProfileGetter { get; } = new();
 
     public async Task UpdateAuthAndNotify(TencUserAuth auth)
     {
@@ -23,20 +24,19 @@ public class UserProfileService(
 
         var mgr = appSettingsService.GetConfigMgr<UserProfile>()
             ?? throw new InvalidOperationException("where is user profile mgr??!!");
-        var up = new TencUserProfileGetter();
         var client = (httpClientFactory.CreateClient(App.PublicClientFlag))
             ?? throw new InvalidOperationException("where is public httpclient??!!");
 
         //获取nick pic
-        bool success = await up.Fetch(client, auth);
+        bool success = await UserProfileGetter.Fetch(client, auth);
         if (success)
         {
             mgr.Data = new UserProfile()
             {
                 TencUserAuth = auth,
                 NeteaseUserAuth = mgr.Data?.NeteaseUserAuth,
-                UserName = up.UserName,
-                AvatarUrl = up.AvatarUrl
+                UserName = UserProfileGetter.UserName,
+                AvatarUrl = UserProfileGetter.AvatarUrl
             };
             await mgr.Save();
             OnAuth?.Invoke(auth);

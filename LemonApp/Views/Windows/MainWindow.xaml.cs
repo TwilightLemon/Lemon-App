@@ -86,9 +86,13 @@ namespace LemonApp.Views.Windows
         /// <param name="e"></param>
         private void MainPageMenu_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (_vm.CurrentPage is { } page && _vm.CurrentPage != MainContentFrame.Content)
+            if (sender is ListBox list)
             {
-                MainContentFrame.Navigate(_vm.CurrentPage);
+                if (list.SelectedItem is null) return;
+                if (_vm.CurrentPage is { } page && _vm.CurrentPage != MainContentFrame.Content)
+                {
+                    MainContentFrame.Navigate(_vm.CurrentPage);
+                }
             }
         }
 
@@ -209,7 +213,7 @@ namespace LemonApp.Views.Windows
             var binding = new Binding("CurrentPlayingPosition")
             {
                 Source = _vm,
-                Mode = BindingMode.TwoWay,
+                Mode = BindingMode.OneWay,
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
             };
             PlaySlider.SetBinding(Slider.ValueProperty, binding);

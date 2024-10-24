@@ -30,6 +30,13 @@
     </base:FluentWindowBase.Triggers>
     <base:FluentWindowBase.Resources>
         <BooleanToVisibilityConverter  x:Key="BoolToVisibility" />
+        <CollectionViewSource x:Key="MainMenuSource"
+                              Source="{Binding MainMenus}">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="Type" />
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+        
         <Storyboard x:Key="OpenLyricPageAni">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="MainPage"
                                            Storyboard.TargetProperty="(UIElement.Opacity)">
@@ -369,11 +376,11 @@
                         <ColumnDefinition Width="1*"
                                           MaxWidth="320"
                                           MinWidth="50" />
-                        <ColumnDefinition Width="3*" />
+                        <ColumnDefinition Width="4*" />
                     </Grid.ColumnDefinitions>
                     <Grid x:Name="MainMenuGrid">
                         <ws:ListBox x:Name="MainPageMenu"
-                                    ItemsSource="{Binding MainMenus}"
+                                    ItemsSource="{Binding Source={StaticResource MainMenuSource}}"
                                     d:ItemsSource="{d:SampleData ItemCount=5}"
                                     SelectedItem="{Binding SelectedMenu}"
                                     SelectionChanged="MainPageMenu_SelectionChanged"
@@ -381,6 +388,20 @@
                                     BorderThickness="0"
                                     ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}"
                                     VerticalAlignment="Top">
+                            <ws:ListBox.GroupStyle>
+                                <GroupStyle>
+                                    <GroupStyle.HeaderTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Name}"
+                                                       Foreground="{DynamicResource ForeColor}"
+                                                       FontSize="14"
+                                                       Opacity="0.8"
+                                                       FontWeight="Bold"
+                                                       Margin="12 8 8 0" />
+                                        </DataTemplate>
+                                    </GroupStyle.HeaderTemplate>
+                                </GroupStyle>
+                            </ws:ListBox.GroupStyle>
                             <ws:ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <ws:Border Height="40"
@@ -440,6 +461,12 @@
                                 </DataTemplate>
                             </ws:ListBox.ItemTemplate>
                         </ws:ListBox>
+                        <!--<TextBlock VerticalAlignment="Bottom"
+                                   Margin="8"
+                                   Opacity="0.4"
+                                   TextAlignment="Center"
+                                   Text="Powered by .NET 8"
+                                   TextWrapping="Wrap" />-->
                     </Grid>
                     <Border x:Name="ContentHost"
                             Margin="8 0 8 8"
@@ -448,14 +475,13 @@
                             BorderThickness="1"
                             Background="{DynamicResource MaskColor}"
                             CornerRadius="8">
-                        <!--待修复：ws:Frame在最大化窗口时不会重新计算页面大小-->
                         <ws:Frame Name="MainContentFrame"
                                   Navigated="MainContentFrame_Navigated"
                                   NavigationUIVisibility="Hidden">
                             <ws:Frame.Transition>
                                 <ws:SlideFadeTransition Orientation="Vertical"
-                                                        Duration="0:0:0.200"
-                                                        Distance="50" />
+                                                        Duration="0:0:0.300"
+                                                        Distance="80" />
                             </ws:Frame.Transition>
                         </ws:Frame>
                     </Border>
@@ -542,7 +568,7 @@
                                 Maximum="{Binding CurrentPlayingDuration}"
                                 Margin="60 0"
                                 VerticalAlignment="Center"
-                                Value="{Binding CurrentPlayingPosition,IsAsync=True}" />
+                                Value="{Binding CurrentPlayingPosition,Mode=OneWay,UpdateSourceTrigger=PropertyChanged}" />
                     </Grid>
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>

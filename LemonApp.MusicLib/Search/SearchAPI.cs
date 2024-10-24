@@ -35,8 +35,7 @@ public static class SearchAPI
                         Singer.Add(name);
                         lm.Add(new Profile() { 
                             Name = name,
-                            Mid = mid ,
-                            Photo= "https://y.gtimg.cn/music/photo_new/T001R500x500M000" + mid + ".jpg?max_age=2592000"
+                            Mid = mid
                         });
                     }
                     m.Singer = lm;

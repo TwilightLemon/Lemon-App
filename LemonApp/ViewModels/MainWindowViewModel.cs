@@ -20,6 +20,8 @@ using CommunityToolkit.Mvvm.Input;
 using System.Timers;
 using LemonApp.Views.UserControls;
 using System.Collections.Generic;
+using LemonApp.MusicLib.Playlist;
+using System.Threading.Tasks;
 
 namespace LemonApp.ViewModels;
 public partial class MainWindowViewModel : ObservableObject
@@ -68,6 +70,7 @@ public partial class MainWindowViewModel : ObservableObject
         _timer.Elapsed += _timer_Elapsed;
         _timer.Interval = 1000;
 
+        LoadMainMenus();
         LoadComponent();
     }
     #endregion
@@ -291,17 +294,39 @@ public partial class MainWindowViewModel : ObservableObject
     #region main menu
     [ObservableProperty]
     private Brush? avator;
-    public class MainMenu(string name, Geometry icon, Type pageType)
+    public enum MenuType { MusicPool,Mine}
+    public class MainMenu(string name, Geometry icon, Type pageType, MenuType type =0,Action<object>? process=null)
     {
         public string Name { get; } = name;
         public Geometry Icon { get; } = icon;
         public Type PageType { get; } = pageType;
         public bool RequireCreateNewPage = true;
+        public MenuType Type { get; set; } = type;
+        public Action<object>? ProcessPage { get; } = process;
     }
-    public ObservableCollection<MainMenu> MainMenus { get; set; } = [
+    /// <summary>
+    /// 主菜单——音乐库
+    /// </summary>
+    public ObservableCollection<MainMenu> MainMenus { get; set; } = [];
+    private void LoadMainMenus()
+    {
+        IEnumerable<MainMenu> list = [
         new MainMenu("Home", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(HomePage)),
-        new MainMenu("Rank", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(RankPage))
+        new MainMenu("Rank", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(RankPage)),
+        new MainMenu("Singer", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page)),
+        new MainMenu("Playlists", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page)),
+        new MainMenu("Radio", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page)),
+
+        new MainMenu("Bought", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page),MenuType.Mine),
+        new MainMenu("Download", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page),MenuType.Mine),
+        new MainMenu("Favorite", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(PlaylistPage),MenuType.Mine,LoadMyFavorite),
+        new MainMenu("Mine", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page),MenuType.Mine)
         ];
+        foreach (var item in list)
+        {
+            MainMenus.Add(item);
+        }
+    }
 
 
     public object? CurrentPage;
@@ -311,11 +336,16 @@ public partial class MainWindowViewModel : ObservableObject
 
     partial void OnSelectedMenuChanged(MainMenu? value)
     {
+        CreateMenuPage(value);
+    }
+    private void CreateMenuPage(MainMenu? value)
+    {
         if (value != null)
         {
             if (value.PageType is { } type && value.RequireCreateNewPage)
             {
                 var page = App.Host!.Services.GetRequiredService(type);
+                value.ProcessPage?.Invoke(page);
                 CurrentPage = page;
             }
             else if (!value.RequireCreateNewPage)
@@ -419,6 +449,48 @@ public partial class MainWindowViewModel : ObservableObject
         SelectedMenu = null;
         IsLoading = false;
     }
+
+    private async void LoadMyFavorite(object page)
+    {
+        if(page is PlaylistPage view)
+        {
+            if (_userProfileService.UserProfileGetter.MyFavorite?.Id is { } id)
+            {
+                if(await LoadUserPlaylist(id) is { } vm)
+                {
+                    view.ViewModel = vm;
+                }
+            }
+        }
+    }
+    private async Task<PlaylistPageViewModel?> LoadUserPlaylist(string id)
+    {
+        IsLoading = true;
+        var hc = _serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
+        var auth = _userProfileService.GetAuth();
+        var vm = _serviceProvider.GetRequiredService<PlaylistPageViewModel>();
+        if (hc != null && auth != null && vm != null)
+        {
+            var data = await PublicPlaylistAPI.LoadPlaylistById(hc, auth, id);
+            if (data != null)
+            {
+                vm.Cover = new ImageBrush(await ImageCacheHelper.FetchData(data.Photo));
+                vm.Description = data.Description ?? "";
+                vm.ListName = data.Name;
+                foreach (var item in data.Musics!)
+                {
+                    vm.Musics.Add(item);
+                }
+                vm.CreatorAvatar = new ImageBrush(await ImageCacheHelper.FetchData(data.Creator!.Photo));
+                vm.CreatorName = data.Creator.Name;
+
+                vm.UpdateCurrentPlaying(CurrentPlaying?.MusicID);
+            }
+        }
+        IsLoading = false;
+        return vm;
+    }
+
     #endregion
     #region playing
     [ObservableProperty]
