@@ -78,7 +78,8 @@ namespace LemonApp.Views.UserControls
         /// 高亮歌词效果
         /// </summary>
         public Effect? Hightlighter;
-        public Effect? NomalTextEffect = new BlurEffect() { Radius = 5 };
+        public Effect? NomalTextEffect = new BlurEffect() { Radius = 8 };
+        public Effect? AroundTextEffect = new BlurEffect() { Radius = 5 };
         /// <summary>
         /// 歌词的文本对齐方式
         /// </summary>
@@ -262,10 +263,18 @@ namespace LemonApp.Views.UserControls
                 item.LrcTb.FontWeight = FontWeights.Regular;
                 item.LrcTb.BeginAnimation(FontSizeProperty, null);
                 item.LrcTb.Opacity = LyricOpacity;
-                item.LrcTb.Effect = NomalTextEffect;
+                item.LrcTb.Effect = NomalTextEffect; //AroundTextEffect;
 
                 item.LrcMain!.Text=item.Lyric;
                 item.LrcMain!.TextWrapping= TextWrapping.Wrap;
+
+/*                int aroundIndex = LrcItems.IndexOf(item);
+                if (aroundIndex > 0)
+                {
+                    var preItem = LrcItems[aroundIndex - 1];
+                    preItem.LrcTb!.Effect = NomalTextEffect;
+                }*/
+
             }
             var temp = LrcItems.LastOrDefault(p => p.Time <= ms);
             if (temp == null || temp == _currentLrc) return;
@@ -297,17 +306,29 @@ namespace LemonApp.Views.UserControls
             Timeline.SetDesiredFrameRate(da, 60);
             ResetLrcviewScroll();
             container.BeginAnimation(FontSizeProperty, da);
+
+            int index = LrcItems.IndexOf(_currentLrc);
+            if (index < LrcItems.Count - 1)
+            {
+                var next = LrcItems[index + 1];
+                next.LrcTb!.Effect = AroundTextEffect;
+            }
         }
 
         private void ResetLrcviewScroll()
         {
-            GeneralTransform gf = _currentLrc!.LrcTb!.TransformToVisual(LyricPanel);
-            Point p = gf.Transform(new Point(0, 0));
-            double os = p.Y - (scrollviewer.ActualHeight / 2) + 120;
-            var da = new DoubleAnimation(os, TimeSpan.FromMilliseconds(500));
-            da.EasingFunction = new CircleEase { EasingMode = EasingMode.EaseOut };
-            Timeline.SetDesiredFrameRate(da, 60);
-            scrollviewer.BeginAnimation(ScrollViewerUtils.VerticalOffsetProperty, da);
+            try
+            {
+                if (_currentLrc == null || _currentLrc.LrcTb == null) return;
+                GeneralTransform gf = _currentLrc.LrcTb.TransformToVisual(LyricPanel);
+                Point p = gf.Transform(new Point(0, 0));
+                double os = p.Y - (scrollviewer.ActualHeight / 2) + 120;
+                var da = new DoubleAnimation(os, TimeSpan.FromMilliseconds(500));
+                da.EasingFunction = new CircleEase { EasingMode = EasingMode.EaseOut };
+                Timeline.SetDesiredFrameRate(da, 60);
+                scrollviewer.BeginAnimation(ScrollViewerUtils.VerticalOffsetProperty, da);
+            }
+            catch { }
         }
 
     }

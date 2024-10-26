@@ -383,7 +383,6 @@
                                     ItemsSource="{Binding Source={StaticResource MainMenuSource}}"
                                     d:ItemsSource="{d:SampleData ItemCount=5}"
                                     SelectedItem="{Binding SelectedMenu}"
-                                    SelectionChanged="MainPageMenu_SelectionChanged"
                                     Background="Transparent"
                                     BorderThickness="0"
                                     ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}"

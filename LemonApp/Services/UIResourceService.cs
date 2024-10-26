@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
+using LemonApp.Common.Behaviors;
 using LemonApp.Common.Configs;
 
 namespace LemonApp.Services;
@@ -16,6 +17,8 @@ public class UIResourceService(
     public void UpdateColorMode()
     {
         bool IsDarkMode = GetIsDarkMode();
+        BlurWindowBehavior.SetDarkMode(IsDarkMode);
+
         string uri = $"pack://application:,,,/LemonApp.Common;component/Styles/ThemeColor_{IsDarkMode switch
         {
             true => "Dark",

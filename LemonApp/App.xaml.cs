@@ -62,12 +62,16 @@ namespace LemonApp
                 services.AddTransient<HomePage>();
                 services.AddTransient<RankPage>();
                 services.AddTransient<PlaylistPage>();
+                services.AddTransient<PlaylistItemPage>();
+
+                //components
                 services.AddSingleton<LyricView>();
 
                 //ViewModels
                 services.AddSingleton<MainWindowViewModel>();
                 services.AddTransient<UserMenuViewModel>();
                 services.AddTransient<PlaylistPageViewModel>();
+                services.AddTransient<PlaylistItemPageViewModel>();
 
                 //Logger
                 services.AddLogging(builder =>
@@ -88,9 +92,9 @@ namespace LemonApp
             Host!.Start();
         }
 
-        protected override void OnExit(ExitEventArgs e)
+        protected override async void OnExit(ExitEventArgs e)
         {
-            _ = Host!.StopAsync();
+            await Host!.StopAsync();
             base.OnExit(e);
         }
 

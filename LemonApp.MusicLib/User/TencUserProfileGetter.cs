@@ -42,7 +42,7 @@ public class TencUserProfileGetter
                         MyFavorite = new DataTypes.Playlist()
                         {
                             Id = id,
-                            DirId = "201",
+                            DirId = "201",//似乎对于每个user,这个id都是201
                             Name = "我喜欢",
                             IsOwner = true,
                             Photo = "",

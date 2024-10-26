@@ -9,6 +9,10 @@ namespace LemonApp.MusicLib.Abstraction.Playlist;
 
 public static class DataTypes
 {
+    public enum PlaylistType
+    {
+        Album,Playlist,Ranklist, Other
+    }
     public class Playlist
     {
         public Profile? Creator { set; get; }

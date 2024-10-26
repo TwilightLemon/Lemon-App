@@ -13,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Data;
 using LemonApp.Common.WinAPI;
 using LemonApp.Views.Pages;
+using LemonApp.Common.Behaviors;
 
 namespace LemonApp.Views.Windows
 {
@@ -32,7 +33,7 @@ namespace LemonApp.Views.Windows
             _mainNavigationService = mainNavigationService;
             _uiResourceService= uiResourceService;
             DataContext = _vm = mainWindowViewModel;
-            _vm.RequireNavigateToPage += Vm_RequireNavigateToPage;
+            _vm.RequestNavigateToPage += Vm_RequireNavigateToPage;
             _vm.SyncCurrentPlayingWithPlayListPage += Vm_SyncCurrentPlayingWithPlayListPage;
             Loaded += MainWindow_Loaded;
         }
@@ -86,14 +87,16 @@ namespace LemonApp.Views.Windows
         /// <param name="e"></param>
         private void MainPageMenu_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (sender is ListBox list)
+            //TODO: 迁移Navigation 由ViewModel处理并发起RequestNavigation
+
+/*            if (sender is ListBox list)
             {
                 if (list.SelectedItem is null) return;
                 if (_vm.CurrentPage is { } page && _vm.CurrentPage != MainContentFrame.Content)
                 {
                     MainContentFrame.Navigate(_vm.CurrentPage);
                 }
-            }
+            }*/
         }
 
         private void GoBackBtn_Click(object sender, RoutedEventArgs e)
@@ -122,11 +125,11 @@ namespace LemonApp.Views.Windows
             }
 
             //sync page with menu
-            if (MainContentFrame.CanGoForward)
+            if (MainContentFrame.CanGoForward&& MainContentFrame.Content is Page { } page
+                &&page.Tag  is MainWindowViewModel.MainMenu{ }attached)
             {
                 //处理来自GoBack的Navigation
-                _vm.CurrentPage = MainContentFrame.Content;
-                var selected = _vm.MainMenus.FirstOrDefault(page => page.PageType == e.Content?.GetType());
+                var selected = attached;
                 //退回时不生成新页面
                 if (selected != null)
                     selected.RequireCreateNewPage = false;

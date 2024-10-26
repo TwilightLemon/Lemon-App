@@ -195,6 +195,7 @@
                               ItemHeight="36"
                               Margin="180,0,0,4">
                     <ws:Button Style="{StaticResource SimpleButtonStyleForWs}"
+                               Command="{Binding PlayAllCommand}"
                                Padding="16 0">
                         Play All
                     </ws:Button>

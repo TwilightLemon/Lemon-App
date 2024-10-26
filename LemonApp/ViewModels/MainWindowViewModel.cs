@@ -138,6 +138,7 @@ public partial class MainWindowViewModel : ObservableObject
                 break;
             index++;
         }
+        if (index == Playlist.Count) index = -1;
         return index;
     }
     [RelayCommand]
@@ -148,6 +149,7 @@ public partial class MainWindowViewModel : ObservableObject
             if (CurrentPlaying != null)
             {
                 int index = GetIndexOfPlaylist(CurrentPlaying.MusicID);
+                if (index == -1) index = 0;
                 index = index == Playlist.Count - 1 ? 0 : index + 1;
                 PlaylistChoosen = Playlist[index];
             }
@@ -182,6 +184,7 @@ public partial class MainWindowViewModel : ObservableObject
             if (CurrentPlaying != null)
             {
                 int index = GetIndexOfPlaylist(CurrentPlaying.MusicID);
+                if (index == -1) index = 0;
                 index = index == 0 ? Playlist.Count - 1 : index - 1;
                 PlaylistChoosen = Playlist[index];
             }
@@ -212,7 +215,7 @@ public partial class MainWindowViewModel : ObservableObject
         _currentPlayingMgr!.Data.Music = CurrentPlaying;
         _currentPlayingMgr!.Data.Volume = CurrentPlayingVolume;
         _currentPlayingMgr!.Data.PlayMode = CircleMode;
-        var temp = Playlist.ToList();
+        var temp = Playlist.Take(20).ToList();
         foreach(var item in temp)
         {
             if(item.Album!=null)
@@ -226,8 +229,12 @@ public partial class MainWindowViewModel : ObservableObject
 
     private void _mediaPlayerService_OnAddToPlayNext(MusicDT.Music obj)
     {
-        var current=Playlist.FirstOrDefault(m=>m.MusicID==obj.MusicID);
-        int index = current!=null? Playlist.IndexOf(current) : 0;
+        int index = 0;
+        if (CurrentPlaying != null)
+        {
+            var current = Playlist.FirstOrDefault(m => m.MusicID == CurrentPlaying.MusicID);
+            index = current != null ? Playlist.IndexOf(current) : 0;
+        }
         Playlist.Insert(index + 1, obj);
     }
 
@@ -295,14 +302,14 @@ public partial class MainWindowViewModel : ObservableObject
     [ObservableProperty]
     private Brush? avator;
     public enum MenuType { MusicPool,Mine}
-    public class MainMenu(string name, Geometry icon, Type pageType, MenuType type =0,Action<object>? process=null)
+    public class MainMenu(string name, Geometry icon, Type pageType, MenuType type =0,Func<object,Task>? process=null)
     {
         public string Name { get; } = name;
         public Geometry Icon { get; } = icon;
         public Type PageType { get; } = pageType;
         public bool RequireCreateNewPage = true;
         public MenuType Type { get; set; } = type;
-        public Action<object>? ProcessPage { get; } = process;
+        public Func<object,Task>? ProcessPage { get; } = process;
     }
     /// <summary>
     /// 主菜单——音乐库
@@ -320,7 +327,7 @@ public partial class MainWindowViewModel : ObservableObject
         new MainMenu("Bought", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page),MenuType.Mine),
         new MainMenu("Download", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page),MenuType.Mine),
         new MainMenu("Favorite", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(PlaylistPage),MenuType.Mine,LoadMyFavorite),
-        new MainMenu("Mine", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page),MenuType.Mine)
+        new MainMenu("My Diss", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(PlaylistItemPage),MenuType.Mine,LoadMyDiss)
         ];
         foreach (var item in list)
         {
@@ -328,34 +335,32 @@ public partial class MainWindowViewModel : ObservableObject
         }
     }
 
-
-    public object? CurrentPage;
-
     [ObservableProperty]
     private MainMenu? selectedMenu;
 
-    partial void OnSelectedMenuChanged(MainMenu? value)
+    async partial void OnSelectedMenuChanged(MainMenu? value)
     {
-        CreateMenuPage(value);
+        await CreateMenuPage(value);
     }
-    private void CreateMenuPage(MainMenu? value)
+    private async Task CreateMenuPage(MainMenu? value)
     {
         if (value != null)
         {
             if (value.PageType is { } type && value.RequireCreateNewPage)
             {
-                var page = App.Host!.Services.GetRequiredService(type);
-                value.ProcessPage?.Invoke(page);
-                CurrentPage = page;
+                if (App.Host!.Services.GetService(type) is Page{ } page)
+                {
+                    if (value.ProcessPage != null)
+                        await value.ProcessPage(page);
+                    //tag of page refers to tagetted main menu
+                    page.Tag = value;
+                    RequestNavigateToPage?.Invoke(page);
+                }
             }
             else if (!value.RequireCreateNewPage)
             {
                 value.RequireCreateNewPage = true;//reset
             }
-        }
-        else
-        {
-            CurrentPage = null;
         }
     }
     #endregion
@@ -365,7 +370,7 @@ public partial class MainWindowViewModel : ObservableObject
     [ObservableProperty]
     private bool _isLoading = false;
 
-    public event Action<Page>? RequireNavigateToPage;
+    public event Action<Page>? RequestNavigateToPage;
 
     private void MainNavigationService_OnNavigatingRequsted(PageType type, object? arg)
     {
@@ -382,6 +387,10 @@ public partial class MainWindowViewModel : ObservableObject
                 if (arg is string { } keyword)
                     NavigateToSearchPage(keyword);
                 break;
+            case PageType.PlaylistPage:
+                if (arg is string { } listId)
+                    NavigateToPlaylistPage(listId);
+                break;
             default:
                 break;
         }
@@ -392,7 +401,7 @@ public partial class MainWindowViewModel : ObservableObject
         var sp = _serviceProvider.GetRequiredService<SettingsPage>();
         if (sp != null)
         {
-            RequireNavigateToPage?.Invoke(sp);
+            RequestNavigateToPage?.Invoke(sp);
         }
         SelectedMenu = null;
     }
@@ -415,11 +424,12 @@ public partial class MainWindowViewModel : ObservableObject
             }
             vm.CreatorAvatar = new ImageBrush(await ImageCacheHelper.FetchData(data.Creator!.Photo));
             vm.CreatorName = data.Creator.Name;
+            vm.PlaylistType = MusicLib.Abstraction.Playlist.DataTypes.PlaylistType.Album;
 
             vm.UpdateCurrentPlaying(CurrentPlaying?.MusicID);
 
             sp.ViewModel = vm;
-            RequireNavigateToPage?.Invoke(sp);
+            RequestNavigateToPage?.Invoke(sp);
         }
         SelectedMenu = null;
         IsLoading = false;
@@ -442,15 +452,28 @@ public partial class MainWindowViewModel : ObservableObject
                 vm.Musics.Add(item);
             }
             vm.UpdateCurrentPlaying(CurrentPlaying?.MusicID);
+            vm.PlaylistType = MusicLib.Abstraction.Playlist.DataTypes.PlaylistType.Other;
 
             sp.ViewModel = vm;
-            RequireNavigateToPage?.Invoke(sp);
+            RequestNavigateToPage?.Invoke(sp);
         }
         SelectedMenu = null;
         IsLoading = false;
     }
+    private async void NavigateToPlaylistPage(string id)
+    {
+        var sp=_serviceProvider.GetRequiredService<PlaylistPage>();
+        if (sp != null)
+        {
+            if (await LoadUserPlaylist(id) is { } vm)
+            {
+                sp.ViewModel = vm;
+                RequestNavigateToPage?.Invoke(sp);
+            }
+        }
+    }
 
-    private async void LoadMyFavorite(object page)
+    private async Task LoadMyFavorite(object page)
     {
         if(page is PlaylistPage view)
         {
@@ -458,6 +481,24 @@ public partial class MainWindowViewModel : ObservableObject
             {
                 if(await LoadUserPlaylist(id) is { } vm)
                 {
+                    view.ViewModel = vm;
+                }
+            }
+        }
+    }
+    private async Task LoadMyDiss(object page)
+    {
+        if (page is PlaylistItemPage view)
+        {
+            if (_userProfileService.UserProfileGetter.MyPlaylists is { } list)
+            {
+                if (_serviceProvider.GetRequiredService<PlaylistItemPageViewModel>() is { } vm)
+                {
+                    vm.Title = "My Diss";
+                    foreach (var item in list)
+                    {
+                        vm.Playlists.Add(item);
+                    }
                     view.ViewModel = vm;
                 }
             }
@@ -483,6 +524,7 @@ public partial class MainWindowViewModel : ObservableObject
                 }
                 vm.CreatorAvatar = new ImageBrush(await ImageCacheHelper.FetchData(data.Creator!.Photo));
                 vm.CreatorName = data.Creator.Name;
+                vm.PlaylistType = MusicLib.Abstraction.Playlist.DataTypes.PlaylistType.Playlist;
 
                 vm.UpdateCurrentPlaying(CurrentPlaying?.MusicID);
             }

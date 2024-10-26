@@ -50,7 +50,7 @@ public class AppSettingsService(
             foreach (var mgr in _settingsMgrs.Values)
             {
                 var saveMethod = mgr.GetType().GetMethod("Save");
-                if (saveMethod?.Invoke(mgr, null) is Task<bool> task)
+                if (saveMethod?.Invoke(mgr, null) is Task task)
                     await task;
             }
         }

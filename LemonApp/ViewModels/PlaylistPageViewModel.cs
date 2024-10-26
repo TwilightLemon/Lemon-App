@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using static LemonApp.MusicLib.Abstraction.Music.DataTypes;
+using static LemonApp.MusicLib.Abstraction.Playlist.DataTypes;
 
 namespace LemonApp.ViewModels;
 
@@ -27,9 +28,11 @@ public partial class PlaylistPageViewModel(
     private string _creatorName = "";
     [ObservableProperty]
     private Brush? _creatorAvatar = null;
-
     [ObservableProperty]
     private bool _showInfoView = true;
+
+
+    public PlaylistType PlaylistType { get; set; } = PlaylistType.Other;
 
     public ObservableCollection<Music> Musics { get; set; } = [];
 
@@ -80,12 +83,30 @@ public partial class PlaylistPageViewModel(
     }
     public ObservableCollection<Profile> ToChoosenArtists { get; set; } = [];
 
+    private bool _hasAddToPlaylist = false;
     [RelayCommand]
     private async Task PlayMusic(Music m)
     {
-        _mediaPlayerService.ReplacePlayList(Musics);
+        //根据列表类型选择播放所有/插入下一曲
+        if (PlaylistType == PlaylistType.Other&&!_hasAddToPlaylist)
+        {
+            _mediaPlayerService.AddToPlayNext(m);
+            _hasAddToPlaylist = true;
+        }
+        else
+            _mediaPlayerService.ReplacePlayList(Musics);
 
         await _mediaPlayerService.Load(m);
+        _mediaPlayerService.Play();
+    }
+    [RelayCommand]
+    private async Task PlayAll()
+    {
+        if(Musics.Count == 0)
+            return;
+
+        _mediaPlayerService.ReplacePlayList(Musics);
+        await _mediaPlayerService.Load(Musics[0]);
         _mediaPlayerService.Play();
     }
     public void UpdateCurrentPlaying(string? musicId)
