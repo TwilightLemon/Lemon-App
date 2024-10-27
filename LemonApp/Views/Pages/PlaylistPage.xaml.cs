@@ -1,4 +1,5 @@
 ﻿using LemonApp.ViewModels;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
@@ -49,24 +50,23 @@ namespace LemonApp.Views.Pages
 
         private void listBox_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
-           /* if (_vm is { } && _vm.ShowInfoView)
+            if (_vm is { } && _vm.ShowInfoView)
             {
-                if (e.VerticalOffset > 0)
+                if (e.VerticalOffset > 120)
                 {
                     if (_hideInfoViewAni != null && !_isHideInfoView)
                     {
                         _hideInfoViewAni?.Begin();
                     }
                 }
-                else
+                if(e.VerticalOffset==0)
                 {
                     if (_showInfoViewAni != null && _isHideInfoView)
                     {
                         _showInfoViewAni?.Begin();
-                        _isHideInfoView = false;
                     }
                 }
-            }*/
+            }
 
             if (e.VerticalChange > 0)
             {

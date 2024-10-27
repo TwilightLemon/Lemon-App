@@ -9,7 +9,7 @@
                      Color="#4C000000" />
     <!--前景色-->
     <SolidColorBrush x:Key="ForeColor"
-                     Color="#FEFEFE" />
+                     Color="#FCFCFC" />
     <!--蒙罩背景色-->
     <SolidColorBrush x:Key="MaskColor"
                      Color="#0cffffff" />

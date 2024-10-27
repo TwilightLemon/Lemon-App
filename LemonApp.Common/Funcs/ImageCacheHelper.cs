@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http;
+using System.Runtime.Caching;
 using System.Runtime.CompilerServices;
 using System.Windows.Media.Imaging;
 
@@ -11,7 +12,11 @@ namespace LemonApp.Common.Funcs;
 
 public class ImageCacheHelper
 {
-    private static readonly ConditionalWeakTable<string, BitmapImage> _cache = new();
+    private static readonly MemoryCache _cache = new MemoryCache("ImageCache");
+    private static CacheItemPolicy _cachePolicy = new CacheItemPolicy
+    {
+        SlidingExpiration = TimeSpan.FromMinutes(10)
+    };
     private static readonly HttpClient _client = new(new SocketsHttpHandler()
     {
         AutomaticDecompression = DecompressionMethods.GZip,
@@ -35,14 +40,14 @@ public class ImageCacheHelper
         img = await GetFromWeb(url);
         if (img != null)
         {
-            _cache.Add(url, img);
+            _cache.Add(url, img, _cachePolicy);
             return img;
         }
         return null;
     }
     private static BitmapImage? GetFromMem(string url)
     {
-        if (_cache.TryGetValue(url, out var img))
+        if (_cache.Get(url) is BitmapImage img)
         {
             return img;
         }
@@ -56,7 +61,7 @@ public class ImageCacheHelper
             var img = new BitmapImage();
             img.BeginInit();
             img.StreamSource = stream;
-            img.CacheOption = BitmapCacheOption.OnLoad;
+            img.CacheOption = BitmapCacheOption.OnDemand;
             img.EndInit();
             return img;
         }

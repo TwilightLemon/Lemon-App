@@ -22,6 +22,7 @@
                     ItemsSource="{Binding Playlists}"
                     SelectedItem="{Binding ChoosenItem}"
                     Margin="0 42 0 0"
+                    SelectionChanged="List_SelectionChanged"
                     VirtualizingStackPanel.IsVirtualizing="True"
                     Style="{StaticResource SimpleListBoxStyle}"
                     VirtualizingStackPanel.VirtualizationMode="Recycling">
@@ -49,7 +50,6 @@
                 <ItemsPanelTemplate>
                     <base:AutoUniformGrid MaxItemWidth="240"
                                           MinItemWidth="180"
-                                          ItemMargin="5 2"
                                           Columns="4" />
                 </ItemsPanelTemplate>
             </ws:ListBox.ItemsPanel>
@@ -63,7 +63,7 @@
                                 CornerRadius="8"
                                 Height="{Binding ElementName=CoverImg,Path=ActualWidth}">
                             <Border.Background>
-                                <ImageBrush ImageSource="{Binding Photo}"/>
+                                <ImageBrush ImageSource="{Binding Cover,IsAsync=True,Mode=OneWay}"/>
                             </Border.Background>
                             <Grid>
                                 <Border VerticalAlignment="Bottom"
@@ -72,7 +72,7 @@
                                         Margin="4"
                                         CornerRadius="9"
                                         Height="18">
-                                    <TextBlock Text="{Binding Subtitle}"
+                                    <TextBlock Text="{Binding ListInfo.Subtitle}"
                                                Foreground="White"
                                                VerticalAlignment="Center"
                                                TextAlignment="Left"
@@ -81,7 +81,7 @@
                                 </Border>
                             </Grid>
                         </Border>
-                        <TextBlock Text="{Binding Name}"
+                        <TextBlock Text="{Binding ListInfo.Name}"
                                    HorizontalAlignment="Center"
                                    Margin="5" />
                     </StackPanel>

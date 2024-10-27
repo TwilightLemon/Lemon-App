@@ -1,9 +1,9 @@
-﻿using System.Diagnostics;
+﻿using EleCho.WpfSuite;
+using System.Diagnostics;
 using System.Windows;
-using System.Windows.Controls.Primitives;
 
 namespace LemonApp.Common.UIBases;
-
+//TODO: 优化纵向布局 空间大时被拉伸
 public class AutoUniformGrid:UniformGrid
 {
     public AutoUniformGrid()
@@ -12,7 +12,6 @@ public class AutoUniformGrid:UniformGrid
     }
     public double MaxItemWidth { get; set; }
     public double MinItemWidth { get; set; }
-    public Thickness ItemMargin { get; set; }
 
     private void AutoUniformGrid_SizeChanged(object sender, SizeChangedEventArgs e)
     {
@@ -33,5 +32,6 @@ public class AutoUniformGrid:UniformGrid
                 Columns = pre;
             }
         }
+        Rows = Children.Count / Columns + 1;
     }
 }

@@ -61,6 +61,7 @@ public partial class MainWindowViewModel : ObservableObject
         _mediaPlayerService.OnPlayLast += PlayLast;
 
         LyricView = lyricView;
+        LyricView.OnNextLrcReached += LyricView_OnNextLrcReached;
 
         _mainNavigationService.OnNavigatingRequsted += MainNavigationService_OnNavigatingRequsted;
         userProfileService.OnAuth += UserProfileService_OnAuth;
@@ -72,6 +73,11 @@ public partial class MainWindowViewModel : ObservableObject
 
         LoadMainMenus();
         LoadComponent();
+    }
+
+    private void LyricView_OnNextLrcReached(MusicLib.Abstraction.Lyric.DataTypes.LrcLine obj)
+    {
+        CurrentLyric = obj.Lyric;
     }
     #endregion
     #region common components
@@ -495,10 +501,7 @@ public partial class MainWindowViewModel : ObservableObject
                 if (_serviceProvider.GetRequiredService<PlaylistItemPageViewModel>() is { } vm)
                 {
                     vm.Title = "My Diss";
-                    foreach (var item in list)
-                    {
-                        vm.Playlists.Add(item);
-                    }
+                    await vm.SetPlaylistItems(list);
                     view.ViewModel = vm;
                 }
             }
@@ -551,6 +554,8 @@ public partial class MainWindowViewModel : ObservableObject
     private double _currentPlayingVolume = 0.5;
     [ObservableProperty]
     private Brush? _currentPlayingCover;
+    [ObservableProperty]
+    private string _currentLyric = string.Empty;
     [ObservableProperty]
     private LyricView? _lyricView;
     [ObservableProperty]

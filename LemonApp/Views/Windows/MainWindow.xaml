@@ -12,8 +12,8 @@
                        xmlns:uc="clr-namespace:LemonApp.Views.UserControls"
                        d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
                        mc:Ignorable="d"
-                       Background="{DynamicResource WindowBackgroundColor}"
-                       Mode="Acrylic"
+                       Background="Transparent"
+                       Mode="Mica"
                        Foreground="{DynamicResource ForeColor}"
                        Title="MainWindow"
                        Height="750"
@@ -378,6 +378,20 @@
                                           MinWidth="50" />
                         <ColumnDefinition Width="4*" />
                     </Grid.ColumnDefinitions>
+                    <TextBlock Grid.ColumnSpan="2"
+                               Opacity="0.1"
+                               VerticalAlignment="Bottom"
+                               TextWrapping="Wrap"
+                               HorizontalAlignment="Stretch"
+                               Margin="12 0 300 4">
+                        <Run Text="🎵 " FontSize="14" />
+                        <Run  Text="{Binding CurrentLyric}"
+                              FontWeight="Bold"
+                              FontSize="48" />
+                        <Run Text="🎵 "
+                             FontSize="14" />
+                    </TextBlock>
+
                     <Grid x:Name="MainMenuGrid">
                         <ws:ListBox x:Name="MainPageMenu"
                                     ItemsSource="{Binding Source={StaticResource MainMenuSource}}"

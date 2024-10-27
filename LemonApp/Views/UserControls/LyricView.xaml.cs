@@ -47,6 +47,14 @@ namespace LemonApp.Views.UserControls
             SizeChanged += LyricView_SizeChanged;
             IsVisibleChanged += LyricView_IsVisibleChanged;
         }
+        public event Action<LrcLine>? OnNextLrcReached;
+        public LrcLine GetCurrentLrc() => new()
+        {
+            Lyric = _currentLrc?.Lyric ?? "",
+            Trans = _currentLrc?.LrcTrans?.Text ?? "",
+            Romaji = _currentLrc?.Romaji?.Text ?? "",
+            Time = double.NaN
+        };
 
         private void LyricView_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
@@ -281,6 +289,8 @@ namespace LemonApp.Views.UserControls
 
             reset(_currentLrc);
             _currentLrc = temp;
+            OnNextLrcReached?.Invoke(GetCurrentLrc());
+
             //next lyric 
             if (IsVisible)
                 RefreshCurrentLrcStyle();

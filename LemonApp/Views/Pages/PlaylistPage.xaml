@@ -56,17 +56,17 @@
         <Storyboard x:Key="ShowInfoViewAni">
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="CreatorView"
                                            Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00.2000000"
+                <DiscreteObjectKeyFrame KeyTime="00:00:00.0"
                                         Value="{x:Static Visibility.Visible}" />
             </ObjectAnimationUsingKeyFrames>
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TitleTb"
                                            Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00.2000000"
+                <DiscreteObjectKeyFrame KeyTime="00:00:00.0"
                                         Value="{x:Static Visibility.Visible}" />
             </ObjectAnimationUsingKeyFrames>
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="InfoView"
                                            Storyboard.TargetProperty="(FrameworkElement.Height)">
-                <EasingDoubleKeyFrame KeyTime="00:00:00.2000000"
+                <EasingDoubleKeyFrame KeyTime="00:00:00.2"
                                       Value="200">
                     <EasingDoubleKeyFrame.EasingFunction>
                         <CircleEase EasingMode="EaseOut" />

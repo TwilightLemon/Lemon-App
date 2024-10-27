@@ -14,7 +14,7 @@ namespace LemonApp.ViewModels;
 public partial class PlaylistPageViewModel(
     MainNavigationService navigationService,
     MediaPlayerService mediaPlayerService
-    ) :ObservableObject
+    ) :ObservableObject,IDisposable
 {
     private readonly MainNavigationService _navigationService =navigationService;
     private readonly MediaPlayerService _mediaPlayerService = mediaPlayerService;
@@ -30,6 +30,11 @@ public partial class PlaylistPageViewModel(
     private Brush? _creatorAvatar = null;
     [ObservableProperty]
     private bool _showInfoView = true;
+
+    public void Dispose()
+    {
+        OnLoadMoreRequired = null;
+    }
 
 
     public PlaylistType PlaylistType { get; set; } = PlaylistType.Other;

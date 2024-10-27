@@ -1,4 +1,5 @@
 ﻿using LemonApp.ViewModels;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
@@ -18,6 +19,11 @@ namespace LemonApp.Views.Pages
         {
             get => DataContext as PlaylistItemPageViewModel;
             set => DataContext = value;
+        }
+
+        private void List_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            List.SelectedItem = null;
         }
     }
 }

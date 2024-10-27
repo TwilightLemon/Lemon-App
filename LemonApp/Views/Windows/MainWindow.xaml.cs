@@ -125,13 +125,12 @@ namespace LemonApp.Views.Windows
             }
 
             //sync page with menu
-            if (MainContentFrame.CanGoForward&& MainContentFrame.Content is Page { } page
-                &&page.Tag  is MainWindowViewModel.MainMenu{ }attached)
+            if (MainContentFrame.CanGoForward&& MainContentFrame.Content is Page { } page)
             {
                 //处理来自GoBack的Navigation
-                var selected = attached;
+                var selected = page.Tag as MainWindowViewModel.MainMenu;
                 //退回时不生成新页面
-                if (selected != null)
+                if (selected!=null)
                     selected.RequireCreateNewPage = false;
                 _vm.SelectedMenu = selected;
             }
