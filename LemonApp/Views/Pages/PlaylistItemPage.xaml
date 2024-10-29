@@ -10,6 +10,7 @@
       d:DataContext="{d:DesignInstance Type=vm:PlaylistItemPageViewModel}"
       mc:Ignorable="d"
       d:DesignHeight="450"
+      Foreground="{DynamicResource ForeColor}"
       d:DesignWidth="800"
       Title="PlaylistItemPage">
 
@@ -61,6 +62,7 @@
                                 BorderBrush="{DynamicResource BorderColor}"
                                 BorderThickness="4"
                                 CornerRadius="8"
+                                RenderOptions.BitmapScalingMode="HighQuality"
                                 Height="{Binding ElementName=CoverImg,Path=ActualWidth}">
                             <Border.Background>
                                 <ImageBrush ImageSource="{Binding Cover,IsAsync=True,Mode=OneWay}"/>

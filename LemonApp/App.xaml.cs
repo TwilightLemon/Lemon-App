@@ -19,6 +19,8 @@ namespace LemonApp
     {
         public static IHost? Host { get; private set; } = null;
         public const string PublicClientFlag = "PublicClient";
+        public static new App Current => (App)Application.Current;
+        public new MainWindow MainWindow { get; set; }
         private static void BuildHost()
         {
             var builder = new HostBuilder();
@@ -63,6 +65,7 @@ namespace LemonApp
                 services.AddTransient<RankPage>();
                 services.AddTransient<PlaylistPage>();
                 services.AddTransient<PlaylistItemPage>();
+                services.AddTransient<NotifyIconMenuWindow>();
 
                 //components
                 services.AddSingleton<LyricView>();
@@ -72,6 +75,7 @@ namespace LemonApp
                 services.AddTransient<UserMenuViewModel>();
                 services.AddTransient<PlaylistPageViewModel>();
                 services.AddTransient<PlaylistItemPageViewModel>();
+                services.AddTransient<NotifyIconMenuViewModel>();
 
                 //Logger
                 services.AddLogging(builder =>

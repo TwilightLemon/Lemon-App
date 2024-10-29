@@ -6,6 +6,7 @@ using LemonApp.MusicLib.Search;
 using LemonApp.Services;
 using LemonApp.Views.Pages;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.WindowsAPICodePack.Taskbar;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -22,9 +23,14 @@ using LemonApp.Views.UserControls;
 using System.Collections.Generic;
 using LemonApp.MusicLib.Playlist;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media.Imaging;
+using LemonApp.Views.Windows;
+using System.Windows.Input;
+using LemonApp.Common.UIBases;
 
 namespace LemonApp.ViewModels;
-public partial class MainWindowViewModel : ObservableObject
+public partial class MainWindowViewModel : ObservableObject,IDisposable
 {
     #region fields & constructor
     private readonly IServiceProvider _serviceProvider;
@@ -73,11 +79,16 @@ public partial class MainWindowViewModel : ObservableObject
 
         LoadMainMenus();
         LoadComponent();
+        FetchIconResource();
     }
 
     private void LyricView_OnNextLrcReached(MusicLib.Abstraction.Lyric.DataTypes.LrcLine obj)
     {
         CurrentLyric = obj.Lyric;
+    }
+    public void Dispose()
+    {
+        NotifyIcon.Dispose();
     }
     #endregion
     #region common components
@@ -131,7 +142,7 @@ public partial class MainWindowViewModel : ObservableObject
     }
 
     #endregion
-    #region playlist
+    #region playlist & play controller
     private Random? _random;
     private List<int>? _randomIndexList;
     private int GetIndexOfPlaylist(string? musicId)
@@ -563,6 +574,12 @@ public partial class MainWindowViewModel : ObservableObject
     public ObservableCollection<MusicDT.Music> Playlist { get;private set; } = [];
     [ObservableProperty]
     private MusicDT.Music? _playlistChoosen = null;
+
+    partial void OnIsPlayingChanged(bool value)
+    {
+        UpdateThumbButtonState();
+    }
+
     async partial void OnPlaylistChoosenChanged(MusicDT.Music? value)
     {
         if (value != null&&value.MusicID!=CurrentPlaying?.MusicID)
@@ -590,13 +607,16 @@ public partial class MainWindowViewModel : ObservableObject
         if (value == null||string.IsNullOrEmpty(value.MusicID)) return;
 
         var hc= _serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
-        CurrentPlayingCover = new ImageBrush(await ImageCacheHelper.FetchData(await CoverGetter.GetCoverImgUrl(hc, value)));
+        var cover = await ImageCacheHelper.FetchData(await CoverGetter.GetCoverImgUrl(hc,_userProfileService.GetAuth(), value),true);
+        CurrentPlayingCover = new ImageBrush(cover);
 
         CurrentPlayingPosition = 0;
         CurrentPlayingPositionText = "00:00";
         CurrentPlayingVolume = _mediaPlayerService.Volume;
 
         PlaylistChoosen = value;
+        //Update TaskBar Info
+        UpdateThumbInfo(cover);
     }
     partial void OnCurrentPlayingVolumeChanged(double value)
     {
@@ -605,6 +625,105 @@ public partial class MainWindowViewModel : ObservableObject
     public void SetCurrentPlayingPosition(double value)
     {
         _mediaPlayerService.Position = TimeSpan.FromMilliseconds(value);
+    }
+    #endregion
+    #region Task Bar Thumb
+    TabbedThumbnail TaskBarImg;
+    ThumbnailToolBarButton TaskBarBtn_Last;
+    ThumbnailToolBarButton TaskBarBtn_Play;
+    ThumbnailToolBarButton TaskBarBtn_Next;
+
+    System.Drawing.Icon icon_play, icon_pause, icon_last, icon_next,icon_app;
+
+    private void FetchIconResource()
+    {
+        icon_play = Properties.Resources.play;
+        icon_pause = Properties.Resources.pause;
+        icon_last = Properties.Resources.left;
+        icon_next = Properties.Resources.right;
+        icon_app = Properties.Resources.icon;
+    }
+
+    public void InitTaskBarThumb()
+    {
+        var _window = App.Current.MainWindow;
+        TaskBarImg = new(_window, _window, new Vector());
+        TaskBarImg.Title = "Lemon App";
+        TaskBarImg.SetWindowIcon(Properties.Resources.icon);
+        TaskBarImg.TabbedThumbnailActivated += delegate
+        {
+            _window.WindowState = WindowState.Normal;
+            _window.Activate();
+        };
+        TaskBarBtn_Last = new (icon_last, "上一曲");
+        TaskBarBtn_Last.Enabled = true;
+        TaskBarBtn_Last.Click += delegate {
+            PlayLast();
+        };
+
+        TaskBarBtn_Play = new (icon_play, "播放|暂停");
+        TaskBarBtn_Play.Enabled = true;
+        TaskBarBtn_Play.Click += delegate {
+            PlayPause();
+        };
+
+        TaskBarBtn_Next = new(icon_next, "下一曲");
+        TaskBarBtn_Next.Enabled = true;
+        TaskBarBtn_Next.Click += delegate {
+            PlayNext();
+        };
+
+        TaskbarManager.Instance.TabbedThumbnail.AddThumbnailPreview(TaskBarImg);
+        TaskbarManager.Instance.ThumbnailToolBars.AddButtons(_window, TaskBarBtn_Last, TaskBarBtn_Play, TaskBarBtn_Next);
+    }
+
+    private void UpdateThumbButtonState()
+    {
+        TaskBarBtn_Play.Icon = IsPlaying ? icon_pause : icon_play;
+    }
+
+    private void UpdateThumbInfo(BitmapImage? cover)
+    {
+        if (cover == null) return;
+        TaskBarImg.SetImage(cover);
+        TaskBarImg.Tooltip = CurrentPlaying?.MusicName+" - "+ CurrentPlaying?.SingerText;
+    }
+    #endregion
+    #region NotifyIcon
+    System.Windows.Forms.NotifyIcon NotifyIcon;
+    public void InitNotifyIcon()
+    {
+        NotifyIcon = new()
+        {
+            Icon = icon_app,
+            Text = "Lemon App",
+            Visible=true
+        };
+        NotifyIcon.MouseClick += NotifyIcon_MouseClick;
+        NotifyIcon.MouseDoubleClick += NotifyIcon_MouseDoubleClick;
+    }
+
+    private void NotifyIcon_MouseDoubleClick(object? sender, System.Windows.Forms.MouseEventArgs e)
+    {
+        var _window = App.Current.MainWindow;
+        _window.ShowWindow();
+    }
+    private void NotifyIcon_MouseClick(object? sender, System.Windows.Forms.MouseEventArgs e)
+    {
+        if (e.Button == System.Windows.Forms.MouseButtons.Right)
+        {
+            if (_serviceProvider.GetRequiredService<NotifyIconMenuWindow>() is { } menu)
+            {
+                //计算窗口弹出的坐标
+                var point = System.Windows.Forms.Cursor.Position;
+                var dpi = VisualTreeHelper.GetDpi(App.Current.MainWindow);
+                menu.Left = point.X / dpi.DpiScaleX;
+                menu.Top = point.Y / dpi.DpiScaleY - menu.Height;
+
+                menu.Show();
+                menu.Activate();
+            }
+        }
     }
     #endregion
 }

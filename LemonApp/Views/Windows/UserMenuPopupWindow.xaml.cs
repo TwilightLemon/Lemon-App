@@ -23,6 +23,6 @@ namespace LemonApp.Views.Windows
         }
 
         private readonly UserMenuViewModel _userMenuViewModel;
-        public Action? RequestClose { set => _userMenuViewModel.RequestClose = value; }
+        public Action? RequestCloseMenu { set => _userMenuViewModel.RequestCloseMenu = value; }
     }
 }

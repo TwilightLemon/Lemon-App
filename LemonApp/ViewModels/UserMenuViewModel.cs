@@ -23,7 +23,7 @@ public partial class UserMenuViewModel:ObservableObject
 {
     public record ActionMenu(string Name,Geometry? Icon,Action? Action);
     private readonly SettingsMgr<UserProfile>? profileMgr;
-    public Action? RequestClose;
+    public Action? RequestCloseMenu;
     public UserMenuViewModel(
         AppSettingsService appSettingsService,
         UserProfileService userProfileService)
@@ -70,7 +70,7 @@ public partial class UserMenuViewModel:ObservableObject
     {
         if (value != null && value.Action is { } action){
             action.Invoke();
-            RequestClose?.Invoke();
+            RequestCloseMenu?.Invoke();
         }
     }
 
@@ -104,6 +104,6 @@ public partial class UserMenuViewModel:ObservableObject
     }
     static void Menu_Exit()
     {
-        Environment.Exit(0);
+        App.Current.Shutdown();
     }
 }

@@ -29,9 +29,11 @@ namespace LemonApp.Views.Windows
            UIResourceService uiResourceService)
         {
             InitializeComponent();
+
             _serviceProvider = serviceProvider;
             _mainNavigationService = mainNavigationService;
             _uiResourceService= uiResourceService;
+
             DataContext = _vm = mainWindowViewModel;
             _vm.RequestNavigateToPage += Vm_RequireNavigateToPage;
             _vm.SyncCurrentPlayingWithPlayListPage += Vm_SyncCurrentPlayingWithPlayListPage;
@@ -51,6 +53,13 @@ namespace LemonApp.Views.Windows
         private void OnSystemColorChanged()
         {
             _uiResourceService.UpdateAccentColor();
+        }
+        public void ShowWindow()
+        {
+            Show();
+            ShowInTaskbar = true;
+            WindowState = WindowState.Normal;
+            Activate();
         }
         #region MainContentFrame
         private void Vm_SyncCurrentPlayingWithPlayListPage(string mid)
@@ -76,10 +85,13 @@ namespace LemonApp.Views.Windows
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             _vm.SelectedMenu = _vm.MainMenus.FirstOrDefault();
+            _vm.InitTaskBarThumb();
+            _vm.InitNotifyIcon();
             LyricViewHost.Child = _vm.LyricView;
 
             SystemThemeAPI.RegesterOnThemeChanged(this, OnThemeChanged, OnSystemColorChanged);
         }
+
         /// <summary>
         /// Menu Selected -> Navigate to some page
         /// </summary>
@@ -146,13 +158,16 @@ namespace LemonApp.Views.Windows
         /// <param name="e"></param>
         private async void UserProfileBtn_Click(object sender, RoutedEventArgs e)
         {
-            var popup = _serviceProvider.GetRequiredService<UserMenuPopupWindow>();
-            popup.RequestClose = () =>
+            if (UserProfilePopup.Child == null)
             {
-                UserProfilePopup.IsOpen = false;
-            };
-            UserProfilePopup.Child = popup;
-            UserProfilePopup.HorizontalOffset = -popup.Width;
+                var popup = _serviceProvider.GetRequiredService<UserMenuPopupWindow>();
+                popup.RequestCloseMenu = () =>
+                {
+                    UserProfilePopup.IsOpen = false;
+                };
+                UserProfilePopup.Child = popup;
+                UserProfilePopup.HorizontalOffset = -popup.Width;
+            }
             await Task.Yield();
             UserProfilePopup.IsOpen = true;
         }

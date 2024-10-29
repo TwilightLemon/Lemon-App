@@ -12,7 +12,8 @@ using MusicDT = LemonApp.MusicLib.Abstraction.Music.DataTypes;
 
 namespace LemonApp.Services;
 
-public class MediaPlayerService(UserProfileService userProfileService,IHttpClientFactory httpClientFactory)
+public class MediaPlayerService(UserProfileService userProfileService,
+    IHttpClientFactory httpClientFactory)
 {
     private MediaPlayer _mediaPlayer = new MediaPlayer();
     private AudioGetter? audioGetter = null;
@@ -77,7 +78,7 @@ public class MediaPlayerService(UserProfileService userProfileService,IHttpClien
         info.MusicProperties.Title = music.MusicName;
         info.MusicProperties.Artist = music.SingerText;
         info.MusicProperties.AlbumArtist = music.Album?.Name ?? "";
-        info.Thumbnail = RandomAccessStreamReference.CreateFromUri(new Uri(await CoverGetter.GetCoverImgUrl(hc!, music)));
+        info.Thumbnail = RandomAccessStreamReference.CreateFromUri(new Uri(await CoverGetter.GetCoverImgUrl(hc!,_userProfileService.GetAuth(), music)));
         item.ApplyDisplayProperties(info);
         _mediaPlayer.Source = item;
         //_mediaPlayer.SetUriSource(new Uri(url.Url));

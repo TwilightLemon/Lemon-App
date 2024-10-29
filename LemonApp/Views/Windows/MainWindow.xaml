@@ -12,8 +12,9 @@
                        xmlns:uc="clr-namespace:LemonApp.Views.UserControls"
                        d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
                        mc:Ignorable="d"
-                       Background="Transparent"
-                       Mode="Mica"
+                       Background="{DynamicResource WindowBackgroundColor}"
+                       ExitOnCloseBtnClicked="False"
+                       Mode="Acrylic"
                        Foreground="{DynamicResource ForeColor}"
                        Title="MainWindow"
                        Height="750"
@@ -347,7 +348,6 @@
                         <base:FluentPopup x:Name="UserProfilePopup"
                                           ExtPopupAnimation="SlideDown"
                                           StaysOpen="False"
-                                          Background="{DynamicResource TabMaskColor}"
                                           Placement="Bottom" />
                     </Border>
                     <ws:Button x:Name="UserProfileBtn"
@@ -727,7 +727,7 @@
                                               ExtPopupAnimation="SlideUp"
                                               Placement="Top"
                                               VerticalOffset="-20"
-                                              Background="{DynamicResource TabMaskColor}"
+                                              Background="{DynamicResource WindowBackgroundColor}"
                                               StaysOpen="False">
                                 <Grid Height="36"
                                       Width="280"
@@ -775,11 +775,14 @@
                   Background="{DynamicResource BackgroundColor}">
                 <TextBlock Margin="18"
                            VerticalAlignment="Top">
-                    <Run Text="播放列表" FontSize="22"/>
+                    <Run Text="播放列表"
+                         FontSize="22" />
                     <LineBreak />
-                    一共<Run Text="{Binding Playlist.Count,Mode=OneWay}" d:Text="0"/>首
+                    一共<Run Text="{Binding Playlist.Count,Mode=OneWay}"
+                           d:Text="0" />首
                 </TextBlock>
-                <ws:ListBox Margin="0 80 0 0" Style="{StaticResource SimpleListBoxStyle}"
+                <ws:ListBox Margin="0 80 0 0"
+                            Style="{StaticResource SimpleListBoxStyle}"
                             ItemsSource="{Binding Playlist,Mode=OneWay}"
                             SelectedItem="{Binding PlaylistChoosen}"
                             ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}"
@@ -799,9 +802,9 @@
                                         d:Visibility="Visible" />
                                 <TextBlock  VerticalAlignment="Center"
                                             Margin="12 0 0 0">
-                                    <Run Text="{Binding MusicName}"/>
+                                    <Run Text="{Binding MusicName}" />
                                     <LineBreak />
-                                    <Run Text="{Binding SingerText}"/>
+                                    <Run Text="{Binding SingerText}" />
                                 </TextBlock>
                             </Grid>
                             <DataTemplate.Triggers>

@@ -84,7 +84,7 @@ internal static class ClientHeaderSetter
         hc.DefaultRequestHeaders.Clear();
         hc.DefaultRequestHeaders.UserAgent.TryParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.110 Safari/537.36");
         if(!string.IsNullOrEmpty(cookie))
-        hc.DefaultRequestHeaders.Add("Cookie", cookie);
+            hc.DefaultRequestHeaders.Add("Cookie", cookie);
         return hc;
     }
 }

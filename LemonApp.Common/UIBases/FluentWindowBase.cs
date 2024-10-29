@@ -101,9 +101,16 @@ namespace LemonApp.Common.UIBases
             ApplyResizeMode();
         }
 
+        public bool ExitOnCloseBtnClicked { get; set; } = false;
+
         private void CloseBtn_Click(object sender, RoutedEventArgs e)
         {
-            Close();
+            if (ExitOnCloseBtnClicked)
+                Close();
+            else{
+                Hide();
+                ShowInTaskbar = false;
+            }
         }
 
         private void MaxmizeBtn_Click(object sender, RoutedEventArgs e)
