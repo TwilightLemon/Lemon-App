@@ -41,6 +41,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
 
     private readonly Timer _timer;
     private SettingsMgr<PlayingPreference>? _currentPlayingMgr;
+    private SettingsMgr<PlaylistCache>? _playlistMgr;
 
     public MainWindowViewModel(
         UserProfileService userProfileService,
@@ -96,7 +97,8 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
     {
         //update current playing
         _currentPlayingMgr = _appSettingsService.GetConfigMgr<PlayingPreference>();
-        if (_currentPlayingMgr is { } mgr)
+        _playlistMgr = _appSettingsService.GetConfigMgr<PlaylistCache>();
+        if (_currentPlayingMgr is { } mgr&&_playlistMgr is { } pl)
         {
             if (mgr.Data?.Music is { MusicID: not "" } music)
             {
@@ -104,15 +106,15 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
                 CurrentPlayingVolume = mgr.Data.Volume;
                 CircleMode = mgr.Data.PlayMode;
 
-                if (_currentPlayingMgr!.Data.Playlist != null)
+                if (pl.Data.Playlist != null)
                 {
                     Playlist.Clear();
-                    foreach (var item in _currentPlayingMgr!.Data.Playlist)
+                    foreach (var item in pl.Data.Playlist)
                     {
                         Playlist.Add(item);
                     }
                     PlaylistChoosen = Playlist.FirstOrDefault(p => p.MusicID == music.MusicID);
-                    _currentPlayingMgr!.Data.Playlist = null;
+                    pl.Data.Playlist = null;
                 }
             }
             else
@@ -232,7 +234,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         _currentPlayingMgr!.Data.Music = CurrentPlaying;
         _currentPlayingMgr!.Data.Volume = CurrentPlayingVolume;
         _currentPlayingMgr!.Data.PlayMode = CircleMode;
-        var temp = Playlist.Take(20).ToList();
+        var temp = Playlist.ToList();
         foreach(var item in temp)
         {
             if(item.Album!=null)
@@ -241,7 +243,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
                 Id=item.Album.Id
             };
         }
-        _currentPlayingMgr!.Data.Playlist = temp;
+        _playlistMgr!.Data.Playlist = temp;
     }
 
     private void _mediaPlayerService_OnAddToPlayNext(MusicDT.Music obj)

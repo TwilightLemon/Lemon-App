@@ -31,13 +31,13 @@ public static class CacheManager
     }
     public static  async Task LoadPath()
     {
-        await  _settingsMgr.Load();
+        await  _settingsMgr.LoadAsync();
         if (_settingsMgr.Data?.CachePath == null)
         {
             CacheSettings paths = new();
             paths.CachePath = GetDefaultCachePath();
             _settingsMgr.Data = paths;
-            await _settingsMgr.Save();
+            await _settingsMgr.SaveAsync();
         }
         foreach(CacheType type in Enum.GetValues(typeof(CacheType)))
         {

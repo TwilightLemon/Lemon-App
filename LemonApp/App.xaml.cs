@@ -9,6 +9,7 @@ using System.Net.Http;
 using LemonApp.ViewModels;
 using LemonApp.Views.Pages;
 using LemonApp.Views.UserControls;
+using System.Diagnostics;
 
 namespace LemonApp
 {
@@ -46,6 +47,7 @@ namespace LemonApp
                         .AddConfig<UserProfile>()
                         .AddConfig<Appearence>()
                         .AddConfig<PlayingPreference>()
+                        .AddConfig<PlaylistCache>(Common.Funcs.Settings.sType.Cache)
                 );
 
                 //services
@@ -96,9 +98,10 @@ namespace LemonApp
             Host!.Start();
         }
 
-        protected override async void OnExit(ExitEventArgs e)
+        protected override void OnExit(ExitEventArgs e)
         {
-            await Host!.StopAsync();
+            Host!.StopAsync().Wait();
+            Debug.WriteLine("Hosts stoped.");
             base.OnExit(e);
         }
 

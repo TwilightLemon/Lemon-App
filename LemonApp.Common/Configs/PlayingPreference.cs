@@ -9,7 +9,8 @@ public class PlayingPreference
     public MusicDT.MusicQuality Quality { get; set; } = MusicDT.MusicQuality.SQ;
     public double Volume { get; set; }
     public CircleMode PlayMode { get; set; }= CircleMode.Circle;
-
-    //TODO: fix amount of music in playlists
+}
+public class PlaylistCache
+{
     public List<MusicDT.Music>? Playlist { get; set; } = [];
 }

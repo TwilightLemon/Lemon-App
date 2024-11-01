@@ -15,6 +15,8 @@ public class SettingsMgr<T> where T : class
     public T Data { get; set; } = null;
     [JsonIgnore]
     private FileSystemWatcher? _watcher;
+    [JsonIgnore]
+    private Settings.sType _type= Settings.sType.Settings;
     /// <summary>
     /// 监测到配置文件改变时触发，之前不会自动更新数据
     /// </summary>
@@ -27,10 +29,11 @@ public class SettingsMgr<T> where T : class
     {
         Settings.LoadPath();
     }
-    public SettingsMgr(string Sign, string pkgName)
+    public SettingsMgr(string Sign, string pkgName,Settings.sType type=Settings.sType.Settings)
     {
         this.Sign = Sign;
         this.PackageName = pkgName;
+        this._type = type;
         _watcher = new FileSystemWatcher(Settings.SettingsPath)
         {
             Filter = Sign + ".json",
@@ -43,19 +46,19 @@ public class SettingsMgr<T> where T : class
     {
         _watcher?.Dispose();
     }
-    public async Task<bool> Load()
+    public async Task<bool> LoadAsync()
     {
         if (Sign is null) return false;
         try
         {
             Debug.WriteLine($"SettingsMgr<{typeof(T).Name}> {Sign} Start to Load");
-            var dt = await Settings.Load<SettingsMgr<T>>(Sign, Settings.sType.Settings);
+            var dt = await Settings.LoadAsync<SettingsMgr<T>>(Sign, _type);
             if (dt != null)
                 Data = dt.Data;
             else
             {
                 Data = Activator.CreateInstance<T>();
-                await Save();
+                await SaveAsync();
             }
             return true;
         }
@@ -65,15 +68,26 @@ public class SettingsMgr<T> where T : class
             return false;
         }
     }
-    public async Task Save()
+    public async Task SaveAsync()
     {
         if (Sign is null || _watcher is null) return;
 
         Debug.WriteLine($"SettingsMgr<{typeof(T).Name}> {Sign} Start to Save");
         _watcher.EnableRaisingEvents = false;
-        await Settings.Save(this, Sign, Settings.sType.Settings);
+        await Settings.SaveAsync(this, Sign, _type);
         _watcher.EnableRaisingEvents = true;
     }
+
+    public void Save()
+    {
+        if (Sign is null || _watcher is null) return;
+
+        Debug.WriteLine($"SettingsMgr<{typeof(T).Name}> {Sign} Start to Save");
+        _watcher.EnableRaisingEvents = false;
+         Settings.Save(this, Sign, _type);
+        _watcher.EnableRaisingEvents = true;
+    }
+
     private DateTime _lastUpdateTime = DateTime.MinValue;
     private void _watcher_Changed(object sender, FileSystemEventArgs e)
     {
@@ -119,34 +133,49 @@ public static class Settings
         sType.Settings => SettingsPath,
         _ => throw new NotImplementedException()
     }, Sign + ".json");
-    public static async Task Save<T>(T Data, string Sign, sType type) where T : class
+    public static async Task SaveAsync<T>(T Data, string Sign, sType type) where T : class
     {
         try
         {
             string path = GetPathBySign(Sign, type);
-            await SaveAsJsonAsync<T>(Data, path);
+            await SaveAsJsonAsync(Data, path, type == sType.Settings);
         }
         catch { }
     }
-    public static async Task SaveAsJsonAsync<T>(T Data,string path) where T : class
+    public static void Save<T>(T Data,string Sign, sType type)where T : class
+    {
+        try
+        {
+            string path = GetPathBySign(Sign, type);
+            SaveAsJson(Data, path, type == sType.Settings);
+        }
+        catch { }
+    }
+    public static void SaveAsJson<T>(T Data, string path, bool useOptions = true) where T : class
     {
         var fs = File.Create(path);
-        await JsonSerializer.SerializeAsync<T>(fs, Data, _options);
+        JsonSerializer.Serialize<T>(fs, Data, useOptions ? _options : null);
         fs.Close();
     }
-    public static async Task<T?> Load<T>(string Sign, sType t) where T : class
+    public static async Task SaveAsJsonAsync<T>(T Data,string path,bool useOptions=true) where T : class
+    {
+        var fs = File.Create(path);
+        await JsonSerializer.SerializeAsync<T>(fs, Data, useOptions?_options:null);
+        fs.Close();
+    }
+    public static async Task<T?> LoadAsync<T>(string Sign, sType t) where T : class
     {
         string path = GetPathBySign(Sign, t);
-        var data = await LoadFromJsonAsync<T>(path);
+        var data = await LoadFromJsonAsync<T>(path, t == sType.Settings);
         return data;
     }
 
-    public static async Task<T?> LoadFromJsonAsync<T>(string path) where T : class
+    public static async Task<T?> LoadFromJsonAsync<T>(string path,bool useOptions=true) where T : class
     {
         if (!File.Exists(path))
             return null;
         var fs = File.OpenRead(path);
-        var data = await JsonSerializer.DeserializeAsync<T>(fs, _options);
+        var data = await JsonSerializer.DeserializeAsync<T>(fs, useOptions ? _options : null);
         fs.Close();
         return data;
     }

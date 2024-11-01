@@ -108,7 +108,7 @@ namespace LemonApp.Views.UserControls
         {
             var path = CacheManager.GetCachePath(CacheManager.CacheType.Lyric);
             path = System.IO.Path.Combine(path, m.MusicID + ".json");
-            if (await Settings.LoadFromJsonAsync<LocalLyricData>(path) is { } local)
+            if (await Settings.LoadFromJsonAsync<LocalLyricData>(path,false) is { } local)
             {
                 LoadLrc(local);
             }
@@ -151,7 +151,7 @@ namespace LemonApp.Views.UserControls
                             i++;
                             ly.LyricData.Add(lrcLine);
                         }
-                        await Settings.SaveAsJsonAsync(ly, path);
+                        await Settings.SaveAsJsonAsync(ly, path,false);
                         LoadLrc(ly);
                     }
                 }

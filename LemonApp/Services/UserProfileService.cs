@@ -38,7 +38,7 @@ public class UserProfileService(
                 UserName = UserProfileGetter.UserName,
                 AvatarUrl = UserProfileGetter.AvatarUrl
             };
-            await mgr.Save();
+            await mgr.SaveAsync();
             OnAuth?.Invoke(auth);
         }
         else

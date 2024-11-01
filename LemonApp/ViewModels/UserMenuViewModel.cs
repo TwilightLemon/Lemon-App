@@ -95,7 +95,7 @@ public partial class UserMenuViewModel:ObservableObject
         var settings = App.Host!.Services.GetRequiredService<AppSettingsService>();
         var mgr = settings.GetConfigMgr<UserProfile>()!;
         mgr.Data!.NeteaseUserAuth = new NeteaseUserAuth() { Id = "100101010" };
-        await mgr.Save();
+        await mgr.SaveAsync();
     }
     static void Menu_GotoSettingsPage()
     {

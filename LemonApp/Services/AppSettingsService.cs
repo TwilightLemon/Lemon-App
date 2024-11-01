@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,11 +15,12 @@ public class AppSettingsService(
     ) :IHostedService,IConfigManager
 {
     private Dictionary<Type, object> _settingsMgrs = [];
+    private readonly ILogger<AppSettingsService> _logger = logger;
     public event Action? OnExiting;
 
-    public AppSettingsService AddConfig<T>() where T : class{
+    public AppSettingsService AddConfig<T>(Settings.sType type=Settings.sType.Settings) where T : class{
         if(Activator.CreateInstance(typeof(SettingsMgr<>).MakeGenericType(typeof(T)),
-        [typeof(T).Name,typeof(AppSettingsService).Namespace]) is {} mgr)
+        [typeof(T).Name,typeof(AppSettingsService).Namespace,type]) is {} mgr)
             _settingsMgrs.Add(typeof(T),mgr);
         return this;
     }
@@ -31,7 +33,7 @@ public class AppSettingsService(
         GlobalConstants.ConfigManager = this;
         foreach (var mgr in _settingsMgrs.Values)
         {
-            var loadMethod = mgr.GetType().GetMethod("Load");
+            var loadMethod = mgr.GetType().GetMethod("LoadAsync");
             if (loadMethod?.Invoke(mgr, null) is Task<bool> task)
                 await task;
         }
@@ -39,7 +41,7 @@ public class AppSettingsService(
     }
     public Task StartAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
-    public async Task StopAsync(CancellationToken cancellationToken)
+    public Task StopAsync(CancellationToken cancellationToken)
     {
         try
         {
@@ -50,9 +52,10 @@ public class AppSettingsService(
             foreach (var mgr in _settingsMgrs.Values)
             {
                 var saveMethod = mgr.GetType().GetMethod("Save");
-                if (saveMethod?.Invoke(mgr, null) is Task task)
-                    await task;
+                saveMethod?.Invoke(mgr, null);
+                Debug.WriteLine($"SettingsMgr<{mgr.GetType().GenericTypeArguments[0].Name}> Saved");
             }
         }
+        return Task.CompletedTask;
     }
 }
