@@ -4,109 +4,126 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Windows.Media;
-using Windows.Media.Core;
-using Windows.Media.Playback;
-using Windows.Storage.Streams;
+using LemonApp.Common.Funcs;
 using MusicDT = LemonApp.MusicLib.Abstraction.Music.DataTypes;
+using LemonApp.Common.WinAPI;
+using System.IO;
 
 namespace LemonApp.Services;
-
+//TODO: integrate with playlists
 public class MediaPlayerService(UserProfileService userProfileService,
-    IHttpClientFactory httpClientFactory)
+    IHttpClientFactory httpClientFactory):IDisposable
 {
-    private MediaPlayer _mediaPlayer = new MediaPlayer();
+    private MusicPlayer _player;
+    private bool _isPlaying = false;
+    private readonly SMTCCreator _smtc = new("Lemon App");
     private AudioGetter? audioGetter = null;
     private readonly UserProfileService _userProfileService = userProfileService!;
-    private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
-    private HttpClient? hc;
+    private readonly HttpClient hc= httpClientFactory.CreateClient(App.PublicClientFlag);
     public MusicDT.Music? CurrentMusic { get; private set; }
     public event Action<MusicDT.Music>? OnLoaded,OnPlay,OnPaused, OnAddToPlayNext;
     public event Action? OnEnd, OnPlayNext, OnPlayLast;
     public event Action<IEnumerable<MusicDT.Music>>? OnNewPlaylistReceived;
-    public void Init()
+    public async Task Init()
     {
-        hc = _httpClientFactory.CreateClient(App.PublicClientFlag);
         audioGetter = new(hc, _userProfileService.GetAuth(), null);
-        _mediaPlayer.MediaEnded += _mediaPlayer_MediaEnded;
-        _mediaPlayer.CommandManager.PlayReceived += CommandManager_PlayReceived;
-        _mediaPlayer.CommandManager.PauseReceived += CommandManager_PauseReceived;
-        _mediaPlayer.CommandManager.NextReceived += CommandManager_NextReceived;
-        _mediaPlayer.CommandManager.PreviousReceived += CommandManager_PreviousReceived;
+        await MusicPlayer.PrepareDll();
+        _player = new();
+        _smtc.Next += Smtc_Next;
+        _smtc.Previous += Smtc_Previous;
+        _smtc.PlayOrPause += Smtc_PlayOrPause;
     }
 
-    private void _mediaPlayer_MediaEnded(MediaPlayer sender, object args)
+    private void Smtc_PlayOrPause(object? sender, EventArgs e)
     {
-        OnEnd?.Invoke();
+        if (CurrentMusic != null)
+        {
+            if (_isPlaying)
+                Pause();
+            else Play();
+        }
     }
 
-    private void CommandManager_PreviousReceived(MediaPlaybackCommandManager sender, MediaPlaybackCommandManagerPreviousReceivedEventArgs args)
+    private void Smtc_Previous(object? sender, EventArgs e)
     {
         PlayLast();
     }
-    private void CommandManager_NextReceived(MediaPlaybackCommandManager sender, MediaPlaybackCommandManagerNextReceivedEventArgs args)
+
+    private void Smtc_Next(object? sender, EventArgs e)
     {
         PlayNext();
     }
 
-    private void CommandManager_PauseReceived(MediaPlaybackCommandManager sender, MediaPlaybackCommandManagerPauseReceivedEventArgs args)
+    public void Dispose()
     {
-        if (CurrentMusic != null)
-            OnPaused?.Invoke(CurrentMusic);
+        _smtc.Dispose();
+        _player.Free();
     }
 
-    private void CommandManager_PlayReceived(MediaPlaybackCommandManager sender, MediaPlaybackCommandManagerPlayReceivedEventArgs args)
-    {
-        if (CurrentMusic != null)
-            OnPlay?.Invoke(CurrentMusic);
-    }
-
-    public async Task Load(MusicDT.Music music)
+    public async Task Load(MusicDT.Music music, MusicDT.MusicQuality prefer= MusicDT.MusicQuality.SQ)
     {
         if(audioGetter == null)
             throw new InvalidOperationException("MediaPlayerService not initialized.");
 
         Pause();
         CurrentMusic = music;
-        var url = await audioGetter.GetUrlAsync(music, MusicDT.MusicQuality.SQ);
-        if (url is null||url.Url is null)
-            throw new InvalidOperationException("Failed to get music url.");
-        var source = MediaSource.CreateFromUri(new Uri(url.Url));
-        var item = new MediaPlaybackItem(source);
-        var info = item.GetDisplayProperties();
-        info.Type = MediaPlaybackType.Music;
-        info.MusicProperties.Title = music.MusicName;
-        info.MusicProperties.Artist = music.SingerText;
-        info.MusicProperties.AlbumArtist = music.Album?.Name ?? "";
-        info.Thumbnail = RandomAccessStreamReference.CreateFromUri(new Uri(await CoverGetter.GetCoverImgUrl(hc!,_userProfileService.GetAuth(), music)));
-        item.ApplyDisplayProperties(info);
-        _mediaPlayer.Source = item;
-        //_mediaPlayer.SetUriSource(new Uri(url.Url));
+        //先检索本地缓存
+        var quality = AudioGetter.QualityMatcher(AudioGetter.GetFinalQuality(music.Quality,prefer));
+        var cacheFile = Path.Combine(CacheManager.GetCachePath(CacheManager.CacheType.Music), music.MusicID + quality[0]);
+        if (File.Exists(cacheFile))
+        {
+            _player.Load(cacheFile);
+        }
+        else
+        {
+            var url = await audioGetter.GetUrlAsync(music, prefer);//TODO: 提供音质选择
+            if (url is null || url.Url is null)
+                throw new InvalidOperationException("Failed to get music url.");
+            _player.LoadUrl(cacheFile,url.Url, null, null);
+        }
 
+        _smtc.SetMediaStatus(SMTCMediaStatus.Playing);
+        _smtc.Info.SetTitle(music.MusicName)
+                        .SetArtist(music.SingerText)
+                        .SetThumbnail(await CoverGetter.GetCoverImgUrl(hc!, _userProfileService.GetAuth(), music))
+                        .Update();
 
         OnLoaded?.Invoke(music);
     }
+    /// <summary>
+    /// volume: 0~1
+    /// </summary>
     public double Volume
     {
-        get => _mediaPlayer.Volume;
-        set => _mediaPlayer.Volume = value;
+        get => _player.Volume;
+        set => _player.Volume = (float)value;
     }
-    public TimeSpan Duration => _mediaPlayer.NaturalDuration;
+    public TimeSpan Duration => _player.Duration;
     public TimeSpan Position
     {
-        get => _mediaPlayer.Position;
-        set => _mediaPlayer.Position = value;
+        get  {
+            if ((int)_player.Position.TotalSeconds >= (int)_player.Duration.TotalSeconds)
+            {
+                OnEnd?.Invoke();
+            }
+            return _player.Position;
+        }
+        set => _player.Position = value;
     }
     public void Play()
     {
-        _mediaPlayer.Play();
+        _player.Play();
+        _isPlaying = true;
+        _smtc.SetMediaStatus(SMTCMediaStatus.Playing);
         OnPlay?.Invoke(CurrentMusic!);
     }
     public void Pause()
     {
-        if (_mediaPlayer.CanPause)
+        if (_isPlaying)
         {
-            _mediaPlayer.Pause();
+            _player.Pause();
+            _isPlaying = false;
+            _smtc.SetMediaStatus(SMTCMediaStatus.Paused);
             OnPaused?.Invoke(CurrentMusic!);
         }
     }
@@ -118,6 +135,7 @@ public class MediaPlayerService(UserProfileService userProfileService,
     {
         OnPlayLast?.Invoke();
     }
+
     public void ReplacePlayList(IEnumerable<MusicDT.Music> list)
     {
         if(list!=null&&list.Any())

@@ -164,6 +164,7 @@ namespace LemonApp.Views.Windows
                 popup.RequestCloseMenu = () =>
                 {
                     UserProfilePopup.IsOpen = false;
+                    UserProfilePopup.Child = null;
                 };
                 UserProfilePopup.Child = popup;
                 UserProfilePopup.HorizontalOffset = -popup.Width;
@@ -213,27 +214,36 @@ namespace LemonApp.Views.Windows
         #endregion
 
         #region Play Control
+        private bool _isSliderCtrl = false;
         private void PlaySlider_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            double perc = e.GetPosition(PlaySlider).X / PlaySlider.ActualWidth;
-            double value = perc * PlaySlider.Maximum;
-            //暂时移除PlaySlider的Value binding
-            BindingOperations.ClearBinding(PlaySlider, Slider.ValueProperty);
-            PlaySlider.Value = value;
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                double perc = e.GetPosition(PlaySlider).X / PlaySlider.ActualWidth;
+                double value = perc * PlaySlider.Maximum;
+                //暂时移除PlaySlider的Value binding
+                BindingOperations.ClearBinding(PlaySlider, Slider.ValueProperty);
+                PlaySlider.Value = value;
+                _isSliderCtrl = true;
+            }
         }
 
         private void PlaySlider_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
-            //提交value
-            _vm.SetCurrentPlayingPosition(PlaySlider.Value);
-            //重新绑定PlaySlider的Value
-            var binding = new Binding("CurrentPlayingPosition")
+            if (_isSliderCtrl)
             {
-                Source = _vm,
-                Mode = BindingMode.OneWay,
-                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-            };
-            PlaySlider.SetBinding(Slider.ValueProperty, binding);
+                //提交value
+                _vm.SetCurrentPlayingPosition(PlaySlider.Value);
+                //重新绑定PlaySlider的Value
+                var binding = new Binding("CurrentPlayingPosition")
+                {
+                    Source = _vm,
+                    Mode = BindingMode.OneWay,
+                    UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                };
+                PlaySlider.SetBinding(Slider.ValueProperty, binding);
+                _isSliderCtrl = false;
+            }
         }
 
         private void AudioAdjustSlider_PreviewMouseDown(object sender, MouseButtonEventArgs e)

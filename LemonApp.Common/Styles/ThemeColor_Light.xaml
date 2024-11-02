@@ -6,7 +6,7 @@
                      Color="#CCFFFFFF" />
     <!--标签页背景色-->
     <SolidColorBrush x:Key="TabMaskColor"
-                     Color="#4CFFFFFF" />
+                     Color="#6CFFFFFF" />
     <!--前景色-->
     <SolidColorBrush x:Key="ForeColor"
                      Color="#0E0E0E" />

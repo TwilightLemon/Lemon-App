@@ -507,6 +507,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
     }
     private async Task LoadMyDiss(object page)
     {
+        IsLoading = true;
         if (page is PlaylistItemPage view)
         {
             if (_userProfileService.UserProfileGetter.MyPlaylists is { } list)
@@ -519,6 +520,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
                 }
             }
         }
+        IsLoading = false;
     }
     private async Task<PlaylistPageViewModel?> LoadUserPlaylist(string id)
     {
@@ -622,10 +624,11 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
     }
     partial void OnCurrentPlayingVolumeChanged(double value)
     {
-       _mediaPlayerService.Volume = value;      
+       _mediaPlayerService.Volume = value;
     }
     public void SetCurrentPlayingPosition(double value)
     {
+        CurrentPlayingPosition = value;
         _mediaPlayerService.Position = TimeSpan.FromMilliseconds(value);
     }
     #endregion

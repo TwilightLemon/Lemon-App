@@ -10,6 +10,7 @@ using LemonApp.ViewModels;
 using LemonApp.Views.Pages;
 using LemonApp.Views.UserControls;
 using System.Diagnostics;
+using System;
 
 namespace LemonApp
 {
@@ -98,11 +99,18 @@ namespace LemonApp
             Host!.Start();
         }
 
-        protected override void OnExit(ExitEventArgs e)
+        public new void Shutdown()
         {
-            Host!.StopAsync().Wait();
-            Debug.WriteLine("Hosts stoped.");
-            base.OnExit(e);
+            try
+            {
+                Host!.StopAsync().Wait();
+                Debug.WriteLine("Hosts stoped.");
+                base.Shutdown();
+            }
+            catch
+            {
+                Environment.Exit(0);
+            }
         }
 
     }

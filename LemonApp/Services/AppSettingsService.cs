@@ -14,7 +14,7 @@ public class AppSettingsService(
     ILogger<AppSettingsService> logger
     ) :IHostedService,IConfigManager
 {
-    private Dictionary<Type, object> _settingsMgrs = [];
+    private readonly Dictionary<Type, object> _settingsMgrs = [];
     private readonly ILogger<AppSettingsService> _logger = logger;
     public event Action? OnExiting;
 

@@ -34,7 +34,7 @@ namespace LemonApp.Services
                 await CacheManager.LoadPath();
 
                 //init media player
-                mediaPlayerService.Init();
+                await mediaPlayerService.Init();
 
                 //apply settings
                 uiResourceService.UpdateColorMode();

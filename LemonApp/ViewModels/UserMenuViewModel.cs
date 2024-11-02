@@ -15,6 +15,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace LemonApp.ViewModels;
@@ -69,8 +70,8 @@ public partial class UserMenuViewModel:ObservableObject
     partial void OnSelectedMenuItemChanged(ActionMenu? value)
     {
         if (value != null && value.Action is { } action){
-            action.Invoke();
             RequestCloseMenu?.Invoke();
+            action.Invoke();
         }
     }
 

@@ -33,17 +33,12 @@ public class AudioGetter(HttpClient hc,TencUserAuth tencAuth,NeteaseUserAuth? ne
     /// <returns></returns>
     public static string[] QualityMatcher(MusicQuality m) => m switch
     {
-
         MusicQuality.SQ => [".flac", "SQ"],
         MusicQuality.HQ => [".mp3", "HQ"],
         MusicQuality._120k => [".m4a", "120k"],
-        _ => throw new NotImplementedException("insupported quality.")
+        _ => throw new NotImplementedException("not supported quality.")
     };
-    //TODO: cache & reflect qid to netease
-    public static string? FindExistingFile(Music m, MusicQuality PQ)
-    {
-        return null;
-    }
+
     public static MusicQuality GetFinalQuality(MusicQuality supported,MusicQuality preferred)
         => supported >= preferred ? preferred : supported;
     
