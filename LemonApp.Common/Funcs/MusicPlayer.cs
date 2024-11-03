@@ -63,6 +63,8 @@ public class MusicPlayer
     /// <param name="file"></param>
     public void Load(string file)
     {
+        Stop();
+
         stream = Bass.BASS_StreamCreateFile(file, 0, 0, BASSFlag.BASS_SAMPLE_FLOAT);
         //设置音量
         Bass.BASS_ChannelSetAttribute(stream, BASSAttribute.BASS_ATTRIB_VOL, _vol);
@@ -79,6 +81,8 @@ public class MusicPlayer
     {
         try
         {
+            Stop();
+
             var user = new IntPtr(BassdlList.Count);
             var Bassdl = new BASSDL(path);
             BassdlList.Add(Bassdl);
@@ -182,6 +186,7 @@ public class MusicPlayer
     /// </summary>
     public void Stop()
     {
+        if (stream == -1024) return;
         Bass.BASS_ChannelStop(stream);
         Bass.BASS_StreamFree(stream);
     }

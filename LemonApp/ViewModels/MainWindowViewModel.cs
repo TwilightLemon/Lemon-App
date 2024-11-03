@@ -43,6 +43,8 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
     private SettingsMgr<PlayingPreference>? _currentPlayingMgr;
     private SettingsMgr<PlaylistCache>? _playlistMgr;
 
+    internal DesktopLyricWindow? lrcWindow = null;
+
     public MainWindowViewModel(
         UserProfileService userProfileService,
         IServiceProvider serviceProvider,
@@ -85,11 +87,11 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
 
     private void LyricView_OnNextLrcReached(MusicLib.Abstraction.Lyric.DataTypes.LrcLine obj)
     {
-        CurrentLyric = obj.Lyric;
+        lrcWindow?.Update(obj);
     }
     public void Dispose()
     {
-        NotifyIcon.Dispose();
+        NotifyIcon?.Dispose();
     }
     #endregion
     #region common components
@@ -105,6 +107,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
                 await _mediaPlayerService.Load(music);
                 CurrentPlayingVolume = mgr.Data.Volume;
                 CircleMode = mgr.Data.PlayMode;
+                IsShowDesktopLyric= mgr.Data.ShowDesktopLyric;
 
                 if (pl.Data.Playlist != null)
                 {
@@ -234,6 +237,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         _currentPlayingMgr!.Data.Music = CurrentPlaying;
         _currentPlayingMgr!.Data.Volume = CurrentPlayingVolume;
         _currentPlayingMgr!.Data.PlayMode = CircleMode;
+        _currentPlayingMgr!.Data.ShowDesktopLyric = IsShowDesktopLyric;
         var temp = Playlist.ToList();
         foreach(var item in temp)
         {
@@ -570,14 +574,29 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
     [ObservableProperty]
     private Brush? _currentPlayingCover;
     [ObservableProperty]
-    private string _currentLyric = string.Empty;
-    [ObservableProperty]
     private LyricView? _lyricView;
     [ObservableProperty]
     private PlayingPreference.CircleMode _circleMode = PlayingPreference.CircleMode.Circle;
     public ObservableCollection<MusicDT.Music> Playlist { get;private set; } = [];
     [ObservableProperty]
     private MusicDT.Music? _playlistChoosen = null;
+
+    [ObservableProperty]
+    private bool _isShowDesktopLyric = false;
+
+    partial void OnIsShowDesktopLyricChanged(bool value)
+    {
+        if (value)
+        {
+            lrcWindow??=_serviceProvider.GetRequiredService<DesktopLyricWindow>();
+            lrcWindow.Show();
+        }
+        else
+        {
+            lrcWindow?.Close();
+            lrcWindow = null;
+        }
+    }
 
     partial void OnIsPlayingChanged(bool value)
     {
@@ -591,6 +610,11 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
             await _mediaPlayerService.Load(value);
             _mediaPlayerService.Play();
         }
+    }
+    [RelayCommand]
+    private void ShowDesktopLyric()
+    {
+        IsShowDesktopLyric = !IsShowDesktopLyric;
     }
 
     [RelayCommand]
@@ -616,7 +640,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
 
         CurrentPlayingPosition = 0;
         CurrentPlayingPositionText = "00:00";
-        CurrentPlayingVolume = _mediaPlayerService.Volume;
+        //CurrentPlayingVolume = _mediaPlayerService.Volume;
 
         PlaylistChoosen = value;
         //Update TaskBar Info
@@ -633,12 +657,12 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
     }
     #endregion
     #region Task Bar Thumb
-    TabbedThumbnail TaskBarImg;
-    ThumbnailToolBarButton TaskBarBtn_Last;
-    ThumbnailToolBarButton TaskBarBtn_Play;
-    ThumbnailToolBarButton TaskBarBtn_Next;
+    TabbedThumbnail? TaskBarImg;
+    ThumbnailToolBarButton? TaskBarBtn_Last;
+    ThumbnailToolBarButton? TaskBarBtn_Play;
+    ThumbnailToolBarButton? TaskBarBtn_Next;
 
-    System.Drawing.Icon icon_play, icon_pause, icon_last, icon_next,icon_app;
+    System.Drawing.Icon? icon_play, icon_pause, icon_last, icon_next,icon_app;
 
     private void FetchIconResource()
     {
@@ -684,18 +708,19 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
 
     private void UpdateThumbButtonState()
     {
+        if(TaskBarBtn_Play!=null)
         TaskBarBtn_Play.Icon = IsPlaying ? icon_pause : icon_play;
     }
 
     private void UpdateThumbInfo(BitmapImage? cover)
     {
-        if (cover == null) return;
+        if (cover == null||TaskBarImg==null) return;
         TaskBarImg.SetImage(cover);
         TaskBarImg.Tooltip = CurrentPlaying?.MusicName+" - "+ CurrentPlaying?.SingerText;
     }
     #endregion
     #region NotifyIcon
-    System.Windows.Forms.NotifyIcon NotifyIcon;
+    System.Windows.Forms.NotifyIcon? NotifyIcon;
     public void InitNotifyIcon()
     {
         NotifyIcon = new()

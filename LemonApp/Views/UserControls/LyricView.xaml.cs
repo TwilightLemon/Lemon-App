@@ -161,8 +161,10 @@ namespace LemonApp.Views.UserControls
         {
             scrollviewer.BeginAnimation(ScrollViewerUtils.VerticalOffsetProperty, null);
             scrollviewer.ScrollToTop();
+
             LyricPanel.Children.Clear();
             LrcItems.Clear();
+            GC.Collect();
             //占位
             LyricPanel.Children.Add(new Border() { Height = 200,Background=Brushes.Transparent });
             foreach (var line in data.LyricData)

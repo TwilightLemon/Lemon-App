@@ -61,6 +61,7 @@ namespace LemonApp
                 services.AddSingleton<MainWindow>();
                 services.AddTransient<LoginWindow>();
                 services.AddTransient<UserMenuPopupWindow>();
+                services.AddTransient<DesktopLyricWindow>();
 
                 //pages
                 services.AddTransient<SettingsPage>();

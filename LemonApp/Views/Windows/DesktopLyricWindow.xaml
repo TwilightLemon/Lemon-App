@@ -1,0 +1,57 @@
+﻿<Window x:Class="LemonApp.Views.Windows.DesktopLyricWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:ws="https://schemas.elecho.dev/wpfsuite"
+        xmlns:behavior="clr-namespace:LemonApp.Common.Behaviors;assembly=LemonApp.Common"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LemonApp.Views.Windows"
+        mc:Ignorable="d"
+        Background="{DynamicResource WindowBackgroundColor}"
+        Topmost="True"
+        Foreground="{DynamicResource ForeColor}"
+        ws:WindowOption.Corner="Round"
+        ShowInTaskbar="False"
+        ResizeMode="CanResize"
+        WindowStyle="None"
+        Title="DesktopLyricWindow" Height="128" Width="700"
+        x:Name="window">
+    <Window.Resources>
+        <WindowChrome x:Key="chrome" ResizeBorderThickness="8"/>
+        <BooleanToVisibilityConverter x:Key="boolToVisibility" />
+    </Window.Resources>
+    <i:Interaction.Behaviors>
+        <behavior:BlurWindowBehavior Mode="Acrylic" WindowChromeEx="{StaticResource chrome}"
+                                     IsToolWindow="True" />
+        <behavior:WindowDragMoveBehavior />
+    </i:Interaction.Behaviors>
+    <Grid>
+        <TextBlock  x:Name="LrcTb"
+                    VerticalAlignment="Center"
+                    TextAlignment="Center"
+                    Opacity="0.8"
+                    Margin="20 0"
+                    TextWrapping="Wrap">
+            <TextBlock.Effect>
+                <DropShadowEffect BlurRadius="20" ShadowDepth="0" Color="White" Opacity="0.5"/>
+            </TextBlock.Effect>
+            <Run x:Name="LyricTb"
+                 FontSize="32"
+                 d:Text="Dancing with our hands tied"
+                 FontWeight="Bold" />
+            <TextBlock x:Name="TransTb" FontSize="16" Opacity="0.5" Margin="0 4 0 0"/>
+        </TextBlock>
+        <!--功能区 鼠标进入后显示-->
+        <Grid Visibility="{Binding ElementName=window,Path=IsMouseOver,Converter={StaticResource boolToVisibility}}">
+            <ws:FlexPanel MainAlignment="Center"
+                          MainSpacing="4"
+                          Height="28"
+                          VerticalAlignment="Bottom"
+                          Margin="0 0 0 4">
+                <ws:Button x:Name="GoCenterBtn" Style="{StaticResource SimpleButtonStyleForWs}"
+                            Content="居中显示" Padding="8 0" Click="GoCenterBtn_Click"/>
+            </ws:FlexPanel>
+        </Grid>
+    </Grid>
+</Window>

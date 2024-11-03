@@ -18,9 +18,14 @@
         ShowInTaskbar="False"
         ResizeMode="NoResize"
         WindowStyle="None"
+        api:WindowLongAPI.DwmAnimation="True"
         d:DataContext="{d:DesignInstance Type=viewmodel:NotifyIconMenuViewModel}">
+    <Window.Resources>
+        <WindowChrome x:Key="chrome"
+                      ResizeBorderThickness="8" />
+    </Window.Resources>
     <i:Interaction.Behaviors>
-        <behavior:BlurWindowBehavior Mode="Acrylic" IsToolWindow="True"/>
+        <behavior:BlurWindowBehavior Mode="Acrylic" IsToolWindow="True" WindowChromeEx="{StaticResource chrome}"/>
     </i:Interaction.Behaviors>
     <Grid>
         <Image HorizontalAlignment="Left"
@@ -39,6 +44,7 @@
                     Background="Transparent"
                     BorderThickness="0"
                     Margin="4 50 4 4"
+                    ScrollViewer.VerticalScrollBarVisibility="Hidden"
                     ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}">
             <ws:ListBox.ItemTemplate>
                 <DataTemplate>

@@ -9,6 +9,7 @@ public class PlayingPreference
     public MusicDT.MusicQuality Quality { get; set; } = MusicDT.MusicQuality.SQ;
     public double Volume { get; set; }
     public CircleMode PlayMode { get; set; }= CircleMode.Circle;
+    public bool ShowDesktopLyric { get; set; } = false;
 }
 public class PlaylistCache
 {

@@ -16,7 +16,7 @@
                        ExitOnCloseBtnClicked="False"
                        Mode="Mica"
                        Foreground="{DynamicResource ForeColor}"
-                       Title="MainWindow"
+                       Title="Lemon App"
                        Height="750"
                        Width="1080">
     <base:FluentWindowBase.Triggers>
@@ -211,7 +211,7 @@
                 <EasingDoubleKeyFrame KeyTime="00:00:00"
                                       Value="0" />
                 <EasingDoubleKeyFrame KeyTime="00:00:00.2500"
-                                      Value="400">
+                                      Value="320">
                     <EasingDoubleKeyFrame.EasingFunction>
                         <CubicEase EasingMode="EaseOut" />
                     </EasingDoubleKeyFrame.EasingFunction>
@@ -355,6 +355,7 @@
                                Cursor="Hand"
                                CornerRadius="18"
                                BorderThickness="0"
+                               ToolTip="菜单"
                                Background="{DynamicResource MaskColor}"
                                HoverBackground="{DynamicResource FocusMaskColor}"
                                PressedBackground="{DynamicResource FocusMaskColor}"
@@ -378,19 +379,6 @@
                                           MinWidth="50" />
                         <ColumnDefinition Width="4*" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.ColumnSpan="2"
-                               Opacity="0.1"
-                               VerticalAlignment="Bottom"
-                               TextWrapping="Wrap"
-                               HorizontalAlignment="Stretch"
-                               Margin="12 0 300 4">
-                        <Run Text="🎵 " FontSize="14" />
-                        <Run  Text="{Binding CurrentLyric}"
-                              FontWeight="Bold"
-                              FontSize="48" />
-                        <Run Text="🎵 "
-                             FontSize="14" />
-                    </TextBlock>
 
                     <Grid x:Name="MainMenuGrid">
                         <ws:ListBox x:Name="MainPageMenu"
@@ -593,6 +581,8 @@
                         <ws:Button x:Name="MusicControl_Info"
                                    Margin="6,4,0,4"
                                    Height="70"
+                                   Cursor="Hand"
+                                   ToolTip="歌词页"
                                    HorizontalAlignment="Left"
                                    Background="Transparent"
                                    HoverBackground="{DynamicResource MaskColor}"
@@ -657,6 +647,7 @@
                                        Width="32"
                                        Height="32"
                                        Margin="48 0 0 0"
+                                       ToolTip="上一曲"
                                        Command="{Binding PlayLastCommand}"
                                        HorizontalAlignment="Left"
                                        Style="{StaticResource SimpleIconButtonStyleForWs}">
@@ -669,6 +660,7 @@
                                        Width="32"
                                        Height="32"
                                        Margin="0 0 48 0"
+                                       ToolTip="下一曲"
                                        Command="{Binding PlayNextCommand}"
                                        HorizontalAlignment="Right"
                                        Style="{StaticResource SimpleIconButtonStyleForWs}">
@@ -680,6 +672,7 @@
                             <ws:Button x:Name="CircleModeBtn"
                                        Width="32"
                                        Height="32"
+                                       ToolTip="播放模式"
                                        Command="{Binding ChangeCircleModeCommand}"
                                        HorizontalAlignment="Right"
                                        Style="{StaticResource SimpleIconButtonStyleForWs}">
@@ -692,12 +685,24 @@
                             <ws:Button x:Name="OpenDesktopLyricBtn"
                                        Width="32"
                                        Height="32"
+                                       Command="{Binding ShowDesktopLyricCommand}"
+                                       ToolTip="桌面歌词"
                                        HorizontalAlignment="Left"
                                        Style="{StaticResource SimpleIconButtonStyleForWs}">
-                                <Path Data="{DynamicResource OpenDesktopLyric}"
-                                      Height="18"
-                                      Fill="{DynamicResource ForeColor}"
-                                      Stretch="Uniform" />
+                                <ws:ConditionalControl Condition="{Binding IsShowDesktopLyric}">
+                                    <ws:ConditionalControl.ContentWhenFalse>
+                                        <Path Data="{DynamicResource OpenDesktopLyric}"
+                                              Height="18"
+                                              Fill="{DynamicResource ForeColor}"
+                                              Stretch="Uniform" />
+                                    </ws:ConditionalControl.ContentWhenFalse>
+                                    <ws:ConditionalControl.ContentWhenTrue>
+                                        <Path Data="{DynamicResource OpenDesktopLyric}"
+                                              Height="18"
+                                              Fill="{DynamicResource HighlightThemeColor}"
+                                              Stretch="Uniform" />
+                                    </ws:ConditionalControl.ContentWhenTrue>
+                                </ws:ConditionalControl>
                             </ws:Button>
                         </Grid>
                         <ws:WrapPanel Grid.Column="2"
@@ -708,6 +713,7 @@
                             <ws:Button x:Name="FavoriteBtn"
                                        Width="32"
                                        Height="32"
+                                       ToolTip="收藏"
                                        Style="{StaticResource SimpleIconButtonStyleForWs}">
                                 <Path Data="{DynamicResource HeartIcon}"
                                       Height="16"
@@ -717,6 +723,7 @@
                             <ws:Button x:Name="MoreMenuBtn"
                                        Width="32"
                                        Height="32"
+                                       ToolTip="更多"
                                        Style="{StaticResource SimpleIconButtonStyleForWs}">
                                 <Path Data="{DynamicResource MoreMenu}"
                                       Height="16"
@@ -744,6 +751,7 @@
                             <ws:Button x:Name="AudioBtn"
                                        Width="32"
                                        Height="32"
+                                       ToolTip="音量"
                                        Click="AudioBtn_Click"
                                        Style="{StaticResource SimpleIconButtonStyleForWs}">
                                 <Path Data="{DynamicResource AudioIcon}"
@@ -754,6 +762,7 @@
                             <ws:Button x:Name="OpenPlayListBtn"
                                        Width="32"
                                        Height="32"
+                                       ToolTip="播放列表"
                                        Style="{StaticResource SimpleIconButtonStyleForWs}">
                                 <Path Data="{DynamicResource OpenPlaylist}"
                                       Height="14"
@@ -770,7 +779,7 @@
             <Border x:Name="PlayListPageMask"
                     Background="#7F000000" />
             <Grid x:Name="PlayListBar"
-                  Width="400"
+                  Width="320"
                   HorizontalAlignment="Right"
                   Background="{DynamicResource BackgroundColor}">
                 <TextBlock Margin="18"

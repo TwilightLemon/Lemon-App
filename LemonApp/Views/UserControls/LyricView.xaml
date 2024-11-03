@@ -11,11 +11,10 @@
                       VerticalScrollBarVisibility="Hidden"
                       HorizontalScrollBarVisibility="Hidden"
                       FocusVisualStyle="{x:Null}">
-            <VirtualizingStackPanel Name="LyricPanel" Orientation="Vertical"
-                                    Width="{Binding ElementName=scrollviewer, Path=ActualWidth}"
-                                    VirtualizingPanel.IsVirtualizing="True">
+            <StackPanel Name="LyricPanel" Orientation="Vertical"
+                                    Width="{Binding ElementName=scrollviewer, Path=ActualWidth}">
 
-            </VirtualizingStackPanel>
+            </StackPanel>
         </ScrollViewer>
     </Grid>
 </UserControl>

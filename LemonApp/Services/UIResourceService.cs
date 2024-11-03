@@ -38,6 +38,4 @@ public class UIResourceService(
             App.Current.Resources["HighlightThemeColor"]=new SolidColorBrush(accentColor.Value);
         }
     }
-
-
 }

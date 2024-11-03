@@ -343,9 +343,15 @@
         <Setter Property="PressedBackground"
                 Value="{DynamicResource FocusMaskColor}" />
         <Setter Property="CornerRadius"
-                Value="14" />
+                Value="8" />
         <Setter Property="BorderThickness"
-                Value="0" />
+                Value="1" />
+        <Setter Property="BorderBrush"
+                Value="{DynamicResource BorderColor}" />
+        <Setter Property="HoverBorderBrush"
+                Value="{DynamicResource BorderColor}" />
+        <Setter Property="PressedBorderBrush"
+                Value="{DynamicResource BorderColor}" />
         <Setter Property="Cursor"
                 Value="Hand" />
     </Style>

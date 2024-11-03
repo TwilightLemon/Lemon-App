@@ -47,8 +47,10 @@ namespace LemonApp.Views.Windows
 
         private void OnThemeChanged()
         {
+            //TODO: 只触发UIResourceService,再由其触发事件
             _uiResourceService.UpdateColorMode();
             _vm.LyricView?.UpdateColorMode();
+            _vm.lrcWindow?.UpdateColorMode();
         }
         private void OnSystemColorChanged()
         {
@@ -91,7 +93,6 @@ namespace LemonApp.Views.Windows
 
             SystemThemeAPI.RegesterOnThemeChanged(this, OnThemeChanged, OnSystemColorChanged);
         }
-
         /// <summary>
         /// Menu Selected -> Navigate to some page
         /// </summary>
