@@ -6,6 +6,9 @@ using LemonApp.ViewModels;
 using System;
 using System.Windows.Input;
 using LemonApp.Services;
+using System.Threading.Tasks;
+using System.Windows.Media.Animation;
+using System.Threading;
 
 namespace LemonApp.Views.Windows
 {
@@ -28,7 +31,13 @@ namespace LemonApp.Views.Windows
             Closed += DesktopLyricWindow_Closed;
             MouseEnter += DesktopLyricWindow_MouseEnter;
             MouseLeave += DesktopLyricWindow_MouseLeave;
-            Deactivated += DesktopLyricWindow_Deactivated;
+            MouseDoubleClick += DesktopLyricWindow_MouseDoubleClick;
+        }
+
+        private void DesktopLyricWindow_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var sc = SystemParameters.WorkArea;
+            Left = (sc.Right - Width) / 2;
         }
 
         private void _uiResourceService_OnColorModeChanged()
@@ -43,19 +52,34 @@ namespace LemonApp.Views.Windows
             _uiResourceService.OnColorModeChanged -= _uiResourceService_OnColorModeChanged;
         }
 
-        private void DesktopLyricWindow_Deactivated(object? sender, EventArgs e)
-        {
-            LrcPanel.Effect = null;
-        }
-
         private void DesktopLyricWindow_MouseLeave(object sender, MouseEventArgs e)
         {
+            cancelShowFunc?.Cancel();
+            cancelShowFunc = null;
+            preShowFunc = false;
             LrcPanel.Effect = null;
+            LrcPanel.BeginAnimation(OpacityProperty, null);
+            FuncPanel.Visibility = Visibility.Collapsed;
+            FuncPanel.BeginAnimation(OpacityProperty, null);
         }
-
-        private void DesktopLyricWindow_MouseEnter(object sender, MouseEventArgs e)
+        bool preShowFunc = false;
+        CancellationTokenSource? cancelShowFunc = null;
+        private async void DesktopLyricWindow_MouseEnter(object sender, MouseEventArgs e)
         {
-            LrcPanel.Effect = new BlurEffect() { Radius = 12 };
+            preShowFunc = true;
+            cancelShowFunc ??= new();
+            try
+            {
+                await Task.Delay(300, cancelShowFunc.Token);
+                if (preShowFunc)
+                {
+                    LrcPanel.BeginAnimation(OpacityProperty, new DoubleAnimation(1, 0.6, TimeSpan.FromMilliseconds(100)));
+                    LrcPanel.Effect = new BlurEffect() { Radius = 12 };
+                    FuncPanel.Visibility = Visibility.Visible;
+                    FuncPanel.BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(180)));
+                }
+            }
+            catch { }
         }
 
         private void UpdateColorMode()
@@ -70,12 +94,6 @@ namespace LemonApp.Views.Windows
         {
             WindowLongAPI.SetToolWindow(this);
             UpdateColorMode();
-        }
-
-        private void GoCenterBtn_Click(object sender, RoutedEventArgs e)
-        {
-            var sc = SystemParameters.WorkArea;
-            Left = (sc.Right - Width) / 2;
         }
 
         private void CloseBtn_Click(object sender, RoutedEventArgs e)

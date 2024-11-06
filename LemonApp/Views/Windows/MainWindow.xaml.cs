@@ -45,19 +45,25 @@ namespace LemonApp.Views.Windows
         private readonly MainNavigationService _mainNavigationService;
         private readonly MainWindowViewModel _vm;
 
+        /// <summary>
+        /// Respond to system theme color (dark mode) changed.
+        /// </summary>
         private void OnThemeChanged()
         {
             _uiResourceService.UpdateColorMode();
             _uiResourceService.UpdateAccentColor();
         }
+        /// <summary>
+        /// Respond to system accent color changed.
+        /// </summary>
         private void OnSystemColorChanged()
         {
             _uiResourceService.UpdateAccentColor();
         }
+
         public void ShowWindow()
         {
             Show();
-            ShowInTaskbar = true;
             WindowState = WindowState.Normal;
             Activate();
         }

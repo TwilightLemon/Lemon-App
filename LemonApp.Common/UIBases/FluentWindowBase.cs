@@ -109,7 +109,6 @@ namespace LemonApp.Common.UIBases
                 Close();
             else{
                 Hide();
-                ShowInTaskbar = false;
             }
         }
 

@@ -10,7 +10,7 @@
         xmlns:vm="clr-namespace:LemonApp.ViewModels"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:DesktopLyricWindowViewModel}"
-        Background="{DynamicResource WindowBackgroundColor}"
+        Background="{DynamicResource PopupWndBgColor}"
         Topmost="True"
         Foreground="{DynamicResource ForeColor}"
         ws:WindowOption.Corner="Round"
@@ -25,7 +25,6 @@
         <WindowChrome x:Key="chrome"
                       ResizeBorderThickness="8"
                       CaptionHeight="0" />
-        <BooleanToVisibilityConverter x:Key="boolToVisibility" />
     </Window.Resources>
     <i:Interaction.Behaviors>
         <behavior:BlurWindowBehavior Mode="Acrylic"
@@ -62,11 +61,9 @@
         <!--功能区 鼠标进入后显示-->
         <Grid  x:Name="FuncPanel"
                Background="{DynamicResource TabMaskColor}"
-               d:Visibility="Visible"
-               Visibility="{Binding ElementName=window,
-                Path=IsMouseOver,Converter={StaticResource boolToVisibility}}">
+               Visibility="Collapsed"
+               d:Visibility="Visible">
             <ws:WrapPanel HorizontalSpacing="24"
-                          Margin="0 20 0 0"
                           VerticalAlignment="Center"
                           HorizontalAlignment="Center">
                 <ws:Button x:Name="PlayLastBtn"
@@ -120,24 +117,13 @@
                        FontFamily="Segoe Fluent Icons"
                        ToolTip="关闭桌面歌词"
                        Click="CloseBtn_Click"
-                       FontSize="10" 
+                       FontSize="10"
                        HorizontalAlignment="Right"
                        VerticalAlignment="Top"
                        Height="32"
                        Width="32"
                        Margin="8"
-                       Style="{StaticResource SimpleIconButtonStyleForWs}"/>
-            <ws:Button x:Name="GoCenterBtn"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Top"
-                       Margin="12"
-                       Width="42"
-                       Height="28"
-                       ToolTip="居中显示"
-                       Style="{StaticResource SimpleButtonStyleForWs}"
-                       Content="⟩ ⟨"
-                       Padding="8 0"
-                       Click="GoCenterBtn_Click" />
+                       Style="{StaticResource SimpleIconButtonStyleForWs}" />
         </Grid>
     </ws:BoxPanel>
 </Window>

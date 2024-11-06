@@ -1,9 +1,12 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!--DarkMode-->
-    <!--窗口背景色-->
+    <!--主窗口背景色 对于Mica材质不适用-->
     <SolidColorBrush x:Key="WindowBackgroundColor"
                      Color="#CC000000" />
+    <!--弹窗背景色 全为Acrylic材质-->
+    <SolidColorBrush x:Key="PopupWndBgColor"
+                     Color="#9F000000" />
     <!--标签页背景色-->
     <SolidColorBrush x:Key="TabMaskColor"
                      Color="#6C000000" />

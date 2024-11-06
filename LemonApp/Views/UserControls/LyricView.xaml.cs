@@ -87,11 +87,11 @@ namespace LemonApp.Views.UserControls
             }
         }
 
-        private  Thickness LyricMargin = new Thickness(20,12,0,12);
+        public  Thickness LyricMargin = new Thickness(20,12,0,12);
         /// <summary>
         /// 非高亮歌词的透明度
         /// </summary>
-        private const double LyricOpacity = 0.8;
+        public double LyricOpacity = 0.5;
         /// <summary>
         /// 高亮歌词效果
         /// </summary>
@@ -104,6 +104,7 @@ namespace LemonApp.Views.UserControls
         public TextAlignment TextAlignment = TextAlignment.Left;
 
         public double LyricFontSize = 22;
+        public FontWeight NormalTextFontWeight = FontWeights.Normal;
         #endregion
         public void Init(HttpClient hc,TencUserAuth auth)
         {
@@ -182,6 +183,7 @@ namespace LemonApp.Views.UserControls
             {
                 LrcItem item = new();
                 item.Time = line.Time;
+                //Container
                 TextBlock tb = new()
                 {
                     FontSize = LyricFontSize,
@@ -191,9 +193,11 @@ namespace LemonApp.Views.UserControls
                     TextWrapping = TextWrapping.Wrap,
                     TextTrimming = TextTrimming.None,
                     Margin= LyricMargin,
-                    Effect= NomalTextEffect
+                    Effect= NomalTextEffect,
+                    FontWeight = NormalTextFontWeight
                 };
                 item.LrcTb = tb;
+                //Romaji
                 if (line.Romaji != null)
                 {
                     TextBlock romaji = new()
@@ -209,6 +213,7 @@ namespace LemonApp.Views.UserControls
                     tb.Inlines.Add(romaji);
                     tb.Inlines.Add(new LineBreak());
                 }
+                //Main Lyric
                 TextBlock lyric = new()
                 {
                     Text = line.Lyric,
@@ -218,6 +223,7 @@ namespace LemonApp.Views.UserControls
                 item.LrcMain = lyric;
                 item.Lyric = line.Lyric;
                 tb.Inlines.Add(lyric);
+                //Translation
                 if (line.Trans != null)
                 {
                     TextBlock trans = new() {
@@ -238,6 +244,7 @@ namespace LemonApp.Views.UserControls
             }
             LyricPanel.Children.Add(new Border() { Height = 200, Background = Brushes.Transparent });
         }
+
         private static double? pixelsPerDip;
         private static string InsertLineBreaks(TextBlock tb,string preText, double fontSize, double maxWidth)
         {
@@ -281,20 +288,13 @@ namespace LemonApp.Views.UserControls
             {
                 if(item==null|| item.LrcTb == null) return;
                 //item.LrcTb.Foreground = NormalLrcColor;
-                item.LrcTb.FontWeight = FontWeights.Regular;
+                item.LrcTb.FontWeight = NormalTextFontWeight;
                 item.LrcTb.BeginAnimation(FontSizeProperty, null);
                 item.LrcTb.Opacity = LyricOpacity;
-                item.LrcTb.Effect = NomalTextEffect; //AroundTextEffect;
+                item.LrcTb.Effect = NomalTextEffect;
 
                 item.LrcMain!.Text=item.Lyric;
                 item.LrcMain!.TextWrapping= TextWrapping.Wrap;
-
-/*                int aroundIndex = LrcItems.IndexOf(item);
-                if (aroundIndex > 0)
-                {
-                    var preItem = LrcItems[aroundIndex - 1];
-                    preItem.LrcTb!.Effect = NomalTextEffect;
-                }*/
 
             }
             var temp = LrcItems.LastOrDefault(p => p.Time <= ms);

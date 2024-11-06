@@ -734,7 +734,7 @@
                                               ExtPopupAnimation="SlideUp"
                                               Placement="Top"
                                               VerticalOffset="-20"
-                                              Background="{DynamicResource WindowBackgroundColor}"
+                                              Background="{DynamicResource PopupWndBgColor}"
                                               StaysOpen="False">
                                 <Grid Height="36"
                                       Width="280"
