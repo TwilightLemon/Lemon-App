@@ -36,17 +36,27 @@ namespace LemonApp.Views.UserControls
     /// </summary>
     public partial class LyricView : UserControl
     {
-        public LyricView(IHttpClientFactory httpClientFactory,UserProfileService userProfileService)
+        public LyricView(IHttpClientFactory httpClientFactory,
+            UserProfileService userProfileService,
+            UIResourceService uiResourceService)
         {
             InitializeComponent();
             UpdateColorMode();
 
             _hc = httpClientFactory.CreateClient(App.PublicClientFlag);
             _auth=userProfileService.GetAuth();
+            _uiResourceService = uiResourceService;
+            _uiResourceService.OnColorModeChanged += _uiResourceService_OnColorModeChanged;
 
             SizeChanged += LyricView_SizeChanged;
             IsVisibleChanged += LyricView_IsVisibleChanged;
         }
+
+        private void _uiResourceService_OnColorModeChanged()
+        {
+            UpdateColorMode();
+        }
+
         public event Action<LrcLine>? OnNextLrcReached;
         public LrcLine GetCurrentLrc() => new()
         {
@@ -69,7 +79,7 @@ namespace LemonApp.Views.UserControls
             RefreshCurrentLrcStyle();
         }
         #region Apperance
-        public void UpdateColorMode()
+        private void UpdateColorMode()
         {
             if(Foreground is SolidColorBrush color)
             {
@@ -102,6 +112,7 @@ namespace LemonApp.Views.UserControls
         }
         private HttpClient? _hc;
         private TencUserAuth? _auth;
+        private UIResourceService _uiResourceService;
         private List<LrcItem> LrcItems = [];
         private LrcItem? _currentLrc = null;
         public async Task LoadFromMusic(Music m)

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
+using System.Windows.Media;
 
 namespace LemonApp.Common.WinAPI
 {
@@ -21,14 +22,22 @@ namespace LemonApp.Common.WinAPI
             if (key != null)
             {
                 var value = key.GetValue("AppsUseLightTheme");
-                if (value != null && value is int)
+                if (value is int { } v)
                 {
-                    return (int)value > 0;
+                    return v > 0;
                 }
             }
 
             return true; // 默认为浅色模式
         }
+        static Windows.UI.ViewManagement.UISettings? _uiSettings = null;
+        public static Color GetSystemAccentColor()
+        {
+            _uiSettings ??= new ();
+            var color = _uiSettings.GetColorValue(GetIsLightTheme()?Windows.UI.ViewManagement.UIColorType.AccentDark1: Windows.UI.ViewManagement.UIColorType.AccentLight2);
+            return Color.FromArgb(color.A, color.R, color.G, color.B);
+        }
+
         public const int WM_SETTINGCHANGE = 0x001A;
         public const int WM_DWMCOLORIZATIONCOLORCHANGED = 0x0320;
         static Action? _onThemeChanged = null;

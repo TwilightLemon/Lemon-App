@@ -47,10 +47,8 @@ namespace LemonApp.Views.Windows
 
         private void OnThemeChanged()
         {
-            //TODO: 只触发UIResourceService,再由其触发事件
             _uiResourceService.UpdateColorMode();
-            _vm.LyricView?.UpdateColorMode();
-            _vm.lrcWindow?.UpdateColorMode();
+            _uiResourceService.UpdateAccentColor();
         }
         private void OnSystemColorChanged()
         {

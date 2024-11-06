@@ -10,7 +10,7 @@ using LemonApp.Common.WinAPI;
 using System.IO;
 
 namespace LemonApp.Services;
-//TODO: integrate with playlists
+
 public class MediaPlayerService(UserProfileService userProfileService,
     IHttpClientFactory httpClientFactory):IDisposable
 {
@@ -102,7 +102,8 @@ public class MediaPlayerService(UserProfileService userProfileService,
     public TimeSpan Position
     {
         get  {
-            if ((int)_player.Position.TotalSeconds >= (int)_player.Duration.TotalSeconds)
+            int total = (int)_player.Duration.TotalSeconds;
+            if (total>0&&(int)_player.Position.TotalSeconds >= total)
             {
                 OnEnd?.Invoke();
             }
@@ -135,6 +136,8 @@ public class MediaPlayerService(UserProfileService userProfileService,
     {
         OnPlayLast?.Invoke();
     }
+
+    public bool IsPlaying=> _isPlaying;
 
     public void ReplacePlayList(IEnumerable<MusicDT.Music> list)
     {

@@ -23,7 +23,7 @@ public class Appearence{
     public Color? AccentColor { get; set; }=null;
     public Color? GetAccentColor() => AccentColorMode switch{
         AccentColorType.Custome => AccentColor,
-        AccentColorType.Auto => SystemParameters.WindowGlassColor,
+        AccentColorType.Auto => SystemThemeAPI.GetSystemAccentColor(),
         _ => null
     };
 }

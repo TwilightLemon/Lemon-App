@@ -3,4 +3,4 @@
     <!--AccentColor-->
     <SolidColorBrush x:Key="HighlightThemeColor"
                      Color="#69F" />
- </ResourceDictionary>
+</ResourceDictionary>

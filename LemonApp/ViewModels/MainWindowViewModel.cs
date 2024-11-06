@@ -43,7 +43,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
     private SettingsMgr<PlayingPreference>? _currentPlayingMgr;
     private SettingsMgr<PlaylistCache>? _playlistMgr;
 
-    internal DesktopLyricWindow? lrcWindow = null;
+    private DesktopLyricWindowViewModel _lyricWindowViewModel;
 
     public MainWindowViewModel(
         UserProfileService userProfileService,
@@ -51,7 +51,8 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         MainNavigationService mainNavigationService,
         MediaPlayerService mediaPlayerService,
         AppSettingsService appSettingsService,
-        LyricView lyricView)
+        LyricView lyricView,
+        DesktopLyricWindowViewModel lyricWindowViewModel)
     {
         _userProfileService = userProfileService;
         _serviceProvider = serviceProvider;
@@ -72,6 +73,8 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         LyricView = lyricView;
         LyricView.OnNextLrcReached += LyricView_OnNextLrcReached;
 
+        _lyricWindowViewModel = lyricWindowViewModel;
+
         _mainNavigationService.OnNavigatingRequsted += MainNavigationService_OnNavigatingRequsted;
         userProfileService.OnAuth += UserProfileService_OnAuth;
         userProfileService.OnAuthExpired += UserProfileService_OnAuthExpired;
@@ -87,7 +90,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
 
     private void LyricView_OnNextLrcReached(MusicLib.Abstraction.Lyric.DataTypes.LrcLine obj)
     {
-        lrcWindow?.Update(obj);
+        _lyricWindowViewModel.Update(obj);
     }
     public void Dispose()
     {
@@ -97,7 +100,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
     #region common components
     private async void LoadComponent()
     {
-        //update current playing
+        //update current playing from Settings:
         _currentPlayingMgr = _appSettingsService.GetConfigMgr<PlayingPreference>();
         _playlistMgr = _appSettingsService.GetConfigMgr<PlaylistCache>();
         if (_currentPlayingMgr is { } mgr&&_playlistMgr is { } pl)
@@ -141,7 +144,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         CurrentPlayingPosition = pos.TotalMilliseconds;
         CurrentPlayingPositionText = $"{pos.Minutes:D2}:{pos.Seconds:D2}";
 
-        LyricView!.Dispatcher.Invoke(() => {
+        LyricView.Dispatcher.Invoke(() => {
             LyricView.UpdateTime(pos.TotalMilliseconds);
         });
     }
@@ -289,7 +292,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         {
             CurrentPlaying = m;
             SyncCurrentPlayingWithPlayListPage?.Invoke(m.MusicID);
-            await LyricView!.LoadFromMusic(m);
+            await LyricView.LoadFromMusic(m);
         });
     }
     [RelayCommand]
@@ -380,7 +383,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
                     RequestNavigateToPage?.Invoke(page);
                 }
             }
-            else if (!value.RequireCreateNewPage)
+            if (!value.RequireCreateNewPage)
             {
                 value.RequireCreateNewPage = true;//reset
             }
@@ -574,7 +577,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
     [ObservableProperty]
     private Brush? _currentPlayingCover;
     [ObservableProperty]
-    private LyricView? _lyricView;
+    private LyricView _lyricView;
     [ObservableProperty]
     private PlayingPreference.CircleMode _circleMode = PlayingPreference.CircleMode.Circle;
     public ObservableCollection<MusicDT.Music> Playlist { get;private set; } = [];
@@ -583,12 +586,13 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
 
     [ObservableProperty]
     private bool _isShowDesktopLyric = false;
-
+    private DesktopLyricWindow? lrcWindow;
     partial void OnIsShowDesktopLyricChanged(bool value)
     {
         if (value)
         {
-            lrcWindow??=_serviceProvider.GetRequiredService<DesktopLyricWindow>();
+            lrcWindow = _serviceProvider.GetRequiredService<DesktopLyricWindow>();
+            lrcWindow.Closed += LrcWindow_Closed;
             lrcWindow.Show();
         }
         else
@@ -596,6 +600,12 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
             lrcWindow?.Close();
             lrcWindow = null;
         }
+    }
+
+    private void LrcWindow_Closed(object? sender, EventArgs e)
+    {
+        lrcWindow = null;
+        IsShowDesktopLyric = false;
     }
 
     partial void OnIsPlayingChanged(bool value)

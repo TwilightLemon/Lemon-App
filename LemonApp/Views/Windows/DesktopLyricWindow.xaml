@@ -7,7 +7,9 @@
         xmlns:behavior="clr-namespace:LemonApp.Common.Behaviors;assembly=LemonApp.Common"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LemonApp.Views.Windows"
+        xmlns:vm="clr-namespace:LemonApp.ViewModels"
         mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=vm:DesktopLyricWindowViewModel}"
         Background="{DynamicResource WindowBackgroundColor}"
         Topmost="True"
         Foreground="{DynamicResource ForeColor}"
@@ -15,43 +17,127 @@
         ShowInTaskbar="False"
         ResizeMode="CanResize"
         WindowStyle="None"
-        Title="DesktopLyricWindow" Height="128" Width="700"
+        Title="DesktopLyricWindow"
+        Height="128"
+        Width="700"
         x:Name="window">
     <Window.Resources>
-        <WindowChrome x:Key="chrome" ResizeBorderThickness="8"/>
+        <WindowChrome x:Key="chrome"
+                      ResizeBorderThickness="8"
+                      CaptionHeight="0" />
         <BooleanToVisibilityConverter x:Key="boolToVisibility" />
     </Window.Resources>
     <i:Interaction.Behaviors>
-        <behavior:BlurWindowBehavior Mode="Acrylic" WindowChromeEx="{StaticResource chrome}"
+        <behavior:BlurWindowBehavior Mode="Acrylic"
+                                     WindowChromeEx="{StaticResource chrome}"
                                      IsToolWindow="True" />
         <behavior:WindowDragMoveBehavior />
     </i:Interaction.Behaviors>
-    <Grid>
-        <TextBlock  x:Name="LrcTb"
-                    VerticalAlignment="Center"
-                    TextAlignment="Center"
-                    Opacity="0.8"
-                    Margin="20 0"
-                    TextWrapping="Wrap">
-            <TextBlock.Effect>
-                <DropShadowEffect BlurRadius="20" ShadowDepth="0" Color="White" Opacity="0.5"/>
-            </TextBlock.Effect>
+    <ws:BoxPanel>
+        <Grid x:Name="LrcPanel">
+            <TextBlock  x:Name="LrcTb"
+                        VerticalAlignment="Center"
+                        TextAlignment="Center"
+                        Opacity="0.8"
+                        Margin="20 0"
+                        TextWrapping="Wrap">
+                <TextBlock.Effect>
+                    <DropShadowEffect BlurRadius="20"
+                                      ShadowDepth="0"
+                                      Color="White"
+                                      Opacity="0.5" />
+                </TextBlock.Effect>
             <Run x:Name="LyricTb"
                  FontSize="32"
                  d:Text="Dancing with our hands tied"
+                 Text="{Binding LyricText}"
                  FontWeight="Bold" />
-            <TextBlock x:Name="TransTb" FontSize="16" Opacity="0.5" Margin="0 4 0 0"/>
+            <TextBlock x:Name="TransTb"
+                       FontSize="16"
+                       Opacity="0.5"
+                       Text="{Binding TransText}"
+                       Margin="0 4 0 0" />
         </TextBlock>
-        <!--功能区 鼠标进入后显示-->
-        <Grid Visibility="{Binding ElementName=window,Path=IsMouseOver,Converter={StaticResource boolToVisibility}}">
-            <ws:FlexPanel MainAlignment="Center"
-                          MainSpacing="4"
-                          Height="28"
-                          VerticalAlignment="Bottom"
-                          Margin="0 0 0 4">
-                <ws:Button x:Name="GoCenterBtn" Style="{StaticResource SimpleButtonStyleForWs}"
-                            Content="居中显示" Padding="8 0" Click="GoCenterBtn_Click"/>
-            </ws:FlexPanel>
         </Grid>
-    </Grid>
+        <!--功能区 鼠标进入后显示-->
+        <Grid  x:Name="FuncPanel"
+               Background="{DynamicResource TabMaskColor}"
+               d:Visibility="Visible"
+               Visibility="{Binding ElementName=window,
+                Path=IsMouseOver,Converter={StaticResource boolToVisibility}}">
+            <ws:WrapPanel HorizontalSpacing="24"
+                          Margin="0 20 0 0"
+                          VerticalAlignment="Center"
+                          HorizontalAlignment="Center">
+                <ws:Button x:Name="PlayLastBtn"
+                           Width="48"
+                           Height="48"
+                           Margin="48 0 0 0"
+                           ToolTip="上一曲"
+                           Command="{Binding PlayLastCommand}"
+                           HorizontalAlignment="Left"
+                           Style="{StaticResource SimpleIconButtonStyleForWs}">
+                    <Path Data="{DynamicResource PlayIcon_Last}"
+                          Height="22"
+                          Fill="{DynamicResource ForeColor}"
+                          Stretch="Uniform" />
+                </ws:Button>
+                <ws:Button x:Name="PlayBtn"
+                           Width="54"
+                           Height="54"
+                           ToolTip="播放"
+                           Command="{Binding PlayOrPauseCommand}"
+                           Style="{StaticResource SimpleIconButtonStyleForWs}">
+                    <ws:ConditionalControl Condition="{Binding IsPlaying}">
+                        <ws:ConditionalControl.ContentWhenFalse>
+                            <Path Data="{DynamicResource PlayIcon_Play}"
+                                  Fill="{DynamicResource HighlightThemeColor}"
+                                  Stretch="Uniform" />
+                        </ws:ConditionalControl.ContentWhenFalse>
+                        <ws:ConditionalControl.ContentWhenTrue>
+                            <Path Data="{DynamicResource PlayIcon_Pause}"
+                                  Fill="{DynamicResource HighlightThemeColor}"
+                                  Stretch="Uniform" />
+                        </ws:ConditionalControl.ContentWhenTrue>
+                    </ws:ConditionalControl>
+                </ws:Button>
+                <ws:Button x:Name="PlayNextBtn"
+                           Width="48"
+                           Height="48"
+                           Margin="0 0 48 0"
+                           ToolTip="下一曲"
+                           Command="{Binding PlayNextCommand}"
+                           HorizontalAlignment="Right"
+                           Style="{StaticResource SimpleIconButtonStyleForWs}">
+                    <Path Data="{DynamicResource PlayIcon_Next}"
+                          Height="22"
+                          Fill="{DynamicResource ForeColor}"
+                          Stretch="Uniform" />
+                </ws:Button>
+            </ws:WrapPanel>
+            <ws:Button x:Name="CloseBtn"
+                       Content="&#xE8BB;"
+                       FontFamily="Segoe Fluent Icons"
+                       ToolTip="关闭桌面歌词"
+                       Click="CloseBtn_Click"
+                       FontSize="10" 
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Top"
+                       Height="32"
+                       Width="32"
+                       Margin="8"
+                       Style="{StaticResource SimpleIconButtonStyleForWs}"/>
+            <ws:Button x:Name="GoCenterBtn"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Top"
+                       Margin="12"
+                       Width="42"
+                       Height="28"
+                       ToolTip="居中显示"
+                       Style="{StaticResource SimpleButtonStyleForWs}"
+                       Content="⟩ ⟨"
+                       Padding="8 0"
+                       Click="GoCenterBtn_Click" />
+        </Grid>
+    </ws:BoxPanel>
 </Window>

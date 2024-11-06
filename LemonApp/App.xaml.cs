@@ -80,6 +80,7 @@ namespace LemonApp
                 services.AddTransient<PlaylistPageViewModel>();
                 services.AddTransient<PlaylistItemPageViewModel>();
                 services.AddTransient<NotifyIconMenuViewModel>();
+                services.AddSingleton<DesktopLyricWindowViewModel>();
 
                 //Logger
                 services.AddLogging(builder =>
