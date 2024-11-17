@@ -12,7 +12,8 @@ using System.IO;
 namespace LemonApp.Services;
 
 public class MediaPlayerService(UserProfileService userProfileService,
-    IHttpClientFactory httpClientFactory):IDisposable
+    IHttpClientFactory httpClientFactory,
+    SharedLaClient sharedLaClient):IDisposable
 {
     private MusicPlayer _player;
     private bool _isPlaying = false;
@@ -20,13 +21,15 @@ public class MediaPlayerService(UserProfileService userProfileService,
     private AudioGetter? audioGetter = null;
     private readonly UserProfileService _userProfileService = userProfileService!;
     private readonly HttpClient hc= httpClientFactory.CreateClient(App.PublicClientFlag);
+    private readonly SharedLaClient _sharedLaClient = sharedLaClient;
+
     public MusicDT.Music? CurrentMusic { get; private set; }
     public event Action<MusicDT.Music>? OnLoaded,OnPlay,OnPaused, OnAddToPlayNext;
     public event Action? OnEnd, OnPlayNext, OnPlayLast;
     public event Action<IEnumerable<MusicDT.Music>>? OnNewPlaylistReceived;
     public async Task Init()
     {
-        audioGetter = new(hc, _userProfileService.GetAuth(), null);
+        audioGetter = new(hc, _userProfileService.GetAuth,null,_sharedLaClient,_userProfileService.GetSharedLaToken);
         await MusicPlayer.PrepareDll();
         _player = new();
         _smtc.Next += Smtc_Next;

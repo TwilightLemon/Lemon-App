@@ -1,0 +1,71 @@
+﻿<Page x:Class="LemonApp.Views.Pages.AccountInfoPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:LemonApp.Views.Pages"
+      xmlns:vm="clr-namespace:LemonApp.ViewModels"
+      xmlns:ws="https://schemas.elecho.dev/wpfsuite"
+      mc:Ignorable="d"
+      Foreground="{DynamicResource ForeColor}"
+      d:DesignHeight="450"
+      d:DesignWidth="800"
+      d:DataContext="{d:DesignInstance Type=vm:AccountInfoPageViewModel}"
+      Title="AccountInfoPage">
+
+    <ws:ScrollViewer Style="{StaticResource SimpleVerticalScrollViewerStyle}">
+        <ws:StackPanel Spacing="8">
+            <Grid Margin="32"
+                  VerticalAlignment="Top">
+                <Border Width="80"
+                        Height="80"
+                        CornerRadius="40"
+                        BorderThickness="4"
+                        BorderBrush="{DynamicResource BorderColor}"
+                        Background="{Binding Avator}"
+                        d:Background="#69f"
+                        HorizontalAlignment="Left" />
+                <TextBlock Text="{Binding Nickname}"
+                           d:Text="UserName"
+                           FontSize="24"
+                           FontWeight="Bold"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Left"
+                           Margin="96,0,0,0" />
+                <ws:Button HorizontalAlignment="Right"
+                           VerticalAlignment="Center" 
+                           Height="32" Width="52"
+                           Command="{Binding GotoProfileFilesCommand}"
+                           ToolTip="Go to profile settings files"
+                           Style="{StaticResource SimpleButtonStyleForWs}"
+                           Content="Profile"/>
+            </Grid>
+            <TextBlock Text="Auth" Margin="24 0" FontSize="16" FontWeight="Bold"/>
+            <ws:Button  Margin="24 0 24 0"
+                        Height="72"
+                        HorizontalContentAlignment="Stretch"
+                        FontSize="12"
+                        Padding="12"
+                        Command="{Binding CopyCookieCommand}"
+                        Style="{StaticResource SimpleButtonStyleForWs}">
+                <TextBlock>
+                    <Run Text="> Copy Cookies" FontSize="14"/>
+                    <LineBreak />
+                    <Run Text="calculated g_tk: "/>
+                    <Run Text="{Binding G_tk}" />
+                </TextBlock>
+            </ws:Button>
+            <TextBlock Text="SharedLaToken"
+                       Margin="24 0"
+                       FontSize="16"
+                       FontWeight="Bold" />
+            <ws:TextBox Text="{Binding SharedLaToken}"
+                        Placeholder="shared by ..."
+                        Margin="24 0 24 0"
+                        Height="36"
+                        FontSize="12"
+                        Padding="8 10 0 0"
+                        Style="{StaticResource SimpleTextBoxStyleForWs}" />
+        </ws:StackPanel>
+    </ws:ScrollViewer>
+</Page>

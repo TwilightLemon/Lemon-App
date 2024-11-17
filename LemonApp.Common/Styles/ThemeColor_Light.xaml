@@ -24,4 +24,6 @@
     <!--纯色背景-->
     <SolidColorBrush x:Key="BackgroundColor"
                      Color="#FFF0F0F0" />
+    <SolidColorBrush x:Key="ButtonPureColor"
+                     Color="#FFF" />
 </ResourceDictionary>

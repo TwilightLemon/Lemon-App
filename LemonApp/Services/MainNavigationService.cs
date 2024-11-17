@@ -3,7 +3,7 @@
 namespace LemonApp.Services;
 public enum PageType
 {
-    SettingsPage, AlbumPage, PlaylistPage, SearchPage, HomePage, RankPage,ArtistPage, RadioPage
+    SettingsPage, AlbumPage, PlaylistPage, SearchPage, HomePage, RankPage,ArtistPage, RadioPage,AccountInfoPage
 }
 public class MainNavigationService
 {

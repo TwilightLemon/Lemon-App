@@ -1,21 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using LemonApp.Common.Configs;
 using LemonApp.Common.Funcs;
 using LemonApp.MusicLib.Abstraction.UserAuth;
-using LemonApp.MusicLib.User;
 using LemonApp.Services;
 using LemonApp.Views.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media;
 
 namespace LemonApp.ViewModels;
@@ -52,6 +45,14 @@ public partial class UserMenuViewModel:ObservableObject
         }
 
     }
+
+    [RelayCommand]
+    private void GotoProfilePage() {
+        var navigator = App.Host!.Services.GetRequiredService<MainNavigationService>();
+        navigator.RequstNavigation(PageType.AccountInfoPage);
+        RequestCloseMenu?.Invoke();
+    }
+
     [ObservableProperty]
     public Brush avator=Brushes.LightPink;
 
@@ -76,7 +77,7 @@ public partial class UserMenuViewModel:ObservableObject
     }
 
     public ObservableCollection<ActionMenu> Menus { get; set; } = [
-        new ActionMenu("登录到QQ音乐",null,Menu_LoginQQ),
+        new ActionMenu("登录到QQ音乐",(Geometry)App.Current.FindResource("QQMusicIcon"),Menu_LoginQQ),
         new ActionMenu("设置",(Geometry)App.Current.FindResource("Icon_Settings"),Menu_GotoSettingsPage),
         new ActionMenu("退出",null,Menu_Exit)
     ];

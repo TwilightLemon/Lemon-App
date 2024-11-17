@@ -33,6 +33,9 @@ namespace LemonApp.Services
                 //load cache manager
                 await CacheManager.LoadPath();
 
+                //init userProfileService
+                userProfileService.Init();
+
                 //init media player
                 await mediaPlayerService.Init();
 

@@ -424,8 +424,8 @@
                                                   Fill="{DynamicResource ForeColor}"
                                                   Data="{Binding Icon}"
                                                   Stretch="Uniform"
-                                                  Width="15"
-                                                  Height="15" />
+                                                  Width="14"
+                                                  Height="14" />
                                             <TextBlock Text="{Binding Name}"
                                                        VerticalAlignment="Center" />
                                         </ws:StackPanel>

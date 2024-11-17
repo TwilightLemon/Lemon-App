@@ -11,6 +11,7 @@ using LemonApp.Views.Pages;
 using LemonApp.Views.UserControls;
 using System.Diagnostics;
 using System;
+using LemonApp.MusicLib.Media;
 
 namespace LemonApp
 {
@@ -70,9 +71,13 @@ namespace LemonApp
                 services.AddTransient<PlaylistPage>();
                 services.AddTransient<PlaylistItemPage>();
                 services.AddTransient<NotifyIconMenuWindow>();
+                services.AddTransient<AccountInfoPage>();
 
-                //components
+                //UI Components
                 services.AddSingleton<LyricView>();
+
+                //MusicLib Components
+                services.AddSingleton<SharedLaClient>();
 
                 //ViewModels
                 services.AddSingleton<MainWindowViewModel>();
@@ -81,6 +86,7 @@ namespace LemonApp
                 services.AddTransient<PlaylistItemPageViewModel>();
                 services.AddTransient<NotifyIconMenuViewModel>();
                 services.AddSingleton<DesktopLyricWindowViewModel>();
+                services.AddSingleton<AccountInfoPageViewModel>();
 
                 //Logger
                 services.AddLogging(builder =>

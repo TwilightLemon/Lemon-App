@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
 namespace LemonApp.Services;
+/*
+ TODO: 为Lib提供接口，改用静态方式GetAuth和其他Profile信息
+ */
 
 public class UserProfileService(
     AppSettingsService appSettingsService,
@@ -17,28 +20,31 @@ public class UserProfileService(
     public event Action<TencUserAuth>? OnAuth;
     public event Action? OnAuthExpired;
     public TencUserProfileGetter UserProfileGetter { get; } = new();
+    private SettingsMgr<UserProfile>? _profileMgr = null;
+
+    public void Init()
+    {
+        _profileMgr = appSettingsService.GetConfigMgr<UserProfile>()
+                                 ?? throw new InvalidOperationException("where is user profile mgr??!!");
+    }
 
     public async Task UpdateAuthAndNotify(TencUserAuth auth)
     {
         Debug.WriteLine("Login qq:" + auth.Id);
-
-        var mgr = appSettingsService.GetConfigMgr<UserProfile>()
-            ?? throw new InvalidOperationException("where is user profile mgr??!!");
-        var client = (httpClientFactory.CreateClient(App.PublicClientFlag))
-            ?? throw new InvalidOperationException("where is public httpclient??!!");
+        var client = httpClientFactory.CreateClient(App.PublicClientFlag);
+        if (_profileMgr == null||client==null) throw new Exception("Failed to load components");
 
         //获取nick pic
         bool success = await UserProfileGetter.Fetch(client, auth);
         if (success)
         {
-            mgr.Data = new UserProfile()
-            {
-                TencUserAuth = auth,
-                NeteaseUserAuth = mgr.Data?.NeteaseUserAuth,
-                UserName = UserProfileGetter.UserName,
-                AvatarUrl = UserProfileGetter.AvatarUrl
-            };
-            await mgr.SaveAsync();
+            var data = _profileMgr.Data;
+            data.TencUserAuth = auth;
+            data.UserName = UserProfileGetter.UserName;
+            data.AvatarUrl = UserProfileGetter.AvatarUrl;
+            _profileMgr.Data = data;
+
+            await _profileMgr.SaveAsync();
             OnAuth?.Invoke(auth);
         }
         else
@@ -49,16 +55,33 @@ public class UserProfileService(
 
     public TencUserAuth GetAuth()
     {
-        if(appSettingsService.GetConfigMgr<UserProfile>() is { } mgr)
+        if(_profileMgr is { })
         {
-            return mgr.Data?.TencUserAuth;
+            return _profileMgr.Data.TencUserAuth!;
         }
         return new();
     }
-    
+
+    public string? GetSharedLaToken()
+    {
+        if(_profileMgr is { })
+        {
+            return _profileMgr.Data.SharedLaToken;
+        }
+        return null;
+    }
+    public void SetSharedLaToken(string token)
+    {
+        if (_profileMgr is { })
+        {
+            _profileMgr.Data.SharedLaToken = token;
+        }
+    }
+
+
     public async  Task<BitmapImage?> GetAvatorImg()
     {
-        if(appSettingsService.GetConfigMgr<UserProfile>() is { } mgr && mgr.Data?.AvatarUrl is { } url)
+        if(_profileMgr is { } mgr && mgr.Data.AvatarUrl is { } url)
             return await ImageCacheHelper.FetchData(url);
 
         return null;
@@ -66,7 +89,7 @@ public class UserProfileService(
 
     public string? GetNickname()
     {
-        if (appSettingsService.GetConfigMgr<UserProfile>() is { } mgr && mgr.Data?.UserName is { } name)
+        if (_profileMgr is { } mgr && mgr.Data.UserName is { } name)
             return name;
 
         return null;

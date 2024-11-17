@@ -26,8 +26,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using LemonApp.Views.Windows;
-using System.Windows.Input;
-using LemonApp.Common.UIBases;
 
 namespace LemonApp.ViewModels;
 public partial class MainWindowViewModel : ObservableObject,IDisposable
@@ -344,16 +342,16 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
     private void LoadMainMenus()
     {
         IEnumerable<MainMenu> list = [
-        new MainMenu("Home", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(HomePage)),
-        new MainMenu("Rank", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(RankPage)),
+        new MainMenu("Home", (Geometry)App.Current.FindResource("Menu_Home"), typeof(HomePage)),
+        new MainMenu("Rank",(Geometry)App.Current.FindResource("Menu_Ranklist"), typeof(RankPage)),
         new MainMenu("Singer", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page)),
         new MainMenu("Playlists", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page)),
         new MainMenu("Radio", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page)),
 
         new MainMenu("Bought", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page),MenuType.Mine),
         new MainMenu("Download", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page),MenuType.Mine),
-        new MainMenu("Favorite", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(PlaylistPage),MenuType.Mine,LoadMyFavorite),
-        new MainMenu("My Diss", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(PlaylistItemPage),MenuType.Mine,LoadMyDiss)
+        new MainMenu("Favorite",(Geometry)App.Current.FindResource("Menu_Favorite"), typeof(PlaylistPage),MenuType.Mine,LoadMyFavorite),
+        new MainMenu("My Diss", (Geometry) App.Current.FindResource("Menu_MyDiss"), typeof(PlaylistItemPage),MenuType.Mine,LoadMyDiss)
         ];
         foreach (var item in list)
         {
@@ -417,11 +415,22 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
                 if (arg is string { } listId)
                     NavigateToPlaylistPage(listId);
                 break;
+            case PageType.AccountInfoPage:
+                NavigateToAccountInfoPage();
+                break;
             default:
                 break;
         }
     }
-
+    private void NavigateToAccountInfoPage()
+    {
+        var sp = _serviceProvider.GetRequiredService<AccountInfoPage>();
+        if (sp != null)
+        {
+            RequestNavigateToPage?.Invoke(sp);
+        }
+        SelectedMenu = null;
+    }
     private void NavigateToSettingsPage()
     {
         var sp = _serviceProvider.GetRequiredService<SettingsPage>();

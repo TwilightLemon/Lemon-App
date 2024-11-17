@@ -11,19 +11,17 @@ using static LemonApp.MusicLib.Abstraction.Music.DataTypes;
 
 namespace LemonApp.MusicLib.Media;
 
-public class AudioGetter(HttpClient hc,TencUserAuth tencAuth,NeteaseUserAuth? neteAuth)
+public class AudioGetter(HttpClient hc,
+    Func<TencUserAuth> tencAuth,
+    Func<NeteaseUserAuth>? neteAuth=null,
+    SharedLaClient? sharedLaClient=null,
+    Func<string?>? sharedLaToken=null)
 {
-    private TencUserAuth _tencAuth = tencAuth!;
-    private NeteaseUserAuth? _neteaseAuth = neteAuth;
+    private TencUserAuth _tencAuth => tencAuth();
+    private NeteaseUserAuth? _neteaseAuth => neteAuth?.Invoke();
+    private string ? _sharedLaToken => sharedLaToken?.Invoke();
+    private readonly SharedLaClient? _laClient = sharedLaClient;
     private readonly HttpClient _hc = hc!;
-    public void UpdateAuth(TencUserAuth auth)
-    {
-        _tencAuth = auth;
-    }
-    public void UpdateAuth(NeteaseUserAuth auth)
-    {
-        _neteaseAuth = auth;
-    }
 
     /// <summary>
     /// 获取音质对应文件拓展名
@@ -48,6 +46,25 @@ public class AudioGetter(HttpClient hc,TencUserAuth tencAuth,NeteaseUserAuth? ne
         if(m.Source == Platform.qq)
         {
             var final=GetFinalQuality(m.Quality, preferQuality);
+
+            if (_laClient != null && _sharedLaToken is {Length:>0} token)
+            {
+                string quality = QualityMatcher(final)[1];
+                if (await _laClient.GetSharedLa(token, m.MusicID,quality) is { } url){
+                    string redirect = await HttpHelper.GetRedirectUrl(url);
+                    if (!string.IsNullOrEmpty(redirect)&&await HttpHelper.GetHTTPFileSize(_hc, redirect) > 0)
+                    {
+                        return new MusicUrlData()
+                        {
+                            Quality = final,
+                            SourceText = "Shared",
+                            Url = redirect
+                        };
+                    }
+                    //TODO: token expired handler
+                }
+            }
+
             return new MusicUrlData() {
                 Quality=final,
                 SourceText= "YQQ",

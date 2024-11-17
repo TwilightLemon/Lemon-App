@@ -44,7 +44,7 @@ namespace LemonApp.Views.UserControls
             UpdateColorMode();
 
             _hc = httpClientFactory.CreateClient(App.PublicClientFlag);
-            _auth=userProfileService.GetAuth();
+            _userProfileService= userProfileService;
             _uiResourceService = uiResourceService;
             _uiResourceService.OnColorModeChanged += _uiResourceService_OnColorModeChanged;
 
@@ -66,10 +66,11 @@ namespace LemonApp.Views.UserControls
             Time = double.NaN
         };
 
-        private void LyricView_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private async void LyricView_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if(e.NewValue is true)
             {
+                await Task.Delay(300);
                 RefreshCurrentLrcStyle();
             }
         }
@@ -106,14 +107,10 @@ namespace LemonApp.Views.UserControls
         public double LyricFontSize = 22;
         public FontWeight NormalTextFontWeight = FontWeights.Normal;
         #endregion
-        public void Init(HttpClient hc,TencUserAuth auth)
-        {
-            _hc  ??= hc;
-            _auth ??= auth;
-        }
         private HttpClient? _hc;
-        private TencUserAuth? _auth;
-        private UIResourceService _uiResourceService;
+        private TencUserAuth? _auth=> _userProfileService.GetAuth();
+        private readonly UIResourceService _uiResourceService;
+        private readonly UserProfileService _userProfileService;
         private List<LrcItem> LrcItems = [];
         private LrcItem? _currentLrc = null;
         public async Task LoadFromMusic(Music m)

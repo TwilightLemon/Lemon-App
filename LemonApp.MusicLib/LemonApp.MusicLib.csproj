@@ -11,4 +11,14 @@
     <ProjectReference Include="..\LemonApp.MusicLib.Abstraction\LemonApp.MusicLib.Abstraction.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Lib\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="SharedLaCreator.Core">
+      <HintPath>Lib\SharedLaCreator.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

@@ -510,14 +510,16 @@
     <ControlTemplate x:Key="SliderThumbHorizontalDefault"
                      TargetType="{x:Type Thumb}">
         <Border BorderBrush="{DynamicResource BorderColor}"
+                SnapsToDevicePixels="True"
                 BorderThickness="1"
                 Height="20"
                 Width="20"
                 CornerRadius="10">
             <Border CornerRadius="10"
                     x:Name="border"
+                    SnapsToDevicePixels="True"
                     BorderThickness="4"
-                    BorderBrush="{DynamicResource BackgroundColor}"
+                    BorderBrush="{DynamicResource ButtonPureColor}"
                     Background="{DynamicResource HighlightThemeColor}" />
         </Border>
         <ControlTemplate.Triggers>

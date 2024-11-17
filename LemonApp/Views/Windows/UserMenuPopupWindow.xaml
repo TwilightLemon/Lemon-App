@@ -13,10 +13,14 @@
              Foreground="{DynamicResource ForeColor}"
              Width="240">
     <StackPanel x:Name="Body" VerticalAlignment="Top">
-        <Grid x:Name="TencProfile"
-              Height="108"
-              d:Visibility="Visible"
-              Visibility="{Binding IsLoginQQ}">
+        <ws:Button Style="{StaticResource SimpleIconButtonStyleForWs}"
+                   BorderThickness="0"
+                   Command="{Binding GotoProfilePageCommand}"
+                   Height="108"
+                   ToolTip="Go to account info page."
+                   d:Visibility="Visible"
+                   Visibility="{Binding IsLoginQQ}">
+            <Grid x:Name="TencProfile">
             <Border Width="72"
                     Height="72"
                     HorizontalAlignment="Left"
@@ -36,6 +40,7 @@
                 </InlineUIContainer>
             </TextBlock>
         </Grid>
+        </ws:Button>
         <Grid x:Name="NeteaseProfile"
               Height="48"
               d:Visibility="Visible"
