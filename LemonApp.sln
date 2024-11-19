@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LemonApp.MusicLib", "LemonA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LemonApp.MusicLib.Abstraction", "LemonApp.MusicLib.Abstraction\LemonApp.MusicLib.Abstraction.csproj", "{0CE8BB96-6987-4601-9C70-557185FDAD41}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LemonApp.Native", "..\LemonApp.Native\LemonApp.Native.csproj", "{C377B556-D8B6-0ABE-469C-AB29A2A59690}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{0CE8BB96-6987-4601-9C70-557185FDAD41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0CE8BB96-6987-4601-9C70-557185FDAD41}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0CE8BB96-6987-4601-9C70-557185FDAD41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C377B556-D8B6-0ABE-469C-AB29A2A59690}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C377B556-D8B6-0ABE-469C-AB29A2A59690}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C377B556-D8B6-0ABE-469C-AB29A2A59690}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C377B556-D8B6-0ABE-469C-AB29A2A59690}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

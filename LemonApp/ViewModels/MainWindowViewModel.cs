@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using LemonApp.Common.Funcs;
+using LemonApp.Native;
 using LemonApp.MusicLib.Abstraction.UserAuth;
 using LemonApp.MusicLib.Album;
 using LemonApp.MusicLib.Search;
@@ -26,6 +27,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using LemonApp.Views.Windows;
+using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
+using Task = System.Threading.Tasks.Task;
 
 namespace LemonApp.ViewModels;
 public partial class MainWindowViewModel : ObservableObject,IDisposable
@@ -36,6 +39,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
     private readonly MainNavigationService _mainNavigationService;
     private readonly MediaPlayerService _mediaPlayerService;
     private readonly AppSettingsService _appSettingsService;
+    private readonly UIResourceService _uiResourceService;
 
     private readonly Timer _timer;
     private SettingsMgr<PlayingPreference>? _currentPlayingMgr;
@@ -49,6 +53,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         MainNavigationService mainNavigationService,
         MediaPlayerService mediaPlayerService,
         AppSettingsService appSettingsService,
+        UIResourceService uIResourceService,
         LyricView lyricView,
         DesktopLyricWindowViewModel lyricWindowViewModel)
     {
@@ -57,6 +62,10 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         _mainNavigationService = mainNavigationService;
         _mediaPlayerService = mediaPlayerService;
         _appSettingsService = appSettingsService;
+        _uiResourceService = uIResourceService;
+
+        _uiResourceService.OnColorModeChanged += UIResourceService_OnColorModeChanged;
+
         _appSettingsService.OnExiting += _appSettingsService_OnExiting;
 
         _mediaPlayerService.OnLoaded += _mediaPlayerService_OnLoaded;
@@ -84,6 +93,11 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         LoadMainMenus();
         LoadComponent();
         FetchIconResource();
+    }
+
+    private async void UIResourceService_OnColorModeChanged()
+    {
+        await UpdateCover();
     }
 
     private void LyricView_OnNextLrcReached(MusicLib.Abstraction.Lyric.DataTypes.LrcLine obj)
@@ -596,6 +610,9 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
     [ObservableProperty]
     private bool _isShowDesktopLyric = false;
     private DesktopLyricWindow? lrcWindow;
+
+    [ObservableProperty]
+    private Brush? _lyricPageBackgound = null;
     partial void OnIsShowDesktopLyricChanged(bool value)
     {
         if (value)
@@ -648,22 +665,39 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         };
     }
 
+    private async Task UpdateCover()
+    {
+        var hc = () => _serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
+        var cover = await ImageCacheHelper.FetchData(await CoverGetter.GetCoverImgUrl(hc, _userProfileService.GetAuth(), CurrentPlaying!), true);
+        if (cover != null)
+        {
+            CurrentPlayingCover = new ImageBrush(cover);
+            var bitmap = cover.ToBitmap();
+            //Update TaskBar Info
+            UpdateThumbInfo(bitmap);
+
+            //process img
+            bitmap.ApplyMicaEffect(_uiResourceService.GetIsDarkMode());
+            LyricPageBackgound = new ImageBrush(bitmap.ToBitmapImage());
+        }
+        else
+        {
+            LyricPageBackgound = null;
+        }
+    }
+
     async partial void OnCurrentPlayingChanged(MusicDT.Music? value)
     {
         //只负责更新UI的ViewModel
         if (value == null||string.IsNullOrEmpty(value.MusicID)) return;
 
-        var hc= _serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
-        var cover = await ImageCacheHelper.FetchData(await CoverGetter.GetCoverImgUrl(hc,_userProfileService.GetAuth(), value),true);
-        CurrentPlayingCover = new ImageBrush(cover);
+        await UpdateCover();
 
         CurrentPlayingPosition = 0;
         CurrentPlayingPositionText = "00:00";
         //CurrentPlayingVolume = _mediaPlayerService.Volume;
 
         PlaylistChoosen = value;
-        //Update TaskBar Info
-        UpdateThumbInfo(cover);
     }
     partial void OnCurrentPlayingVolumeChanged(double value)
     {
@@ -731,7 +765,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         TaskBarBtn_Play.Icon = IsPlaying ? icon_pause : icon_play;
     }
 
-    private void UpdateThumbInfo(BitmapImage? cover)
+    private void UpdateThumbInfo(System.Drawing.Bitmap cover)
     {
         if (cover == null||TaskBarImg==null) return;
         TaskBarImg.SetImage(cover);

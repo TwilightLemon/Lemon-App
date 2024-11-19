@@ -13,7 +13,7 @@ using System.Windows.Input;
 using System.Windows.Data;
 using LemonApp.Common.WinAPI;
 using LemonApp.Views.Pages;
-using LemonApp.Common.Behaviors;
+using System.Windows.Interop;
 
 namespace LemonApp.Views.Windows
 {
@@ -96,6 +96,21 @@ namespace LemonApp.Views.Windows
             LyricViewHost.Child = _vm.LyricView;
 
             SystemThemeAPI.RegesterOnThemeChanged(this, OnThemeChanged, OnSystemColorChanged);
+        
+           /* HwndSource source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
+            source.AddHook(WndProc);*/
+        }
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            if (msg == MsgInteraction.WM_COPYDATA)
+            {
+                var msgStr = MsgInteraction.HandleMsg(lParam);
+                if (msgStr == MsgInteraction.SEND_SHOW)
+                {
+                    ShowWindow();
+                }
+            }
+            return IntPtr.Zero;
         }
         /// <summary>
         /// Menu Selected -> Navigate to some page

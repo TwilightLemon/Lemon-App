@@ -88,7 +88,7 @@ public class MediaPlayerService(UserProfileService userProfileService,
         _smtc.SetMediaStatus(SMTCMediaStatus.Playing);
         _smtc.Info.SetTitle(music.MusicName)
                         .SetArtist(music.SingerText)
-                        .SetThumbnail(await CoverGetter.GetCoverImgUrl(hc!, _userProfileService.GetAuth(), music))
+                        .SetThumbnail(await CoverGetter.GetCoverImgUrl(()=>hc, _userProfileService.GetAuth(), music))
                         .Update();
 
         OnLoaded?.Invoke(music);

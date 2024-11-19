@@ -506,6 +506,7 @@
                     <ColumnDefinition Width="6*" />
                 </Grid.ColumnDefinitions>
                 <Border x:Name="LyricPage_Background"
+                        Background="{Binding LyricPageBackgound}"
                         Grid.ColumnSpan="2" />
                 <Border x:Name="LyricPage_Img"
                         HorizontalAlignment="Left"

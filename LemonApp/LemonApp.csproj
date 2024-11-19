@@ -25,10 +25,12 @@
     <PackageReference Include="NLog" Version="5.3.4" />
     <PackageReference Include="NLog.Extensions.Logging" Version="5.3.14" />
     <PackageReference Include="System.Collections.Concurrent" Version="4.3.0" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.1" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\LemonApp.Native\LemonApp.Native.csproj" />
     <ProjectReference Include="..\LemonApp.Common\LemonApp.Common.csproj" />
     <ProjectReference Include="..\LemonApp.MusicLib.Abstraction\LemonApp.MusicLib.Abstraction.csproj" />
     <ProjectReference Include="..\LemonApp.MusicLib\LemonApp.MusicLib.csproj" />

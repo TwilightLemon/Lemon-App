@@ -1,4 +1,6 @@
-﻿using System;
+﻿using LemonApp.Common.Configs;
+using LemonApp.Common.Funcs;
+using System;
 using System.Reflection;
 using System.Threading;
 
@@ -6,7 +8,6 @@ namespace LemonApp;
 
 internal class EntryPoint
 {
-
     static Mutex? _appMutex = null;
     static bool IsAppRunning()
     {

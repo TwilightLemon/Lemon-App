@@ -61,8 +61,17 @@ public class ImageCacheHelper
             var img = new BitmapImage();
             img.BeginInit();
             img.StreamSource = stream;
-            img.CacheOption = immediate ? BitmapCacheOption.OnLoad : BitmapCacheOption.OnDemand;
+            img.CacheOption = immediate ? BitmapCacheOption.Default : BitmapCacheOption.OnDemand;
             img.EndInit();
+
+            if (immediate)
+            {
+                while (img.IsDownloading)
+                {
+                    await Task.Delay(100);
+                }
+            }
+
             return img;
         }
         catch {
