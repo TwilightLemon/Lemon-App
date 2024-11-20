@@ -132,7 +132,7 @@ namespace LemonApp.Views.UserControls
                         LocalLyricData ly=new();
                         ly.Id= m.MusicID;
                         var lyrics = LyricHelper.Format(data.Lyric);
-                        Dictionary<double, string?>? trans = null;
+                        List<(double, string?)>? trans = null;
                         List<string>? romaji = null;
                         if (data.Trans != null)
                         {
@@ -150,10 +150,10 @@ namespace LemonApp.Views.UserControls
                         int i = 0;
                         foreach(var line in lyrics)
                         {
-                            var transText = trans?.FirstOrDefault(m => m.Key >= line.Key - 2).Value;
+                            var transText = trans?.FirstOrDefault(m => m.Item1 >= line.Item1 - 2).Item2;
                             LrcLine lrcLine = new() {
-                                Time = line.Key,
-                                Lyric = line.Value!,
+                                Time = line.Item1,
+                                Lyric = line.Item2!,
                                 Trans=transText,
                                 Romaji=romaji?[i]
                             };

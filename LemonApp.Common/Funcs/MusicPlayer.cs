@@ -23,7 +23,7 @@ public class MusicPlayer
     /// <returns></returns>
     public static async Task PrepareDll() 
     {
-        if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + "\\bass.dll") || !File.Exists(AppDomain.CurrentDomain.BaseDirectory + "\\bass_fx.dll"))
+        if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + "\\bass.dll"))
         {
             if (Environment.Is64BitProcess)
                 await ReleaseDLLFiles(Properties.Resources.bass);

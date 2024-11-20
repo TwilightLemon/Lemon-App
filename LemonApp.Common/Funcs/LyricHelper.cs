@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 namespace LemonApp.Common.Funcs;
 public static class LyricHelper
 {
-    public static Dictionary<double, string?> Format(string text)
+    public static List<(double, string?)> Format(string text)
     {
         Regex regex = new Regex(@"\[(\d+):(\d+\.\d+)\](.*)");
         var lines = text.Split('\n');
-        Dictionary<double, string?> result = [];
+        List<(double, string?)> result = [];
         foreach (var line in lines)
         {
             var match = regex.Match(line);
@@ -30,7 +30,7 @@ public static class LyricHelper
                 var second = double.Parse(match.Groups[2].Value);
                 var sec = minute * 60 + second;
                 var millisecond = sec * 1000;
-                result.Add(millisecond, lyric);
+                result.Add((millisecond, lyric));
             }
         }
         return result;
