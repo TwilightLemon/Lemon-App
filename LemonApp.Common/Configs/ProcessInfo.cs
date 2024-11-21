@@ -8,6 +8,6 @@ namespace LemonApp.Common.Configs;
 
 public class ProcessInfo
 {
-    public IntPtr MainWindowHandle { get; set; }
+    public int MainWindowHandle { get; set; } = 0;
     public string InstancePid { get; set; } = string.Empty;
 }

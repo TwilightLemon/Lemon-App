@@ -36,10 +36,10 @@ public class MsgInteraction
         return result != 0;
     }
 
-    public static string HandleMsg(IntPtr lParam)
+    public static string? HandleMsg(IntPtr lParam)
     {
         var cds = Marshal.PtrToStructure<COPYDATASTRUCT>(lParam);
         var msg = Marshal.PtrToStringAnsi(cds.lpData, cds.cbData);
-        return msg;
+        return msg[..^1];//remove '\0'
     }
 }

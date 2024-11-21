@@ -46,6 +46,29 @@ public class SettingsMgr<T> where T : class
     {
         _watcher?.Dispose();
     }
+    public bool Load()
+    {
+        if(Sign is null)return false;
+        try
+        {
+            var dt = Settings.Load<SettingsMgr<T>>(Sign, _type);
+            if (dt != null)
+            {
+                Data = dt.Data;
+            }
+            else
+            {
+                Data = Activator.CreateInstance<T>();
+                Save();
+            }
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     public async Task<bool> LoadAsync()
     {
         if (Sign is null) return false;
@@ -170,12 +193,29 @@ public static class Settings
         return data;
     }
 
+    public static T? Load<T>(string Sign,sType t)where T : class
+    {
+        string path = GetPathBySign(Sign, t);
+        var data = LoadFromJson<T>(path, t == sType.Settings);
+        return data;
+    }
+
     public static async Task<T?> LoadFromJsonAsync<T>(string path,bool useOptions=true) where T : class
     {
         if (!File.Exists(path))
             return null;
         var fs = File.OpenRead(path);
         var data = await JsonSerializer.DeserializeAsync<T>(fs, useOptions ? _options : null);
+        fs.Close();
+        return data;
+    }
+
+    public static T? LoadFromJson<T>(string path, bool useOptions = true) where T : class
+    {
+        if (!File.Exists(path))
+            return null;
+        var fs = File.OpenRead(path);
+        var data = JsonSerializer.Deserialize<T>(fs, useOptions ? _options : null);
         fs.Close();
         return data;
     }

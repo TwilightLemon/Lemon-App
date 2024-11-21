@@ -5,11 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Interop;
 
 namespace LemonApp.Services
 {
@@ -51,6 +49,14 @@ namespace LemonApp.Services
                 //check & update user profile
                 if (appSettingsService.GetConfigMgr<UserProfile>()?.Data?.TencUserAuth is { } auth)
                     await userProfileService.UpdateAuthAndNotify(auth);
+
+                //save window handle for MsgInteraction
+                if (EntryPoint._procMgr is { } procMgr)
+                {
+                    var hwnd = new WindowInteropHelper(mainWindow).Handle;
+                    procMgr.Data = new() { MainWindowHandle = hwnd.ToInt32() };
+                    await procMgr.SaveAsync();
+                }
             });
 
             return Task.CompletedTask;
