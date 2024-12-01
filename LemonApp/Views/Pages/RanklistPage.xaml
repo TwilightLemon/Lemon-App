@@ -1,0 +1,93 @@
+﻿<Page x:Class="LemonApp.Views.Pages.RanklistPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:ws="https://schemas.elecho.dev/wpfsuite"
+      xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
+      xmlns:local="clr-namespace:LemonApp.Views.Pages"
+      xmlns:vm="clr-namespace:LemonApp.ViewModels"
+      mc:Ignorable="d" 
+      Foreground="{DynamicResource ForeColor}"
+      d:DesignHeight="450" d:DesignWidth="800"
+      d:DataContext="{d:DesignInstance Type=vm:RanklistPageViewModel}"
+      Title="RanklistPage">
+
+    <Grid>
+        <TextBlock Text="Ranking"
+                   Margin="24 12"
+                   FontSize="24"
+                   FontWeight="Bold" />
+        <ws:ListBox x:Name="RankList"
+                    Style="{StaticResource SimpleListBoxStyle}"
+                    Margin="0 56 0 0"
+                    VirtualizingStackPanel.IsVirtualizing="True"
+                    VirtualizingStackPanel.VirtualizationMode="Recycling"
+                    d:ItemsSource="{d:SampleData ItemCount=5}"
+                    SelectedItem="{Binding ChoosenItem}"
+                    SelectionChanged="RankList_SelectionChanged"
+                    ItemsSource="{Binding Ranklists}">
+            <ws:ListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ws:ListBoxItem}">
+                    <Setter Property="FocusVisualStyle"
+                            Value="{x:Null}" />
+                    <Setter Property="Margin"
+                            Value="5 8" />
+                    <Setter Property="CornerRadius"
+                            Value="8" />
+                    <Setter Property="BorderThickness"
+                            Value="0" />
+                    <Setter Property="Background"
+                            Value="{DynamicResource MaskColor}" />
+                    <Setter Property="Foreground"
+                            Value="{DynamicResource ForeColor}" />
+                    <Setter Property="HoverBackground"
+                            Value="{DynamicResource FocusMaskColor}" />
+                    <Setter Property="SelectedBackground"
+                            Value="{DynamicResource FocusMaskColor}" />
+                    <Setter Property="SelectedActiveBackground"
+                            Value="{DynamicResource FocusMaskColor}" />
+                </Style>
+            </ws:ListBox.ItemContainerStyle>
+            <ws:ListBox.ItemsPanel>
+                <ItemsPanelTemplate >
+                    <base:AutoUniformGrid MaxItemWidth="420"
+                                          MinItemWidth="380"
+                                          Columns="2" />
+                </ItemsPanelTemplate>
+            </ws:ListBox.ItemsPanel>
+            <ws:ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border Height="138">
+                        <Grid>
+                            <Border x:Name="CoverImg"
+                                    HorizontalAlignment="Left"
+                                    RenderOptions.BitmapScalingMode="HighQuality"
+                                    Width="138"
+                                    Height="138"
+                                    CornerRadius="8"
+                                    d:Background="#69f">
+                                <Border.Background>
+                                    <ImageBrush ImageSource="{Binding Cover,IsAsync=True,Mode=OneWay}" />
+                                </Border.Background>
+                            </Border>
+                            <TextBlock VerticalAlignment="Top"
+                                       Margin="162 18 10 0"
+                                       FontSize="20"
+                                       FontWeight="Bold"
+                                       Text="{Binding ListInfo.Name}"/>
+                            <TextBlock VerticalAlignment="Top" />
+                            <ItemsControl Margin="162 52 10 20" ItemsSource="{Binding ListInfo.Content}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock  Text="{Binding}"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ws:ListBox.ItemTemplate>
+        </ws:ListBox>
+    </Grid>
+</Page>

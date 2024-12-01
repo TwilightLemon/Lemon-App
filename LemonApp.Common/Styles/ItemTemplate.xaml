@@ -1,0 +1,63 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ws="https://schemas.elecho.dev/wpfsuite"
+                    xmlns:base="clr-namespace:LemonApp.Common.UIBases">
+    <!--展示歌单-->
+    <Style x:Key="PlaylistItemContainerStyle" TargetType="{x:Type ws:ListBoxItem}">
+        <Setter Property="FocusVisualStyle"
+                Value="{x:Null}" />
+        <Setter Property="Margin"
+                Value="5 2" />
+        <Setter Property="CornerRadius"
+                Value="8" />
+        <Setter Property="BorderThickness"
+                Value="0" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource ForeColor}" />
+        <Setter Property="HoverBackground"
+                Value="{DynamicResource MaskColor}" />
+        <Setter Property="SelectedBackground"
+                Value="{DynamicResource MaskColor}" />
+        <Setter Property="SelectedActiveBackground"
+                Value="{DynamicResource MaskColor}" />
+    </Style>
+    <ItemsPanelTemplate x:Key="PlaylistItemContainer">
+        <base:AutoUniformGrid MaxItemWidth="240"
+                              MinItemWidth="180"
+                              Columns="4" />
+    </ItemsPanelTemplate>
+    <DataTemplate x:Key="PlaylistItemDataTemplate">
+        <StackPanel>
+            <Border x:Name="CoverImg"
+                    Margin="12 12 12 0"
+                    BorderBrush="{DynamicResource BorderColor}"
+                    BorderThickness="4"
+                    CornerRadius="8"
+                    RenderOptions.BitmapScalingMode="HighQuality"
+                    Height="{Binding ElementName=CoverImg,Path=ActualWidth}">
+                <Border.Background>
+                    <ImageBrush ImageSource="{Binding Cover,IsAsync=True,Mode=OneWay}" />
+                </Border.Background>
+                <Grid>
+                    <Border VerticalAlignment="Bottom"
+                            HorizontalAlignment="Right"
+                            Background="#BF000000"
+                            Margin="4"
+                            CornerRadius="9"
+                            Height="18">
+                        <TextBlock Text="{Binding ListInfo.Subtitle}"
+                                   Foreground="White"
+                                   VerticalAlignment="Center"
+                                   TextAlignment="Left"
+                                   Margin="8 0 0 0"
+                                   FontSize="12" />
+                    </Border>
+                </Grid>
+            </Border>
+            <TextBlock Text="{Binding ListInfo.Name}"
+                       HorizontalAlignment="Center"
+                       Margin="5" />
+        </StackPanel>
+    </DataTemplate>
+    <!--歌曲列表-->
+</ResourceDictionary>

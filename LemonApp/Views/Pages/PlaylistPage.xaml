@@ -288,5 +288,20 @@
                 </ws:ListBox>
             </Grid>
         </base:FluentPopup>
+        <ws:Button x:Name="GotoPlayingBtn"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Bottom"
+                   Visibility="{Binding ShowGotoPlaying}"
+                   Margin="32"
+                   Width="36"
+                   Height="36"
+                   CornerRadius="18"
+                   Style="{StaticResource AccentButtonStyleForWs}"
+                   Click="GotoPlayingBtn_Click">
+            <Path Fill="{DynamicResource BackgroundColor}"
+                  Stretch="Uniform"
+                  Data="{StaticResource Icon_Position}"
+                  Width="16"/>
+        </ws:Button>
     </Grid>
 </Page>

@@ -5,6 +5,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 using static LemonApp.MusicLib.Abstraction.Music.DataTypes;
 using static LemonApp.MusicLib.Abstraction.Playlist.DataTypes;
@@ -30,6 +31,8 @@ public partial class PlaylistPageViewModel(
     private Brush? _creatorAvatar = null;
     [ObservableProperty]
     private bool _showInfoView = true;
+    [ObservableProperty]
+    private Visibility _showGotoPlaying = Visibility.Collapsed;
 
     public void Dispose()
     {
@@ -125,5 +128,9 @@ public partial class PlaylistPageViewModel(
     /// </summary>
     [ObservableProperty]
     private Music? _playing = null;
+    partial void OnPlayingChanged(Music? value)
+    {
+        ShowGotoPlaying = value==null?Visibility.Collapsed:Visibility.Visible;
+    }
 
 }

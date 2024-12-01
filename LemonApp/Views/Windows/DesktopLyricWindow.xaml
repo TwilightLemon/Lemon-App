@@ -66,10 +66,28 @@
             <ws:WrapPanel HorizontalSpacing="24"
                           VerticalAlignment="Center"
                           HorizontalAlignment="Center">
+                <ws:Button Width="48"
+                           Height="48"
+                           Style="{StaticResource SimpleIconButtonStyleForWs}"
+                           Command="{Binding ShowOrHideTranslationCommand}">
+                    <ws:ConditionalControl Condition="{Binding ShowTranslation}">
+                        <ws:ConditionalControl.ContentWhenTrue>
+                            <Path Data="{StaticResource Icon_Trans}"
+                                  Stretch="Uniform"
+                                  Fill="{DynamicResource HighlightThemeColor}"
+                                  Height="22" />
+                        </ws:ConditionalControl.ContentWhenTrue>
+                        <ws:ConditionalControl.ContentWhenFalse>
+                            <Path Data="{StaticResource Icon_Trans}"
+                                  Stretch="Uniform"
+                                  Fill="{DynamicResource ForeColor}"
+                                  Height="22" />
+                        </ws:ConditionalControl.ContentWhenFalse>
+                    </ws:ConditionalControl>
+                </ws:Button>
                 <ws:Button x:Name="PlayLastBtn"
                            Width="48"
                            Height="48"
-                           Margin="48 0 0 0"
                            ToolTip="上一曲"
                            Command="{Binding PlayLastCommand}"
                            HorizontalAlignment="Left"
@@ -101,7 +119,6 @@
                 <ws:Button x:Name="PlayNextBtn"
                            Width="48"
                            Height="48"
-                           Margin="0 0 48 0"
                            ToolTip="下一曲"
                            Command="{Binding PlayNextCommand}"
                            HorizontalAlignment="Right"
@@ -111,6 +128,7 @@
                           Fill="{DynamicResource ForeColor}"
                           Stretch="Uniform" />
                 </ws:Button>
+                <Border Width="48" Height="48"/>
             </ws:WrapPanel>
             <ws:Button x:Name="CloseBtn"
                        Content="&#xE8BB;"

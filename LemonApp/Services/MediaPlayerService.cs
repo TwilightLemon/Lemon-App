@@ -27,6 +27,8 @@ public class MediaPlayerService(UserProfileService userProfileService,
     public event Action<MusicDT.Music>? OnLoaded,OnPlay,OnPaused, OnAddToPlayNext;
     public event Action? OnEnd, OnPlayNext, OnPlayLast;
     public event Action<IEnumerable<MusicDT.Music>>? OnNewPlaylistReceived;
+    public Action<long, long>? CacheProgress;
+    public Action? CacheFinished,CacheStarted;
     public async Task Init()
     {
         audioGetter = new(hc, _userProfileService.GetAuth,null,_sharedLaClient,_userProfileService.GetSharedLaToken);
@@ -82,7 +84,8 @@ public class MediaPlayerService(UserProfileService userProfileService,
             var url = await audioGetter.GetUrlAsync(music, prefer);//TODO: 提供音质选择
             if (url is null || url.Url is null)
                 throw new InvalidOperationException("Failed to get music url.");
-            _player.LoadUrl(cacheFile,url.Url, null, null);
+            _player.LoadUrl(cacheFile,url.Url, CacheProgress, CacheFinished);
+            CacheStarted?.Invoke();
         }
 
         _smtc.SetMediaStatus(SMTCMediaStatus.Playing);

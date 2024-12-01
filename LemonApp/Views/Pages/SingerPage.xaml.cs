@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace LemonApp.Views.Pages
 {
     /// <summary>
-    /// RankPage.xaml 的交互逻辑
+    /// SingerPage.xaml 的交互逻辑
     /// </summary>
-    public partial class RankPage : Page
+    public partial class SingerPage : Page
     {
-        public RankPage()
+        public SingerPage()
         {
             InitializeComponent();
         }

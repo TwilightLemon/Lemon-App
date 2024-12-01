@@ -37,6 +37,10 @@ namespace LemonApp.Views.Windows
             DataContext = _vm = mainWindowViewModel;
             _vm.RequestNavigateToPage += Vm_RequireNavigateToPage;
             _vm.SyncCurrentPlayingWithPlayListPage += Vm_SyncCurrentPlayingWithPlayListPage;
+            _vm.CacheStarted = Vm_CacheBegin;
+            _vm.CacheFinished = Vm_CacheFinished;
+
+
             Loaded += MainWindow_Loaded;
         }
 
@@ -91,6 +95,7 @@ namespace LemonApp.Views.Windows
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             _vm.SelectedMenu = _vm.MainMenus.FirstOrDefault();
+            _vm.RequireCreateNewPage();
             _vm.InitTaskBarThumb();
             _vm.InitNotifyIcon();
             LyricViewHost.Child = _vm.LyricView;
@@ -111,24 +116,6 @@ namespace LemonApp.Views.Windows
                 }
             }
             return IntPtr.Zero;
-        }
-        /// <summary>
-        /// Menu Selected -> Navigate to some page
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void MainPageMenu_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            //TODO: 迁移Navigation 由ViewModel处理并发起RequestNavigation
-
-/*            if (sender is ListBox list)
-            {
-                if (list.SelectedItem is null) return;
-                if (_vm.CurrentPage is { } page && _vm.CurrentPage != MainContentFrame.Content)
-                {
-                    MainContentFrame.Navigate(_vm.CurrentPage);
-                }
-            }*/
         }
 
         private void GoBackBtn_Click(object sender, RoutedEventArgs e)
@@ -161,9 +148,6 @@ namespace LemonApp.Views.Windows
             {
                 //处理来自GoBack的Navigation
                 var selected = page.Tag as MainWindowViewModel.MainMenu;
-                //退回时不生成新页面
-                if (selected!=null)
-                    selected.RequireCreateNewPage = false;
                 _vm.SelectedMenu = selected;
             }
         }
@@ -234,6 +218,19 @@ namespace LemonApp.Views.Windows
         #endregion
 
         #region Play Control
+        private void Vm_CacheBegin()
+        {
+            Dispatcher.Invoke(() => { 
+                CacheProg.BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(300)));
+            });
+        }
+        private void Vm_CacheFinished()
+        {
+            Dispatcher.Invoke(() => {
+                CacheProg.BeginAnimation(OpacityProperty, new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(300)));
+            });
+        }
+
         private bool _isSliderCtrl = false;
         private void PlaySlider_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -272,6 +269,35 @@ namespace LemonApp.Views.Windows
             double value = perc * AudioAdjustSlider.Maximum;
             _vm.CurrentPlayingVolume = value;
         }
+
+        private void GotoPlayingBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (PlaylistLb.SelectedItem is { } music)
+                PlaylistLb.ScrollIntoView(music);
+        }
+
+        private void MainPageMenuItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true; // 阻止默认的选中行为
+            (sender as ListBoxItem).Tag = true;
+        }
+
+        private void MainPageMenuItem_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is ListBoxItem item&& item.Tag is true)
+            {
+                item.IsSelected = true;
+                item.Tag = false;
+                _vm.RequireCreateNewPage();
+            }
+        }
+
+        private void MainPageMenuItem_MouseLeave(object sender, MouseEventArgs e)
+        {
+            if (sender is ListBoxItem item && item.Tag is true)
+                item.Tag = false;
+        }
+
         #endregion
 
         #region Functional Button Navigation

@@ -14,16 +14,10 @@ namespace LemonApp.Views.Pages
         {
             InitializeComponent();
         }
-
-        public PlaylistItemPageViewModel? ViewModel
+        public PlaylistItemViewModel? MyDissViewModel
         {
-            get => DataContext as PlaylistItemPageViewModel;
-            set => DataContext = value;
-        }
-
-        private void List_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            List.SelectedItem = null;
+            get => MyDissList.ViewModel;
+            set => MyDissList.ViewModel = value;
         }
     }
 }

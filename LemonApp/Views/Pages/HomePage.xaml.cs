@@ -1,4 +1,5 @@
 ﻿using LemonApp.Services;
+using LemonApp.Views.Windows;
 using System.Windows;
 using System.Windows.Controls;
 using static LemonApp.MusicLib.Abstraction.Music.DataTypes;
@@ -17,9 +18,9 @@ namespace LemonApp.Views.Pages
         }
         private readonly MainNavigationService _mainNavigationService;
 
-/*        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void Grid_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            _mainNavigationService.RequstNavigation(PageType.SearchPage,"Taylor Swift");
-        }*/
+            new ExMessageBox().Show();
+        }
     }
 }

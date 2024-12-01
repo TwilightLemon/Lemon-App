@@ -34,8 +34,7 @@ namespace LemonApp
                 {
                     AutomaticDecompression = System.Net.DecompressionMethods.GZip,
                     UseCookies=true,
-                    UseProxy = true,
-                    KeepAlivePingPolicy=HttpKeepAlivePingPolicy.Always
+                    UseProxy = true
                 });
 
 
@@ -50,6 +49,7 @@ namespace LemonApp
                         .AddConfig<Appearence>()
                         .AddConfig<PlayingPreference>()
                         .AddConfig<PlaylistCache>(Common.Funcs.Settings.sType.Cache)
+                        .AddConfig<DesktopLyricOption>()
                 );
 
                 //services
@@ -67,7 +67,7 @@ namespace LemonApp
                 //pages
                 services.AddTransient<SettingsPage>();
                 services.AddTransient<HomePage>();
-                services.AddTransient<RankPage>();
+                services.AddTransient<RanklistPage>();
                 services.AddTransient<PlaylistPage>();
                 services.AddTransient<PlaylistItemPage>();
                 services.AddTransient<NotifyIconMenuWindow>();
@@ -83,10 +83,12 @@ namespace LemonApp
                 services.AddSingleton<MainWindowViewModel>();
                 services.AddTransient<UserMenuViewModel>();
                 services.AddTransient<PlaylistPageViewModel>();
-                services.AddTransient<PlaylistItemPageViewModel>();
+                services.AddTransient<PlaylistItemViewModel>();
                 services.AddTransient<NotifyIconMenuViewModel>();
                 services.AddSingleton<DesktopLyricWindowViewModel>();
                 services.AddSingleton<AccountInfoPageViewModel>();
+                services.AddTransient<SettingsPageViewModel>();
+                services.AddTransient<RanklistPageViewModel>();
 
                 //Logger
                 services.AddLogging(builder =>

@@ -83,6 +83,14 @@ namespace LemonApp.Views.Pages
                 _vm!.PlayMusicCommand.Execute(m);
         }
 
+        private void GotoPlayingBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (listBox.SelectedItem is Music { } m)
+            {
+                listBox.ScrollIntoView(m);
+            }
+        }
+
         public PlaylistPageViewModel? ViewModel
         {
             get => DataContext as PlaylistPageViewModel;

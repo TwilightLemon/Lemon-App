@@ -81,7 +81,14 @@ public class MusicPlayer
     {
         try
         {
-            Stop();
+            if ((BassdlList.LastOrDefault() is { } last && last.stream == stream))
+            {
+                last.SetClose();
+            }
+            else
+            {
+                Stop();
+            }
 
             var user = new IntPtr(BassdlList.Count);
             var Bassdl = new BASSDL(path);
@@ -91,8 +98,11 @@ public class MusicPlayer
                 BassdlList.Remove(dl);
                 finish?.Invoke();
             };
-            Bassdl.DownloadFailed = (dl) => {
+            Bassdl.DownloadFailed = Bassdl.DownloadCancelled = (dl) =>
+            {
                 BassdlList.Remove(dl);
+                Bass.BASS_ChannelStop(dl.stream);
+                Bass.BASS_StreamFree(dl.stream);
             };
 
             stream = Bass.BASS_StreamCreateURL(url + "\r\n"
@@ -208,6 +218,7 @@ public class BASSDL
     public Action<long, long>? ProgressChanged = null;
     public Action<BASSDL>? DownloadSucceeded = null;
     public Action<BASSDL>? DownloadFailed = null;
+    public Action<BASSDL>? DownloadCancelled = null;
     public int stream;
     public BASSDL(string file)
     {
@@ -252,6 +263,9 @@ public class BASSDL
                 {
                     //没有被停止而是链接下载失败
                     DownloadFailed?.Invoke(this);
+                }else
+                {
+                    DownloadCancelled?.Invoke(this);
                 }
             }
             else

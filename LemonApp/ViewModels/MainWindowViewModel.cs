@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Windows.Controls;
@@ -25,10 +24,10 @@ using System.Collections.Generic;
 using LemonApp.MusicLib.Playlist;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media.Imaging;
 using LemonApp.Views.Windows;
-using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
 using Task = System.Threading.Tasks.Task;
+using LemonApp.MusicLib.RankList;
+using System.Diagnostics;
 
 namespace LemonApp.ViewModels;
 public partial class MainWindowViewModel : ObservableObject,IDisposable
@@ -76,6 +75,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         _mediaPlayerService.OnEnd += _mediaPlayerService_OnEnd;
         _mediaPlayerService.OnPlayNext += PlayNext;
         _mediaPlayerService.OnPlayLast += PlayLast;
+        _mediaPlayerService.CacheProgress = CacheProgress;
 
         LyricView = lyricView;
         LyricView.OnNextLrcReached += LyricView_OnNextLrcReached;
@@ -156,9 +156,14 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         CurrentPlayingPosition = pos.TotalMilliseconds;
         CurrentPlayingPositionText = $"{pos.Minutes:D2}:{pos.Seconds:D2}";
 
-        LyricView.Dispatcher.Invoke(() => {
-            LyricView.UpdateTime(pos.TotalMilliseconds);
-        });
+        try
+        {
+            LyricView.Dispatcher.Invoke(() =>
+            {
+                LyricView.UpdateTime(pos.TotalMilliseconds);
+            });
+        }
+        catch { }
     }
 
     #endregion
@@ -286,6 +291,14 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
     }
     #endregion
     #region respond to media player controller
+    [ObservableProperty]
+    private double _cacheDownloadProgress = 0;
+    public Action? CacheFinished { set => _mediaPlayerService.CacheFinished = value; }
+    public Action? CacheStarted { set => _mediaPlayerService.CacheStarted = value; }
+    private void CacheProgress(long total,long downloaded)
+    {
+        CacheDownloadProgress = (double)downloaded / total;
+    }
     private void _mediaPlayerService_OnPaused(MusicDT.Music obj)
     {
         IsPlaying = false;
@@ -323,8 +336,10 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
     #region userprofile
     private void UserProfileService_OnAuthExpired()
     {
-        //TODO: notify main window to show msg
-        Debug.WriteLine("Auth expired.....");
+        if (ExMessageBox.Show("登录已失效，重新登录？"))
+        {
+            UserMenuViewModel.Menu_LoginQQ();
+        }
     }
 
     private async void UserProfileService_OnAuth(TencUserAuth auth)
@@ -345,7 +360,6 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         public string Name { get; } = name;
         public Geometry Icon { get; } = icon;
         public Type PageType { get; } = pageType;
-        public bool RequireCreateNewPage = true;
         public MenuType Type { get; set; } = type;
         public Func<object,Task>? ProcessPage { get; } = process;
     }
@@ -357,7 +371,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
     {
         IEnumerable<MainMenu> list = [
         new MainMenu("Home", (Geometry)App.Current.FindResource("Menu_Home"), typeof(HomePage)),
-        new MainMenu("Rank",(Geometry)App.Current.FindResource("Menu_Ranklist"), typeof(RankPage)),
+        new MainMenu("Rank",(Geometry)App.Current.FindResource("Menu_Ranklist"), typeof(RanklistPage)),
         new MainMenu("Singer", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page)),
         new MainMenu("Playlists", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page)),
         new MainMenu("Radio", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page)),
@@ -375,16 +389,15 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
 
     [ObservableProperty]
     private MainMenu? selectedMenu;
-
-    async partial void OnSelectedMenuChanged(MainMenu? value)
+    public Task RequireCreateNewPage()
     {
-        await CreateMenuPage(value);
+        return CreateMenuPage(SelectedMenu);
     }
     private async Task CreateMenuPage(MainMenu? value)
     {
         if (value != null)
         {
-            if (value.PageType is { } type && value.RequireCreateNewPage)
+            if (value.PageType is { } type)
             {
                 if (App.Host!.Services.GetService(type) is Page{ } page)
                 {
@@ -394,10 +407,6 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
                     page.Tag = value;
                     RequestNavigateToPage?.Invoke(page);
                 }
-            }
-            if (!value.RequireCreateNewPage)
-            {
-                value.RequireCreateNewPage = true;//reset
             }
         }
     }
@@ -420,6 +429,10 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
             case PageType.AlbumPage:
                 if (arg is string { } id)
                     NavigateToAlbumPage(id);
+                break;
+            case PageType.RankPage:
+                if (arg is MusicLib.Abstraction.RankList.DataTypes.RankListInfo { } info)
+                    NavigateToRanklist(info);
                 break;
             case PageType.SearchPage:
                 if (arg is string { } keyword)
@@ -453,6 +466,34 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
             RequestNavigateToPage?.Invoke(sp);
         }
         SelectedMenu = null;
+    }
+    private async void NavigateToRanklist(MusicLib.Abstraction.RankList.DataTypes.RankListInfo info)
+    {
+        IsLoading = true;
+        var page=_serviceProvider.GetRequiredService<PlaylistPage>();
+        var vm= _serviceProvider.GetRequiredService<PlaylistPageViewModel>();
+        var hc = _serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
+        if (page != null && hc != null && vm!=null)
+        {
+            var data = await RankListAPI.GetRankListData(info.Id, hc);
+            if (data != null)
+            {
+                vm.Cover= new ImageBrush(await ImageCacheHelper.FetchData(info.CoverUrl));
+                vm.Description = info.Description;
+                vm.ListName = info.Name;
+                vm.PlaylistType = MusicLib.Abstraction.Playlist.DataTypes.PlaylistType.Ranklist;
+                foreach (var item in data)
+                {
+                    vm.Musics.Add(item);
+                }
+                vm.CreatorName = "QQ Music Official";
+                vm.CreatorAvatar = Brushes.SkyBlue;
+                vm.UpdateCurrentPlaying(CurrentPlaying?.MusicID);
+                page.ViewModel = vm;
+                RequestNavigateToPage?.Invoke(page);
+            }
+        }
+        IsLoading = false;
     }
     private async void NavigateToAlbumPage(string AlbumId)
     {
@@ -542,11 +583,10 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         {
             if (_userProfileService.UserProfileGetter.MyPlaylists is { } list)
             {
-                if (_serviceProvider.GetRequiredService<PlaylistItemPageViewModel>() is { } vm)
+                if (_serviceProvider.GetRequiredService<PlaylistItemViewModel>() is { } vm)
                 {
-                    vm.Title = "My Diss";
                     await vm.SetPlaylistItems(list);
-                    view.ViewModel = vm;
+                    view.MyDissViewModel = vm;
                 }
             }
         }

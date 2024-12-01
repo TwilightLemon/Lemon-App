@@ -12,7 +12,7 @@ using static LemonApp.MusicLib.Abstraction.Album.DataTypes;
 using static LemonApp.MusicLib.Abstraction.Music.DataTypes;
 
 namespace LemonApp.MusicLib.Playlist;
-
+#pragma warning disable CS8602 // 解引用可能出现空引用。
 public static class PublicPlaylistAPI
 {
     public static async Task<DataTypes.Playlist?> LoadPlaylistById(HttpClient hc, TencUserAuth auth, string id)

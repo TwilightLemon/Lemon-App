@@ -7,7 +7,10 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Documents;
+using System.Windows;
 using System.Windows.Interop;
+using System.Windows.Navigation;
 
 namespace LemonApp.Services
 {
@@ -22,6 +25,12 @@ namespace LemonApp.Services
     {
         public Task StartAsync(CancellationToken cancellationToken)
         {
+            //注册Hyperlink的跳转事件
+            EventManager.RegisterClassHandler(typeof(Hyperlink), Hyperlink.RequestNavigateEvent, new RequestNavigateEventHandler((sender, e) =>
+            {
+                System.Diagnostics.Process.Start("explorer.exe", e.Uri.AbsoluteUri);
+                e.Handled = true;
+            }));
             // Load settings
             appSettingsService.LoadAsync(async(success)=>{
                 if(!success){
@@ -47,7 +56,7 @@ namespace LemonApp.Services
                 mainWindow.Show();
 
                 //check & update user profile
-                if (appSettingsService.GetConfigMgr<UserProfile>()?.Data?.TencUserAuth is { } auth)
+                if (appSettingsService.GetConfigMgr<UserProfile>()?.Data?.TencUserAuth is {Id.Length:>5} auth)
                     await userProfileService.UpdateAuthAndNotify(auth);
 
                 //save window handle for MsgInteraction

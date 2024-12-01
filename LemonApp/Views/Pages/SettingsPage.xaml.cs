@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LemonApp.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +21,26 @@ namespace LemonApp.Views.Pages
     /// </summary>
     public partial class SettingsPage : Page
     {
-        public SettingsPage()
+        public SettingsPage(SettingsPageViewModel settingsPageViewModel)
         {
             InitializeComponent();
+            DataContext = vm = settingsPageViewModel;
+        }
+        private readonly SettingsPageViewModel vm;
+        bool IsAboutMoreOpen = false;
+        private async void AboutMoreBt_Click(object sender, RoutedEventArgs e)
+        {
+            if (!IsAboutMoreOpen)
+            {
+                await vm.LoadPublisherContent();
+                ContentPanel.Children.Add(vm.PublisherContent);
+                IsAboutMoreOpen = true;
+            }
+            else
+            {
+                ContentPanel.Children.Remove(vm.PublisherContent);
+                IsAboutMoreOpen = false;
+            }
         }
     }
 }

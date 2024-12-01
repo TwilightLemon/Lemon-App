@@ -81,7 +81,7 @@ public partial class UserMenuViewModel:ObservableObject
         new ActionMenu("设置",(Geometry)App.Current.FindResource("Icon_Settings"),Menu_GotoSettingsPage),
         new ActionMenu("退出",null,Menu_Exit)
     ];
-    static void Menu_LoginQQ()
+    public static void Menu_LoginQQ()
     {
         var sp = App.Host!.Services;
         var loginWindow = sp.GetRequiredService<LoginWindow>();

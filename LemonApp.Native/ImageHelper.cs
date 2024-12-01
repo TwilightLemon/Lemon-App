@@ -106,7 +106,7 @@ public static class ImageHelper
 
     public static void AddMask(this Bitmap bitmap,bool darkmode)
     {
-        var color1 = darkmode ? Color.FromArgb(210, 0, 0, 0) : Color.FromArgb(230, 255, 255, 255);
+        var color1 = darkmode ? Color.FromArgb(190, 0, 0, 0) : Color.FromArgb(210, 255, 255, 255);
         var color2 = darkmode ? Color.FromArgb(180, 0, 0, 0) : Color.FromArgb(200, 255, 255, 255);
         using Graphics g = Graphics.FromImage(bitmap);
         using LinearGradientBrush brush = new(
@@ -134,7 +134,7 @@ public static class ImageHelper
                 byte* row = (byte*)data.Scan0 + (y * data.Stride);
                 for (int x = 0; x < width; x++)
                 {
-                    int idx = x * 4;
+                    int idx = x * 3;
 
                     float blue = row[idx] / 255.0f;
                     float green = row[idx + 1] / 255.0f;

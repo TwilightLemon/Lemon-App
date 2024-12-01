@@ -12,9 +12,9 @@
                        xmlns:uc="clr-namespace:LemonApp.Views.UserControls"
                        d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
                        mc:Ignorable="d"
-                       Background="Transparent"
+                       Background="{DynamicResource WindowBackgroundColor}"
                        ExitOnCloseBtnClicked="False"
-                       Mode="Mica"
+                       Mode="Acrylic"
                        Foreground="{DynamicResource ForeColor}"
                        Title="Lemon App"
                        Height="750"
@@ -387,8 +387,33 @@
                                     SelectedItem="{Binding SelectedMenu}"
                                     Background="Transparent"
                                     BorderThickness="0"
-                                    ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}"
                                     VerticalAlignment="Top">
+                            <ws:ListBox.ItemContainerStyle>
+                                <Style TargetType="{x:Type ws:ListBoxItem}">
+                                    <EventSetter Event="PreviewMouseLeftButtonDown"
+                                                 Handler="MainPageMenuItem_PreviewMouseLeftButtonDown" />
+                                    <EventSetter Event="MouseLeave"
+                                                 Handler="MainPageMenuItem_MouseLeave" />
+                                    <EventSetter Event="MouseLeftButtonUp"
+                                                 Handler="MainPageMenuItem_MouseLeftButtonUp" />
+                                    <Setter Property="FocusVisualStyle"
+                                            Value="{x:Null}" />
+                                    <Setter Property="Margin"
+                                            Value="5 2" />
+                                    <Setter Property="CornerRadius"
+                                            Value="8" />
+                                    <Setter Property="BorderThickness"
+                                            Value="0" />
+                                    <Setter Property="Foreground"
+                                            Value="{DynamicResource ForeColor}" />
+                                    <Setter Property="HoverBackground"
+                                            Value="{DynamicResource MaskColor}" />
+                                    <Setter Property="SelectedBackground"
+                                            Value="{DynamicResource MaskColor}" />
+                                    <Setter Property="SelectedActiveBackground"
+                                            Value="{DynamicResource MaskColor}" />
+                                </Style>
+                            </ws:ListBox.ItemContainerStyle>
                             <ws:ListBox.GroupStyle>
                                 <GroupStyle>
                                     <GroupStyle.HeaderTemplate>
@@ -571,6 +596,20 @@
                                 Margin="60 0"
                                 VerticalAlignment="Center"
                                 Value="{Binding CurrentPlayingPosition,Mode=OneWay,UpdateSourceTrigger=PropertyChanged}" />
+                        <ws:ProgressBar x:Name="CacheProg"
+                                        VerticalAlignment="Bottom"
+                                        Height="2"
+                                        Maximum="1"
+                                        Opacity="0"
+                                        d:Opacity="1"
+                                        d:Value="0.5"
+                                        Value="{Binding CacheDownloadProgress}"
+                                        CornerRadius="1"
+                                        BorderThickness="0"
+                                        HorizontalAlignment="Center"
+                                        Background="{DynamicResource FocusMaskColor}"
+                                        Width="240"
+                                        Foreground="{DynamicResource HighlightThemeColor}" />
                     </Grid>
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
@@ -791,7 +830,8 @@
                     一共<Run Text="{Binding Playlist.Count,Mode=OneWay}"
                            d:Text="0" />首
                 </TextBlock>
-                <ws:ListBox Margin="0 80 0 0"
+                <ws:ListBox x:Name="PlaylistLb"
+                            Margin="0 80 0 0"
                             Style="{StaticResource SimpleListBoxStyle}"
                             ItemsSource="{Binding Playlist,Mode=OneWay}"
                             SelectedItem="{Binding PlaylistChoosen}"
@@ -849,6 +889,21 @@
                         </DataTemplate>
                     </ws:ListBox.ItemTemplate>
                 </ws:ListBox>
+                <ws:Button x:Name="GotoPlayingBtn"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Bottom"
+                           Visibility="{Binding ShowGotoPlaying}"
+                           Margin="32"
+                           Width="36"
+                           Height="36"
+                           CornerRadius="18"
+                           Style="{StaticResource AccentButtonStyleForWs}"
+                           Click="GotoPlayingBtn_Click">
+                    <Path Fill="{DynamicResource BackgroundColor}"
+                          Stretch="Uniform"
+                          Data="{StaticResource Icon_Position}"
+                          Width="16" />
+                </ws:Button>
             </Grid>
         </Grid>
     </ws:BoxPanel>

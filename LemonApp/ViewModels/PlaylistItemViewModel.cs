@@ -1,28 +1,22 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using LemonApp.Common.Funcs;
 using LemonApp.Services;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Threading.Tasks;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using static LemonApp.MusicLib.Abstraction.Playlist.DataTypes;
 
 namespace LemonApp.ViewModels;
 
-public partial class PlaylistItem(Playlist item,BitmapImage? cover)
+public class PlaylistItem(Playlist item,BitmapImage? cover)
 {
     public Playlist ListInfo { get; set; } = item;
     public BitmapImage? Cover { get; set; } = cover;
 }
-public partial class PlaylistItemPageViewModel(
+public partial class PlaylistItemViewModel(
     MainNavigationService mainNavigationService) :ObservableObject
 {
-    private readonly MainNavigationService _mainNavigationService = mainNavigationService;
-    [ObservableProperty]
-    private string _title = string.Empty;
     [ObservableProperty]
     private PlaylistItem? _choosenItem;
 
@@ -30,7 +24,7 @@ public partial class PlaylistItemPageViewModel(
     {
         if (value!=null)
         {
-            _mainNavigationService.RequstNavigation(PageType.PlaylistPage, value.ListInfo.Id);
+            mainNavigationService.RequstNavigation(PageType.PlaylistPage, value.ListInfo.Id);
         }
     }
 

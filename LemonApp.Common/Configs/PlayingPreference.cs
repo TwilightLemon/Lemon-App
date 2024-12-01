@@ -1,5 +1,4 @@
 ﻿using MusicDT = LemonApp.MusicLib.Abstraction.Music.DataTypes;
-using PlaylistDT = LemonApp.MusicLib.Abstraction.Playlist.DataTypes;
 
 namespace LemonApp.Common.Configs;
 public class PlayingPreference
@@ -14,4 +13,8 @@ public class PlayingPreference
 public class PlaylistCache
 {
     public List<MusicDT.Music>? Playlist { get; set; } = [];
+}
+public class DesktopLyricOption
+{
+    public bool ShowTranslation { get; set; } = true;
 }

@@ -1,0 +1,57 @@
+﻿<base:FluentWindowBase x:Class="LemonApp.Views.Windows.ExMessageBox"
+                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                       xmlns:local="clr-namespace:LemonApp.Views.Windows"
+                       xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
+                       xmlns:converter="clr-namespace:LemonApp.Converters"
+                       xmlns:ws="https://schemas.elecho.dev/wpfsuite"
+                       mc:Ignorable="d"
+                       Mode="Acrylic"
+                       Background="{DynamicResource WindowBackgroundColor}"
+                       Foreground="{DynamicResource ForeColor}"
+                       ResizeMode="NoResize"
+                       ShowInTaskbar="False"
+                       Title="ExMessageBox"
+                       Height="240"
+                       Width="380">
+    <Grid>
+        <Grid Margin="0 0 0 64"
+              Background="{DynamicResource TabMaskColor}">
+            <Path  Width="84"
+                   Height="84"
+                   Data="{StaticResource Icon_Info}"
+                   Fill="Orange"
+                   Stretch="Fill"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Margin="32" />
+            <TextBlock x:Name="ContentTb"
+                       Margin="148,32,12,53"
+                       Text="Hello"
+                       FontSize="14" />
+        </Grid>
+        <Border VerticalAlignment="Bottom"
+                Height=" 64">
+            <ws:WrapPanel HorizontalAlignment="Right"
+                          ItemHeight="38"
+                          VerticalAlignment="Center"
+                          ItemWidth="86"
+                          HorizontalSpacing="24"
+                          Margin="0 0 12 0">
+                <ws:Button x:Name="ConfirmBtn"
+                           Content="确认"
+                           Click="ConfirmBtn_Click"
+                           Style="{StaticResource AccentButtonStyleForWs}">
+                </ws:Button>
+                <ws:Button x:Name="CancelBtn"
+                           Content="取消"
+                           Click="CancelBtn_Click"
+                           Style="{StaticResource SimpleButtonStyleForWs}"
+                           Grid.Column="1">
+                </ws:Button>
+            </ws:WrapPanel>
+        </Border>
+    </Grid>
+</base:FluentWindowBase>

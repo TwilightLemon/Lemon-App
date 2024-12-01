@@ -32,6 +32,5 @@ public class AutoUniformGrid:UniformGrid
                 Columns = pre;
             }
         }
-        Rows = Children.Count / Columns + 1;
     }
 }

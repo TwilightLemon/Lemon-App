@@ -9,7 +9,7 @@
       Title="HomePage"
        Foreground="{DynamicResource ForeColor}">
 
-    <Grid>
+    <Grid MouseDown="Grid_MouseDown">
         <TextBlock VerticalAlignment="Center"
                    HorizontalAlignment="Center">
             Home Page

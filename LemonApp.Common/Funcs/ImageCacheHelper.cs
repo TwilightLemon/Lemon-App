@@ -16,7 +16,7 @@ public class ImageCacheHelper
     private static readonly MemoryCache _cache = new MemoryCache("ImageCache");
     private static CacheItemPolicy _cachePolicy = new CacheItemPolicy
     {
-        SlidingExpiration = TimeSpan.FromMinutes(2),
+        SlidingExpiration = TimeSpan.FromMinutes(10),
         RemovedCallback=new CacheEntryRemovedCallback((e) => {
             Debug.WriteLine($"Cache item '{e.CacheItem.Key}' was removed because {e.RemovedReason}");
         })
@@ -76,7 +76,7 @@ public class ImageCacheHelper
                     await Task.Delay(100);
                 }
             }
-            Debug.WriteLine("img loaded from cache.");
+            Debug.WriteLine("img loaded from web.");
             return img;
         }
         catch {
