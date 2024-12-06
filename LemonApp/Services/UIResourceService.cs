@@ -39,9 +39,12 @@ public class UIResourceService(
     }
 
     public void UpdateAccentColor(){
-        var accentColor=appSettingsService.GetConfigMgr<Appearence>()?.Data?.GetAccentColor();
-        if(accentColor.HasValue){
+        var dt = appSettingsService.GetConfigMgr<Appearence>()?.Data;
+        var accentColor=dt?.GetAccentColor();
+        var focusColor= dt?.GetFocusAccentColor();
+        if (accentColor.HasValue&&focusColor.HasValue){
             App.Current.Resources["HighlightThemeColor"]=new SolidColorBrush(accentColor.Value);
+            App.Current.Resources["FocusAccentColor"]=new SolidColorBrush(focusColor.Value);
         }
     }
 }

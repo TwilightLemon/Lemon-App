@@ -8,22 +8,26 @@ using LemonApp.Common.Funcs;
 using MusicDT = LemonApp.MusicLib.Abstraction.Music.DataTypes;
 using LemonApp.Common.WinAPI;
 using System.IO;
+using LemonApp.Common.Configs;
 
 namespace LemonApp.Services;
 
 public class MediaPlayerService(UserProfileService userProfileService,
     IHttpClientFactory httpClientFactory,
-    SharedLaClient sharedLaClient):IDisposable
+    SharedLaClient sharedLaClient,
+    AppSettingsService appSettingsService):IDisposable
 {
     private MusicPlayer _player;
     private bool _isPlaying = false;
     private readonly SMTCCreator _smtc = new("Lemon App");
     private AudioGetter? audioGetter = null;
     private readonly UserProfileService _userProfileService = userProfileService!;
+    private SettingsMgr<PlayingPreference> _playingMgr;
     private readonly HttpClient hc= httpClientFactory.CreateClient(App.PublicClientFlag);
     private readonly SharedLaClient _sharedLaClient = sharedLaClient;
 
     public MusicDT.Music? CurrentMusic { get; private set; }
+    public MusicDT.MusicQuality CurrentQuality { get; private set; }
     public event Action<MusicDT.Music>? OnLoaded,OnPlay,OnPaused, OnAddToPlayNext;
     public event Action? OnEnd, OnPlayNext, OnPlayLast;
     public event Action<IEnumerable<MusicDT.Music>>? OnNewPlaylistReceived;
@@ -32,6 +36,7 @@ public class MediaPlayerService(UserProfileService userProfileService,
     public async Task Init()
     {
         audioGetter = new(hc, _userProfileService.GetAuth,null,_sharedLaClient,_userProfileService.GetSharedLaToken);
+        _playingMgr = appSettingsService.GetConfigMgr<PlayingPreference>()!;
         await MusicPlayer.PrepareDll();
         _player = new();
         _smtc.Next += Smtc_Next;
@@ -65,33 +70,40 @@ public class MediaPlayerService(UserProfileService userProfileService,
         _player.Free();
     }
 
-    public async Task Load(MusicDT.Music music, MusicDT.MusicQuality prefer= MusicDT.MusicQuality.SQ)
+    public Task Load(MusicDT.Music music)
     {
-        if(audioGetter == null)
+        return LoadMusic(music, _playingMgr.Data.Quality);
+    }
+    public async Task LoadMusic(MusicDT.Music music, MusicDT.MusicQuality prefer)
+    {
+        if (audioGetter == null)
             throw new InvalidOperationException("MediaPlayerService not initialized.");
 
         Pause();
         CurrentMusic = music;
         //先检索本地缓存
-        var quality = AudioGetter.QualityMatcher(AudioGetter.GetFinalQuality(music.Quality,prefer));
+        var matched = AudioGetter.GetFinalQuality(music.Quality, prefer);
+        var quality = AudioGetter.QualityMatcher(matched);
         var cacheFile = Path.Combine(CacheManager.GetCachePath(CacheManager.CacheType.Music), music.MusicID + quality[0]);
         if (File.Exists(cacheFile))
         {
             _player.Load(cacheFile);
+            CurrentQuality = matched;
         }
         else
         {
-            var url = await audioGetter.GetUrlAsync(music, prefer);//TODO: 提供音质选择
+            var url = await audioGetter.GetUrlAsync(music, prefer);
             if (url is null || url.Url is null)
                 throw new InvalidOperationException("Failed to get music url.");
-            _player.LoadUrl(cacheFile,url.Url, CacheProgress, CacheFinished);
+            _player.LoadUrl(cacheFile, url.Url, CacheProgress, CacheFinished);
+            CurrentQuality = url.Quality;
             CacheStarted?.Invoke();
         }
 
         _smtc.SetMediaStatus(SMTCMediaStatus.Playing);
         _smtc.Info.SetTitle(music.MusicName)
                         .SetArtist(music.SingerText)
-                        .SetThumbnail(await CoverGetter.GetCoverImgUrl(()=>hc, _userProfileService.GetAuth(), music))
+                        .SetThumbnail(await CoverGetter.GetCoverImgUrl(() => hc, _userProfileService.GetAuth(), music))
                         .Update();
 
         OnLoaded?.Invoke(music);

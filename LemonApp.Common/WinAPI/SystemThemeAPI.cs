@@ -31,10 +31,12 @@ namespace LemonApp.Common.WinAPI
             return true; // 默认为浅色模式
         }
         static Windows.UI.ViewManagement.UISettings? _uiSettings = null;
-        public static Color GetSystemAccentColor()
+        public static Color GetSystemAccentColor(bool isDarkMode, bool focus = false)
         {
             _uiSettings ??= new ();
-            var color = _uiSettings.GetColorValue(GetIsLightTheme()?Windows.UI.ViewManagement.UIColorType.AccentDark1: Windows.UI.ViewManagement.UIColorType.AccentLight2);
+
+            var color =!focus? _uiSettings.GetColorValue(isDarkMode ? Windows.UI.ViewManagement.UIColorType.AccentLight2: Windows.UI.ViewManagement.UIColorType.AccentDark1)
+                            : _uiSettings.GetColorValue(isDarkMode ? Windows.UI.ViewManagement.UIColorType.AccentLight3 : Windows.UI.ViewManagement.UIColorType.AccentDark2);
             return Color.FromArgb(color.A, color.R, color.G, color.B);
         }
 

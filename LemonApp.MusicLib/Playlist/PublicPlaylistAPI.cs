@@ -76,7 +76,7 @@ public static class PublicPlaylistAPI
                     m.Mvmid = item["vid"].ToString();
                     m.Littleid = pl.Ids[index];
 
-                    m.Quality = item["sizeflac"].ToString() != "0" ? MusicQuality.SQ : (item["size320"].ToString() != "0" ? MusicQuality.HQ : MusicQuality._120k);
+                    m.Quality = item["sizeflac"].ToString() != "0" ? MusicQuality.SQ : (item["size320"].ToString() != "0" ? MusicQuality.HQ : MusicQuality.Std);
                 }
 
                 pl.Musics.Add(m);

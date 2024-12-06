@@ -1,0 +1,40 @@
+﻿<UserControl x:Class="LemonApp.Views.UserControls.MusicInfoLand"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ws="https://schemas.elecho.dev/wpfsuite"
+             xmlns:local="clr-namespace:LemonApp.Views.UserControls"
+             mc:Ignorable="d" Height="20">
+    <ws:WrapPanel ItemHeight="20"
+                  HorizontalSpacing="6"
+                  VerticalAlignment="Center"
+                  Margin="4 0"
+                  Orientation="Vertical">
+        <ws:Button Style="{StaticResource SimpleIconButtonStyleForWs}"
+                   x:Name="QualityIcon"
+                   Width="34"
+                   BorderThickness="1.5"
+                   CornerRadius="6"
+                   IsEnabled="False"
+                   DisabledBackground="Transparent"
+                   DisabledBorderBrush="#FFF6B322"
+                   BorderBrush="#FFF6B322">
+            <TextBlock x:Name="QualityText"  Text="SQ" HorizontalAlignment="Center" VerticalAlignment="Center"
+                        FontSize="12" FontWeight="Bold"
+                       Foreground="#FFF6B322" />
+        </ws:Button>
+        <ws:Button Style="{StaticResource SimpleIconButtonStyleForWs}" Width="34"
+                   Padding="0"
+                   x:Name="MVBtn"
+                   CornerRadius="6"
+                   BorderBrush="{DynamicResource ForeColor}"
+                   BorderThickness="1.5">
+            <TextBlock Text="MV"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontSize="12"
+                        FontWeight="Bold"/>
+        </ws:Button>
+    </ws:WrapPanel>
+</UserControl>

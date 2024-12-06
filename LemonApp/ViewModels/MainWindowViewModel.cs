@@ -27,7 +27,6 @@ using System.Windows;
 using LemonApp.Views.Windows;
 using Task = System.Threading.Tasks.Task;
 using LemonApp.MusicLib.RankList;
-using System.Diagnostics;
 
 namespace LemonApp.ViewModels;
 public partial class MainWindowViewModel : ObservableObject,IDisposable
@@ -289,6 +288,12 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
             Playlist.Add(item);
         }
     }
+
+    [RelayCommand]
+    private void SetQuality()
+    {
+        NavigateToSettingsPage();
+    }
     #endregion
     #region respond to media player controller
     [ObservableProperty]
@@ -316,6 +321,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         App.Current.Dispatcher.Invoke(async () =>
         {
             CurrentPlaying = m;
+            CurrentQuality = _mediaPlayerService.CurrentQuality;
             SyncCurrentPlayingWithPlayListPage?.Invoke(m.MusicID);
             await LyricView.LoadFromMusic(m);
         });
@@ -627,6 +633,8 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
     private bool _isPlaying = false;
     [ObservableProperty]
     private MusicDT.Music? _currentPlaying = null;
+    [ObservableProperty]
+    private MusicDT.MusicQuality _currentQuality;
     [ObservableProperty]
     private string _currentPlayingPositionText = "00:00";
     [ObservableProperty]

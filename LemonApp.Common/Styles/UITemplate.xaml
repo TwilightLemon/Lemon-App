@@ -458,9 +458,9 @@
         <Setter Property="Background"
                 Value="{DynamicResource HighlightThemeColor}" />
         <Setter Property="HoverBackground"
-                Value="{DynamicResource HighlightThemeColor}" />
+                Value="{DynamicResource FocusAccentColor}" />
         <Setter Property="PressedBackground"
-                Value="{DynamicResource HighlightThemeColor}" />
+                Value="{DynamicResource FocusAccentColor}" />
         <Setter Property="CornerRadius"
                 Value="8" />
         <Setter Property="BorderThickness"

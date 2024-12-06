@@ -6,6 +6,8 @@
       xmlns:local="clr-namespace:LemonApp.Views.Pages"
       xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
       xmlns:ws="https://schemas.elecho.dev/wpfsuite"
+      xmlns:converter="clr-namespace:LemonApp.Converters"
+      xmlns:uc="clr-namespace:LemonApp.Views.UserControls"
       xmlns:vm="clr-namespace:LemonApp.ViewModels"
       mc:Ignorable="d"
       d:DataContext="{d:DesignInstance Type=vm:PlaylistPageViewModel}"
@@ -194,7 +196,7 @@
                               HorizontalSpacing="16"
                               ItemHeight="36"
                               Margin="180,0,0,4">
-                    <ws:Button Style="{StaticResource SimpleButtonStyleForWs}"
+                    <ws:Button Style="{StaticResource AccentButtonStyleForWs}"
                                Command="{Binding PlayAllCommand}"
                                Padding="16 0">
                         Play All
@@ -226,7 +228,7 @@
                     ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}">
             <ws:ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Grid Height="40"
+                    <Grid Height="48"
                           Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ws:ListBox},Mode=OneWay}"
                           Background="Transparent">
                         <Grid.ColumnDefinitions>
@@ -234,13 +236,18 @@
                             <ColumnDefinition Width="2*" />
                             <ColumnDefinition Width="2*" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock VerticalAlignment="Center"
-                                   Margin="8 0"
-                                   HorizontalAlignment="Left">
-                            <Run Text="{Binding MusicName}" />
-                            <Run Text="{Binding MusicName_Lyric}"
-                                 FontSize="10" />
-                        </TextBlock>
+                        <ws:WrapPanel VerticalAlignment="Center"
+                                      Margin="8 0"
+                                      HorizontalSpacing="4"
+                                      VerticalSpacing="2"
+                                      HorizontalAlignment="Stretch">
+                            <TextBlock Text="{Binding MusicName}"/>
+                            <TextBlock Text="{Binding MusicName_Lyric}"
+                                       VerticalAlignment="Center"
+                                       FontSize="10"
+                                       Opacity="0.6"/>
+                            <uc:MusicInfoLand x:Name="InfoLand" HorizontalAlignment="Right"  Quality="{Binding Quality}" MvId="{Binding Mvmid}"/>
+                        </ws:WrapPanel>
                         <ws:Button Margin="4"
                                    HorizontalAlignment="Left"
                                    Padding="8 4"

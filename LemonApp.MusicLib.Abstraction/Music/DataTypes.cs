@@ -20,7 +20,7 @@ public static class DataTypes
     }
     public enum MusicQuality
     {
-        _120k, HQ, SQ
+        Std, HQ, SQ
     }
 
     public class Music

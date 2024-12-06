@@ -79,9 +79,10 @@ public class MusicPlayer
     /// <param name="finish">下载结束回调</param>
     public void LoadUrl(string path, string url, Action<long, long>? proc, Action? finish)
     {
+        //TODO: 修复 在缓冲时切歌可能造成Bass抛异常
         try
         {
-            if ((BassdlList.LastOrDefault() is { } last && last.stream == stream))
+            if (BassdlList.LastOrDefault() is { } last && last.stream == stream)
             {
                 last.SetClose();
             }

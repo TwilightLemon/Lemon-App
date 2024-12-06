@@ -7,6 +7,7 @@
       xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
       xmlns:local="clr-namespace:LemonApp.Views.Pages"
       xmlns:vm="clr-namespace:LemonApp.ViewModels"
+      xmlns:converter="clr-namespace:LemonApp.Converters"
       mc:Ignorable="d" 
       Foreground="{DynamicResource ForeColor}"
       d:DesignHeight="450" d:DesignWidth="800"
@@ -32,7 +33,9 @@
                     <Setter Property="FocusVisualStyle"
                             Value="{x:Null}" />
                     <Setter Property="Margin"
-                            Value="5 8" />
+                            Value="6 8" />
+                    <Setter Property="Padding"
+                            Value="0" />
                     <Setter Property="CornerRadius"
                             Value="8" />
                     <Setter Property="BorderThickness"
@@ -65,7 +68,7 @@
                                     RenderOptions.BitmapScalingMode="HighQuality"
                                     Width="138"
                                     Height="138"
-                                    CornerRadius="8"
+                                    CornerRadius="8 0 0 8"
                                     d:Background="#69f">
                                 <Border.Background>
                                     <ImageBrush ImageSource="{Binding Cover,IsAsync=True,Mode=OneWay}" />
@@ -77,10 +80,17 @@
                                        FontWeight="Bold"
                                        Text="{Binding ListInfo.Name}"/>
                             <TextBlock VerticalAlignment="Top" />
-                            <ItemsControl Margin="162 52 10 20" ItemsSource="{Binding ListInfo.Content}">
+                            <ItemsControl Margin="162 52 10 20"
+                                          ItemsSource="{Binding ListInfo.Content}"
+                                          AlternationCount="{Binding ListInfo.Content.Count}"
+                                          d:AlternationCount="4">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock  Text="{Binding}"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Path=(ItemsControl.AlternationIndex),RelativeSource={RelativeSource TemplatedParent},
+                                                                        Mode=OneWay,Converter={x:Static converter:IndexConverter.Instance}}" />
+                                            <TextBlock Margin="5 0 0 0" Text="{Binding}"/>
+                                        </StackPanel>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>

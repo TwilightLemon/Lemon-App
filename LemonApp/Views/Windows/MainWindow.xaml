@@ -750,6 +750,9 @@
                                       VerticalAlignment="Center"
                                       Margin="0 0 32 0"
                                       HorizontalSpacing="24">
+                            <uc:MusicInfoLand  Quality="{Binding CurrentQuality}"
+                                               MvId="{Binding CurrentPlaying.Mvmid}" 
+                                               QualityCommand="{Binding SetQualityCommand}"/>
                             <ws:Button x:Name="FavoriteBtn"
                                        Width="32"
                                        Height="32"

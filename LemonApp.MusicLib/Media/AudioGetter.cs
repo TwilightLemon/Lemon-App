@@ -33,7 +33,7 @@ public class AudioGetter(HttpClient hc,
     {
         MusicQuality.SQ => [".flac", "SQ"],
         MusicQuality.HQ => [".mp3", "HQ"],
-        MusicQuality._120k => [".m4a", "120k"],
+        MusicQuality.Std => [".m4a", "120k"],
         _ => throw new NotImplementedException("not supported quality.")
     };
 
@@ -75,7 +75,7 @@ public class AudioGetter(HttpClient hc,
         {
             return new MusicUrlData()
             {
-                Quality = MusicQuality._120k,
+                Quality = MusicQuality.Std,
                 SourceText = "WYY",
                 Url = await GetUrlFromWYY(m.MusicID)
             };
@@ -101,14 +101,14 @@ public class AudioGetter(HttpClient hc,
     {
         string prefix = quality switch
         {
-            MusicQuality._120k => "C400",
+            MusicQuality.Std => "C400",
             MusicQuality.HQ => "M800",
             MusicQuality.SQ => "F000",
             _=>throw new NotImplementedException()
         };
         string surffix = quality switch
         {
-            MusicQuality._120k => "m4a",
+            MusicQuality.Std => "m4a",
             MusicQuality.HQ => "mp3",
             MusicQuality.SQ => "flac",
             _ => throw new NotImplementedException()
