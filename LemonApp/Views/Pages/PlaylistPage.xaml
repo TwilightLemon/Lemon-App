@@ -7,6 +7,7 @@
       xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
       xmlns:ws="https://schemas.elecho.dev/wpfsuite"
       xmlns:converter="clr-namespace:LemonApp.Converters"
+      xmlns:common="clr-namespace:LemonApp.Common;assembly=LemonApp.Common"
       xmlns:uc="clr-namespace:LemonApp.Views.UserControls"
       xmlns:vm="clr-namespace:LemonApp.ViewModels"
       mc:Ignorable="d"
@@ -216,57 +217,97 @@
                 </ws:WrapPanel>
             </Grid>
         </Border>
+        
         <ws:ListBox x:Name="listBox"
                     ItemsSource="{Binding Musics}"
-                    SelectedItem="{Binding Playing}"
                     ScrollViewer.ScrollChanged="listBox_ScrollChanged"
+                    AlternationCount="{Binding Musics.Count}"
                     VerticalAlignment="Stretch"
                     Margin="0 208 0 0"
                     MouseDoubleClick="listBox_MouseDoubleClick"
                     d:ItemsSource="{d:SampleData ItemCount=5}"
+                    d:AlternationCount="5"
                     Style="{DynamicResource SimpleListBoxStyle}"
                     ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}">
             <ws:ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Grid Height="48"
-                          Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ws:ListBox},Mode=OneWay}"
-                          Background="Transparent">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="3*" />
-                            <ColumnDefinition Width="2*" />
-                            <ColumnDefinition Width="2*" />
-                        </Grid.ColumnDefinitions>
-                        <ws:WrapPanel VerticalAlignment="Center"
-                                      Margin="8 0"
-                                      HorizontalSpacing="4"
-                                      VerticalSpacing="2"
-                                      HorizontalAlignment="Stretch">
-                            <TextBlock Text="{Binding MusicName}"/>
-                            <TextBlock Text="{Binding MusicName_Lyric}"
-                                       VerticalAlignment="Center"
-                                       FontSize="10"
-                                       Opacity="0.6"/>
-                            <uc:MusicInfoLand x:Name="InfoLand" HorizontalAlignment="Right"  Quality="{Binding Quality}" MvId="{Binding Mvmid}"/>
-                        </ws:WrapPanel>
-                        <ws:Button Margin="4"
-                                   HorizontalAlignment="Left"
-                                   Padding="8 4"
-                                   Grid.Column="1"
-                                   Command="{Binding DataContext.CheckIfGotoArtistsPopupCommand,RelativeSource={RelativeSource AncestorType=ws:ListBox}}"
-                                   CommandParameter="{Binding}"
-                                   Style="{StaticResource SimpleIconButtonStyleForWs}">
-                            <TextBlock Text="{Binding SingerText}" />
-                        </ws:Button>
-                        <ws:Button Margin="4"
-                                   HorizontalAlignment="Left"
-                                   Padding="8 4"
-                                   Grid.Column="2"
-                                   Command="{Binding DataContext.GotoAlbumPageCommand ,RelativeSource={RelativeSource AncestorType=ws:ListBox}}"
-                                   CommandParameter="{Binding Album.Id}"
-                                   Style="{StaticResource SimpleIconButtonStyleForWs}">
-                            <TextBlock Text="{Binding Album.Name}" />
-                        </ws:Button>
-                    </Grid>
+                    <Border Height="48" x:Name="_border" CornerRadius="8"
+                            Background="Transparent">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="3*" />
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+                            <ws:ConditionalControl x:Name="Highlighter"
+                                                   d:Condition="True"
+                                                   Width="4"
+                                                   Height="22"
+                                                   HorizontalAlignment="Left">
+                                <ws:ConditionalControl.ContentWhenTrue>
+                                    <Border Background="{DynamicResource HighlightThemeColor}"
+                                            CornerRadius="2" />
+                                </ws:ConditionalControl.ContentWhenTrue>
+                            </ws:ConditionalControl>
+                            <ws:WrapPanel VerticalAlignment="Center"
+                                          Margin="12 0"
+                                          HorizontalSpacing="4"
+                                          VerticalSpacing="2"
+                                          HorizontalAlignment="Stretch">
+                                <TextBlock Text="{Binding MusicName}"
+                                           VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding MusicName_Lyric}"
+                                           VerticalAlignment="Center"
+                                           FontSize="10"
+                                           FontWeight="Normal"
+                                           Opacity="0.6" />
+                                <uc:MusicInfoLand x:Name="InfoLand"
+                                                  HorizontalAlignment="Right"
+                                                  VerticalAlignment="Center"
+                                                  Quality="{Binding Quality}"
+                                                  MvId="{Binding Mvmid}" />
+                            </ws:WrapPanel>
+                            <ws:Button Margin="4"
+                                       HorizontalAlignment="Left"
+                                       Padding="8 4"
+                                       Grid.Column="1"
+                                       Command="{Binding DataContext.CheckIfGotoArtistsPopupCommand,RelativeSource={RelativeSource AncestorType=ws:ListBox}}"
+                                       CommandParameter="{Binding}"
+                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
+                                <TextBlock Text="{Binding SingerText}" />
+                            </ws:Button>
+                            <ws:Button Margin="4"
+                                       HorizontalAlignment="Left"
+                                       Padding="8 4"
+                                       Grid.Column="2"
+                                       Command="{Binding DataContext.GotoAlbumPageCommand ,RelativeSource={RelativeSource AncestorType=ws:ListBox}}"
+                                       CommandParameter="{Binding Album.Id}"
+                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
+                                <TextBlock Text="{Binding Album.Name}" />
+                            </ws:Button>
+                        </Grid>
+                    </Border>
+                    <DataTemplate.Triggers>
+                        <DataTrigger Value="True">
+                            <DataTrigger.Binding>
+                                <MultiBinding Converter="{x:Static converter:MusicEqualConverter.Instance}">
+                                    <Binding />
+                                    <Binding Path="DataContext.Playing"
+                                             RelativeSource="{RelativeSource AncestorType=ws:ListBox}" />
+                                </MultiBinding>
+                            </DataTrigger.Binding>
+                            <Setter Property="TextElement.Foreground"
+                                    Value="{DynamicResource HighlightThemeColor}" />
+                            <Setter Property="TextElement.FontWeight"
+                                    Value="Bold" />
+                            <Setter TargetName="Highlighter"
+                                    Property="Condition"
+                                    Value="True" />
+                            <Setter TargetName="_border"
+                                    Property="Background"
+                                    Value="{DynamicResource MaskColor}" />
+                        </DataTrigger>
+                    </DataTemplate.Triggers>
                 </DataTemplate>
             </ws:ListBox.ItemTemplate>
         </ws:ListBox>

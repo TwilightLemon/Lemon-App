@@ -3,7 +3,7 @@ using LemonApp.MusicLib.Http;
 using System.Net;
 using System.Text;
 using System.Text.Json.Nodes;
-using static LemonApp.MusicLib.Abstraction.Lyric.DataTypes;
+using LemonApp.MusicLib.Abstraction.Entities;
 
 namespace LemonApp.MusicLib.Lyric;
 

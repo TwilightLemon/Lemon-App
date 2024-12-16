@@ -1,11 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using LemonApp.Common.Funcs;
+using LemonApp.MusicLib.Abstraction.Entities;
 using LemonApp.Services;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
-using static LemonApp.MusicLib.Abstraction.Playlist.DataTypes;
 
 namespace LemonApp.ViewModels;
 

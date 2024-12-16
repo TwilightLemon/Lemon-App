@@ -14,7 +14,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Windows.Controls;
 using System.Windows.Media;
-using MusicDT = LemonApp.MusicLib.Abstraction.Music.DataTypes;
 using LemonApp.Common.Configs;
 using LemonApp.MusicLib.Media;
 using CommunityToolkit.Mvvm.Input;
@@ -27,6 +26,7 @@ using System.Windows;
 using LemonApp.Views.Windows;
 using Task = System.Threading.Tasks.Task;
 using LemonApp.MusicLib.RankList;
+using LemonApp.MusicLib.Abstraction.Entities;
 
 namespace LemonApp.ViewModels;
 public partial class MainWindowViewModel : ObservableObject,IDisposable
@@ -99,7 +99,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         await UpdateCover();
     }
 
-    private void LyricView_OnNextLrcReached(MusicLib.Abstraction.Lyric.DataTypes.LrcLine obj)
+    private void LyricView_OnNextLrcReached(LrcLine obj)
     {
         _lyricWindowViewModel.Update(obj);
     }
@@ -269,7 +269,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         _playlistMgr!.Data.Playlist = temp;
     }
 
-    private void _mediaPlayerService_OnAddToPlayNext(MusicDT.Music obj)
+    private void _mediaPlayerService_OnAddToPlayNext(Music obj)
     {
         int index = 0;
         if (CurrentPlaying != null)
@@ -280,7 +280,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         Playlist.Insert(index + 1, obj);
     }
 
-    private void _mediaPlayerService_OnNewPlaylistReceived(IEnumerable<MusicDT.Music> obj)
+    private void _mediaPlayerService_OnNewPlaylistReceived(IEnumerable<Music> obj)
     {
         Playlist.Clear();
         foreach (var item in obj)
@@ -304,19 +304,19 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
     {
         CacheDownloadProgress = (double)downloaded / total;
     }
-    private void _mediaPlayerService_OnPaused(MusicDT.Music obj)
+    private void _mediaPlayerService_OnPaused(Music obj)
     {
         IsPlaying = false;
         _timer?.Stop();
     }
 
-    private void _mediaPlayerService_OnPlay(MusicDT.Music m)
+    private void _mediaPlayerService_OnPlay(Music m)
     {
         IsPlaying = true;
         _timer?.Start();
     }
     public event Action<string>? SyncCurrentPlayingWithPlayListPage;
-    private void _mediaPlayerService_OnLoaded(MusicDT.Music m)
+    private void _mediaPlayerService_OnLoaded(Music m)
     {
         App.Current.Dispatcher.Invoke(async () =>
         {
@@ -437,7 +437,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
                     NavigateToAlbumPage(id);
                 break;
             case PageType.RankPage:
-                if (arg is MusicLib.Abstraction.RankList.DataTypes.RankListInfo { } info)
+                if (arg is RankListInfo { } info)
                     NavigateToRanklist(info);
                 break;
             case PageType.SearchPage:
@@ -473,7 +473,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         }
         SelectedMenu = null;
     }
-    private async void NavigateToRanklist(MusicLib.Abstraction.RankList.DataTypes.RankListInfo info)
+    private async void NavigateToRanklist(RankListInfo info)
     {
         IsLoading = true;
         var page=_serviceProvider.GetRequiredService<PlaylistPage>();
@@ -487,7 +487,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
                 vm.Cover= new ImageBrush(await ImageCacheHelper.FetchData(info.CoverUrl));
                 vm.Description = info.Description;
                 vm.ListName = info.Name;
-                vm.PlaylistType = MusicLib.Abstraction.Playlist.DataTypes.PlaylistType.Ranklist;
+                vm.PlaylistType = PlaylistType.Ranklist;
                 foreach (var item in data)
                 {
                     vm.Musics.Add(item);
@@ -520,7 +520,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
             }
             vm.CreatorAvatar = new ImageBrush(await ImageCacheHelper.FetchData(data.Creator!.Photo));
             vm.CreatorName = data.Creator.Name;
-            vm.PlaylistType = MusicLib.Abstraction.Playlist.DataTypes.PlaylistType.Album;
+            vm.PlaylistType = PlaylistType.Album;
 
             vm.UpdateCurrentPlaying(CurrentPlaying?.MusicID);
 
@@ -548,7 +548,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
                 vm.Musics.Add(item);
             }
             vm.UpdateCurrentPlaying(CurrentPlaying?.MusicID);
-            vm.PlaylistType = MusicLib.Abstraction.Playlist.DataTypes.PlaylistType.Other;
+            vm.PlaylistType = PlaylistType.Other;
 
             sp.ViewModel = vm;
             RequestNavigateToPage?.Invoke(sp);
@@ -618,7 +618,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
                 }
                 vm.CreatorAvatar = new ImageBrush(await ImageCacheHelper.FetchData(data.Creator!.Photo));
                 vm.CreatorName = data.Creator.Name;
-                vm.PlaylistType = MusicLib.Abstraction.Playlist.DataTypes.PlaylistType.Playlist;
+                vm.PlaylistType = PlaylistType.Playlist;
 
                 vm.UpdateCurrentPlaying(CurrentPlaying?.MusicID);
             }
@@ -632,9 +632,9 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
     [ObservableProperty]
     private bool _isPlaying = false;
     [ObservableProperty]
-    private MusicDT.Music? _currentPlaying = null;
+    private Music? _currentPlaying = null;
     [ObservableProperty]
-    private MusicDT.MusicQuality _currentQuality;
+    private MusicQuality _currentQuality;
     [ObservableProperty]
     private string _currentPlayingPositionText = "00:00";
     [ObservableProperty]
@@ -651,9 +651,9 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
     private LyricView _lyricView;
     [ObservableProperty]
     private PlayingPreference.CircleMode _circleMode = PlayingPreference.CircleMode.Circle;
-    public ObservableCollection<MusicDT.Music> Playlist { get;private set; } = [];
+    public ObservableCollection<Music> Playlist { get;private set; } = [];
     [ObservableProperty]
-    private MusicDT.Music? _playlistChoosen = null;
+    private Music? _playlistChoosen = null;
 
     [ObservableProperty]
     private bool _isShowDesktopLyric = false;
@@ -687,7 +687,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         UpdateThumbButtonState();
     }
 
-    async partial void OnPlaylistChoosenChanged(MusicDT.Music? value)
+    async partial void OnPlaylistChoosenChanged(Music? value)
     {
         if (value != null&&value.MusicID!=CurrentPlaying?.MusicID)
         {
@@ -734,7 +734,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         }
     }
 
-    async partial void OnCurrentPlayingChanged(MusicDT.Music? value)
+    async partial void OnCurrentPlayingChanged(Music? value)
     {
         //只负责更新UI的ViewModel
         if (value == null||string.IsNullOrEmpty(value.MusicID)) return;

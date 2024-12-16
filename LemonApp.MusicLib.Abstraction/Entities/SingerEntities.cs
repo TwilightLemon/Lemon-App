@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LemonApp.MusicLib.Abstraction.Singer;
+namespace LemonApp.MusicLib.Abstraction.Entities;
 
-public static class DataTypes
+public class SingerEntities
 {
 
 }

@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using LemonApp.MusicLib.Abstraction.Music;
+using LemonApp.MusicLib.Abstraction.Entities;
 
 namespace LemonApp.Views.UserControls
 {
@@ -37,28 +37,28 @@ namespace LemonApp.Views.UserControls
             }
         }
 
-        public DataTypes.MusicQuality Quality
+        public MusicQuality Quality
         {
-            get { return (DataTypes.MusicQuality)GetValue(QualityProperty); }
+            get { return (MusicQuality)GetValue(QualityProperty); }
             set { SetValue(QualityProperty, value); }
         }
 
         public static readonly DependencyProperty QualityProperty =
             DependencyProperty.Register("Quality", 
-                typeof(DataTypes.MusicQuality), typeof(MusicInfoLand), 
-                new PropertyMetadata(DataTypes.MusicQuality.Std, OnQualityChanged));
+                typeof(MusicQuality), typeof(MusicInfoLand), 
+                new PropertyMetadata(MusicQuality.Std, OnQualityChanged));
 
         public static void OnQualityChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if(d is MusicInfoLand land&&e.NewValue is DataTypes.MusicQuality q)
+            if(d is MusicInfoLand land&&e.NewValue is MusicQuality q)
             {
                 land.QualityIcon.Visibility = Visibility.Visible;
                 land.QualityText.Text = q.ToString();
-                if (q == DataTypes.MusicQuality.SQ)
+                if (q == MusicQuality.SQ)
                 {
                     land.QualityIcon.DisabledBorderBrush=land.QualityText.Foreground = land.QualityIcon.BorderBrush = SQColor;
                 }
-                else if (q == DataTypes.MusicQuality.HQ)
+                else if (q == MusicQuality.HQ)
                 {
                     land.QualityIcon.DisabledBorderBrush = land.QualityText.Foreground = land.QualityIcon.BorderBrush = HQColor;
                 }
@@ -88,13 +88,13 @@ namespace LemonApp.Views.UserControls
         public static readonly DependencyProperty MvIdProperty =
             DependencyProperty.Register("MvId",
                 typeof(string), typeof(MusicInfoLand),
-                new PropertyMetadata(string.Empty, OnMvIdChanged));
+                new PropertyMetadata(null, OnMvIdChanged));
 
         public static void OnMvIdChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if(d is MusicInfoLand land &&e.NewValue is string { Length:>0} id)
+            if(d is MusicInfoLand land)
             {
-                land.MVBtn.Visibility = string.IsNullOrEmpty(id) ? Visibility.Visible : Visibility.Collapsed;
+                land.MVBtn.Visibility = e.NewValue is string { Length: > 0 } ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 

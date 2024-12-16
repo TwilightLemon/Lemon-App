@@ -62,16 +62,16 @@ namespace LemonApp
                 services.AddSingleton<MainWindow>();
                 services.AddTransient<LoginWindow>();
                 services.AddTransient<UserMenuPopupWindow>();
+                services.AddTransient<NotifyIconMenuWindow>();
                 services.AddTransient<DesktopLyricWindow>();
 
                 //pages
-                services.AddTransient<SettingsPage>();
+                services.AddSingleton<SettingsPage>();
                 services.AddTransient<HomePage>();
                 services.AddTransient<RanklistPage>();
                 services.AddTransient<PlaylistPage>();
                 services.AddTransient<PlaylistItemPage>();
-                services.AddTransient<NotifyIconMenuWindow>();
-                services.AddTransient<AccountInfoPage>();
+                services.AddSingleton<AccountInfoPage>();
 
                 //UI Components
                 services.AddSingleton<LyricView>();

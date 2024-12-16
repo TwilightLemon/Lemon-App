@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using static LemonApp.MusicLib.Abstraction.Music.DataTypes;
+using LemonApp.MusicLib.Abstraction.Entities;
 
 namespace LemonApp.MusicLib.Media;
 

@@ -1,7 +1,5 @@
 ﻿using System.Text.Json.Nodes;
-using static LemonApp.MusicLib.Abstraction.Album.DataTypes;
-using static LemonApp.MusicLib.Abstraction.Music.DataTypes;
-using static LemonApp.MusicLib.Abstraction.RankList.DataTypes;
+using LemonApp.MusicLib.Abstraction.Entities;
 
 namespace LemonApp.MusicLib.RankList;
 #pragma warning disable CS8602 // 解引用可能出现空引用。

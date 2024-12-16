@@ -17,10 +17,13 @@
                    BorderThickness="1.5"
                    CornerRadius="6"
                    IsEnabled="False"
+                   VerticalContentAlignment="Center"
+                   Padding="0"
                    DisabledBackground="Transparent"
                    DisabledBorderBrush="#FFF6B322"
                    BorderBrush="#FFF6B322">
-            <TextBlock x:Name="QualityText"  Text="SQ" HorizontalAlignment="Center" VerticalAlignment="Center"
+            <TextBlock x:Name="QualityText"  Text="SQ"
+                       VerticalAlignment="Center"
                         FontSize="12" FontWeight="Bold"
                        Foreground="#FFF6B322" />
         </ws:Button>
@@ -28,10 +31,10 @@
                    Padding="0"
                    x:Name="MVBtn"
                    CornerRadius="6"
+                   VerticalContentAlignment="Center"
                    BorderBrush="{DynamicResource ForeColor}"
                    BorderThickness="1.5">
             <TextBlock Text="MV"
-                        HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         FontSize="12"
                         FontWeight="Bold"/>

@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using LemonApp.Common.Configs;
 using LemonApp.Common.Funcs;
+using LemonApp.MusicLib.Abstraction.Entities;
 using LemonApp.Services;
 
 namespace LemonApp.ViewModels;
@@ -23,18 +24,18 @@ public partial class DesktopLyricWindowViewModel:ObservableObject
         _mediaPlayerService.OnLoaded += _mediaPlayerService_OnLoaded;
     }
      
-    private void _mediaPlayerService_OnLoaded(MusicLib.Abstraction.Music.DataTypes.Music obj)
+    private void _mediaPlayerService_OnLoaded(Music obj)
     {
         LyricText = obj.MusicName + "\r\n";
         TransText = obj.SingerText;
     }
 
-    private void _mediaPlayerService_OnPaused(MusicLib.Abstraction.Music.DataTypes.Music obj)
+    private void _mediaPlayerService_OnPaused(Music obj)
     {
         IsPlaying = false;
     }
 
-    private void _mediaPlayerService_OnPlay(MusicLib.Abstraction.Music.DataTypes.Music obj)
+    private void _mediaPlayerService_OnPlay(Music obj)
     {
         IsPlaying = true;
     }
@@ -62,8 +63,8 @@ public partial class DesktopLyricWindowViewModel:ObservableObject
         }
     }
 
-    private MusicLib.Abstraction.Lyric.DataTypes.LrcLine? lrcLine;
-    public void Update(MusicLib.Abstraction.Lyric.DataTypes.LrcLine lrc)
+    private LrcLine? lrcLine;
+    public void Update(LrcLine lrc)
     {
         lrcLine = lrc;
         if (!string.IsNullOrEmpty(lrc.Trans)&&ShowTranslation)

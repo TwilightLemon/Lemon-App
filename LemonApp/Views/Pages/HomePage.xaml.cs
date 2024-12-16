@@ -2,7 +2,6 @@
 using LemonApp.Views.Windows;
 using System.Windows;
 using System.Windows.Controls;
-using static LemonApp.MusicLib.Abstraction.Music.DataTypes;
 
 namespace LemonApp.Views.Pages
 {

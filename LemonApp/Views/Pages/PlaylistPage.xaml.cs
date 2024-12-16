@@ -1,9 +1,9 @@
-﻿using LemonApp.ViewModels;
+﻿using LemonApp.MusicLib.Abstraction.Entities;
+using LemonApp.ViewModels;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
-using static LemonApp.MusicLib.Abstraction.Music.DataTypes;
 
 namespace LemonApp.Views.Pages
 {
@@ -85,7 +85,7 @@ namespace LemonApp.Views.Pages
 
         private void GotoPlayingBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (listBox.SelectedItem is Music { } m)
+            if (_vm?.Playing is Music { } m)
             {
                 listBox.ScrollIntoView(m);
             }

@@ -1,8 +1,7 @@
 ﻿using LemonApp.MusicLib.Abstraction.UserAuth;
 using LemonApp.MusicLib.Http;
 using System.Text.Json.Nodes;
-using static LemonApp.MusicLib.Abstraction.Album.DataTypes;
-using static LemonApp.MusicLib.Abstraction.Music.DataTypes;
+using LemonApp.MusicLib.Abstraction.Entities;
 
 namespace LemonApp.MusicLib.Album;
 #pragma warning disable CS8600 // 将 null 字面量或可能为 null 的值转换为非 null 类型。

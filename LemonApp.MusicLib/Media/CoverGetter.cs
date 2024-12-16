@@ -1,12 +1,7 @@
 ﻿using LemonApp.Common.Funcs;
 using LemonApp.MusicLib.Abstraction.UserAuth;
 using LemonApp.MusicLib.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static LemonApp.MusicLib.Abstraction.Music.DataTypes;
+using LemonApp.MusicLib.Abstraction.Entities;
 
 namespace LemonApp.MusicLib.Media;
 

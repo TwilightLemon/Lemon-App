@@ -82,14 +82,7 @@ public class MusicPlayer
         //TODO: 修复 在缓冲时切歌可能造成Bass抛异常
         try
         {
-            if (BassdlList.LastOrDefault() is { } last && last.stream == stream)
-            {
-                last.SetClose();
-            }
-            else
-            {
-                Stop();
-            }
+            Stop();
 
             var user = new IntPtr(BassdlList.Count);
             var Bassdl = new BASSDL(path);
@@ -198,8 +191,16 @@ public class MusicPlayer
     public void Stop()
     {
         if (stream == -1024) return;
-        Bass.BASS_ChannelStop(stream);
-        Bass.BASS_StreamFree(stream);
+        if (BassdlList.LastOrDefault() is { } last && last.stream == stream)
+        {
+            //如果stream指向网络流，并且还在加载中，则只打上关闭标记，资源释放在LoadFromURL中已经处理
+            last.SetClose();
+        }
+        else
+        {
+            Bass.BASS_ChannelStop(stream);
+            Bass.BASS_StreamFree(stream);
+        }
     }
 }
 
@@ -243,7 +244,7 @@ public class BASSDL
     private void DownloadCallBack(IntPtr buffer, int length, IntPtr user)
     {
         // file length
-        _length = Bass.BASS_StreamGetFilePosition(stream, BASSStreamFilePosition.BASS_FILEPOS_END);
+        _length =Math.Max(_length, Bass.BASS_StreamGetFilePosition(stream, BASSStreamFilePosition.BASS_FILEPOS_END));
         // download progress
         _downloaded = Bass.BASS_StreamGetFilePosition(stream, BASSStreamFilePosition.BASS_FILEPOS_DOWNLOAD);
         ProgressChanged?.Invoke(_length, _downloaded);
@@ -259,6 +260,7 @@ public class BASSDL
             FileInfo fi = new(_cacheFileName);
             if (_length>_downloaded)
             {
+                //下载不完整
                 fi.Delete();
                 if (!_isStopped)
                 {

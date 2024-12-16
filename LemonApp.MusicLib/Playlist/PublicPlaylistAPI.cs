@@ -1,28 +1,20 @@
-﻿using LemonApp.Common.Funcs;
-using LemonApp.MusicLib.Abstraction.Playlist;
-using LemonApp.MusicLib.Abstraction.UserAuth;
+﻿using LemonApp.MusicLib.Abstraction.UserAuth;
 using LemonApp.MusicLib.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
-using static LemonApp.MusicLib.Abstraction.Album.DataTypes;
-using static LemonApp.MusicLib.Abstraction.Music.DataTypes;
+using LemonApp.MusicLib.Abstraction.Entities;
 
 namespace LemonApp.MusicLib.Playlist;
 #pragma warning disable CS8602 // 解引用可能出现空引用。
 public static class PublicPlaylistAPI
 {
-    public static async Task<DataTypes.Playlist?> LoadPlaylistById(HttpClient hc, TencUserAuth auth, string id)
+    public static async Task<Abstraction.Entities.Playlist?> LoadPlaylistById(HttpClient hc, TencUserAuth auth, string id)
     {
         string url = $"https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg?type=1&json=1&utf8=1&onlysong=0&disstid={id}&format=json&g_tk={auth.G_tk}&loginUin={auth.Id}&hostUin=0&format=json&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq&needNewCode=0";
         string data = await hc.SetForCYQ(auth.Cookie)
                                 .GetStringAsync(url);
         if (JsonNode.Parse(data) is { } json && json["cdlist"]?.AsArray()[0] is { } diss)
         {
-            var pl = new DataTypes.Playlist();
+            var pl = new Abstraction.Entities.Playlist();
             pl.Id = id;
             pl.Name = diss["dissname"].ToString();
             pl.Photo = diss["logo"].ToString().Replace("http://", "https://");

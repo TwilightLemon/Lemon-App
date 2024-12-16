@@ -7,8 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
-using static LemonApp.MusicLib.Abstraction.Music.DataTypes;
-using static LemonApp.MusicLib.Abstraction.Playlist.DataTypes;
+using LemonApp.MusicLib.Abstraction.Entities;
 
 namespace LemonApp.ViewModels;
 
@@ -120,7 +119,9 @@ public partial class PlaylistPageViewModel(
     public void UpdateCurrentPlaying(string? musicId)
     {
         if (!string.IsNullOrEmpty(musicId))
+        {
             Playing = Musics.FirstOrDefault(m => m.MusicID == musicId);
+        }
     }
 
     /// <summary>

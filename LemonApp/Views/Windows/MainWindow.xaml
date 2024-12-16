@@ -775,8 +775,9 @@
                             </ws:Button>
                             <base:FluentPopup x:Name="AudioAdjustPopup"
                                               ExtPopupAnimation="SlideUp"
-                                              Placement="Top"
-                                              VerticalOffset="-20"
+                                              Placement="Right"
+                                              VerticalOffset="-60"
+                                              HorizontalOffset="-200"
                                               Background="{DynamicResource PopupWndBgColor}"
                                               StaysOpen="False">
                                 <Grid Height="36"

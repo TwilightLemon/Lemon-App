@@ -1,8 +1,8 @@
-﻿using LemonApp.MusicLib.Abstraction.Playlist;
-using LemonApp.MusicLib.Abstraction.UserAuth;
+﻿using LemonApp.MusicLib.Abstraction.UserAuth;
 using LemonApp.MusicLib.Http;
+using DataTypes = LemonApp.MusicLib.Abstraction.Entities;
 using System.Text.Json.Nodes;
-using static LemonApp.MusicLib.Abstraction.Music.DataTypes;
+using LemonApp.MusicLib.Abstraction.Entities;
 
 namespace LemonApp.MusicLib.User;
 #pragma warning disable CS8600 // 将 null 字面量或可能为 null 的值转换为非 null 类型。
@@ -13,8 +13,8 @@ public class TencUserProfileGetter
 
     public string? AvatarUrl { get; private set; } = null;
 
-    public DataTypes.Playlist? MyFavorite { get; private set; } = null;
-    public List<DataTypes.Playlist> MyPlaylists { get; private set; } = [];
+    public Abstraction.Entities.Playlist? MyFavorite { get; private set; } = null;
+    public List<Abstraction.Entities.Playlist> MyPlaylists { get; private set; } = [];
 
     public async Task<bool> Fetch<T>(HttpClient client,T auth)
     {

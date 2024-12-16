@@ -1,9 +1,8 @@
-﻿using static LemonApp.MusicLib.Abstraction.Music.DataTypes;
-using System.Web;
+﻿using System.Web;
 using LemonApp.MusicLib.Abstraction.UserAuth;
 using LemonApp.MusicLib.Http;
 using System.Text.Json.Nodes;
-using static LemonApp.MusicLib.Abstraction.Album.DataTypes;
+using LemonApp.MusicLib.Abstraction.Entities;
 
 namespace LemonApp.MusicLib.Search;
 #pragma warning disable CS8602 // 解引用可能出现空引用。

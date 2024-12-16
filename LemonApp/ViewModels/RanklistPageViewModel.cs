@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
-using static LemonApp.MusicLib.Abstraction.RankList.DataTypes;
+using LemonApp.MusicLib.Abstraction.Entities;
 
 namespace LemonApp.ViewModels;
 

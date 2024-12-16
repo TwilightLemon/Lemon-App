@@ -1,18 +1,20 @@
-﻿using MusicDT = LemonApp.MusicLib.Abstraction.Music.DataTypes;
+﻿
+
+using LemonApp.MusicLib.Abstraction.Entities;
 
 namespace LemonApp.Common.Configs;
 public class PlayingPreference
 {
     public enum CircleMode {Circle,Single,Random}
-    public MusicDT.Music? Music { get; set; }
-    public MusicDT.MusicQuality Quality { get; set; } = MusicDT.MusicQuality.SQ;
+    public Music? Music { get; set; }
+    public MusicQuality Quality { get; set; } = MusicQuality.SQ;
     public double Volume { get; set; }
     public CircleMode PlayMode { get; set; }= CircleMode.Circle;
     public bool ShowDesktopLyric { get; set; } = false;
 }
 public class PlaylistCache
 {
-    public List<MusicDT.Music>? Playlist { get; set; } = [];
+    public List<Music>? Playlist { get; set; } = [];
 }
 public class DesktopLyricOption
 {

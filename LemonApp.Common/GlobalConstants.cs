@@ -1,5 +1,4 @@
 using LemonApp.Common.Configs;
-using LemonApp.Common.Funcs;
 
 namespace LemonApp.Common;
 /*

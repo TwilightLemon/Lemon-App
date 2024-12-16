@@ -1,17 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using LemonApp.Common.Configs;
 using LemonApp.Common.Funcs;
+using LemonApp.MusicLib.Abstraction.Entities;
 using LemonApp.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Markup;
-using MusicDT = LemonApp.MusicLib.Abstraction.Music.DataTypes;
 
 namespace LemonApp.ViewModels
 {
@@ -32,8 +28,8 @@ namespace LemonApp.ViewModels
         }
         #region Files
         [ObservableProperty]
-        private MusicDT.MusicQuality _preferQuality= MusicDT.MusicQuality.SQ;
-        partial void OnPreferQualityChanged(MusicDT.MusicQuality value)
+        private MusicQuality _preferQuality= MusicQuality.SQ;
+        partial void OnPreferQualityChanged(MusicQuality value)
         {
             _playingMgr.Data.Quality = value;
         }

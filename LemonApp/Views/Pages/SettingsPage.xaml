@@ -6,7 +6,7 @@
       xmlns:sys="clr-namespace:System;assembly=netstandard"
       xmlns:local="clr-namespace:LemonApp.Views.Pages"
       xmlns:ws="https://schemas.elecho.dev/wpfsuite"
-      xmlns:music="clr-namespace:LemonApp.MusicLib.Abstraction.Music;assembly=LemonApp.MusicLib.Abstraction"
+      xmlns:music="clr-namespace:LemonApp.MusicLib.Abstraction.Entities;assembly=LemonApp.MusicLib.Abstraction"
       xmlns:vm="clr-namespace:LemonApp.ViewModels"
       mc:Ignorable="d"
       d:DesignHeight="900"
@@ -20,7 +20,7 @@
                             MethodName="GetValues"
                             ObjectType="{x:Type sys:Enum}">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="music:DataTypes+MusicQuality" />
+                <x:Type TypeName="music:MusicQuality" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
     </Page.Resources>

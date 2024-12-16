@@ -5,10 +5,11 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using LemonApp.Common.Funcs;
-using MusicDT = LemonApp.MusicLib.Abstraction.Music.DataTypes;
 using LemonApp.Common.WinAPI;
 using System.IO;
 using LemonApp.Common.Configs;
+using LemonApp.Common;
+using LemonApp.MusicLib.Abstraction.Entities;
 
 namespace LemonApp.Services;
 
@@ -26,11 +27,11 @@ public class MediaPlayerService(UserProfileService userProfileService,
     private readonly HttpClient hc= httpClientFactory.CreateClient(App.PublicClientFlag);
     private readonly SharedLaClient _sharedLaClient = sharedLaClient;
 
-    public MusicDT.Music? CurrentMusic { get; private set; }
-    public MusicDT.MusicQuality CurrentQuality { get; private set; }
-    public event Action<MusicDT.Music>? OnLoaded,OnPlay,OnPaused, OnAddToPlayNext;
+    public Music? CurrentMusic { get; private set; }
+    public MusicQuality CurrentQuality { get; private set; }
+    public event Action<Music>? OnLoaded,OnPlay,OnPaused, OnAddToPlayNext;
     public event Action? OnEnd, OnPlayNext, OnPlayLast;
-    public event Action<IEnumerable<MusicDT.Music>>? OnNewPlaylistReceived;
+    public event Action<IEnumerable<Music>>? OnNewPlaylistReceived;
     public Action<long, long>? CacheProgress;
     public Action? CacheFinished,CacheStarted;
     public async Task Init()
@@ -70,11 +71,11 @@ public class MediaPlayerService(UserProfileService userProfileService,
         _player.Free();
     }
 
-    public Task Load(MusicDT.Music music)
+    public Task Load(Music music)
     {
         return LoadMusic(music, _playingMgr.Data.Quality);
     }
-    public async Task LoadMusic(MusicDT.Music music, MusicDT.MusicQuality prefer)
+    public async Task LoadMusic(Music music, MusicQuality prefer)
     {
         if (audioGetter == null)
             throw new InvalidOperationException("MediaPlayerService not initialized.");
@@ -157,14 +158,14 @@ public class MediaPlayerService(UserProfileService userProfileService,
 
     public bool IsPlaying=> _isPlaying;
 
-    public void ReplacePlayList(IEnumerable<MusicDT.Music> list)
+    public void ReplacePlayList(IEnumerable<Music> list)
     {
         if(list!=null&&list.Any())
         {
             OnNewPlaylistReceived?.Invoke(list);
         }
     }
-    public void AddToPlayNext(MusicDT.Music music)
+    public void AddToPlayNext(Music music)
     {
         OnAddToPlayNext?.Invoke(music);
     }
