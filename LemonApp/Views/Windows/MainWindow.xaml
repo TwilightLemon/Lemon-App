@@ -37,7 +37,7 @@
                 <PropertyGroupDescription PropertyName="Type" />
             </CollectionViewSource.GroupDescriptions>
         </CollectionViewSource>
-        
+
         <Storyboard x:Key="OpenLyricPageAni">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="MainPage"
                                            Storyboard.TargetProperty="(UIElement.Opacity)">
@@ -323,24 +323,30 @@
                                    FontSize="14"
                                    Text="Lemon App" />
                     </ws:WrapPanel>
-                    <ws:TextBox x:Name="SearchBox"
-                                Background="{DynamicResource MaskColor}"
-                                HoverBackground="{DynamicResource FocusMaskColor}"
-                                FocusedBackground="{DynamicResource FocusMaskColor}"
-                                BorderBrush="{DynamicResource BorderColor}"
-                                FocusedBorderBrush="{DynamicResource FocusMaskColor}"
-                                HoverBorderBrush="{DynamicResource FocusMaskColor}"
-                                SelectionBrush="{DynamicResource HighlightThemeColor}"
-                                CaretBrush="{DynamicResource ForeColor}"
-                                Foreground="{DynamicResource ForeColor}"
-                                Height="32"
-                                Padding="6 7 0 0"
-                                MaxWidth="380"
-                                Placeholder="搜索"
-                                HorizontalAlignment="Stretch"
-                                CornerRadius="6"
-                                Margin="220,8,220,8"
-                                PreviewKeyDown="SearchBox_PreviewKeyDown" />
+                    <Grid Margin="220 8"
+                          MaxWidth="380">
+                        <base:FluentPopup x:Name="SearchHintPopup"
+                                          ExtPopupAnimation="SlideDown"
+                                          StaysOpen="False"
+                                          SlideAnimationOffset="20"
+                                          Placement="Bottom" />
+                        <ws:TextBox x:Name="SearchBox"
+                                    Background="{DynamicResource MaskColor}"
+                                    HoverBackground="{DynamicResource FocusMaskColor}"
+                                    FocusedBackground="{DynamicResource FocusMaskColor}"
+                                    BorderBrush="{DynamicResource BorderColor}"
+                                    FocusedBorderBrush="{DynamicResource FocusMaskColor}"
+                                    HoverBorderBrush="{DynamicResource FocusMaskColor}"
+                                    SelectionBrush="{DynamicResource HighlightThemeColor}"
+                                    CaretBrush="{DynamicResource ForeColor}"
+                                    Foreground="{DynamicResource ForeColor}"
+                                    Height="32"
+                                    Padding="6 7 0 0"
+                                    Placeholder="搜索"
+                                    CornerRadius="6"
+                                    TextChanged="SearchBox_TextChanged"
+                                    PreviewKeyDown="SearchBox_PreviewKeyDown" />
+                    </Grid>
                     <!--用户头像&菜单-->
                     <Border HorizontalAlignment="Right"
                             Margin="0 0 144 0"
@@ -543,7 +549,11 @@
                         CornerRadius="8"
                         Margin="60,132,0,242">
                     <Border.Effect>
-                        <DropShadowEffect Color="Black" Direction="0" ShadowDepth="0" Opacity="0.6" BlurRadius="30"/>
+                        <DropShadowEffect Color="Black"
+                                          Direction="0"
+                                          ShadowDepth="0"
+                                          Opacity="0.6"
+                                          BlurRadius="30" />
                     </Border.Effect>
                 </Border>
                 <Border x:Name="LyricViewHost"
@@ -751,8 +761,8 @@
                                       Margin="0 0 32 0"
                                       HorizontalSpacing="24">
                             <uc:MusicInfoLand  Quality="{Binding CurrentQuality}"
-                                               MvId="{Binding CurrentPlaying.Mvmid}" 
-                                               QualityCommand="{Binding SetQualityCommand}"/>
+                                               MvId="{Binding CurrentPlaying.Mvmid}"
+                                               QualityCommand="{Binding SetQualityCommand}" />
                             <ws:Button x:Name="FavoriteBtn"
                                        Width="32"
                                        Height="32"

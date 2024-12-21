@@ -18,7 +18,7 @@ internal static class ClientHeaderSetter
     /// </summary>
     /// <param name="hc"></param>
     /// <param name="cookie"></param>
-    public static HttpClient SetForCYQ(this HttpClient hc,string cookie,string? referer=null)
+    public static HttpClient SetForCYQ(this HttpClient hc,string? cookie=null,string? referer=null)
     {
         hc.DefaultRequestHeaders.Clear();
         hc.DefaultRequestHeaders.Add("CacheControl", "max-age=0");
@@ -27,7 +27,7 @@ internal static class ClientHeaderSetter
         hc.DefaultRequestHeaders.Add("Referer", referer??"https://y.qq.com/");
         hc.DefaultRequestHeaders.Host = "c.y.qq.com";
         hc.DefaultRequestHeaders.TryAddWithoutValidation("AcceptLanguage", "zh-CN,zh;q=0.8");
-        hc.DefaultRequestHeaders.Add("Cookie", cookie);
+        if (cookie != null) hc.DefaultRequestHeaders.Add("Cookie", cookie);
         hc.DefaultRequestHeaders.Add("sec-fetch-dest", "empty");
         hc.DefaultRequestHeaders.Add("sec-fetch-mode", "cors");
         hc.DefaultRequestHeaders.Add("sec-fetch-site", "same-site");

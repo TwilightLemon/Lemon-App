@@ -314,6 +314,7 @@
         <!--TODO:作为打开歌手页面选择弹窗，ListBox.Item绑定ViewModel的Command 由其决定如果数量为1则直接打开，数量>1则打开弹窗，弹窗绑定新的数据以选择歌手-->
         <base:FluentPopup IsOpen="{Binding ShowCheckArtistsPopup}"
                           StaysOpen="False"
+                          ExtPopupAnimation="SlideUp"
                           Placement="Mouse">
             <Grid Width="200">
                 <ws:ListBox ItemsSource="{Binding ToChoosenArtists}"

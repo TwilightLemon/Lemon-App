@@ -1,0 +1,80 @@
+﻿<UserControl x:Class="LemonApp.Views.UserControls.SearchHintView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ws="https://schemas.elecho.dev/wpfsuite"
+             xmlns:local="clr-namespace:LemonApp.Views.UserControls"
+             mc:Ignorable="d"
+             Background="{DynamicResource WindowBackgroundColor}"
+             Foreground="{DynamicResource ForeColor}"
+             d:DataContext="{d:DesignInstance Type=local:SearchHintView}"
+             KeyDown="UserControl_KeyDown"
+             d:DesignHeight="450"
+             d:DesignWidth="800">
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="HintSource"
+                              Source="{Binding Hints.Hints}">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="Type" />
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+    </UserControl.Resources>
+    <!--ItemSource Provided in cs-->
+    <ws:ListBox x:Name="HintList"
+                Style="{StaticResource SimpleListBoxStyle}"
+                Margin="12"
+                d:DataContext="{d:SampleData ItemCount=5}"
+                ItemsSource="{Binding Source={StaticResource HintSource}}">
+        <ws:ListBox.ItemContainerStyle>
+            <Style TargetType="{x:Type ws:ListBoxItem}">
+                <EventSetter Event="PreviewMouseLeftButtonDown"
+                             Handler="ListBoxItem_PreviewMouseLeftButtonDown" />
+                <EventSetter Event="MouseLeftButtonUp"
+                             Handler="ListBoxItem_MouseLeftButtonUp" />
+                <Setter Property="FocusVisualStyle"
+                        Value="{x:Null}" />
+                <Setter Property="Margin"
+                        Value="5 2" />
+                <Setter Property="CornerRadius"
+                        Value="8" />
+                <Setter Property="Padding"
+                        Value="8" />
+                <Setter Property="BorderThickness"
+                        Value="0" />
+                <Setter Property="Foreground"
+                        Value="{DynamicResource ForeColor}" />
+                <Setter Property="SelectedForeground"
+                        Value="{DynamicResource HighlightThemeColor}" />
+                <Setter Property="HoverBackground"
+                        Value="{DynamicResource MaskColor}" />
+                <Setter Property="SelectedBackground"
+                        Value="{DynamicResource MaskColor}" />
+                <Setter Property="SelectedActiveBackground"
+                        Value="{DynamicResource MaskColor}" />
+            </Style>
+        </ws:ListBox.ItemContainerStyle>
+        <ws:ListBox.GroupStyle>
+            <GroupStyle>
+                <GroupStyle.HeaderTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}"
+                                   Foreground="{DynamicResource ForeColor}"
+                                   FontSize="14"
+                                   Opacity="0.8"
+                                   FontWeight="Bold"
+                                   Margin="4 8" />
+                    </DataTemplate>
+                </GroupStyle.HeaderTemplate>
+            </GroupStyle>
+        </ws:ListBox.GroupStyle>
+        <ws:ListBox.ItemTemplate>
+            <DataTemplate>
+                <ws:WrapPanel HorizontalSpacing="8">
+                    <TextBlock Text="{Binding Content}" FontSize="14"/>
+                    <TextBlock VerticalAlignment="Bottom" Text="{Binding Singer}"  Opacity="0.6"/>
+                </ws:WrapPanel>
+            </DataTemplate>
+        </ws:ListBox.ItemTemplate>
+    </ws:ListBox>
+</UserControl>

@@ -75,6 +75,7 @@ namespace LemonApp
 
                 //UI Components
                 services.AddSingleton<LyricView>();
+                services.AddSingleton<SearchHintView>();
 
                 //MusicLib Components
                 services.AddSingleton<SharedLaClient>();

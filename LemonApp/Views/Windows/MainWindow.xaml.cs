@@ -14,6 +14,9 @@ using System.Windows.Data;
 using LemonApp.Common.WinAPI;
 using LemonApp.Views.Pages;
 using System.Windows.Interop;
+using LemonApp.Views.UserControls;
+using LemonApp.MusicLib.Search;
+using System.Net.Http;
 
 namespace LemonApp.Views.Windows
 {
@@ -305,6 +308,37 @@ namespace LemonApp.Views.Windows
         {
             if (e.Key == Key.Enter)
                 _mainNavigationService.RequstNavigation(PageType.SearchPage, SearchBox.Text);
+            else if(e.Key == Key.Up||e.Key==Key.Down)
+            {
+                if(SearchHintPopup.Child is SearchHintView { } view)
+                {
+                    view.HintList.Focus();
+                }
+            }
+        }
+        private HttpClient _hc;
+        private async void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(SearchBox.Text))
+            {
+                SearchHintPopup.IsOpen = false;
+                return;
+            }
+            if (SearchHintPopup.Child == null)
+            {
+                var view = _serviceProvider.GetRequiredService<SearchHintView>();
+                view.RequestClose = () => SearchHintPopup.IsOpen = false;
+                view.RequestDefocus = () => SearchBox.Focus();
+                SearchHintPopup.Child = view;
+            }
+            if (!SearchHintPopup.IsOpen)
+            {
+                await Task.Yield();
+                SearchHintPopup.IsOpen = true;
+            }
+            _hc ??= new();
+            var hints = await SearchHintAPI.GetSearchHintAsync(SearchBox.Text, _hc);// Manage HttpClient
+            (SearchHintPopup.Child as SearchHintView)!.Hints = hints;
         }
         #endregion
         // private void Border_MouseDown(object sender, MouseButtonEventArgs e){
