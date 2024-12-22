@@ -1,6 +1,6 @@
 ﻿using LemonApp.MusicLib.Abstraction.Entities;
 using LemonApp.ViewModels;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
@@ -89,6 +89,24 @@ namespace LemonApp.Views.Pages
             {
                 listBox.ScrollIntoView(m);
             }
+        }
+
+        private void ListSearchBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            _vm?.SearchItem(ListSearchBox.Text);
+        }
+
+        private void SelectModeTB_Click(object sender, RoutedEventArgs e)
+        {
+            listBox.SelectionMode=SelectModeTB.IsChecked ==true ? SelectionMode.Multiple : SelectionMode.Single;
+        }
+
+        private void AddToNextBtn_Click(object sender, RoutedEventArgs e)
+        {
+            List<Music> list = [];
+            foreach (var m in listBox.SelectedItems)
+                list.Add((Music)m);
+            _vm?.AddToPlayNextCommand.Execute(list);
         }
 
         public PlaylistPageViewModel? ViewModel

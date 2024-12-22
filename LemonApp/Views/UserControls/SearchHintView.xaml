@@ -20,7 +20,6 @@
             </CollectionViewSource.GroupDescriptions>
         </CollectionViewSource>
     </UserControl.Resources>
-    <!--ItemSource Provided in cs-->
     <ws:ListBox x:Name="HintList"
                 Style="{StaticResource SimpleListBoxStyle}"
                 Margin="12"

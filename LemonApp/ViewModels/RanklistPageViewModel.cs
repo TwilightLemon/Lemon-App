@@ -39,6 +39,7 @@ public partial class RanklistPageViewModel(
         var temp = new List<RanklistItem>();
         foreach (var item in list)
         {
+            //TODO: 图片加载过慢
             var cover = await ImageCacheHelper.FetchData(item.CoverUrl);
             temp.Add(new(item, cover));
         }

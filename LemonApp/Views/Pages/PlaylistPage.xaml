@@ -46,7 +46,7 @@
                     </EasingThicknessKeyFrame.EasingFunction>
                 </EasingThicknessKeyFrame>
             </ThicknessAnimationUsingKeyFrames>
-            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="listBox"
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="ContentView"
                                               Storyboard.TargetProperty="(FrameworkElement.Margin)">
                 <EasingThicknessKeyFrame KeyTime="00:00:00.2000000"
                                          Value="0,128,0,0">
@@ -85,7 +85,7 @@
                     </EasingThicknessKeyFrame.EasingFunction>
                 </EasingThicknessKeyFrame>
             </ThicknessAnimationUsingKeyFrames>
-            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="listBox"
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="ContentView"
                                               Storyboard.TargetProperty="(FrameworkElement.Margin)">
                 <EasingThicknessKeyFrame KeyTime="00:00:00.2000000"
                                          Value="0,208,0,0">
@@ -126,7 +126,7 @@
                 <EasingThicknessKeyFrame KeyTime="00:00:00"
                                          Value="8,8,8,8" />
             </ThicknessAnimationUsingKeyFrames>
-            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="listBox"
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="ContentView"
                                               Storyboard.TargetProperty="(FrameworkElement.Margin)">
                 <EasingThicknessKeyFrame KeyTime="00:00:00"
                                          Value="0,72,0,0" />
@@ -208,109 +208,154 @@
                     </ws:Button>
                     <ws:Button Style="{StaticResource SimpleButtonStyleForWs}"
                                Padding="16 0">
-                        Select
-                    </ws:Button>
-                    <ws:Button Style="{StaticResource SimpleButtonStyleForWs}"
-                               Padding="16 0">
                         Share
                     </ws:Button>
                 </ws:WrapPanel>
             </Grid>
         </Border>
-        
-        <ws:ListBox x:Name="listBox"
-                    ItemsSource="{Binding Musics}"
-                    ScrollViewer.ScrollChanged="listBox_ScrollChanged"
-                    AlternationCount="{Binding Musics.Count}"
-                    VerticalAlignment="Stretch"
-                    Margin="0 208 0 0"
-                    MouseDoubleClick="listBox_MouseDoubleClick"
-                    d:ItemsSource="{d:SampleData ItemCount=5}"
-                    d:AlternationCount="5"
-                    Style="{DynamicResource SimpleListBoxStyle}"
-                    ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}">
-            <ws:ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Border Height="48" x:Name="_border" CornerRadius="8"
-                            Background="Transparent">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="3*" />
-                                <ColumnDefinition Width="2*" />
-                                <ColumnDefinition Width="2*" />
-                            </Grid.ColumnDefinitions>
-                            <ws:ConditionalControl x:Name="Highlighter"
-                                                   d:Condition="True"
-                                                   Width="4"
-                                                   Height="22"
-                                                   HorizontalAlignment="Left">
-                                <ws:ConditionalControl.ContentWhenTrue>
-                                    <Border Background="{DynamicResource HighlightThemeColor}"
-                                            CornerRadius="2" />
-                                </ws:ConditionalControl.ContentWhenTrue>
-                            </ws:ConditionalControl>
-                            <ws:WrapPanel VerticalAlignment="Center"
-                                          Margin="12 0"
-                                          HorizontalSpacing="4"
-                                          VerticalSpacing="2"
-                                          HorizontalAlignment="Stretch">
-                                <TextBlock Text="{Binding MusicName}"
-                                           VerticalAlignment="Center" />
-                                <TextBlock Text="{Binding MusicName_Lyric}"
-                                           VerticalAlignment="Center"
-                                           FontSize="10"
-                                           FontWeight="Normal"
-                                           Opacity="0.6" />
-                                <uc:MusicInfoLand x:Name="InfoLand"
-                                                  HorizontalAlignment="Right"
-                                                  VerticalAlignment="Center"
-                                                  Quality="{Binding Quality}"
-                                                  MvId="{Binding Mvmid}" />
-                            </ws:WrapPanel>
-                            <ws:Button Margin="4"
-                                       HorizontalAlignment="Left"
-                                       Padding="8 4"
-                                       Grid.Column="1"
-                                       Command="{Binding DataContext.CheckIfGotoArtistsPopupCommand,RelativeSource={RelativeSource AncestorType=ws:ListBox}}"
-                                       CommandParameter="{Binding}"
-                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
-                                <TextBlock Text="{Binding SingerText}" />
-                            </ws:Button>
-                            <ws:Button Margin="4"
-                                       HorizontalAlignment="Left"
-                                       Padding="8 4"
-                                       Grid.Column="2"
-                                       Command="{Binding DataContext.GotoAlbumPageCommand ,RelativeSource={RelativeSource AncestorType=ws:ListBox}}"
-                                       CommandParameter="{Binding Album.Id}"
-                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
-                                <TextBlock Text="{Binding Album.Name}" />
-                            </ws:Button>
-                        </Grid>
-                    </Border>
-                    <DataTemplate.Triggers>
-                        <DataTrigger Value="True">
-                            <DataTrigger.Binding>
-                                <MultiBinding Converter="{x:Static converter:MusicEqualConverter.Instance}">
-                                    <Binding />
-                                    <Binding Path="DataContext.Playing"
-                                             RelativeSource="{RelativeSource AncestorType=ws:ListBox}" />
-                                </MultiBinding>
-                            </DataTrigger.Binding>
-                            <Setter Property="TextElement.Foreground"
-                                    Value="{DynamicResource HighlightThemeColor}" />
-                            <Setter Property="TextElement.FontWeight"
-                                    Value="Bold" />
-                            <Setter TargetName="Highlighter"
-                                    Property="Condition"
-                                    Value="True" />
-                            <Setter TargetName="_border"
-                                    Property="Background"
-                                    Value="{DynamicResource MaskColor}" />
-                        </DataTrigger>
-                    </DataTemplate.Triggers>
-                </DataTemplate>
-            </ws:ListBox.ItemTemplate>
-        </ws:ListBox>
+
+        <Grid x:Name="ContentView"
+                       Margin="0 208 0 0">
+            <Border BorderThickness="1"
+                    BorderBrush="{DynamicResource BorderColor}"
+                    Background="{DynamicResource TabMaskColor}"
+                    CornerRadius="8"
+                    Margin="8 4 8 8"
+                    VerticalAlignment="Top"
+                    Height="36">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="1*" />
+                    </Grid.ColumnDefinitions>
+                    <ws:TextBox x:Name="ListSearchBox"
+                                Grid.Column="1"
+                                Margin="8 2"
+                                Padding="8 6"
+                                Placeholder="Search"
+                                TextChanged="ListSearchBox_TextChanged"
+                                Style="{StaticResource SimpleTextBoxStyleForWs}" />
+                    <ws:WrapPanel HorizontalSpacing="12" ItemHeight="30" Margin="20 0" VerticalAlignment="Center">
+                        <TextBlock VerticalAlignment="Center">
+                            <Run Text="{Binding Musics.Count,Mode=OneWay}" d:Text="520"/>
+                            <Run Text=" Songs" />
+                        </TextBlock>
+                        <ToggleButton x:Name="SelectModeTB" Style="{StaticResource AccentToggleButtonStyle}"
+                                      Padding="16 0"
+                                      Click="SelectModeTB_Click">
+                            Select
+                        </ToggleButton>
+                        <ws:Button x:Name="AddToDissBtn" Style="{StaticResource SimpleButtonStyleForWs}"
+                                   Padding="16 0">
+                            Add to My Diss
+                        </ws:Button>
+                        <ws:Button x:Name="AddToNextBtn" Style="{StaticResource SimpleButtonStyleForWs}"
+                                   Padding="16 0"
+                                   Click="AddToNextBtn_Click">
+                            Next to play
+                        </ws:Button>
+                        <ws:Button Style="{StaticResource SimpleButtonStyleForWs}"
+                                   Padding="16 0">
+                            Download
+                        </ws:Button>
+                    </ws:WrapPanel>
+                </Grid>
+            </Border>
+            <ws:ListBox x:Name="listBox"
+                        Margin="0 42 0 0"
+                        ItemsSource="{Binding Musics}"
+                        ScrollViewer.ScrollChanged="listBox_ScrollChanged"
+                        AlternationCount="{Binding Musics.Count}"
+                        MouseDoubleClick="listBox_MouseDoubleClick"
+                        d:ItemsSource="{d:SampleData ItemCount=5}"
+                        d:AlternationCount="5"
+                        Style="{DynamicResource SimpleListBoxStyle}"
+                        ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}">
+                <ws:ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Height="48"
+                                x:Name="_border"
+                                CornerRadius="8"
+                                Background="Transparent">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="3*" />
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="2*" />
+                                </Grid.ColumnDefinitions>
+                                <ws:ConditionalControl x:Name="Highlighter"
+                                                       d:Condition="True"
+                                                       Width="4"
+                                                       Height="22"
+                                                       HorizontalAlignment="Left">
+                                    <ws:ConditionalControl.ContentWhenTrue>
+                                        <Border Background="{DynamicResource HighlightThemeColor}"
+                                                CornerRadius="2" />
+                                    </ws:ConditionalControl.ContentWhenTrue>
+                                </ws:ConditionalControl>
+                                <ws:WrapPanel VerticalAlignment="Center"
+                                              Margin="12 0"
+                                              HorizontalSpacing="4"
+                                              VerticalSpacing="2"
+                                              HorizontalAlignment="Stretch">
+                                    <TextBlock Text="{Binding MusicName}"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding MusicName_Lyric}"
+                                               VerticalAlignment="Center"
+                                               FontSize="10"
+                                               FontWeight="Normal"
+                                               Opacity="0.6" />
+                                    <uc:MusicInfoLand x:Name="InfoLand"
+                                                      HorizontalAlignment="Right"
+                                                      VerticalAlignment="Center"
+                                                      Quality="{Binding Quality}"
+                                                      MvId="{Binding Mvmid}" />
+                                </ws:WrapPanel>
+                                <ws:Button Margin="4"
+                                           HorizontalAlignment="Left"
+                                           Padding="8 4"
+                                           Grid.Column="1"
+                                           Command="{Binding DataContext.CheckIfGotoArtistsPopupCommand,RelativeSource={RelativeSource AncestorType=ws:ListBox}}"
+                                           CommandParameter="{Binding}"
+                                           Style="{StaticResource SimpleIconButtonStyleForWs}">
+                                    <TextBlock Text="{Binding SingerText}" />
+                                </ws:Button>
+                                <ws:Button Margin="4"
+                                           HorizontalAlignment="Left"
+                                           Padding="8 4"
+                                           Grid.Column="2"
+                                           Command="{Binding DataContext.GotoAlbumPageCommand ,RelativeSource={RelativeSource AncestorType=ws:ListBox}}"
+                                           CommandParameter="{Binding Album.Id}"
+                                           Style="{StaticResource SimpleIconButtonStyleForWs}">
+                                    <TextBlock Text="{Binding Album.Name}" />
+                                </ws:Button>
+                            </Grid>
+                        </Border>
+                        <DataTemplate.Triggers>
+                            <DataTrigger Value="True">
+                                <DataTrigger.Binding>
+                                    <MultiBinding Converter="{x:Static converter:MusicEqualConverter.Instance}">
+                                        <Binding />
+                                        <Binding Path="DataContext.Playing"
+                                                 RelativeSource="{RelativeSource AncestorType=ws:ListBox}" />
+                                    </MultiBinding>
+                                </DataTrigger.Binding>
+                                <Setter Property="TextElement.Foreground"
+                                        Value="{DynamicResource HighlightThemeColor}" />
+                                <Setter Property="TextElement.FontWeight"
+                                        Value="Bold" />
+                                <Setter TargetName="Highlighter"
+                                        Property="Condition"
+                                        Value="True" />
+                                <Setter TargetName="_border"
+                                        Property="Background"
+                                        Value="{DynamicResource MaskColor}" />
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </ws:ListBox.ItemTemplate>
+            </ws:ListBox>
+        </Grid>
         <!--TODO:作为打开歌手页面选择弹窗，ListBox.Item绑定ViewModel的Command 由其决定如果数量为1则直接打开，数量>1则打开弹窗，弹窗绑定新的数据以选择歌手-->
         <base:FluentPopup IsOpen="{Binding ShowCheckArtistsPopup}"
                           StaysOpen="False"

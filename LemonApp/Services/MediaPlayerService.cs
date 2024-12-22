@@ -30,6 +30,7 @@ public class MediaPlayerService(UserProfileService userProfileService,
     public Music? CurrentMusic { get; private set; }
     public MusicQuality CurrentQuality { get; private set; }
     public event Action<Music>? OnLoaded,OnPlay,OnPaused, OnAddToPlayNext;
+    public event Action<IEnumerable<Music>>? OnAddListToPlayNext;
     public event Action? OnEnd, OnPlayNext, OnPlayLast;
     public event Action<IEnumerable<Music>>? OnNewPlaylistReceived;
     public Action<long, long>? CacheProgress;
@@ -168,5 +169,9 @@ public class MediaPlayerService(UserProfileService userProfileService,
     public void AddToPlayNext(Music music)
     {
         OnAddToPlayNext?.Invoke(music);
+    }
+    public void AddToPlayNext(IEnumerable<Music> list)
+    {
+        OnAddListToPlayNext?.Invoke(list);
     }
 }

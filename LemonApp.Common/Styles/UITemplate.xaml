@@ -24,6 +24,7 @@
     <ControlTemplate x:Key="AccentToggleButtonTemplate" TargetType="{x:Type ToggleButton}">
         <Border x:Name="border"
                 CornerRadius="8"
+                BorderBrush="{DynamicResource BorderColor}"
                 Background="{DynamicResource HighlightThemeColor}">
             <ContentPresenter x:Name="contentPresenter"
                               Focusable="False"
@@ -34,20 +35,26 @@
                               VerticalAlignment="Center" />
         </Border>
         <ControlTemplate.Triggers>
-            <Trigger Property="IsChecked" Value="True">
+            <Trigger Property="IsChecked" Value="False">
                 <Setter TargetName="border"
                         Property="Background"
                         Value="{DynamicResource MaskColor}" />
+                <Setter TargetName="border"
+                        Property="BorderThickness"
+                        Value="1" />
                 <Setter Property="TextElement.Foreground"
                         Value="{DynamicResource ForeColor}" />
             </Trigger>
             <Trigger Property="IsChecked"
-                     Value="False">
+                     Value="True">
                 <Setter TargetName="border"
                         Property="Background"
                         Value="{DynamicResource HighlightThemeColor}" />
+                <Setter TargetName="border"
+                        Property="BorderThickness"
+                        Value="0" />
                 <Setter Property="TextElement.Foreground"
-                        Value="#EFEFEF" />
+                        Value="{DynamicResource BackgroundColor}" />
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
@@ -415,7 +422,13 @@
         <Setter Property="CaretBrush"
                 Value="{DynamicResource ForeColor}" />
         <Setter Property="BorderThickness"
-                Value="0" />
+                Value="1" />
+        <Setter Property="BorderBrush"
+                Value="{DynamicResource BorderColor}" />
+        <Setter Property="FocusedBorderBrush"
+                Value="{DynamicResource FocusMaskColor}" />
+        <Setter Property="HoverBorderBrush"
+                Value="{DynamicResource FocusMaskColor}" />
         <Setter Property="CornerRadius"
                 Value="10" />
     </Style>

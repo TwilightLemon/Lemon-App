@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using LemonApp.MusicLib.Abstraction.Entities;
+using System.IO;
 using System.Text;
 
 namespace LemonApp.Common.Funcs;
@@ -83,5 +84,14 @@ public static class TextHelper
             }
             return all.Substring(A, B);
         }
+    }
+
+    public static bool FuzzySearch(Music m,string key)
+    {
+        if (m == null || string.IsNullOrWhiteSpace(key)) return false;
+
+        key= key.ToLower();
+        string content = $"{m.MusicName} {m.SingerText} {m.Album?.Name ?? ""}".ToLower();
+        return content.Contains(key);
     }
 }

@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using LemonApp.MusicLib.Abstraction.Entities;
+using System.Collections.Generic;
+using LemonApp.Common.Funcs;
 
 namespace LemonApp.ViewModels;
 
@@ -42,12 +44,40 @@ public partial class PlaylistPageViewModel(
     public PlaylistType PlaylistType { get; set; } = PlaylistType.Other;
 
     public ObservableCollection<Music> Musics { get; set; } = [];
+    private IList<Music>? _oriData;
+    public void InitMusicList(IList<Music> list)
+    {
+        Musics.Clear();
+        _oriData = list;
+        foreach (var m in list)
+        {
+            Musics.Add(m);
+        }
+    }
 
     //TODO: 接入LoadMore
     public event Action? OnLoadMoreRequired;
     public void LoadMore()
     {
         OnLoadMoreRequired?.Invoke();
+    }
+
+    public void SearchItem(string key)
+    {
+        if (string.IsNullOrWhiteSpace(key))
+            if (_oriData != null && Musics.Count != _oriData.Count){
+                InitMusicList(_oriData);
+                return;
+            }
+        var searchResult = _oriData?.Where(m => TextHelper.FuzzySearch(m,key));
+        if (searchResult != null)
+        {
+            Musics.Clear();
+            foreach (var m in searchResult)
+            {
+                Musics.Add(m);
+            }
+        }
     }
 
     [RelayCommand]
@@ -95,6 +125,7 @@ public partial class PlaylistPageViewModel(
     private async Task PlayMusic(Music m)
     {
         //根据列表类型选择播放所有/插入下一曲
+        //在当前页面第二次点击时添加整个列表
         if (PlaylistType == PlaylistType.Other&&!_hasAddToPlaylist)
         {
             _mediaPlayerService.AddToPlayNext(m);
@@ -115,6 +146,12 @@ public partial class PlaylistPageViewModel(
         _mediaPlayerService.ReplacePlayList(Musics);
         await _mediaPlayerService.Load(Musics[0]);
         _mediaPlayerService.Play();
+    }
+
+    [RelayCommand]
+    private void AddToPlayNext(IEnumerable<Music> list)
+    {
+        _mediaPlayerService.AddToPlayNext(list);
     }
     public void UpdateCurrentPlaying(string? musicId)
     {

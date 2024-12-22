@@ -7,14 +7,18 @@ public enum PageType
 }
 public class MainNavigationService
 {
-    public event Action<PageType,object?>? OnNavigatingRequsted;
+    public event Action<PageType,object?>? OnNavigationRequested;
+    public event Action? LoadingAniRequested,LoadingAniCancelled;
 
     public void RequstNavigation<T>(PageType type,T? arg) where T:class
     {
-        OnNavigatingRequsted?.Invoke(type, arg);
+        OnNavigationRequested?.Invoke(type, arg);
     }
     public void RequstNavigation(PageType type)
     {
-        OnNavigatingRequsted?.Invoke(type,null);
+        OnNavigationRequested?.Invoke(type,null);
     }
+
+    public void BeginLoadingAni()=>App.Current.Dispatcher.Invoke(LoadingAniRequested);
+    public void CancelLoadingAni()=>App.Current.Dispatcher.Invoke(LoadingAniCancelled);
 }

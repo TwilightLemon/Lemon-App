@@ -1,4 +1,5 @@
-﻿using LemonApp.ViewModels;
+﻿using LemonApp.Services;
+using LemonApp.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,19 +22,22 @@ namespace LemonApp.Views.Pages
     /// </summary>
     public partial class RanklistPage : Page
     {
-        public RanklistPage(RanklistPageViewModel ranklistPageViewModel)
+        private readonly MainNavigationService _mainNavigationService;
+        private readonly RanklistPageViewModel vm;
+        public RanklistPage(RanklistPageViewModel ranklistPageViewModel,MainNavigationService mainNavigationService)
         {
             InitializeComponent();
             DataContext = vm = ranklistPageViewModel;
+            _mainNavigationService = mainNavigationService;
             Loaded += RanklistPage_Loaded;
         }
 
-        private void RanklistPage_Loaded(object sender, RoutedEventArgs e)
+        private async void RanklistPage_Loaded(object sender, RoutedEventArgs e)
         {
-            _=vm.LoadData();
+            _mainNavigationService.BeginLoadingAni();
+            await vm.LoadData();
+            _mainNavigationService.CancelLoadingAni();
         }
-
-        private readonly RanklistPageViewModel vm;
 
         private void RankList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

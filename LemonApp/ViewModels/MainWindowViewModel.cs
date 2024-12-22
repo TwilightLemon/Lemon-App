@@ -28,6 +28,7 @@ using Task = System.Threading.Tasks.Task;
 using LemonApp.MusicLib.RankList;
 using LemonApp.MusicLib.Abstraction.Entities;
 
+//TODO: 将功能再细分为Component 简化ViewModel
 namespace LemonApp.ViewModels;
 public partial class MainWindowViewModel : ObservableObject,IDisposable
 {
@@ -71,6 +72,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         _mediaPlayerService.OnPaused += _mediaPlayerService_OnPaused;
         _mediaPlayerService.OnNewPlaylistReceived += _mediaPlayerService_OnNewPlaylistReceived;
         _mediaPlayerService.OnAddToPlayNext += _mediaPlayerService_OnAddToPlayNext;
+        _mediaPlayerService.OnAddListToPlayNext += _mediaPlayerService_OnAddListToPlayNext;
         _mediaPlayerService.OnEnd += _mediaPlayerService_OnEnd;
         _mediaPlayerService.OnPlayNext += PlayNext;
         _mediaPlayerService.OnPlayLast += PlayLast;
@@ -81,7 +83,9 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
 
         _lyricWindowViewModel = lyricWindowViewModel;
 
-        _mainNavigationService.OnNavigatingRequsted += MainNavigationService_OnNavigatingRequsted;
+        _mainNavigationService.OnNavigationRequested += MainNavigationService_OnNavigatingRequsted;
+        _mainNavigationService.LoadingAniRequested+=()=>IsLoading=true;
+        _mainNavigationService.LoadingAniCancelled+=()=>IsLoading=false;
         userProfileService.OnAuth += UserProfileService_OnAuth;
         userProfileService.OnAuthExpired += UserProfileService_OnAuthExpired;
 
@@ -93,6 +97,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         LoadComponent();
         FetchIconResource();
     }
+
 
     private async void UIResourceService_OnColorModeChanged()
     {
@@ -278,6 +283,20 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
             index = current != null ? Playlist.IndexOf(current) : 0;
         }
         Playlist.Insert(index + 1, obj);
+    }
+    private void _mediaPlayerService_OnAddListToPlayNext(IEnumerable<Music> obj)
+    {
+        int index = 0;
+        if (CurrentPlaying != null)
+        {
+            var current = Playlist.FirstOrDefault(m => m.MusicID == CurrentPlaying.MusicID);
+            index = current != null ? Playlist.IndexOf(current) : 0;
+        }
+        foreach (var item in obj)
+        {
+            Playlist.Insert(index + 1, item);
+            index++;
+        }
     }
 
     private void _mediaPlayerService_OnNewPlaylistReceived(IEnumerable<Music> obj)
@@ -488,10 +507,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
                 vm.Description = info.Description;
                 vm.ListName = info.Name;
                 vm.PlaylistType = PlaylistType.Ranklist;
-                foreach (var item in data)
-                {
-                    vm.Musics.Add(item);
-                }
+                vm.InitMusicList(data);
                 vm.CreatorName = "QQ Music Official";
                 vm.CreatorAvatar = Brushes.SkyBlue;
                 vm.UpdateCurrentPlaying(CurrentPlaying?.MusicID);
@@ -514,10 +530,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
             vm.Cover = new ImageBrush(await ImageCacheHelper.FetchData(data.Photo));
             vm.Description = data.Description ?? "";
             vm.ListName = data.Name;
-            foreach (var item in data.Musics!)
-            {
-                vm.Musics.Add(item);
-            }
+            vm.InitMusicList(data.Musics!);
             vm.CreatorAvatar = new ImageBrush(await ImageCacheHelper.FetchData(data.Creator!.Photo));
             vm.CreatorName = data.Creator.Name;
             vm.PlaylistType = PlaylistType.Album;
@@ -543,10 +556,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         {
             vm.ShowInfoView = false;
             var search = await SearchAPI.SearchMusicAsync(hc, auth, keyword);
-            foreach (var item in search)
-            {
-                vm.Musics.Add(item);
-            }
+            vm.InitMusicList(search);
             vm.UpdateCurrentPlaying(CurrentPlaying?.MusicID);
             vm.PlaylistType = PlaylistType.Other;
 
@@ -612,10 +622,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
                 vm.Cover = new ImageBrush(await ImageCacheHelper.FetchData(data.Photo));
                 vm.Description = data.Description ?? "";
                 vm.ListName = data.Name;
-                foreach (var item in data.Musics!)
-                {
-                    vm.Musics.Add(item);
-                }
+                vm.InitMusicList(data.Musics!);
                 vm.CreatorAvatar = new ImageBrush(await ImageCacheHelper.FetchData(data.Creator!.Photo));
                 vm.CreatorName = data.Creator.Name;
                 vm.PlaylistType = PlaylistType.Playlist;
