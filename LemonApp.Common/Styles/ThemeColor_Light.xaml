@@ -19,8 +19,11 @@
     <!--焦点蒙罩背景色-->
     <SolidColorBrush x:Key="FocusMaskColor"
                      Color="#19000000" />
+    <!--主窗口的内容容器背景色-->
+    <SolidColorBrush x:Key="ContentBgColor"
+                     Color="#4CFFFFFF" />
     <SolidColorBrush x:Key="BorderColor" 
-                     Color="#19000000"/>
+                     Color="#10000000"/>
     <!--纯色背景-->
     <SolidColorBrush x:Key="BackgroundColor"
                      Color="#FFF0F0F0" />

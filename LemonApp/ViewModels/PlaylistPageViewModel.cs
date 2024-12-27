@@ -85,9 +85,9 @@ public partial class PlaylistPageViewModel(
     {
         _navigationService.RequstNavigation(PageType.AlbumPage, albumId);
     }
-    private void GotoArtistPage(string artistId)
+    private void GotoArtistPage(Profile artist)
     {
-        _navigationService.RequstNavigation(PageType.ArtistPage, artistId);
+        _navigationService.RequstNavigation(PageType.ArtistPage, artist);
     }
 
     [RelayCommand]
@@ -95,7 +95,7 @@ public partial class PlaylistPageViewModel(
     {
         if (m.Singer.Count == 1)
         {
-            GotoArtistPage(m.Singer[0].Mid);
+            GotoArtistPage(m.Singer[0]);
         }
         else
         {
@@ -114,7 +114,7 @@ public partial class PlaylistPageViewModel(
     partial void OnChoosenArtistChanged(Profile? value)
     {
         if(value !=null){
-            GotoArtistPage(value.Mid);
+            GotoArtistPage(value);
             ShowCheckArtistsPopup = false;
         }
     }

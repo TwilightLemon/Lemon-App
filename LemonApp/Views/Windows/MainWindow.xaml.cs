@@ -99,7 +99,9 @@ namespace LemonApp.Views.Windows
         {
             _vm.SelectedMenu = _vm.MainMenus.FirstOrDefault();
             _vm.RequireCreateNewPage();
+#if !DEBUG //只在Release模式下启用TaskBarThumb
             _vm.InitTaskBarThumb();
+#endif
             _vm.InitNotifyIcon();
             LyricViewHost.Child = _vm.LyricView;
 
@@ -154,7 +156,7 @@ namespace LemonApp.Views.Windows
                 _vm.SelectedMenu = selected;
             }
         }
-        #endregion
+#endregion
 
         #region  Open Popups
 

@@ -503,9 +503,7 @@
                     <Border x:Name="ContentHost"
                             Margin="8 0 8 8"
                             Grid.Column="1"
-                            BorderBrush="{DynamicResource BorderColor}"
-                            BorderThickness="1"
-                            Background="{DynamicResource TabMaskColor}"
+                            Background="{DynamicResource ContentBgColor}"
                             CornerRadius="8">
                         <ws:Frame Name="MainContentFrame"
                                   Navigated="MainContentFrame_Navigated"

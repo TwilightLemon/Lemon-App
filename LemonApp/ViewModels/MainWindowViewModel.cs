@@ -27,6 +27,7 @@ using LemonApp.Views.Windows;
 using Task = System.Threading.Tasks.Task;
 using LemonApp.MusicLib.RankList;
 using LemonApp.MusicLib.Abstraction.Entities;
+using LemonApp.MusicLib.User;
 
 //TODO: 将功能再细分为Component 简化ViewModel
 namespace LemonApp.ViewModels;
@@ -401,10 +402,10 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         new MainMenu("Playlists", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page)),
         new MainMenu("Radio", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page)),
 
-        new MainMenu("Bought", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page),MenuType.Mine),
+        new MainMenu("Bought", (Geometry)App.Current.FindResource("Menu_Bought"), typeof(MyBoughtPage),MenuType.Mine,LoadMyBoughtPage),
         new MainMenu("Download", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page),MenuType.Mine),
         new MainMenu("Favorite",(Geometry)App.Current.FindResource("Menu_Favorite"), typeof(PlaylistPage),MenuType.Mine,LoadMyFavorite),
-        new MainMenu("My Diss", (Geometry) App.Current.FindResource("Menu_MyDiss"), typeof(PlaylistItemPage),MenuType.Mine,LoadMyDiss)
+        new MainMenu("My Diss", (Geometry) App.Current.FindResource("Menu_MyDiss"), typeof(MyDissPage),MenuType.Mine,LoadMyDiss)  //把加载部分写入Page或单独的components
         ];
         foreach (var item in list)
         {
@@ -469,6 +470,12 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
                 break;
             case PageType.AccountInfoPage:
                 NavigateToAccountInfoPage();
+                break;
+            case PageType.ArtistPage:
+                if(arg is Profile pro)
+                {
+                    NavigateToSearchPage(pro.Name);
+                }
                 break;
             default:
                 break;
@@ -595,7 +602,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
     private async Task LoadMyDiss(object page)
     {
         IsLoading = true;
-        if (page is PlaylistItemPage view)
+        if (page is MyDissPage view)
         {
             if (_userProfileService.UserProfileGetter.MyPlaylists is { } list)
             {
@@ -605,6 +612,28 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
                     view.MyDissViewModel = vm;
                 }
             }
+        }
+        IsLoading = false;
+    }
+    private async Task LoadMyBoughtPage(object page)
+    {
+        IsLoading = true;
+        if (page is MyBoughtPage view)
+        {
+            var hc = _serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
+            var auth = _userProfileService.GetAuth();
+            if (auth != null && hc != null)
+            {
+                var data=await TencMyDissAPI.GetMyBoughtAlbumList(auth, hc);
+                if (data != null)
+                {
+                    if (_serviceProvider.GetRequiredService<AlbumItemViewModel>() is { } vm)
+                    {
+                        await vm.SetAlbumItems(data);
+                        view.MyDissViewModel = vm;
+                    }
+                }
+            } 
         }
         IsLoading = false;
     }

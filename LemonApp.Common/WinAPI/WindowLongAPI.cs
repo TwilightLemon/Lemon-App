@@ -18,6 +18,7 @@ public static class WindowLongAPI
     {
         // ...
         WS_EX_TOOLWINDOW = 0x00000080,
+        WS_EX_NOACTIVATE= 0x08000000,
         // ...
     }
 
@@ -62,6 +63,8 @@ public static class WindowLongAPI
 
     [DllImport("user32.dll")]
     public static extern IntPtr GetWindowLong(IntPtr hWnd, int nIndex);
+    [DllImport("user32.dll")]
+    public static extern IntPtr SetActiveWindow(IntPtr hWnd);
 
     public static IntPtr SetWindowLong(IntPtr hWnd, int nIndex, IntPtr dwNewLong)
     {
@@ -112,6 +115,12 @@ public static class WindowLongAPI
         int exStyle = (int)GetWindowLong(wndHelper.Handle, (int)GetWindowLongFields.GWL_EXSTYLE);
         exStyle |= (int)ExtendedWindowStyles.WS_EX_TOOLWINDOW;
         SetWindowLong(wndHelper.Handle, (int)GetWindowLongFields.GWL_EXSTYLE, (IntPtr)exStyle);
+    }
+    public static void SetNoActiveWindow(IntPtr hwnd)
+    {
+        int exStyle = (int)GetWindowLong(hwnd, (int)GetWindowLongFields.GWL_EXSTYLE);
+        exStyle |= (int)ExtendedWindowStyles.WS_EX_NOACTIVATE;
+        SetWindowLong(hwnd, (int)GetWindowLongFields.GWL_EXSTYLE, (IntPtr)exStyle);
     }
 
 

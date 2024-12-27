@@ -13,8 +13,8 @@ public class TencUserProfileGetter
 
     public string? AvatarUrl { get; private set; } = null;
 
-    public Abstraction.Entities.Playlist? MyFavorite { get; private set; } = null;
-    public List<Abstraction.Entities.Playlist> MyPlaylists { get; private set; } = [];
+    public DataTypes.Playlist? MyFavorite { get; private set; }
+    public List<DataTypes.Playlist> MyPlaylists { get; private set; } = [];
 
     public async Task<bool> Fetch<T>(HttpClient client,T auth)
     {

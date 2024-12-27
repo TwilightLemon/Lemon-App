@@ -70,7 +70,8 @@ namespace LemonApp
                 services.AddTransient<HomePage>();
                 services.AddTransient<RanklistPage>();
                 services.AddTransient<PlaylistPage>();
-                services.AddTransient<PlaylistItemPage>();
+                services.AddTransient<MyDissPage>();
+                services.AddTransient<MyBoughtPage>();
                 services.AddSingleton<AccountInfoPage>();
 
                 //UI Components
@@ -86,6 +87,7 @@ namespace LemonApp
                 services.AddTransient<PlaylistPageViewModel>();
                 services.AddTransient<PlaylistItemViewModel>();
                 services.AddTransient<NotifyIconMenuViewModel>();
+                services.AddTransient<AlbumItemViewModel>();
                 services.AddSingleton<DesktopLyricWindowViewModel>();
                 services.AddSingleton<AccountInfoPageViewModel>();
                 services.AddTransient<SettingsPageViewModel>();

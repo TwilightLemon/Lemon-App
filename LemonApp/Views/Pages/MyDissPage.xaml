@@ -1,4 +1,4 @@
-﻿<Page x:Class="LemonApp.Views.Pages.PlaylistItemPage"
+﻿<Page x:Class="LemonApp.Views.Pages.MyDissPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -9,12 +9,13 @@
       d:DesignHeight="450"
       Foreground="{DynamicResource ForeColor}"
       d:DesignWidth="800"
-      Title="PlaylistItemPage">
+      Title="MyDissPage">
 
     <Grid>
         <TextBlock Text="My Diss"
                    Margin="24 12"
                    FontSize="24"
+                   VerticalAlignment="Top"
                    FontWeight="Bold" />
         <uc:PlaylistItemView x:Name="MyDissList" Margin="0 52 0 0"/>
     </Grid>

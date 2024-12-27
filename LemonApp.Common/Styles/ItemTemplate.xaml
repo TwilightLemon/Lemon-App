@@ -26,38 +26,5 @@
                               MinItemWidth="180"
                               Columns="4" />
     </ItemsPanelTemplate>
-    <DataTemplate x:Key="PlaylistItemDataTemplate">
-        <StackPanel>
-            <Border x:Name="CoverImg"
-                    Margin="12 12 12 0"
-                    BorderBrush="{DynamicResource BorderColor}"
-                    BorderThickness="4"
-                    CornerRadius="8"
-                    RenderOptions.BitmapScalingMode="HighQuality"
-                    Height="{Binding ElementName=CoverImg,Path=ActualWidth}">
-                <Border.Background>
-                    <ImageBrush ImageSource="{Binding Cover,IsAsync=True,Mode=OneWay}" />
-                </Border.Background>
-                <Grid>
-                    <Border VerticalAlignment="Bottom"
-                            HorizontalAlignment="Right"
-                            Background="#BF000000"
-                            Margin="4"
-                            CornerRadius="9"
-                            Height="18">
-                        <TextBlock Text="{Binding ListInfo.Subtitle}"
-                                   Foreground="White"
-                                   VerticalAlignment="Center"
-                                   TextAlignment="Left"
-                                   Margin="8 0 0 0"
-                                   FontSize="12" />
-                    </Border>
-                </Grid>
-            </Border>
-            <TextBlock Text="{Binding ListInfo.Name}"
-                       HorizontalAlignment="Center"
-                       Margin="5" />
-        </StackPanel>
-    </DataTemplate>
     <!--歌曲列表-->
 </ResourceDictionary>

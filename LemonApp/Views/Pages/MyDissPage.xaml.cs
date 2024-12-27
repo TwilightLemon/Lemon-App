@@ -6,11 +6,11 @@ using System.Windows.Controls.Primitives;
 namespace LemonApp.Views.Pages
 {
     /// <summary>
-    /// PlaylistItemPage.xaml 的交互逻辑
+    /// MyDissPage.xaml 的交互逻辑
     /// </summary>
-    public partial class PlaylistItemPage : Page
+    public partial class MyDissPage : Page
     {
-        public PlaylistItemPage()
+        public MyDissPage()
         {
             InitializeComponent();
         }

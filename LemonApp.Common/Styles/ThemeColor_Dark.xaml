@@ -3,7 +3,7 @@
     <!--DarkMode-->
     <!--主窗口背景色 对于Mica材质不适用-->
     <SolidColorBrush x:Key="WindowBackgroundColor"
-                     Color="#CC000000" />
+                     Color="#BC000000" />
     <!--弹窗背景色 全为Acrylic材质-->
     <SolidColorBrush x:Key="PopupWndBgColor"
                      Color="#9F000000" />
@@ -19,6 +19,9 @@
     <!--焦点蒙罩背景色-->
     <SolidColorBrush x:Key="FocusMaskColor"
                      Color="#33FFFFFF" />
+    <!--主窗口的内容容器背景色-->
+    <SolidColorBrush x:Key="ContentBgColor"
+                     Color="#3F000000" />
     <SolidColorBrush x:Key="BorderColor"
                      Color="#3C000000" />
     <!--纯色背景-->

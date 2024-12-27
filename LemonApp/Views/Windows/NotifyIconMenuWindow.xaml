@@ -11,7 +11,7 @@
         mc:Ignorable="d"
         Height="148"
         Width="180"
-        Background="{DynamicResource WindowBackgroundColor}"
+        Background="{DynamicResource PopupWndBgColor}"
         Topmost="True"
         Foreground="{DynamicResource ForeColor}"
         ws:WindowOption.Corner="Round"
@@ -25,7 +25,7 @@
                       ResizeBorderThickness="8" />
     </Window.Resources>
     <i:Interaction.Behaviors>
-        <behavior:BlurWindowBehavior Mode="Acrylic" IsToolWindow="True" WindowChromeEx="{StaticResource chrome}"/>
+        <behavior:BlurWindowBehavior Mode="Acrylic" WindowChromeEx="{StaticResource chrome}"/>
     </i:Interaction.Behaviors>
     <Grid>
         <Image HorizontalAlignment="Left"
