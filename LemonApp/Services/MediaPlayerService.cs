@@ -35,6 +35,11 @@ public class MediaPlayerService(UserProfileService userProfileService,
     public event Action<IEnumerable<Music>>? OnNewPlaylistReceived;
     public Action<long, long>? CacheProgress;
     public Action? CacheFinished,CacheStarted;
+
+    /// <summary>
+    /// Initialize when app starts, called by ApplicationService
+    /// </summary>
+    /// <returns></returns>
     public async Task Init()
     {
         audioGetter = new(hc, _userProfileService.GetAuth,null,_sharedLaClient,_userProfileService.GetSharedLaToken);

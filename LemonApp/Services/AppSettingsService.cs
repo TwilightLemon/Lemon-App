@@ -10,6 +10,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace LemonApp.Services;
+/// <summary>
+/// Manage user settings.
+/// </summary>
+/// <param name="logger"></param>
 public class AppSettingsService(
     ILogger<AppSettingsService> logger
     ) :IHostedService,IConfigManager

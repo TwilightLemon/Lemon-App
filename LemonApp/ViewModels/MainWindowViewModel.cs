@@ -2,12 +2,9 @@
 using LemonApp.Common.Funcs;
 using LemonApp.Native;
 using LemonApp.MusicLib.Abstraction.UserAuth;
-using LemonApp.MusicLib.Album;
-using LemonApp.MusicLib.Search;
 using LemonApp.Services;
 using LemonApp.Views.Pages;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.WindowsAPICodePack.Taskbar;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -20,18 +17,16 @@ using CommunityToolkit.Mvvm.Input;
 using System.Timers;
 using LemonApp.Views.UserControls;
 using System.Collections.Generic;
-using LemonApp.MusicLib.Playlist;
 using System.Threading.Tasks;
-using System.Windows;
 using LemonApp.Views.Windows;
 using Task = System.Threading.Tasks.Task;
-using LemonApp.MusicLib.RankList;
 using LemonApp.MusicLib.Abstraction.Entities;
 using LemonApp.MusicLib.User;
+using LemonApp.Components;
 
 //TODO: 将功能再细分为Component 简化ViewModel
 namespace LemonApp.ViewModels;
-public partial class MainWindowViewModel : ObservableObject,IDisposable
+public partial class MainWindowViewModel : ObservableObject
 {
     #region fields & constructor
     private readonly IServiceProvider _serviceProvider;
@@ -40,6 +35,8 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
     private readonly MediaPlayerService _mediaPlayerService;
     private readonly AppSettingsService _appSettingsService;
     private readonly UIResourceService _uiResourceService;
+    private readonly WindowBasicComponent _windowBasicComponent;
+    private readonly PlaylistDataWrapper _playlistDataWrapper;
 
     private readonly Timer _timer;
     private SettingsMgr<PlayingPreference>? _currentPlayingMgr;
@@ -55,7 +52,9 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         AppSettingsService appSettingsService,
         UIResourceService uIResourceService,
         LyricView lyricView,
-        DesktopLyricWindowViewModel lyricWindowViewModel)
+        DesktopLyricWindowViewModel lyricWindowViewModel,
+        WindowBasicComponent windowBasicComponent,
+        PlaylistDataWrapper playlistDataWrapper)
     {
         _userProfileService = userProfileService;
         _serviceProvider = serviceProvider;
@@ -63,6 +62,8 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         _mediaPlayerService = mediaPlayerService;
         _appSettingsService = appSettingsService;
         _uiResourceService = uIResourceService;
+        _windowBasicComponent = windowBasicComponent;
+        _playlistDataWrapper = playlistDataWrapper;
 
         _uiResourceService.OnColorModeChanged += UIResourceService_OnColorModeChanged;
 
@@ -85,8 +86,8 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         _lyricWindowViewModel = lyricWindowViewModel;
 
         _mainNavigationService.OnNavigationRequested += MainNavigationService_OnNavigatingRequsted;
-        _mainNavigationService.LoadingAniRequested+=()=>IsLoading=true;
-        _mainNavigationService.LoadingAniCancelled+=()=>IsLoading=false;
+        _mainNavigationService.LoadingAniRequested += () => IsLoading = true;
+        _mainNavigationService.LoadingAniCancelled += () => IsLoading = false;
         userProfileService.OnAuth += UserProfileService_OnAuth;
         userProfileService.OnAuthExpired += UserProfileService_OnAuthExpired;
 
@@ -96,7 +97,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
 
         LoadMainMenus();
         LoadComponent();
-        FetchIconResource();
+        _playlistDataWrapper = playlistDataWrapper;
     }
 
 
@@ -108,10 +109,6 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
     private void LyricView_OnNextLrcReached(LrcLine obj)
     {
         _lyricWindowViewModel.Update(obj);
-    }
-    public void Dispose()
-    {
-        NotifyIcon?.Dispose();
     }
     #endregion
     #region common components
@@ -377,7 +374,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         }
     }
     #endregion
-    #region main menu
+    #region main menu definition
     [ObservableProperty]
     private Brush? avator;
     public enum MenuType { MusicPool,Mine}
@@ -502,51 +499,15 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
     private async void NavigateToRanklist(RankListInfo info)
     {
         IsLoading = true;
-        var page=_serviceProvider.GetRequiredService<PlaylistPage>();
-        var vm= _serviceProvider.GetRequiredService<PlaylistPageViewModel>();
-        var hc = _serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
-        if (page != null && hc != null && vm!=null)
-        {
-            var data = await RankListAPI.GetRankListData(info.Id, hc);
-            if (data != null)
-            {
-                vm.Cover= new ImageBrush(await ImageCacheHelper.FetchData(info.CoverUrl));
-                vm.Description = info.Description;
-                vm.ListName = info.Name;
-                vm.PlaylistType = PlaylistType.Ranklist;
-                vm.InitMusicList(data);
-                vm.CreatorName = "QQ Music Official";
-                vm.CreatorAvatar = Brushes.SkyBlue;
-                vm.UpdateCurrentPlaying(CurrentPlaying?.MusicID);
-                page.ViewModel = vm;
-                RequestNavigateToPage?.Invoke(page);
-            }
-        }
+        if (await _playlistDataWrapper.LoadRanklist(info) is { } page)
+            RequestNavigateToPage?.Invoke(page);
         IsLoading = false;
     }
     private async void NavigateToAlbumPage(string AlbumId)
     {
         IsLoading = true;
-        var sp = _serviceProvider.GetRequiredService<PlaylistPage>();
-        PlaylistPageViewModel vm = _serviceProvider.GetRequiredService<PlaylistPageViewModel>();
-        var hc = _serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
-        var auth = _userProfileService.GetAuth();
-        if (sp != null && hc != null && auth != null)
-        {
-            var data = await AlbumAPI.GetAlbumTracksByIdAync(hc, auth, AlbumId);
-            vm.Cover = new ImageBrush(await ImageCacheHelper.FetchData(data.Photo));
-            vm.Description = data.Description ?? "";
-            vm.ListName = data.Name;
-            vm.InitMusicList(data.Musics!);
-            vm.CreatorAvatar = new ImageBrush(await ImageCacheHelper.FetchData(data.Creator!.Photo));
-            vm.CreatorName = data.Creator.Name;
-            vm.PlaylistType = PlaylistType.Album;
-
-            vm.UpdateCurrentPlaying(CurrentPlaying?.MusicID);
-
-            sp.ViewModel = vm;
-            RequestNavigateToPage?.Invoke(sp);
-        }
+        if(await _playlistDataWrapper.LoadAlbumPage(AlbumId) is { } page)
+            RequestNavigateToPage?.Invoke(page);
         SelectedMenu = null;
         IsLoading = false;
     }
@@ -555,21 +516,8 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
         if (string.IsNullOrWhiteSpace(keyword))
             return;
         IsLoading = true;
-        var sp = _serviceProvider.GetRequiredService<PlaylistPage>();
-        var hc = _serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
-        var auth = _userProfileService.GetAuth();
-        var vm = _serviceProvider.GetRequiredService<PlaylistPageViewModel>();
-        if (sp != null && hc != null && auth != null && vm != null)
-        {
-            vm.ShowInfoView = false;
-            var search = await SearchAPI.SearchMusicAsync(hc, auth, keyword);
-            vm.InitMusicList(search);
-            vm.UpdateCurrentPlaying(CurrentPlaying?.MusicID);
-            vm.PlaylistType = PlaylistType.Other;
-
-            sp.ViewModel = vm;
-            RequestNavigateToPage?.Invoke(sp);
-        }
+        if(await _playlistDataWrapper.LoadSearchPage(keyword) is { } page)
+            RequestNavigateToPage?.Invoke(page);
         SelectedMenu = null;
         IsLoading = false;
     }
@@ -640,25 +588,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
     private async Task<PlaylistPageViewModel?> LoadUserPlaylist(string id)
     {
         IsLoading = true;
-        var hc = _serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
-        var auth = _userProfileService.GetAuth();
-        var vm = _serviceProvider.GetRequiredService<PlaylistPageViewModel>();
-        if (hc != null && auth != null && vm != null)
-        {
-            var data = await PublicPlaylistAPI.LoadPlaylistById(hc, auth, id);
-            if (data != null)
-            {
-                vm.Cover = new ImageBrush(await ImageCacheHelper.FetchData(data.Photo));
-                vm.Description = data.Description ?? "";
-                vm.ListName = data.Name;
-                vm.InitMusicList(data.Musics!);
-                vm.CreatorAvatar = new ImageBrush(await ImageCacheHelper.FetchData(data.Creator!.Photo));
-                vm.CreatorName = data.Creator.Name;
-                vm.PlaylistType = PlaylistType.Playlist;
-
-                vm.UpdateCurrentPlaying(CurrentPlaying?.MusicID);
-            }
-        }
+        var vm=await _playlistDataWrapper.LoadUserPlaylistVm(id);
         IsLoading = false;
         return vm;
     }
@@ -720,7 +650,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
 
     partial void OnIsPlayingChanged(bool value)
     {
-        UpdateThumbButtonState();
+        _windowBasicComponent.UpdateThumbButtonState();
     }
 
     async partial void OnPlaylistChoosenChanged(Music? value)
@@ -758,7 +688,7 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
             CurrentPlayingCover = new ImageBrush(cover);
             var bitmap = cover.ToBitmap();
             //Update TaskBar Info
-            UpdateThumbInfo(bitmap);
+            _windowBasicComponent.UpdateThumbInfo(bitmap);
 
             //process img
             bitmap.ApplyMicaEffect(_uiResourceService.GetIsDarkMode());
@@ -791,106 +721,6 @@ public partial class MainWindowViewModel : ObservableObject,IDisposable
     {
         CurrentPlayingPosition = value;
         _mediaPlayerService.Position = TimeSpan.FromMilliseconds(value);
-    }
-    #endregion
-    #region Task Bar Thumb
-    TabbedThumbnail? TaskBarImg;
-    ThumbnailToolBarButton? TaskBarBtn_Last;
-    ThumbnailToolBarButton? TaskBarBtn_Play;
-    ThumbnailToolBarButton? TaskBarBtn_Next;
-
-    System.Drawing.Icon? icon_play, icon_pause, icon_last, icon_next,icon_app;
-
-    private void FetchIconResource()
-    {
-        icon_play = Properties.Resources.play;
-        icon_pause = Properties.Resources.pause;
-        icon_last = Properties.Resources.left;
-        icon_next = Properties.Resources.right;
-        icon_app = Properties.Resources.icon;
-    }
-
-    public void InitTaskBarThumb()
-    {
-        var _window = App.Current.MainWindow;
-        TaskBarImg = new(_window, _window, new Vector());
-        TaskBarImg.Title = "Lemon App";
-        TaskBarImg.SetWindowIcon(Properties.Resources.icon);
-        TaskBarImg.TabbedThumbnailActivated += delegate
-        {
-            _window.WindowState = WindowState.Normal;
-            _window.Activate();
-        };
-        TaskBarBtn_Last = new (icon_last, "上一曲");
-        TaskBarBtn_Last.Enabled = true;
-        TaskBarBtn_Last.Click += delegate {
-            PlayLast();
-        };
-
-        TaskBarBtn_Play = new (icon_play, "播放|暂停");
-        TaskBarBtn_Play.Enabled = true;
-        TaskBarBtn_Play.Click += delegate {
-            PlayPause();
-        };
-
-        TaskBarBtn_Next = new(icon_next, "下一曲");
-        TaskBarBtn_Next.Enabled = true;
-        TaskBarBtn_Next.Click += delegate {
-            PlayNext();
-        };
-
-        TaskbarManager.Instance.TabbedThumbnail.AddThumbnailPreview(TaskBarImg);
-        TaskbarManager.Instance.ThumbnailToolBars.AddButtons(_window, TaskBarBtn_Last, TaskBarBtn_Play, TaskBarBtn_Next);
-    }
-
-    private void UpdateThumbButtonState()
-    {
-        if(TaskBarBtn_Play!=null)
-        TaskBarBtn_Play.Icon = IsPlaying ? icon_pause : icon_play;
-    }
-
-    private void UpdateThumbInfo(System.Drawing.Bitmap cover)
-    {
-        if (cover == null||TaskBarImg==null) return;
-        TaskBarImg.SetImage(cover);
-        TaskBarImg.Tooltip = CurrentPlaying?.MusicName+" - "+ CurrentPlaying?.SingerText;
-    }
-    #endregion
-    #region NotifyIcon
-    System.Windows.Forms.NotifyIcon? NotifyIcon;
-    public void InitNotifyIcon()
-    {
-        NotifyIcon = new()
-        {
-            Icon = icon_app,
-            Text = "Lemon App",
-            Visible=true
-        };
-        NotifyIcon.MouseClick += NotifyIcon_MouseClick;
-        NotifyIcon.MouseDoubleClick += NotifyIcon_MouseDoubleClick;
-    }
-
-    private void NotifyIcon_MouseDoubleClick(object? sender, System.Windows.Forms.MouseEventArgs e)
-    {
-        var _window = App.Current.MainWindow;
-        _window.ShowWindow();
-    }
-    private void NotifyIcon_MouseClick(object? sender, System.Windows.Forms.MouseEventArgs e)
-    {
-        if (e.Button == System.Windows.Forms.MouseButtons.Right)
-        {
-            if (_serviceProvider.GetRequiredService<NotifyIconMenuWindow>() is { } menu)
-            {
-                //计算窗口弹出的坐标
-                var point = System.Windows.Forms.Cursor.Position;
-                var dpi = VisualTreeHelper.GetDpi(App.Current.MainWindow);
-                menu.Left = point.X / dpi.DpiScaleX;
-                menu.Top = point.Y / dpi.DpiScaleY - menu.Height;
-
-                menu.Show();
-                menu.Activate();
-            }
-        }
     }
     #endregion
 }

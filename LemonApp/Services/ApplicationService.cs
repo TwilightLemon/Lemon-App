@@ -11,6 +11,7 @@ using System.Windows.Documents;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Navigation;
+using LemonApp.Components;
 
 namespace LemonApp.Services
 {
@@ -20,7 +21,8 @@ namespace LemonApp.Services
         AppSettingsService appSettingsService,
         UIResourceService uiResourceService,
         UserProfileService userProfileService,
-        MediaPlayerService mediaPlayerService
+        MediaPlayerService mediaPlayerService,
+        WindowBasicComponent windowBasicComponent
         ) : IHostedService
     {
         public Task StartAsync(CancellationToken cancellationToken)
@@ -55,17 +57,13 @@ namespace LemonApp.Services
                 App.Current.MainWindow = mainWindow;
                 mainWindow.Show();
 
+                //init window basic components
+                windowBasicComponent.Init();
+
                 //check & update user profile
                 if (appSettingsService.GetConfigMgr<UserProfile>()?.Data?.TencUserAuth is {Id.Length:>5} auth)
                     await userProfileService.UpdateAuthAndNotify(auth);
 
-                //save window handle for MsgInteraction
-                if (EntryPoint._procMgr is { } procMgr)
-                {
-                    var hwnd = new WindowInteropHelper(mainWindow).Handle;
-                    procMgr.Data = new() { MainWindowHandle = hwnd.ToInt32() };
-                    await procMgr.SaveAsync();
-                }
             });
 
             return Task.CompletedTask;

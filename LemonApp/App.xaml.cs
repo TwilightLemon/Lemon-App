@@ -12,6 +12,7 @@ using LemonApp.Views.UserControls;
 using System.Diagnostics;
 using System;
 using LemonApp.MusicLib.Media;
+using LemonApp.Components;
 
 namespace LemonApp
 {
@@ -80,6 +81,10 @@ namespace LemonApp
 
                 //MusicLib Components
                 services.AddSingleton<SharedLaClient>();
+
+                //MainWindow Components
+                services.AddSingleton<WindowBasicComponent>();
+                services.AddSingleton<PlaylistDataWrapper>();
 
                 //ViewModels
                 services.AddSingleton<MainWindowViewModel>();

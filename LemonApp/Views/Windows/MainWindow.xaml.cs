@@ -99,28 +99,9 @@ namespace LemonApp.Views.Windows
         {
             _vm.SelectedMenu = _vm.MainMenus.FirstOrDefault();
             _vm.RequireCreateNewPage();
-#if !DEBUG //只在Release模式下启用TaskBarThumb
-            _vm.InitTaskBarThumb();
-#endif
-            _vm.InitNotifyIcon();
             LyricViewHost.Child = _vm.LyricView;
 
             SystemThemeAPI.RegesterOnThemeChanged(this, OnThemeChanged, OnSystemColorChanged);
-
-            HwndSource source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
-            source.AddHook(WndProc);
-        }
-        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
-        {
-            if (msg == MsgInteraction.WM_COPYDATA)
-            {
-                var msgStr = MsgInteraction.HandleMsg(lParam);
-                if (msgStr == MsgInteraction.SEND_SHOW)
-                {
-                    ShowWindow();
-                }
-            }
-            return IntPtr.Zero;
         }
 
         private void GoBackBtn_Click(object sender, RoutedEventArgs e)
