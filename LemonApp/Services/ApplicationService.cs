@@ -57,6 +57,9 @@ namespace LemonApp.Services
                 App.Current.MainWindow = mainWindow;
                 mainWindow.Show();
 
+                //apply theme config
+                uiResourceService.UpdateThemeConfig();
+
                 //init window basic components
                 windowBasicComponent.Init();
 

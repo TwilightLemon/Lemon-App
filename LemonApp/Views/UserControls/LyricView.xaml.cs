@@ -318,7 +318,7 @@ namespace LemonApp.Views.UserControls
             var mainLine = _currentLrc.LrcMain!;
             mainLine.TextWrapping = TextWrapping.NoWrap;
             mainLine.Text = InsertLineBreaks(mainLine,_currentLrc.Lyric, targetFontsize, ActualWidth - LyricMargin.Left - LyricMargin.Right - 1);
-            var da = new DoubleAnimation(targetFontsize, TimeSpan.FromSeconds(0.3))
+            var da = new DoubleAnimation(targetFontsize, TimeSpan.FromSeconds(0.5))
             {
                 EasingFunction = new CircleEase { EasingMode = EasingMode.EaseOut }
             };

@@ -18,7 +18,7 @@ public class SettingsMgr<T> where T : class
     [JsonIgnore]
     private Settings.sType _type= Settings.sType.Settings;
     /// <summary>
-    /// 监测到配置文件改变时触发，之前不会自动更新数据
+    /// 监测到配置文件改变时触发，之前会自动更新数据
     /// </summary>
     public event Action? OnDataChanged;
     /// <summary>
@@ -112,13 +112,15 @@ public class SettingsMgr<T> where T : class
     }
 
     private DateTime _lastUpdateTime = DateTime.MinValue;
-    private void _watcher_Changed(object sender, FileSystemEventArgs e)
+    private async void _watcher_Changed(object sender, FileSystemEventArgs e)
     {
+        await Task.Delay(300);
         if (DateTime.Now - _lastUpdateTime > TimeSpan.FromSeconds(1))
         {
-            Debug.WriteLine($"SettingsMgr<{typeof(T).Name}> {Sign} file Changed");
-            OnDataChanged?.Invoke();
             _lastUpdateTime = DateTime.Now;
+            Debug.WriteLine($"SettingsMgr<{typeof(T).Name}> {Sign} file Changed");
+            await LoadAsync();
+            OnDataChanged?.Invoke();
         }
     }
 }

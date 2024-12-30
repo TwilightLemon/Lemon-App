@@ -33,6 +33,18 @@ public class AppSettingsService(
             return (SettingsMgr<T>)mgr;
         return null;
     }
+    public bool AddEventHandler<T>(Action handler) where T : class
+    {
+        if(_settingsMgrs.TryGetValue(typeof(T), out var mgr))
+        {
+            if(mgr.GetType().GetEvent("OnDataChanged") is { } info)
+            {
+                info.AddEventHandler(mgr, handler);
+                return true;
+            }
+        }
+        return false;
+    }
     public async void LoadAsync(Action<bool> callback){
         GlobalConstants.ConfigManager = this;
         foreach (var mgr in _settingsMgrs.Values)

@@ -18,6 +18,9 @@ public class Appearence{
         _ => true //default to dark
     };
     public enum AccentColorType{Auto,Custome}
+    /// <summary>
+    /// 主题色模式   
+    /// </summary>
     public AccentColorType AccentColorMode { get; set; }
 
     public Color? AccentColor { get; set; }=null;
@@ -31,4 +34,16 @@ public class Appearence{
         AccentColorType.Auto => SystemThemeAPI.GetSystemAccentColor(GetIsDarkMode(),true),
         _=>null
     };
+    public enum BackgroundType
+    {
+        Acrylic,Mica,Image, Color
+    }
+    /// <summary>
+    /// 背景模式
+    /// </summary>
+    public BackgroundType BackgroundMode { get; set; }=BackgroundType.Acrylic;
+    /// <summary>
+    /// 图片背景路径
+    /// </summary>
+    public string? BackgroundPath { get; set; }
 }

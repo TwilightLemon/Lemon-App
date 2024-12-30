@@ -280,7 +280,7 @@
             </ThicknessAnimationUsingKeyFrames>
         </Storyboard>
     </base:FluentWindowBase.Resources>
-    <ws:BoxPanel>
+    <ws:BoxPanel x:Name="Container">
         <Grid x:Name="MainContentPage">
             <Grid x:Name="MainPage"
                   Margin="0 0 0 110">
