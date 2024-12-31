@@ -2,13 +2,11 @@ using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms.VisualStyles;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using LemonApp.Common.Behaviors;
 using LemonApp.Common.Configs;
 using LemonApp.Common.Funcs;
-using LemonApp.Views.Windows;
 
 namespace LemonApp.Services;
 /*
@@ -22,15 +20,22 @@ public class UIResourceService(
     AppSettingsService appSettingsService)
 {
     public event Action? OnColorModeChanged;
-    private SettingsMgr<Appearence>? _settingsMgr;
-    public bool GetIsDarkMode() { 
-        if(_settingsMgr== null)
+    private SettingsMgr<Appearance>? _settingsMgr;
+    public SettingsMgr<Appearance> SettingsMgr
+    {
+        get
         {
-            _settingsMgr = appSettingsService.GetConfigMgr<Appearence>();
-            if (_settingsMgr == null) throw new InvalidOperationException("SettingsMgr has not initialized yet.");
-            _settingsMgr.OnDataChanged += SettingsMgr_OnDataChanged;
+            if (_settingsMgr == null)
+            {
+                _settingsMgr = appSettingsService.GetConfigMgr<Appearance>();
+                if (_settingsMgr == null) throw new InvalidOperationException("SettingsMgr has not initialized yet.");
+                _settingsMgr.OnDataChanged += SettingsMgr_OnDataChanged;
+            }
+            return _settingsMgr;
         }
-        return _settingsMgr?.Data?.GetIsDarkMode() == true;
+    }
+    public bool GetIsDarkMode() { 
+        return SettingsMgr.Data?.GetIsDarkMode() == true;
     }
 
     private void SettingsMgr_OnDataChanged()
@@ -63,7 +68,7 @@ public class UIResourceService(
     }
 
     public void UpdateAccentColor(){
-        var dt = appSettingsService.GetConfigMgr<Appearence>()?.Data;
+        var dt = SettingsMgr.Data;
         var accentColor=dt?.GetAccentColor();
         var focusColor= dt?.GetFocusAccentColor();
         if (accentColor.HasValue&&focusColor.HasValue){
@@ -72,23 +77,29 @@ public class UIResourceService(
         }
     }
 
+    public bool UsingMusicTheme => SettingsMgr.Data.AccentColorMode == Appearance.AccentColorType.Music;
+
     public void UpdateThemeConfig()
     {
-        var mgr=appSettingsService.GetConfigMgr<Appearence>();
+        var mgr = SettingsMgr;
         if (mgr == null||mgr.Data==null) return;
         var mw = App.Current.MainWindow;
         mw.Container.Background = null;
         switch (mgr.Data.BackgroundMode)
         {
-            case Appearence.BackgroundType.Acrylic:
+            case Appearance.BackgroundType.Acrylic:
                 mw.Mode=Common.WinAPI.MaterialType.Acrylic;
                 mw.SetResourceReference(Control.BackgroundProperty, "WindowBackgroundColor");
                 break;
-            case Appearence.BackgroundType.Mica:
+            case Appearance.BackgroundType.Mica:
                 mw.Mode = Common.WinAPI.MaterialType.Mica;
                 mw.Background = Brushes.Transparent;
                 break;
-            case Appearence.BackgroundType.Image:
+            case Appearance.BackgroundType.MicaAlt:
+                mw.Mode = Common.WinAPI.MaterialType.MicaAlt;
+                mw.Background = Brushes.Transparent;
+                break;
+            case Appearance.BackgroundType.Image:
                 if (System.IO.Path.Exists(mgr.Data.BackgroundPath))
                 {
                     mw.Mode = Common.WinAPI.MaterialType.None;
@@ -96,9 +107,13 @@ public class UIResourceService(
                     mw.Container.SetResourceReference(Control.BackgroundProperty, "WindowBackgroundColor");
                 }
                 break;
-            case Appearence.BackgroundType.Color:
+            case Appearance.BackgroundType.Color:
                 mw.Mode = Common.WinAPI.MaterialType.None;
                 mw.SetResourceReference(Window.BackgroundProperty, "BackgroundColor");
+                break;
+            case Appearance.BackgroundType.Music:
+                mw.Mode = Common.WinAPI.MaterialType.None;
+                mw.SetBinding(Control.BackgroundProperty, "LyricPageBackgound");
                 break;
         }
     }

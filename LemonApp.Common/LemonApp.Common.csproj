@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LemonApp.MusicLib.Abstraction\LemonApp.MusicLib.Abstraction.csproj" />
+    <ProjectReference Include="..\LemonApp.Native\LemonApp.Native.csproj" />
   </ItemGroup>
 
   <ItemGroup>

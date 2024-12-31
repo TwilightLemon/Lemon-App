@@ -290,10 +290,13 @@ namespace LemonApp.Views.Windows
         private void SearchBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
-                _mainNavigationService.RequstNavigation(PageType.SearchPage, SearchBox.Text);
-            else if(e.Key == Key.Up||e.Key==Key.Down)
             {
-                if(SearchHintPopup.Child is SearchHintView { } view)
+                SearchHintPopup.IsOpen = false;
+                _mainNavigationService.RequstNavigation(PageType.SearchPage, SearchBox.Text);
+            }
+            else if (e.Key == Key.Up || e.Key == Key.Down)
+            {
+                if (SearchHintPopup.Child is SearchHintView { } view)
                 {
                     view.HintList.Focus();
                 }

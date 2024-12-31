@@ -1,16 +1,13 @@
 ﻿<UserControl x:Class="LemonApp.Common.UIBases.LoadingIcon"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d"  d:Height="100" d:Width="100">
-    <UserControl.Triggers>
-        <EventTrigger SourceName="ellipse" RoutedEvent="Loaded">
-            <BeginStoryboard Storyboard="{DynamicResource Loading}"/>
-        </EventTrigger>
-    </UserControl.Triggers>
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:Height="100"
+             d:Width="100">
     <UserControl.Resources>
-        <Storyboard x:Key="Loading" RepeatBehavior="Forever">
+        <Storyboard x:Key="LoadingAni" RepeatBehavior="Forever">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ellipse" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)">
                 <EasingDoubleKeyFrame KeyTime="00:00:01" Value="360" />
             </DoubleAnimationUsingKeyFrames>

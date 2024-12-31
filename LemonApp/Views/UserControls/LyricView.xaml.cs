@@ -286,11 +286,9 @@ namespace LemonApp.Views.UserControls
                 //item.LrcTb.Foreground = NormalLrcColor;
                 item.LrcTb.FontWeight = NormalTextFontWeight;
                 item.LrcTb.BeginAnimation(FontSizeProperty, null);
-                item.LrcTb.Opacity = LyricOpacity;
+                item.LrcTb.BeginAnimation(OpacityProperty, new DoubleAnimation(LyricOpacity,TimeSpan.FromSeconds(0.5)));
                 item.LrcTb.Effect = NomalTextEffect;
-
-                item.LrcMain!.Text=item.Lyric;
-                item.LrcMain!.TextWrapping= TextWrapping.Wrap;
+                
 
             }
             var temp = LrcItems.LastOrDefault(p => p.Time <= ms);
@@ -311,16 +309,16 @@ namespace LemonApp.Views.UserControls
             var container = _currentLrc.LrcTb!;
             //container.Foreground = HighlightLrcColor;
             container.FontWeight = FontWeights.Bold;
-            container.Opacity = 1;
+            container.BeginAnimation(OpacityProperty, new DoubleAnimation(1, TimeSpan.FromSeconds(0.3)));
             container.Effect = Hightlighter;
 
-            double targetFontsize = LyricFontSize + 8;
+            double targetFontsize = LyricFontSize + 10;
             var mainLine = _currentLrc.LrcMain!;
             mainLine.TextWrapping = TextWrapping.NoWrap;
             mainLine.Text = InsertLineBreaks(mainLine,_currentLrc.Lyric, targetFontsize, ActualWidth - LyricMargin.Left - LyricMargin.Right - 1);
-            var da = new DoubleAnimation(targetFontsize, TimeSpan.FromSeconds(0.5))
+            var da = new DoubleAnimation(targetFontsize, TimeSpan.FromSeconds(0.4))
             {
-                EasingFunction = new CircleEase { EasingMode = EasingMode.EaseOut }
+                EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseOut }
             };
             Timeline.SetDesiredFrameRate(da, 60);
             ResetLrcviewScroll();
@@ -343,7 +341,7 @@ namespace LemonApp.Views.UserControls
                 Point p = gf.Transform(new Point(0, 0));
                 double os = p.Y - (scrollviewer.ActualHeight / 2) + 120;
                 var da = new DoubleAnimation(os, TimeSpan.FromMilliseconds(500));
-                da.EasingFunction = new CircleEase { EasingMode = EasingMode.EaseOut };
+                da.EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseOut };
                 Timeline.SetDesiredFrameRate(da, 60);
                 scrollviewer.BeginAnimation(ScrollViewerUtils.VerticalOffsetProperty, da);
             }

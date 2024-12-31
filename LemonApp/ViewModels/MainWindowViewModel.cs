@@ -690,8 +690,14 @@ public partial class MainWindowViewModel : ObservableObject
             //Update TaskBar Info
             _windowBasicComponent.UpdateThumbInfo(bitmap);
 
+            bool isDarkMode = _uiResourceService.GetIsDarkMode();
+            if (_uiResourceService.UsingMusicTheme)
+            {
+                _uiResourceService.SettingsMgr.Data.AccentColor = bitmap.GetMajorColor().AdjustColor();
+                _uiResourceService.UpdateAccentColor();
+            }
             //process img
-            bitmap.ApplyMicaEffect(_uiResourceService.GetIsDarkMode());
+            bitmap.ApplyMicaEffect(isDarkMode);
             LyricPageBackgound = new ImageBrush(bitmap.ToBitmapImage());
         }
         else

@@ -9,6 +9,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -25,17 +26,22 @@ namespace LemonApp.Common.UIBases
             InitializeComponent();
             IsVisibleChanged += LoadingIcon_IsVisibleChanged;
         }
+
         CancellationTokenSource? _cts = null;
+        Storyboard? loadingAni = null;
         private async void LoadingIcon_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
+            loadingAni ??= Resources["LoadingAni"] as Storyboard;
             if (IsVisible)
             {
                 if (_cts != null) return;
                 _cts = new CancellationTokenSource();
+                loadingAni?.Begin();
                 await Animate(_cts.Token);
             }
             else
             {
+                loadingAni?.Stop();
                 _cts?.Cancel();
                 _cts = null;
             }

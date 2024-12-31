@@ -8,6 +8,7 @@ using LemonApp.Views.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
 
@@ -79,6 +80,7 @@ public partial class UserMenuViewModel:ObservableObject
     public ObservableCollection<ActionMenu> Menus { get; set; } = [
         new ActionMenu("登录到QQ音乐",(Geometry)App.Current.FindResource("QQMusicIcon"),Menu_LoginQQ),
         new ActionMenu("设置",(Geometry)App.Current.FindResource("Icon_Settings"),Menu_GotoSettingsPage),
+        new ActionMenu("主题",(Geometry)App.Current.FindResource("Menu_Theme"),Menu_Theme),
         new ActionMenu("退出",null,Menu_Exit)
     ];
     public static void Menu_LoginQQ()
@@ -98,6 +100,12 @@ public partial class UserMenuViewModel:ObservableObject
         var mgr = settings.GetConfigMgr<UserProfile>()!;
         mgr.Data!.NeteaseUserAuth = new NeteaseUserAuth() { Id = "100101010" };
         await mgr.SaveAsync();
+    }
+    static void Menu_Theme()
+    {
+        //TODO: add theme config page
+        string path = System.IO.Path.Combine(Settings.SettingsPath, "Appearance.json");
+        Process.Start("explorer", path);
     }
     static void Menu_GotoSettingsPage()
     {

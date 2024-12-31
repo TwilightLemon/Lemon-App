@@ -80,6 +80,88 @@ public static class ImageHelper
         }
     }
     #endregion
+    public static System.Windows.Media.Color GetMajorColor(this Bitmap bitmap)
+    {
+        int threshold = 36;
+        //色调的总和
+        var sum_hue = 0d;
+        //色差的阈值
+        //计算色调总和
+        for (int h = 0; h < bitmap.Height; h++)
+        {
+            for (int w = 0; w < bitmap.Width; w++)
+            {
+                var hue = bitmap.GetPixel(w, h).GetHue();
+                sum_hue += hue;
+            }
+        }
+        var avg_hue = sum_hue / (bitmap.Width * bitmap.Height);
+        if (avg_hue < 190) threshold = 5;
+        //色差大于阈值的颜色值
+        var rgbs = new List<Color>();
+        for (int h = 0; h < bitmap.Height; h++)
+        {
+            for (int w = 0; w < bitmap.Width; w++)
+            {
+                var color = bitmap.GetPixel(w, h);
+                var hue = color.GetHue();
+                //如果色差大于阈值，则加入列表
+                if (Math.Abs(hue - avg_hue) > threshold)
+                {
+                    rgbs.Add(color);
+                }
+            }
+        }
+        if (rgbs.Count == 0)
+            return System.Windows.Media.Colors.Black;
+        //计算列表中的颜色均值，结果即为该图片的主色调
+        int sum_r = 0, sum_g = 0, sum_b = 0;
+        foreach (var rgb in rgbs)
+        {
+            sum_r += rgb.R;
+            sum_g += rgb.G;
+            sum_b += rgb.B;
+        }
+        return System.Windows.Media.Color.FromRgb((byte)(sum_r / rgbs.Count),
+            (byte)(sum_g / rgbs.Count),
+            (byte)(sum_b / rgbs.Count));
+    }
+    public static System.Windows.Media.Color AdjustColor(this System.Windows.Media.Color col)
+    {
+        int high = 230;
+        int dark = 120;
+        if (col.R >= high && col.G >= high && col.B >= high)
+        {
+            col.R = (byte)(col.R * 0.6);
+            col.G = (byte)(col.G * 0.6);
+            col.B = (byte)(col.B * 0.6);
+        }
+        else if ((col.R + col.G + col.B) / 3 < dark)
+        {
+            col.R = (byte)(col.R * 1.8);
+            col.G = (byte)(col.G * 1.8);
+            col.B = (byte)(col.B * 1.8);
+        }
+        if (col.R >= high && col.G >= high && col.B >= high)
+        {
+            col.R -= 90; col.G -= 90; col.B -= 90;
+        }
+        else if ((col.R + col.G + col.B) / 3 < dark)
+        {
+            col.R += 80; col.G += 80; col.B += 80;
+        }
+        return col;
+    }
+    public static System.Windows.Media.Color ApplyColorMode(this System.Windows.Media.Color color,bool isDarkMode)
+    {
+        RgbToHsl(color.R/255f,color.G/255f, color.B/255f,out float h, out float s, out float l);
+        if (isDarkMode)
+            l = Math.Max(0.1f, l - 0.1f);
+        else
+            l = Math.Min(0.9f, l + 0.1f);
+        HslToRgb(h, s, l, out float r, out float g, out float b);
+        return System.Windows.Media.Color.FromRgb((byte)(r * 255), (byte)(g * 255), (byte)(b * 255));
+    }
 
     public static BitmapImage ToBitmapImage(this Bitmap Bmp)
     {

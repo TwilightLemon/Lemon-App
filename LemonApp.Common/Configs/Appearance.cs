@@ -1,9 +1,10 @@
-using System.Windows;
+using System.Text.Json.Serialization;
 using System.Windows.Media;
 using LemonApp.Common.WinAPI;
+using LemonApp.Native;
 
 namespace LemonApp.Common.Configs;
-public class Appearence{
+public class Appearance{
     public enum ColorModeType{Auto,Dark,Light}
     
     /// <summary>
@@ -17,26 +18,27 @@ public class Appearence{
         ColorModeType.Auto => !SystemThemeAPI.GetIsLightTheme(),
         _ => true //default to dark
     };
-    public enum AccentColorType{Auto,Custome}
+    public enum AccentColorType{Auto,Custome,Music}
     /// <summary>
     /// 主题色模式   
     /// </summary>
     public AccentColorType AccentColorMode { get; set; }
-
     public Color? AccentColor { get; set; }=null;
     public Color? GetAccentColor() => AccentColorMode switch{
         AccentColorType.Custome => AccentColor,
         AccentColorType.Auto => SystemThemeAPI.GetSystemAccentColor(GetIsDarkMode()),
+        AccentColorType.Music=> AccentColor,
         _ => null
     };
     public Color? GetFocusAccentColor() => AccentColorMode switch {
-        AccentColorType.Custome=>AccentColor,
+        AccentColorType.Custome=> AccentColor?.ApplyColorMode(GetIsDarkMode()),
         AccentColorType.Auto => SystemThemeAPI.GetSystemAccentColor(GetIsDarkMode(),true),
-        _=>null
+        AccentColorType.Music=> AccentColor?.ApplyColorMode(GetIsDarkMode()),
+        _ =>null
     };
     public enum BackgroundType
     {
-        Acrylic,Mica,Image, Color
+        Acrylic,Mica,MicaAlt,Image,Music,Color
     }
     /// <summary>
     /// 背景模式

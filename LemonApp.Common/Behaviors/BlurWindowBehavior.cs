@@ -131,7 +131,7 @@ public class BlurWindowBehavior : Behavior<Window>
         wac.UseWindowComposition = IsToolWindow;
         if (WindowChromeEx != null)
             wac.WindowChromeEx = WindowChromeEx;
-        var isDarkMode = GlobalConstants.ConfigManager?.GetConfigMgr<Appearence>()?.Data?.GetIsDarkMode()==true;
+        var isDarkMode = GlobalConstants.ConfigManager?.GetConfigMgr<Appearance>()?.Data?.GetIsDarkMode()==true;
         UpdateWindowBlurMode(wac, isDarkMode);
         WindowMaterial.SetMaterial(AssociatedObject, wac);
         return wac;

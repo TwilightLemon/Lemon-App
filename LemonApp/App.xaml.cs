@@ -47,7 +47,7 @@ namespace LemonApp
                 services.AddHostedService(
                     p=>p.GetRequiredService<AppSettingsService>()
                         .AddConfig<UserProfile>()
-                        .AddConfig<Appearence>()
+                        .AddConfig<Appearance>()
                         .AddConfig<PlayingPreference>()
                         .AddConfig<PlaylistCache>(Common.Funcs.Settings.sType.Cache)
                         .AddConfig<DesktopLyricOption>()
