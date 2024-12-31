@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using LemonApp.Common.Funcs;
 using LemonApp.MusicLib.Abstraction.Entities;
 using LemonApp.Services;
@@ -17,15 +18,10 @@ public class PlaylistItem(Playlist item,BitmapImage? cover)
 public partial class PlaylistItemViewModel(
     MainNavigationService mainNavigationService) :ObservableObject
 {
-    [ObservableProperty]
-    private PlaylistItem? _choosenItem;
-
-    partial void OnChoosenItemChanged(PlaylistItem? value)
+    [RelayCommand]
+    private void Select(PlaylistItem value)
     {
-        if (value!=null)
-        {
-            mainNavigationService.RequstNavigation(PageType.PlaylistPage, value.ListInfo.Id);
-        }
+        mainNavigationService.RequstNavigation(PageType.PlaylistPage, value.ListInfo.Id);
     }
 
     public ObservableCollection<PlaylistItem> Playlists { get; set; } = [];

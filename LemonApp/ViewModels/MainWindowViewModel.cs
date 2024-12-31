@@ -554,11 +554,17 @@ public partial class MainWindowViewModel : ObservableObject
         {
             if (_userProfileService.UserProfileGetter.MyPlaylists is { } list)
             {
-                if (_serviceProvider.GetRequiredService<PlaylistItemViewModel>() is { } vm)
+                var vm = _serviceProvider.GetRequiredService<PlaylistItemViewModel>();
+                _= vm.SetPlaylistItems(list);
+                view.MyDissViewModel = vm;
+                if (_userProfileService.UserProfileGetter.MyFavoritePlaylists == null)
                 {
-                    await vm.SetPlaylistItems(list);
-                    view.MyDissViewModel = vm;
+                    var hc = _serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
+                    _userProfileService.UserProfileGetter.MyFavoritePlaylists=await TencMyDissAPI.GetMyFavoritePlaylist(_userProfileService.GetAuth(), hc);
                 }
+                var vm2 = _serviceProvider.GetRequiredService<PlaylistItemViewModel>();
+                _= vm2.SetPlaylistItems(_userProfileService.UserProfileGetter.MyFavoritePlaylists);
+                view.MyFavViewModel = vm2;
             }
         }
         IsLoading = false;

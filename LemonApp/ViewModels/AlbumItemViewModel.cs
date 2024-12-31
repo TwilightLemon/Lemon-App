@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using LemonApp.Common.Funcs;
 using LemonApp.MusicLib.Abstraction.Entities;
 using LemonApp.Services;
@@ -17,10 +18,8 @@ public class AlbumItem(AlbumInfo item,BitmapImage? cover)
 public partial class AlbumItemViewModel(
     MainNavigationService mainNavigationService) :ObservableObject
 {
-    [ObservableProperty]
-    private AlbumItem? _choosenItem;
-
-    partial void OnChoosenItemChanged(AlbumItem? value)
+    [RelayCommand]
+    private void Select(AlbumItem? value)
     {
         if (value!=null)
         {

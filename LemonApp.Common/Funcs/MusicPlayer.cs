@@ -97,6 +97,7 @@ public class MusicPlayer
                 BassdlList.Remove(dl);
                 Bass.BASS_ChannelStop(dl.stream);
                 Bass.BASS_StreamFree(dl.stream);
+                finish?.Invoke();
             };
 
             stream = Bass.BASS_StreamCreateURL(url + "\r\n"
@@ -237,6 +238,7 @@ public class BASSDL
         _isStopped = true;
         ProgressChanged = null;
         DownloadSucceeded = null;
+        DownloadCancelled?.Invoke(this);
     }
     /// <summary>
     /// 由Bass调用   传来下载数据时 将数据保存到缓存文件中
@@ -262,14 +264,8 @@ public class BASSDL
             {
                 //下载不完整
                 fi.Delete();
-                if (!_isStopped)
-                {
-                    //没有被停止而是链接下载失败
-                    DownloadFailed?.Invoke(this);
-                }else
-                {
-                    DownloadCancelled?.Invoke(this);
-                }
+                //没有被停止而是链接下载失败
+                DownloadFailed?.Invoke(this);
             }
             else
             {

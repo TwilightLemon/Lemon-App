@@ -2,6 +2,8 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
+using System.Xml.Linq;
 
 namespace LemonApp.Views.Pages
 {
@@ -18,6 +20,11 @@ namespace LemonApp.Views.Pages
         {
             get => MyDissList.ViewModel;
             set => MyDissList.ViewModel = value;
+        }
+        public PlaylistItemViewModel? MyFavViewModel
+        {
+            get => MyFarvoriteDissList.ViewModel;
+            set => MyFarvoriteDissList.ViewModel = value;
         }
     }
 }

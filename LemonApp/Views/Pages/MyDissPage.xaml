@@ -5,18 +5,26 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:LemonApp.Views.Pages"
       xmlns:uc="clr-namespace:LemonApp.Views.UserControls"
+      xmlns:ws="https://schemas.elecho.dev/wpfsuite"
       mc:Ignorable="d"
       d:DesignHeight="450"
       Foreground="{DynamicResource ForeColor}"
       d:DesignWidth="800"
       Title="MyDissPage">
-
-    <Grid>
-        <TextBlock Text="My Diss"
+    <ws:ScrollViewer x:Name="sv" Style="{StaticResource SimpleVerticalScrollViewerStyle}">
+        <ws:StackPanel>
+            <TextBlock Text="My Diss"
                    Margin="24 12"
                    FontSize="24"
                    VerticalAlignment="Top"
                    FontWeight="Bold" />
-        <uc:PlaylistItemView x:Name="MyDissList" Margin="0 52 0 0"/>
-    </Grid>
+            <uc:PlaylistItemView x:Name="MyDissList"/>
+            <TextBlock Text="My Favorite"
+                       Margin="24 12"
+                       FontSize="24"
+                       VerticalAlignment="Top"
+                       FontWeight="Bold" />
+            <uc:PlaylistItemView x:Name="MyFarvoriteDissList" />
+        </ws:StackPanel>
+    </ws:ScrollViewer>
 </Page>

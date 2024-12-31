@@ -30,10 +30,5 @@ namespace LemonApp.Views.UserControls
             get => DataContext as AlbumItemViewModel;
             set => DataContext = value;
         }
-
-        private void List_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            List.SelectedItem = null;
-        }
     }
 }

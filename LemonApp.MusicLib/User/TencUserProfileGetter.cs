@@ -15,6 +15,7 @@ public class TencUserProfileGetter
 
     public DataTypes.Playlist? MyFavorite { get; private set; }
     public List<DataTypes.Playlist> MyPlaylists { get; private set; } = [];
+    public List<DataTypes.Playlist>? MyFavoritePlaylists { get; set; }
 
     public async Task<bool> Fetch<T>(HttpClient client,T auth)
     {
