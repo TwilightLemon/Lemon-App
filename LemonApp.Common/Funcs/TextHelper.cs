@@ -1,5 +1,6 @@
 ﻿using LemonApp.MusicLib.Abstraction.Entities;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace LemonApp.Common.Funcs;
@@ -93,5 +94,14 @@ public static class TextHelper
         key= key.ToLower();
         string content = $"{m.MusicName} {m.SingerText} {m.Album?.Name ?? ""}".ToLower();
         return content.Contains(key);
+    }
+    public static string MD5Hash(string text)
+    {
+        byte[] inputBytes = Encoding.UTF8.GetBytes(text);
+        byte[] hash = MD5.HashData(inputBytes);
+        var sb = new StringBuilder();
+        foreach (byte b in hash)
+            sb.Append(b.ToString("x2"));
+        return sb.ToString();
     }
 }

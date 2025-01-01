@@ -68,11 +68,11 @@ namespace LemonApp
 
                 //pages
                 services.AddSingleton<SettingsPage>();
-                services.AddTransient<HomePage>();
-                services.AddTransient<RanklistPage>();
+                services.AddSingleton<HomePage>();
+                services.AddSingleton<RanklistPage>();
                 services.AddTransient<PlaylistPage>();
-                services.AddTransient<MyDissPage>();
-                services.AddTransient<MyBoughtPage>();
+                services.AddSingleton<MyDissPage>();
+                services.AddSingleton<MyBoughtPage>();
                 services.AddSingleton<AccountInfoPage>();
 
                 //UI Components

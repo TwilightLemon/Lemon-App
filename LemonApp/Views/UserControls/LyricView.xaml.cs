@@ -318,7 +318,7 @@ namespace LemonApp.Views.UserControls
             mainLine.Text = InsertLineBreaks(mainLine,_currentLrc.Lyric, targetFontsize, ActualWidth - LyricMargin.Left - LyricMargin.Right - 1);
             var da = new DoubleAnimation(targetFontsize, TimeSpan.FromSeconds(0.4))
             {
-                EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseOut }
+                EasingFunction = new SineEase { EasingMode = EasingMode.EaseOut }
             };
             Timeline.SetDesiredFrameRate(da, 60);
             ResetLrcviewScroll();
@@ -341,7 +341,7 @@ namespace LemonApp.Views.UserControls
                 Point p = gf.Transform(new Point(0, 0));
                 double os = p.Y - (scrollviewer.ActualHeight / 2) + 120;
                 var da = new DoubleAnimation(os, TimeSpan.FromMilliseconds(500));
-                da.EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseOut };
+                da.EasingFunction = new SineEase { EasingMode = EasingMode.EaseOut };
                 Timeline.SetDesiredFrameRate(da, 60);
                 scrollviewer.BeginAnimation(ScrollViewerUtils.VerticalOffsetProperty, da);
             }

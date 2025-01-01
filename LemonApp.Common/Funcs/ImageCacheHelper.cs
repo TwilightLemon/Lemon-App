@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Runtime.Caching;
@@ -7,8 +8,7 @@ using System.Windows.Media.Imaging;
 
 namespace LemonApp.Common.Funcs;
 /*
- 图片二级缓存  web->memory
-似乎不需要进行本地缓存..?
+ 图片三级缓存  Memory->File->Internet
  */
 
 public class ImageCacheHelper
@@ -34,20 +34,31 @@ public class ImageCacheHelper
         _client.DefaultRequestHeaders.UserAgent.TryParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.110 Safari/537.36");
     }
 
-    public static async Task<BitmapImage?> FetchData(string url,bool immediate=false)
+    public static async Task<BitmapImage?> FetchData(string url)
     {
         var img = GetFromMem(url);
         if (img is { })
         {
             return img;
         }
-        img = await GetFromWeb(url,immediate);
+        img = GetFromFile(url);
+        if (img != null)
+        {
+            _cache.Add(url, img, _cachePolicy);
+            return img;
+        }
+        img = await GetFromWeb(url);
         if (img != null)
         {
             _cache.Add(url, img, _cachePolicy);
             return img;
         }
         return null;
+    }
+    private static string GetLocalFilePath(string url)
+    {
+        var fileName = TextHelper.MD5Hash(url) + ".jpg";
+        return Path.Combine(CacheManager.GetCachePath(CacheManager.CacheType.Image), fileName);
     }
     private static BitmapImage? GetFromMem(string url)
     {
@@ -58,29 +69,43 @@ public class ImageCacheHelper
         }
         return null;
     }
-    private static async Task<BitmapImage?> GetFromWeb(string url, bool immediate)
+    private static async Task<BitmapImage?> GetFromWeb(string url)
     {
         try
         {
+            string file = GetLocalFilePath(url);
+            var fs= File.Create(file);
             var stream = await _client.GetStreamAsync(url);
-            var img = new BitmapImage();
-            img.BeginInit();
-            img.StreamSource = stream;
-            img.CacheOption = immediate ? BitmapCacheOption.Default : BitmapCacheOption.OnDemand;
-            img.EndInit();
-
-            if (immediate)
-            {
-                while (img.IsDownloading)
-                {
-                    await Task.Delay(100);
-                }
-            }
+            await stream.CopyToAsync(fs);
+            fs.Dispose();
+            stream.Dispose();
             Debug.WriteLine("img loaded from web.");
-            return img;
+            return GetFromFile(url);
         }
         catch {
             Debug.WriteLine("failed to load img from web.");
+            return null;
+        }
+    }
+    private static BitmapImage? GetFromFile(string url)
+    {
+        try
+        {
+            string file = GetLocalFilePath(url);
+            if (!Path.Exists(file)) return null;
+            using var fs = File.OpenRead(file);
+            var img = new BitmapImage();
+            img.BeginInit();
+            img.CacheOption = BitmapCacheOption.OnLoad;
+            img.StreamSource = fs;
+            img.EndInit();
+            if (img.CanFreeze)
+                img.Freeze();
+            return img;
+        }
+        catch
+        {
+            Debug.WriteLine("failed to load img from file.");
             return null;
         }
     }

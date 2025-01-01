@@ -399,10 +399,10 @@ public partial class MainWindowViewModel : ObservableObject
         new MainMenu("Playlists", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page)),
         new MainMenu("Radio", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page)),
 
-        new MainMenu("Bought", (Geometry)App.Current.FindResource("Menu_Bought"), typeof(MyBoughtPage),MenuType.Mine,LoadMyBoughtPage),
+        new MainMenu("Bought", (Geometry)App.Current.FindResource("Menu_Bought"), typeof(MyBoughtPage),MenuType.Mine),
         new MainMenu("Download", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page),MenuType.Mine),
         new MainMenu("Favorite",(Geometry)App.Current.FindResource("Menu_Favorite"), typeof(PlaylistPage),MenuType.Mine,LoadMyFavorite),
-        new MainMenu("My Diss", (Geometry) App.Current.FindResource("Menu_MyDiss"), typeof(MyDissPage),MenuType.Mine,LoadMyDiss)  //把加载部分写入Page或单独的components
+        new MainMenu("My Diss", (Geometry) App.Current.FindResource("Menu_MyDiss"), typeof(MyDissPage),MenuType.Mine)
         ];
         foreach (var item in list)
         {
@@ -547,50 +547,6 @@ public partial class MainWindowViewModel : ObservableObject
             }
         }
     }
-    private async Task LoadMyDiss(object page)
-    {
-        IsLoading = true;
-        if (page is MyDissPage view)
-        {
-            if (_userProfileService.UserProfileGetter.MyPlaylists is { } list)
-            {
-                var vm = _serviceProvider.GetRequiredService<PlaylistItemViewModel>();
-                _= vm.SetPlaylistItems(list);
-                view.MyDissViewModel = vm;
-                if (_userProfileService.UserProfileGetter.MyFavoritePlaylists == null)
-                {
-                    var hc = _serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
-                    _userProfileService.UserProfileGetter.MyFavoritePlaylists=await TencMyDissAPI.GetMyFavoritePlaylist(_userProfileService.GetAuth(), hc);
-                }
-                var vm2 = _serviceProvider.GetRequiredService<PlaylistItemViewModel>();
-                _= vm2.SetPlaylistItems(_userProfileService.UserProfileGetter.MyFavoritePlaylists);
-                view.MyFavViewModel = vm2;
-            }
-        }
-        IsLoading = false;
-    }
-    private async Task LoadMyBoughtPage(object page)
-    {
-        IsLoading = true;
-        if (page is MyBoughtPage view)
-        {
-            var hc = _serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
-            var auth = _userProfileService.GetAuth();
-            if (auth != null && hc != null)
-            {
-                var data=await TencMyDissAPI.GetMyBoughtAlbumList(auth, hc);
-                if (data != null)
-                {
-                    if (_serviceProvider.GetRequiredService<AlbumItemViewModel>() is { } vm)
-                    {
-                        await vm.SetAlbumItems(data);
-                        view.MyDissViewModel = vm;
-                    }
-                }
-            } 
-        }
-        IsLoading = false;
-    }
     private async Task<PlaylistPageViewModel?> LoadUserPlaylist(string id)
     {
         IsLoading = true;
@@ -688,7 +644,7 @@ public partial class MainWindowViewModel : ObservableObject
     private async Task UpdateCover()
     {
         var hc = () => _serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
-        var cover = await ImageCacheHelper.FetchData(await CoverGetter.GetCoverImgUrl(hc, _userProfileService.GetAuth(), CurrentPlaying!), true);
+        var cover = await ImageCacheHelper.FetchData(await CoverGetter.GetCoverImgUrl(hc, _userProfileService.GetAuth(), CurrentPlaying!));
         if (cover != null)
         {
             CurrentPlayingCover = new ImageBrush(cover);

@@ -15,9 +15,9 @@ public class TencUserProfileGetter
 
     public DataTypes.Playlist? MyFavorite { get; private set; }
     public List<DataTypes.Playlist> MyPlaylists { get; private set; } = [];
-    public List<DataTypes.Playlist>? MyFavoritePlaylists { get; set; }
+    public List<DataTypes.Playlist> MyFavoritePlaylists { get; set; } = [];
 
-    public async Task<bool> Fetch<T>(HttpClient client,T auth)
+    public async Task<bool> Fetch(HttpClient client,TencUserAuth auth)
     {
         if(auth is TencUserAuth{Id:not null,Cookie:not null} au)
         {
@@ -68,7 +68,11 @@ public class TencUserProfileGetter
                             };
                             MyPlaylists.Add(pl);
                         }
-                        
+                        try
+                        {
+                            await GetMyFavoritePlaylists(client, auth);
+                        }
+                        catch{ }
                         return true;
                     }
                 }
@@ -79,5 +83,10 @@ public class TencUserProfileGetter
             }
         }
         return false;
+    }
+
+    private async Task GetMyFavoritePlaylists(HttpClient client, TencUserAuth auth)
+    {
+        MyFavoritePlaylists = await TencMyDissAPI.GetMyFavoritePlaylist(auth,client);
     }
 }

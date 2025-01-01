@@ -6,13 +6,14 @@ public static class CacheManager
     private const string RootName= "LemonApp";
     public enum CacheType
     {
-        Music,Lyric,Other
+        Music,Lyric,Image
     }
     private static SettingsMgr<CacheSettings> _settingsMgr =
         new(typeof(CacheManager).Name, typeof(CacheManager).Namespace!);
     private static string GetTypeName(CacheType type) => type switch {
         CacheType.Music=>"Music",
         CacheType.Lyric=>"Lyric",
+        CacheType.Image=>"Image",
         _=>"Other"
     };
     private static string GetDefaultCachePath()
