@@ -94,9 +94,12 @@ public class MusicPlayer
             };
             Bassdl.DownloadFailed = Bassdl.DownloadCancelled = (dl) =>
             {
-                BassdlList.Remove(dl);
-                Bass.BASS_ChannelStop(dl.stream);
-                Bass.BASS_StreamFree(dl.stream);
+                if (dl.CanStop)
+                {
+                    BassdlList.Remove(dl);
+                    Bass.BASS_ChannelStop(dl.stream);
+                    Bass.BASS_StreamFree(dl.stream);
+                }
                 finish?.Invoke();
             };
 
@@ -213,7 +216,6 @@ public class BASSDL
     private FileStream? _fs = null;
     private byte[]?  _data; // local data buffer
     private readonly string _downloadFile;
-    private bool _isStopped = false;
     private long _length, _downloaded;
     private string _cacheFileName;
 
@@ -222,6 +224,7 @@ public class BASSDL
     public Action<BASSDL>? DownloadSucceeded = null;
     public Action<BASSDL>? DownloadFailed = null;
     public Action<BASSDL>? DownloadCancelled = null;
+    public bool CanStop { get; private set; } = true;
     public int stream;
     public BASSDL(string file)
     {
@@ -235,7 +238,7 @@ public class BASSDL
     /// </summary>
     public void SetClose()
     {
-        _isStopped = true;
+        CanStop = false;
         ProgressChanged = null;
         DownloadSucceeded = null;
         DownloadCancelled?.Invoke(this);
@@ -259,6 +262,7 @@ public class BASSDL
             _fs.Flush();
             _fs.Close();
             _fs = null;
+            CanStop = true;
             FileInfo fi = new(_cacheFileName);
             if (_length>_downloaded)
             {
