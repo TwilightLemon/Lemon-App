@@ -46,6 +46,9 @@
                                       Color="White"
                                       Opacity="0.5" />
                 </TextBlock.Effect>
+            <Run x:Name="RomajiTb"
+                 FontSize="16"
+                 Text="{Binding RomajiText}"/>
             <Run x:Name="LyricTb"
                  FontSize="32"
                  d:Text="Dancing with our hands tied"

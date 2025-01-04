@@ -36,14 +36,12 @@ namespace LemonApp.Views.UserControls
     public partial class LyricView : UserControl
     {
         public LyricView(IHttpClientFactory httpClientFactory,
-            UserProfileService userProfileService,
             UIResourceService uiResourceService)
         {
             InitializeComponent();
             UpdateColorMode();
 
             _hc = httpClientFactory.CreateClient(App.PublicClientFlag);
-            _userProfileService= userProfileService;
             _uiResourceService = uiResourceService;
             _uiResourceService.OnColorModeChanged += _uiResourceService_OnColorModeChanged;
 
@@ -107,9 +105,7 @@ namespace LemonApp.Views.UserControls
         public FontWeight NormalTextFontWeight = FontWeights.Normal;
         #endregion
         private HttpClient? _hc;
-        private TencUserAuth? _auth=> _userProfileService.GetAuth();
         private readonly UIResourceService _uiResourceService;
-        private readonly UserProfileService _userProfileService;
         private List<LrcItem> LrcItems = [];
         private LrcItem? _currentLrc = null;
         public async Task LoadFromMusic(Music m)
@@ -122,9 +118,13 @@ namespace LemonApp.Views.UserControls
             }
             else
             {
-                if (_hc == null || _auth == null) return;
+                if (_hc == null) return;
                 if (m.Source == Platform.qq)
                 {
+                    var ly= await GatitoGetLyric.GetTencLyricAsync(_hc, m.MusicID);
+                    await Settings.SaveAsJsonAsync(ly, path, false);
+                    LoadLrc(ly);
+                    /*
                     var data=await TencGetLyric.GetLyricDataAsync(_hc,_auth, m.MusicID);
                     if(data != null&&data.Lyric!=null)
                     {
@@ -136,15 +136,6 @@ namespace LemonApp.Views.UserControls
                         if (data.Trans != null)
                         {
                              trans = LyricHelper.Format(data.Trans);
-                            //TODO:重新考虑romaji翻译的加载和储存方式，不要让其影响主要部件加载
-                           /* if (LyricHelper.IsJapanese(data.Lyric))
-                            {
-                                StringBuilder sb = new();
-                                foreach(var line in lyrics)
-                                    sb.AppendLine(line.Value.Contains('：')?"":line.Value);
-                                var temp = sb.ToString();
-                                romaji =await RomajiLyric.Trans(_hc,temp);
-                            }*/
                         }
                         int i = 0;
                         foreach(var line in lyrics)
@@ -162,6 +153,7 @@ namespace LemonApp.Views.UserControls
                         await Settings.SaveAsJsonAsync(ly, path,false);
                         LoadLrc(ly);
                     }
+                    */
                 }
             }
         }
@@ -288,8 +280,6 @@ namespace LemonApp.Views.UserControls
                 item.LrcTb.BeginAnimation(FontSizeProperty, null);
                 item.LrcTb.BeginAnimation(OpacityProperty, new DoubleAnimation(LyricOpacity,TimeSpan.FromSeconds(0.5)));
                 item.LrcTb.Effect = NomalTextEffect;
-                
-
             }
             var temp = LrcItems.LastOrDefault(p => p.Time <= ms);
             if (temp == null || temp == _currentLrc) return;

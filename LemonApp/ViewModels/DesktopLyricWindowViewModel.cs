@@ -49,6 +49,8 @@ public partial class DesktopLyricWindowViewModel:ObservableObject
     [ObservableProperty]
     private string? _transText;
     [ObservableProperty]
+    private string? _romajiText;
+    [ObservableProperty]
     private bool _showTranslation = true;
     partial void OnShowTranslationChanged(bool value)
     {
@@ -56,10 +58,12 @@ public partial class DesktopLyricWindowViewModel:ObservableObject
         if (value)
         {
             TransText = lrcLine?.Trans;
+            RomajiText = lrcLine?.Romaji;
         }
         else
         {
             TransText = null;
+            RomajiText = null;
         }
     }
 
@@ -76,6 +80,7 @@ public partial class DesktopLyricWindowViewModel:ObservableObject
             LyricText = lrc.Lyric;
         }
         TransText = ShowTranslation ? lrc.Trans : null;
+        RomajiText = ShowTranslation ? lrc.Romaji+"\r\n" : null;
     }
 
     [RelayCommand]
