@@ -38,8 +38,7 @@ namespace LemonApp.Views.Windows
 
         private void Wb_DocumentTitleChanged(object? sender, EventArgs e)
         {
-            if(wb.Url?.ToString() is { } url &&wb.Document?.Cookie is { } cookie)
-                loginAPI.CollectInfo(url, cookie);
+             loginAPI.CollectInfo(wb.Url.ToString(), wb.Document?.Cookie);
         }
 
         private void LoginWindow_Loaded(object sender, RoutedEventArgs e)

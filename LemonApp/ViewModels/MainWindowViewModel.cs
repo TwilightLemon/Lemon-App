@@ -619,8 +619,7 @@ public partial class MainWindowViewModel : ObservableObject
     {
         if (value != null&&value.MusicID!=CurrentPlaying?.MusicID)
         {
-            await _mediaPlayerService.Load(value);
-            _mediaPlayerService.Play();
+            await _mediaPlayerService.LoadThenPlay(value);
         }
     }
     [RelayCommand]

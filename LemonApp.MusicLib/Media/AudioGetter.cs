@@ -45,8 +45,11 @@ public class AudioGetter(HttpClient hc,
     {
         if(m.Source == Platform.qq)
         {
+            //歌曲品质   先选择preference | supported
             var final=GetFinalQuality(m.Quality, preferQuality);
 
+            //尝试通过SharedLaClient获取  TODO:完善异常情况处理(token过期...)
+            //一般来说，共享的token都不会受音质限制，所以不遍历所有音质
             if (_laClient != null && _sharedLaToken is {Length:>0} token)
             {
                 string quality = QualityMatcher(final)[1];
@@ -61,14 +64,23 @@ public class AudioGetter(HttpClient hc,
                             Url = redirect
                         };
                     }
-                    //TODO: token expired handler
                 }
+            }
+
+            //遍历所有音质
+            string? purl = null;
+            while (true)
+            {
+                purl = await GetUrlFcgLine(m.MusicID, final);
+                if (final == MusicQuality.Std)
+                    break;
+                final--;
             }
 
             return new MusicUrlData() {
                 Quality=final,
                 SourceText= "YQQ",
-                Url = await GetUrlFcgLine(m.MusicID, final)
+                Url = purl
             };
         }
         else if(m.Source == Platform.wyy)
@@ -119,7 +131,7 @@ public class AudioGetter(HttpClient hc,
                                .GetStringAsync(url);
         if(JsonNode.Parse(data) is { } json)
         {
-            if(json["req_0"]?["data"]?["midurlinfo"]?[0]?["purl"]?.ToString() is { } purl)
+            if(json["req_0"]?["data"]?["midurlinfo"]?[0]?["purl"]?.ToString() is {Length:>0} purl)
             {
                 return "https://ws.stream.qqmusic.qq.com/" + purl;
             }

@@ -4,6 +4,7 @@ using LemonApp.Views.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using System;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -28,11 +29,26 @@ public class WindowBasicComponent(IServiceProvider serviceProvider,MediaPlayerSe
     /// </summary>
     public void Init()
     {
+#if !DEBUG
         InitTaskBarThumb();
+#endif
+        FixPopup();
         InitNotifyIcon();
         RegisterWakeup();
         SaveHwnd();
     }
+
+    private static void FixPopup()
+    {
+        var ifLeft = SystemParameters.MenuDropAlignment;
+        if (ifLeft)
+        {
+            var t = typeof(SystemParameters);
+            var field = t.GetField("_menuDropAlignment", BindingFlags.NonPublic | BindingFlags.Static);
+            field?.SetValue(null, false);
+        }
+    }
+
     #region Task Bar Thumb
     TabbedThumbnail? TaskBarImg;
     ThumbnailToolBarButton? TaskBarBtn_Last;

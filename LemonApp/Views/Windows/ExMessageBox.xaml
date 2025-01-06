@@ -14,13 +14,13 @@
                        ResizeMode="NoResize"
                        ShowInTaskbar="False"
                        Title="ExMessageBox"
-                       Height="240"
-                       Width="380">
+                       Height="220"
+                       Width="340">
     <Grid>
-        <Grid Margin="0 0 0 64"
+        <Grid Margin="0 0 0 56"
               Background="{DynamicResource TabMaskColor}">
-            <Path  Width="84"
-                   Height="84"
+            <Path  Width="64"
+                   Height="64"
                    Data="{StaticResource Icon_Info}"
                    Fill="Orange"
                    Stretch="Fill"
@@ -28,16 +28,16 @@
                    VerticalAlignment="Top"
                    Margin="32" />
             <TextBlock x:Name="ContentTb"
-                       Margin="148,32,12,53"
+                       Margin="128,32,12,53"
                        Text="Hello"
                        FontSize="14" />
         </Grid>
         <Border VerticalAlignment="Bottom"
-                Height=" 64">
+                Height="56">
             <ws:WrapPanel HorizontalAlignment="Right"
-                          ItemHeight="38"
+                          ItemHeight="32"
                           VerticalAlignment="Center"
-                          ItemWidth="86"
+                          ItemWidth="72"
                           HorizontalSpacing="24"
                           Margin="0 0 12 0">
                 <ws:Button x:Name="ConfirmBtn"

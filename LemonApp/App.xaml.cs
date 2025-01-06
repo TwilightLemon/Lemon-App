@@ -35,7 +35,7 @@ namespace LemonApp
                 {
                     AutomaticDecompression = System.Net.DecompressionMethods.GZip,
                     UseCookies=true,
-                    UseProxy = false
+                    UseProxy = true
                 });
 
 

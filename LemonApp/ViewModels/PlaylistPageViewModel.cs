@@ -134,8 +134,7 @@ public partial class PlaylistPageViewModel(
         else
             _mediaPlayerService.ReplacePlayList(Musics);
 
-        await _mediaPlayerService.Load(m);
-        _mediaPlayerService.Play();
+        await _mediaPlayerService.LoadThenPlay(m);
     }
     [RelayCommand]
     private async Task PlayAll()
@@ -144,8 +143,7 @@ public partial class PlaylistPageViewModel(
             return;
 
         _mediaPlayerService.ReplacePlayList(Musics);
-        await _mediaPlayerService.Load(Musics[0]);
-        _mediaPlayerService.Play();
+        await _mediaPlayerService.LoadThenPlay(Musics[0]);
     }
 
     [RelayCommand]

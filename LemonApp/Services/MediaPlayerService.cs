@@ -77,31 +77,52 @@ public class MediaPlayerService(UserProfileService userProfileService,
         _player.Free();
     }
 
-    public Task Load(Music music)
+    public async Task LoadThenPlay(Music music)
+    {
+        if (await Load(music))
+            Play();
+    }
+    public Task<bool> Load(Music music)
     {
         return LoadMusic(music, _playingMgr.Data.Quality);
     }
-    public async Task LoadMusic(Music music, MusicQuality prefer)
+    private async Task<bool> LoadMusic(Music music, MusicQuality prefer)
     {
         if (audioGetter == null)
             throw new InvalidOperationException("MediaPlayerService not initialized.");
 
         Pause();
         CurrentMusic = music;
-        //先检索本地缓存
+
+        //先检索本地缓存 按照音质高到低依次检索
+        bool playLocalFile = false;
         var matched = AudioGetter.GetFinalQuality(music.Quality, prefer);
-        var quality = AudioGetter.QualityMatcher(matched);
-        var cacheFile = Path.Combine(CacheManager.GetCachePath(CacheManager.CacheType.Music), music.MusicID + quality[0]);
-        if (File.Exists(cacheFile))
+        while (true)
         {
-            _player.Load(cacheFile);
-            CurrentQuality = matched;
+            var quality = AudioGetter.QualityMatcher(matched);
+            var cacheFile = Path.Combine(CacheManager.GetCachePath(CacheManager.CacheType.Music), music.MusicID + quality[0]);
+            if (File.Exists(cacheFile))
+            {
+                _player.Load(cacheFile);
+                CurrentQuality = matched;
+                playLocalFile = true;
+                break;
+            }
+            if (matched == MusicQuality.Std)
+            {
+                //最低音质也没找到
+                break;
+            }
+            matched--;
         }
-        else
-        {
+
+        //本地文件未匹配成功则请求加载网络
+        if(!playLocalFile){
             var url = await audioGetter.GetUrlAsync(music, prefer);
             if (url is null || url.Url is null)
-                throw new InvalidOperationException("Failed to get music url.");
+                return false;
+            var quality = AudioGetter.QualityMatcher(url.Quality);
+            var cacheFile = Path.Combine(CacheManager.GetCachePath(CacheManager.CacheType.Music), music.MusicID + quality[0]);
             _player.LoadUrl(cacheFile, url.Url, CacheProgress, CacheFinished);
             CurrentQuality = url.Quality;
             CacheStarted?.Invoke();
@@ -114,6 +135,7 @@ public class MediaPlayerService(UserProfileService userProfileService,
                         .Update();
 
         OnLoaded?.Invoke(music);
+        return true;
     }
     /// <summary>
     /// volume: 0~1
