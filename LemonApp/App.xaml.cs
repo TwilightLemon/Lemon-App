@@ -51,6 +51,7 @@ namespace LemonApp
                         .AddConfig<PlayingPreference>()
                         .AddConfig<PlaylistCache>(Common.Funcs.Settings.sType.Cache)
                         .AddConfig<DesktopLyricOption>()
+                        .AddConfig<LyricOption>()
                 );
 
                 //services

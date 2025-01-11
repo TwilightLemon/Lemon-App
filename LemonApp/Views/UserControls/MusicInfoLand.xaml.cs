@@ -34,6 +34,12 @@ namespace LemonApp.Views.UserControls
             {
                 land.QualityIcon.Command = command;
                 land.QualityIcon.IsEnabled = true;
+                land.QualityIcon.Visibility = Visibility.Visible;
+                if (land.Quality == MusicQuality.Std)
+                {
+                    land.QualityIcon.SetResourceReference(BorderBrushProperty, "ForeColor");
+                    land.QualityText.SetResourceReference(ForegroundProperty, "ForeColor");
+                }
             }
         }
 
@@ -46,7 +52,7 @@ namespace LemonApp.Views.UserControls
         public static readonly DependencyProperty QualityProperty =
             DependencyProperty.Register("Quality", 
                 typeof(MusicQuality), typeof(MusicInfoLand), 
-                new PropertyMetadata(MusicQuality.Std, OnQualityChanged));
+                new PropertyMetadata(MusicQuality.SQ, OnQualityChanged));
 
         public static void OnQualityChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {

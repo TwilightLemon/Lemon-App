@@ -39,6 +39,17 @@
         </CollectionViewSource>
 
         <Storyboard x:Key="OpenLyricPageAni">
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="LyricPage"
+                                              Storyboard.TargetProperty="Margin">
+                <EasingThicknessKeyFrame KeyTime="00"
+                                         Value="0 200 0 -200" />
+                <EasingThicknessKeyFrame KeyTime="00:00:00.2500"
+                                         Value="0">
+                    <EasingThicknessKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut"/>
+                    </EasingThicknessKeyFrame.EasingFunction>
+                </EasingThicknessKeyFrame>
+            </ThicknessAnimationUsingKeyFrames>
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="MainPage"
                                            Storyboard.TargetProperty="(UIElement.Opacity)">
                 <EasingDoubleKeyFrame KeyTime="00:00:00.2500"
@@ -54,58 +65,13 @@
                 <DiscreteObjectKeyFrame KeyTime="00:00:00"
                                         Value="{x:Static Visibility.Visible}" />
             </ObjectAnimationUsingKeyFrames>
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="LyricPage_Background"
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="LyricPage"
                                            Storyboard.TargetProperty="(UIElement.Opacity)">
                 <EasingDoubleKeyFrame KeyTime="00:00:00"
                                       Value="0" />
                 <EasingDoubleKeyFrame KeyTime="00:00:00.2500"
                                       Value="1" />
             </DoubleAnimationUsingKeyFrames>
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="LyricPage_Img"
-                                           Storyboard.TargetProperty="(FrameworkElement.Width)">
-                <EasingDoubleKeyFrame KeyTime="00:00:00"
-                                      Value="60">
-                    <EasingDoubleKeyFrame.EasingFunction>
-                        <CircleEase EasingMode="EaseOut" />
-                    </EasingDoubleKeyFrame.EasingFunction>
-                </EasingDoubleKeyFrame>
-                <EasingDoubleKeyFrame KeyTime="00:00:00.2500"
-                                      Value="360">
-                    <EasingDoubleKeyFrame.EasingFunction>
-                        <CircleEase EasingMode="EaseOut" />
-                    </EasingDoubleKeyFrame.EasingFunction>
-                </EasingDoubleKeyFrame>
-            </DoubleAnimationUsingKeyFrames>
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="LyricPage_Img"
-                                           Storyboard.TargetProperty="(FrameworkElement.Height)">
-                <EasingDoubleKeyFrame KeyTime="00:00:00"
-                                      Value="60">
-                    <EasingDoubleKeyFrame.EasingFunction>
-                        <CircleEase EasingMode="EaseOut" />
-                    </EasingDoubleKeyFrame.EasingFunction>
-                </EasingDoubleKeyFrame>
-                <EasingDoubleKeyFrame KeyTime="00:00:00.2500"
-                                      Value="360">
-                    <EasingDoubleKeyFrame.EasingFunction>
-                        <CircleEase EasingMode="EaseOut" />
-                    </EasingDoubleKeyFrame.EasingFunction>
-                </EasingDoubleKeyFrame>
-            </DoubleAnimationUsingKeyFrames>
-            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="LyricPage_Img"
-                                              Storyboard.TargetProperty="(FrameworkElement.Margin)">
-                <EasingThicknessKeyFrame KeyTime="00:00:00"
-                                         Value="13,656,0,0">
-                    <EasingThicknessKeyFrame.EasingFunction>
-                        <CircleEase EasingMode="EaseOut" />
-                    </EasingThicknessKeyFrame.EasingFunction>
-                </EasingThicknessKeyFrame>
-                <EasingThicknessKeyFrame KeyTime="00:00:00.2500"
-                                         Value="60,0,0,110">
-                    <EasingThicknessKeyFrame.EasingFunction>
-                        <CircleEase EasingMode="EaseOut" />
-                    </EasingThicknessKeyFrame.EasingFunction>
-                </EasingThicknessKeyFrame>
-            </ThicknessAnimationUsingKeyFrames>
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="MusicControl_Img"
                                            Storyboard.TargetProperty="(UIElement.Visibility)">
                 <DiscreteObjectKeyFrame KeyTime="00:00:00"
@@ -120,14 +86,9 @@
                     </EasingThicknessKeyFrame.EasingFunction>
                 </EasingThicknessKeyFrame>
             </ThicknessAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LyricViewHost"
-                                           Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00.0"
-                                        Value="{x:Static Visibility.Visible}" />
-            </ObjectAnimationUsingKeyFrames>
         </Storyboard>
         <Storyboard x:Key="CloseLyricPageAni">
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="LyricPage_Background"
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="LyricPage"
                                            Storyboard.TargetProperty="(UIElement.Opacity)">
                 <EasingDoubleKeyFrame KeyTime="00:00:00.2500"
                                       Value="0" />
@@ -147,33 +108,6 @@
                     </EasingThicknessKeyFrame.EasingFunction>
                 </EasingThicknessKeyFrame>
             </ThicknessAnimationUsingKeyFrames>
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="LyricPage_Img"
-                                           Storyboard.TargetProperty="(FrameworkElement.Width)">
-                <EasingDoubleKeyFrame KeyTime="00:00:00.2500"
-                                      Value="60">
-                    <EasingDoubleKeyFrame.EasingFunction>
-                        <CircleEase EasingMode="EaseOut" />
-                    </EasingDoubleKeyFrame.EasingFunction>
-                </EasingDoubleKeyFrame>
-            </DoubleAnimationUsingKeyFrames>
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="LyricPage_Img"
-                                           Storyboard.TargetProperty="(FrameworkElement.Height)">
-                <EasingDoubleKeyFrame KeyTime="00:00:00.2500"
-                                      Value="60">
-                    <EasingDoubleKeyFrame.EasingFunction>
-                        <CircleEase EasingMode="EaseOut" />
-                    </EasingDoubleKeyFrame.EasingFunction>
-                </EasingDoubleKeyFrame>
-            </DoubleAnimationUsingKeyFrames>
-            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="LyricPage_Img"
-                                              Storyboard.TargetProperty="(FrameworkElement.Margin)">
-                <EasingThicknessKeyFrame KeyTime="00:00:00.2500"
-                                         Value="13,656,0,0">
-                    <EasingThicknessKeyFrame.EasingFunction>
-                        <CircleEase EasingMode="EaseOut" />
-                    </EasingThicknessKeyFrame.EasingFunction>
-                </EasingThicknessKeyFrame>
-            </ThicknessAnimationUsingKeyFrames>
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LyricPage"
                                            Storyboard.TargetProperty="(UIElement.Visibility)">
                 <DiscreteObjectKeyFrame KeyTime="00:00:00.2500"
@@ -191,14 +125,15 @@
             </ObjectAnimationUsingKeyFrames>
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="MusicControl_Img"
                                            Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00.2500"
+                <DiscreteObjectKeyFrame KeyTime="00:00:00.0"
                                         Value="{x:Static Visibility.Visible}" />
             </ObjectAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LyricViewHost"
-                                           Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00.0"
-                                        Value="{x:Static Visibility.Collapsed}" />
-            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="MusicControl_Img"
+                                           Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.0" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.2500"
+                                      Value="1" />
+            </DoubleAnimationUsingKeyFrames>
         </Storyboard>
         <Storyboard x:Key="OpenPlaylistAni">
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PlayListPage"
@@ -528,24 +463,25 @@
                     </ws:ConditionalControl>
                 </Grid>
             </Grid>
-            <Grid x:Name="LyricPage"
-                  Visibility="Collapsed">
+            <Grid x:Name="LyricPage" Visibility="Collapsed">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="5*" />
-                    <ColumnDefinition Width="6*" />
+                    <ColumnDefinition Width="7*" />
                 </Grid.ColumnDefinitions>
                 <Border x:Name="LyricPage_Background"
                         Background="{Binding LyricPageBackgound}"
                         Grid.ColumnSpan="2" />
                 <Border x:Name="LyricPage_Img"
-                        HorizontalAlignment="Left"
-                        Width="360"
-                        Height="360"
+                        HorizontalAlignment="Stretch"
+                        Width="auto"
+                        MinWidth="200"
+                        MaxWidth="500"
+                        Height="{Binding ElementName=LyricPage_Img,Path=ActualWidth}"
                         d:Background="Pink"
                         RenderOptions.BitmapScalingMode="HighQuality"
                         Background="{Binding CurrentPlayingCover,TargetNullValue={StaticResource HighlightThemeColor}}"
-                        CornerRadius="8"
-                        Margin="60,132,0,242">
+                        CornerRadius="12"
+                        Margin="80,0,60,110">
                     <Border.Effect>
                         <DropShadowEffect Color="Black"
                                           Direction="0"
@@ -556,6 +492,7 @@
                 </Border>
                 <Border x:Name="LyricViewHost"
                         Grid.Column="1"
+                        d:Background="White"
                         Margin="10 80 120 150">
                     <Border.OpacityMask>
                         <LinearGradientBrush EndPoint="0.5,1"
@@ -570,7 +507,44 @@
                         </LinearGradientBrush>
                     </Border.OpacityMask>
                 </Border>
-
+                <Border x:Name="LyricToolBar" Grid.Column="1"
+                        Background="{DynamicResource MaskColor}"
+                        CornerRadius="8"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Margin="0 0 36 110"
+                        Width="36">
+                    <StackPanel>
+                        <ws:Button Style="{StaticResource SimpleIconButtonStyleForWs}"
+                                   Height="36"
+                                   Padding="10"
+                                   Command="{Binding LyricView.FontSizeUpCommand}">
+                            <Path Stretch="Uniform"
+                                  Fill="{DynamicResource ForeColor}"
+                                  Data="{StaticResource Icon_FontUp}" />
+                        </ws:Button>
+                        <ws:Button Style="{StaticResource SimpleIconButtonStyleForWs}"
+                                   Height="36"
+                                   Padding="10"
+                                   Command="{Binding LyricView.FontSizeDownCommand}">
+                            <Path Stretch="Uniform"
+                                  Fill="{DynamicResource ForeColor}"
+                                  Data="{StaticResource Icon_FontDown}" />
+                        </ws:Button>
+                        <ToggleButton Height="36"
+                                      Style="{StaticResource IconToggleButton}"
+                                      Visibility="{Binding LyricView.IsTranslationAvailable,Converter={StaticResource BoolToVisibility}}"
+                                      Padding="10"
+                                      IsChecked="{Binding LyricView.IsShowTranslation}"
+                                      Tag="{StaticResource Icon_Trans}" />
+                        <ToggleButton Height="36"
+                                      Style="{StaticResource IconToggleButton}"
+                                      Visibility="{Binding LyricView.IsRomajiAvailable,Converter={StaticResource BoolToVisibility}}"
+                                      Padding="10"
+                                      IsChecked="{Binding LyricView.IsShowRomaji}"
+                                      Tag="{StaticResource Icon_Romaji}" />
+                    </StackPanel>
+                </Border>
             </Grid>
             <Border x:Name="MusicControl"
                     BorderThickness="0 1 0 0"
@@ -730,28 +704,15 @@
                                       Fill="{DynamicResource ForeColor}"
                                       Stretch="Uniform" />
                             </ws:Button>
-                            <ws:Button x:Name="OpenDesktopLyricBtn"
-                                       Width="32"
-                                       Height="32"
-                                       Command="{Binding ShowDesktopLyricCommand}"
-                                       ToolTip="桌面歌词"
-                                       HorizontalAlignment="Left"
-                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
-                                <ws:ConditionalControl Condition="{Binding IsShowDesktopLyric}">
-                                    <ws:ConditionalControl.ContentWhenFalse>
-                                        <Path Data="{DynamicResource OpenDesktopLyric}"
-                                              Height="18"
-                                              Fill="{DynamicResource ForeColor}"
-                                              Stretch="Uniform" />
-                                    </ws:ConditionalControl.ContentWhenFalse>
-                                    <ws:ConditionalControl.ContentWhenTrue>
-                                        <Path Data="{DynamicResource OpenDesktopLyric}"
-                                              Height="18"
-                                              Fill="{DynamicResource HighlightThemeColor}"
-                                              Stretch="Uniform" />
-                                    </ws:ConditionalControl.ContentWhenTrue>
-                                </ws:ConditionalControl>
-                            </ws:Button>
+                            <ToggleButton x:Name="OpenDesktopLyricBtn"
+                                          Width="32"
+                                          Height="32"
+                                          IsChecked="{Binding IsShowDesktopLyric}"
+                                          ToolTip="桌面歌词"
+                                          HorizontalAlignment="Left"
+                                          Tag="{DynamicResource OpenDesktopLyric}"
+                                          Style="{StaticResource IconToggleButton}">
+                            </ToggleButton>
                         </Grid>
                         <ws:WrapPanel Grid.Column="2"
                                       HorizontalAlignment="Right"
@@ -904,7 +865,6 @@
                 <ws:Button x:Name="GotoPlayingBtn"
                            HorizontalAlignment="Right"
                            VerticalAlignment="Bottom"
-                           Visibility="{Binding ShowGotoPlaying}"
                            Margin="32"
                            Width="36"
                            Height="36"

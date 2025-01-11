@@ -185,6 +185,7 @@ namespace LemonApp.Views.Windows
         {
             _openLyricPageAni ??= (Storyboard)Resources["OpenLyricPageAni"];
             _closeLyricPageAni ??= (Storyboard)Resources["CloseLyricPageAni"];
+
             if (_vm.IsLyricPageOpen)
             {
                 _closeLyricPageAni.Begin();
@@ -192,13 +193,8 @@ namespace LemonApp.Views.Windows
             }
             else
             {
-                var point = MusicControl_Img.TranslatePoint(new Point(0, 0), this);
-                (_closeLyricPageAni.Children[4] as ThicknessAnimationUsingKeyFrames)!.KeyFrames[0].Value =
-                (_openLyricPageAni.Children[6] as ThicknessAnimationUsingKeyFrames)!.KeyFrames[0].Value =
-                            new Thickness(point.X, (double)656 / 681 * point.Y, 0, 0);
                 _openLyricPageAni.Begin();
                 _vm.IsLyricPageOpen = true;
-
             }
         }
         #endregion

@@ -562,7 +562,7 @@ public partial class MainWindowViewModel : ObservableObject
     [ObservableProperty]
     private Music? _currentPlaying = null;
     [ObservableProperty]
-    private MusicQuality _currentQuality;
+    private MusicQuality _currentQuality = MusicQuality.SQ;
     [ObservableProperty]
     private string _currentPlayingPositionText = "00:00";
     [ObservableProperty]
@@ -621,11 +621,6 @@ public partial class MainWindowViewModel : ObservableObject
         {
             await _mediaPlayerService.LoadThenPlay(value);
         }
-    }
-    [RelayCommand]
-    private void ShowDesktopLyric()
-    {
-        IsShowDesktopLyric = !IsShowDesktopLyric;
     }
 
     [RelayCommand]

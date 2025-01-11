@@ -1,6 +1,4 @@
-﻿
-
-using LemonApp.MusicLib.Abstraction.Entities;
+﻿using LemonApp.MusicLib.Abstraction.Entities;
 
 namespace LemonApp.Common.Configs;
 public class PlayingPreference
@@ -19,4 +17,11 @@ public class PlaylistCache
 public class DesktopLyricOption
 {
     public bool ShowTranslation { get; set; } = true;
+}
+
+public class LyricOption
+{
+    public bool ShowTranslation { get; set; } = true;
+    public bool ShowRomaji { get; set; } = true;
+    public int FontSize { get; set; } = 24;
 }

@@ -17,5 +17,7 @@ public class LrcLine
 public class LocalLyricData
 {
     public string Id { get; set; } = string.Empty;
+    public bool HasTrans { get; set; } = false;
+    public bool HasRomaji { get; set; } = false;
     public List<LrcLine> LyricData { get; set; } = [];
 }

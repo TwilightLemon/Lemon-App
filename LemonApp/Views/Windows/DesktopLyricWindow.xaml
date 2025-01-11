@@ -69,25 +69,14 @@
             <ws:WrapPanel HorizontalSpacing="24"
                           VerticalAlignment="Center"
                           HorizontalAlignment="Center">
-                <ws:Button Width="48"
-                           Height="48"
-                           Style="{StaticResource SimpleIconButtonStyleForWs}"
-                           Command="{Binding ShowOrHideTranslationCommand}">
-                    <ws:ConditionalControl Condition="{Binding ShowTranslation}">
-                        <ws:ConditionalControl.ContentWhenTrue>
-                            <Path Data="{StaticResource Icon_Trans}"
-                                  Stretch="Uniform"
-                                  Fill="{DynamicResource HighlightThemeColor}"
-                                  Height="22" />
-                        </ws:ConditionalControl.ContentWhenTrue>
-                        <ws:ConditionalControl.ContentWhenFalse>
-                            <Path Data="{StaticResource Icon_Trans}"
-                                  Stretch="Uniform"
-                                  Fill="{DynamicResource ForeColor}"
-                                  Height="22" />
-                        </ws:ConditionalControl.ContentWhenFalse>
-                    </ws:ConditionalControl>
-                </ws:Button>
+                <ToggleButton Width="48"
+                              Height="48"
+                              Style="{StaticResource IconToggleButton}"
+                              Tag="{StaticResource Icon_Trans}"
+                              IsChecked="{Binding ShowTranslation}"
+                              Padding="12"
+                              Command="{Binding ShowOrHideTranslationCommand}">
+                </ToggleButton>
                 <ws:Button x:Name="PlayLastBtn"
                            Width="48"
                            Height="48"

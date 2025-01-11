@@ -72,7 +72,7 @@ public class AudioGetter(HttpClient hc,
             while (true)
             {
                 purl = await GetUrlFcgLine(m.MusicID, final);
-                if (final == MusicQuality.Std)
+                if (!string.IsNullOrEmpty(purl)||final == MusicQuality.Std)
                     break;
                 final--;
             }

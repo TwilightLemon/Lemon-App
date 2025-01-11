@@ -5,6 +5,53 @@
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                     mc:Ignorable="av">
 
+    <Style x:Key="IconToggleButton" TargetType="ToggleButton">
+        <Setter Property="Cursor"
+                Value="Hand" />
+        <Setter Property="Padding"
+                Value="7" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border x:Name="bd"
+                            Background="Transparent"
+                            CornerRadius="4"
+                            Padding="{TemplateBinding Padding}">
+                        <Path x:Name="path"
+                              Fill="{DynamicResource ForeColor}"
+                              Data="{TemplateBinding Tag}"
+                              Stretch="Uniform" 
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked"
+                                 Value="False">
+                            <Setter TargetName="path" Property="Fill"
+                                    Value="{DynamicResource ForeColor}" />
+                        </Trigger>
+                        <Trigger Property="IsChecked"
+                                 Value="True">
+                            <Setter TargetName="path"
+                                    Property="Fill"
+                                    Value="{DynamicResource HighlightThemeColor}" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="bd"
+                                    Property="Background"
+                                    Value="{DynamicResource MaskColor}" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver"
+                                 Value="False">
+                            <Setter TargetName="bd"
+                                    Property="Background"
+                                    Value="Transparent" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
     <Style x:Key="SimpleVerticalScrollViewerStyle"
            TargetType="{x:Type ws:ScrollViewer}">
         <Setter Property="ws:StylusTouchDevice.Simulate"

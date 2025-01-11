@@ -17,6 +17,8 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Effects;
 using LemonApp.MusicLib.Abstraction.Entities;
+using LemonApp.Common.Configs;
+using CommunityToolkit.Mvvm.Input;
 
 namespace LemonApp.Views.UserControls
 {
@@ -35,57 +37,59 @@ namespace LemonApp.Views.UserControls
     /// </summary>
     public partial class LyricView : UserControl
     {
+        private readonly HttpClient? _hc;
+        private readonly SettingsMgr<LyricOption> _settings;
+        private readonly UIResourceService _uiResourceService;
+        private readonly List<LrcItem> LrcItems = [];
+        private LrcItem? _currentLrc = null;
         public LyricView(IHttpClientFactory httpClientFactory,
-            UIResourceService uiResourceService)
+            UIResourceService uiResourceService,
+            AppSettingsService appSettingsService)
         {
             InitializeComponent();
             UpdateColorMode();
 
+            _settings = appSettingsService.GetConfigMgr<LyricOption>()!;
             _hc = httpClientFactory.CreateClient(App.PublicClientFlag);
             _uiResourceService = uiResourceService;
-            _uiResourceService.OnColorModeChanged += _uiResourceService_OnColorModeChanged;
+            _uiResourceService.OnColorModeChanged += UiResourceService_OnColorModeChanged;
 
             SizeChanged += LyricView_SizeChanged;
             IsVisibleChanged += LyricView_IsVisibleChanged;
+            Loaded += LyricView_Loaded;
         }
 
-        private void _uiResourceService_OnColorModeChanged()
+        #region Self-adaption
+        private void LyricView_Loaded(object sender, RoutedEventArgs e)
         {
-            UpdateColorMode();
+            IsShowTranslation = _settings?.Data?.ShowTranslation is true;
+            IsShowRomaji = _settings?.Data?.ShowRomaji is true;
+            SetFontSize(_settings?.Data?.FontSize ?? (int)LyricFontSize);
         }
 
-        public event Action<LrcLine>? OnNextLrcReached;
-        public LrcLine GetCurrentLrc() => new()
+        private void UpdateColorMode()
         {
-            Lyric = _currentLrc?.Lyric ?? "",
-            Trans = _currentLrc?.LrcTrans?.Text ?? "",
-            Romaji = _currentLrc?.Romaji?.Text ?? "",
-            Time = double.NaN
-        };
+            if (Foreground is SolidColorBrush color)
+            {
+                Hightlighter = new DropShadowEffect() { BlurRadius = 20, Color = color.Color, Opacity = 0.5, ShadowDepth = 0, Direction = 0 };
+            }
+        }
+        private void UiResourceService_OnColorModeChanged() => UpdateColorMode();
 
         private async void LyricView_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if(e.NewValue is true)
+            if (e.NewValue is true)
             {
                 await Task.Delay(300);
                 RefreshCurrentLrcStyle();
             }
         }
 
-        private void LyricView_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            RefreshCurrentLrcStyle();
-        }
+        private void LyricView_SizeChanged(object sender, SizeChangedEventArgs e) => RefreshCurrentLrcStyle();
+        #endregion
         #region Apperance
-        private void UpdateColorMode()
-        {
-            if(Foreground is SolidColorBrush color)
-            {
-                Hightlighter = new DropShadowEffect() { BlurRadius = 20, Color = color.Color, Opacity = 0.5, ShadowDepth = 0, Direction = 0 };
-            }
-        }
 
-        public  Thickness LyricMargin = new Thickness(20,12,0,12);
+        public Thickness LyricMargin = new Thickness(20, 12, 0, 12);
         /// <summary>
         /// 非高亮歌词的透明度
         /// </summary>
@@ -101,18 +105,127 @@ namespace LemonApp.Views.UserControls
         /// </summary>
         public TextAlignment TextAlignment = TextAlignment.Left;
 
-        public double LyricFontSize = 22;
+        public double LyricFontSize = 24;
+        public const double LyricFontSizeDelta = 6;
         public FontWeight NormalTextFontWeight = FontWeights.Normal;
         #endregion
-        private HttpClient? _hc;
-        private readonly UIResourceService _uiResourceService;
-        private List<LrcItem> LrcItems = [];
-        private LrcItem? _currentLrc = null;
+
+
+        public event Action<LrcLine>? OnNextLrcReached;
+        public LrcLine GetCurrentLrc() => new()
+        {
+            Lyric = _currentLrc?.Lyric ?? "",
+            Trans = _currentLrc?.LrcTrans?.Text ?? "",
+            Romaji = _currentLrc?.Romaji?.Text ?? "",
+            Time = double.NaN
+        };
+
+        [RelayCommand]
+        public void FontSizeUp() => SetFontSize((int)LyricFontSize +2);
+        [RelayCommand]
+        public void FontSizeDown() => SetFontSize((int)LyricFontSize - 2);
+        public void SetFontSize(int size)
+        {
+            LyricFontSize = size;
+            _settings.Data.FontSize = size;
+            foreach (var item in LrcItems)
+            {
+                item.LrcTb!.FontSize = size;
+                if (item.Romaji != null)
+                    item.Romaji.FontSize = size - LyricFontSizeDelta;
+                if (item.LrcTrans != null)
+                    item.LrcTrans.FontSize = size - LyricFontSizeDelta;
+            }
+        }
+
+
+        public bool IsRomajiAvailable
+        {
+            get { return (bool)GetValue(IsRomajiAvailableProperty); }
+            private set { SetValue(IsRomajiAvailableProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsRomajiAvailableProperty =
+            DependencyProperty.Register("IsRomajiAvailable", typeof(bool), typeof(LyricView), new PropertyMetadata(false));
+
+
+        public bool IsTranslationAvailable
+        {
+            get { return (bool)GetValue(IsTranslationAvailableProperty); }
+            private set { SetValue(IsTranslationAvailableProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsTranslationAvailableProperty =
+            DependencyProperty.Register("IsTranslationAvailable", typeof(bool), typeof(LyricView), new PropertyMetadata(false));
+
+        public bool IsShowTranslation
+        {
+            get { return (bool)GetValue(IsShowTranslationProperty); }
+            set
+            {
+                SetValue(IsShowTranslationProperty, value);
+                _settings.Data.ShowTranslation = value;
+            }
+        }
+
+        public static readonly DependencyProperty IsShowTranslationProperty =
+            DependencyProperty.Register("IsShowTranslation", typeof(bool), typeof(LyricView), new PropertyMetadata(true, OnIsShowTranslationChanged));
+
+        private static void OnIsShowTranslationChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is LyricView view)
+            {
+                view.SetShowTranslation(e.NewValue is true);
+            }
+        }
+
+        public bool IsShowRomaji
+        {
+            get { return (bool)GetValue(IsShowRomajiProperty); }
+            set
+            {
+                SetValue(IsShowRomajiProperty, value);
+                _settings.Data.ShowRomaji = value;
+            }
+        }
+
+        public static readonly DependencyProperty IsShowRomajiProperty =
+            DependencyProperty.Register("IsShowRomaji", typeof(bool), typeof(LyricView), new PropertyMetadata(true, OnIsShowRomajiChanged));
+
+        private static void OnIsShowRomajiChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is LyricView view)
+            {
+                view.SetShowRomaji(e.NewValue is true);
+            }
+        }
+
+        public void SetShowTranslation(bool show)
+        {
+            foreach (var item in LrcItems)
+            {
+                if (item.LrcTrans != null)
+                {
+                    item.LrcTrans.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
+                }
+            }
+        }
+        public void SetShowRomaji(bool show)
+        {
+            foreach (var item in LrcItems)
+            {
+                if (item.Romaji != null)
+                {
+                    item.Romaji.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
+                }
+            }
+        }
+
         public async Task LoadFromMusic(Music m)
         {
             var path = CacheManager.GetCachePath(CacheManager.CacheType.Lyric);
             path = System.IO.Path.Combine(path, m.MusicID + ".json");
-            if (await Settings.LoadFromJsonAsync<LocalLyricData>(path,false) is { } local)
+            if (await Settings.LoadFromJsonAsync<LocalLyricData>(path, false) is { } local)
             {
                 LoadLrc(local);
             }
@@ -121,7 +234,7 @@ namespace LemonApp.Views.UserControls
                 if (_hc == null) return;
                 if (m.Source == Platform.qq)
                 {
-                    var ly= await GatitoGetLyric.GetTencLyricAsync(_hc, m.MusicID);
+                    var ly = await GatitoGetLyric.GetTencLyricAsync(_hc, m.MusicID);
                     await Settings.SaveAsJsonAsync(ly, path, false);
                     LoadLrc(ly);
                     /*
@@ -161,12 +274,14 @@ namespace LemonApp.Views.UserControls
         {
             scrollviewer.BeginAnimation(ScrollViewerUtils.VerticalOffsetProperty, null);
             scrollviewer.ScrollToTop();
+            IsTranslationAvailable = data.HasTrans;
+            IsRomajiAvailable = data.HasRomaji;
 
             LyricPanel.Children.Clear();
             LrcItems.Clear();
             GC.Collect();
             //占位
-            LyricPanel.Children.Add(new Border() { Height = 200,Background=Brushes.Transparent });
+            LyricPanel.Children.Add(new Border() { Height = 200, Background = Brushes.Transparent });
             foreach (var line in data.LyricData)
             {
                 LrcItem item = new();
@@ -180,8 +295,8 @@ namespace LemonApp.Views.UserControls
                     Opacity = LyricOpacity,
                     TextWrapping = TextWrapping.Wrap,
                     TextTrimming = TextTrimming.None,
-                    Margin= LyricMargin,
-                    Effect= NomalTextEffect,
+                    Margin = LyricMargin,
+                    Effect = NomalTextEffect,
                     FontWeight = NormalTextFontWeight
                 };
                 item.LrcTb = tb;
@@ -191,12 +306,14 @@ namespace LemonApp.Views.UserControls
                     TextBlock romaji = new()
                     {
                         Text = line.Romaji,
-                        FontSize = LyricFontSize-5,
+                        Opacity = 0.8,
+                        FontSize = LyricFontSize - LyricFontSizeDelta,
                         FontWeight = FontWeights.Regular,
                         //Foreground = NormalLrcColor,
                         TextWrapping = TextWrapping.Wrap,
                         TextTrimming = TextTrimming.None
                     };
+                    if (!IsShowRomaji) romaji.Visibility = Visibility.Collapsed;
                     item.Romaji = romaji;
                     tb.Inlines.Add(romaji);
                     tb.Inlines.Add(new LineBreak());
@@ -214,15 +331,17 @@ namespace LemonApp.Views.UserControls
                 //Translation
                 if (line.Trans != null)
                 {
-                    TextBlock trans = new() {
+                    TextBlock trans = new()
+                    {
                         FontWeight = FontWeights.Regular,
-                        Text=line.Trans,
-                        Opacity=0.5,
-                        FontSize = LyricFontSize - 6,
+                        Text = line.Trans,
+                        Opacity = 0.8,
+                        FontSize = LyricFontSize - LyricFontSizeDelta,
                         //Foreground = NormalLrcColor,
                         TextWrapping = TextWrapping.Wrap,
                         TextTrimming = TextTrimming.None
                     };
+                    if (!IsShowTranslation) trans.Visibility = Visibility.Collapsed;
                     item.LrcTrans = trans;
                     tb.Inlines.Add(new LineBreak());
                     tb.Inlines.Add(trans);
@@ -233,15 +352,16 @@ namespace LemonApp.Views.UserControls
             LyricPanel.Children.Add(new Border() { Height = 200, Background = Brushes.Transparent });
         }
 
+
         private static double? pixelsPerDip;
-        private static string InsertLineBreaks(TextBlock tb,string preText, double fontSize, double maxWidth)
+        private static string InsertLineBreaks(TextBlock tb, string preText, double fontSize, double maxWidth)
         {
             var typeface = new Typeface(tb.FontFamily, tb.FontStyle, FontWeights.Bold, tb.FontStretch);
             pixelsPerDip ??= VisualTreeHelper.GetDpi(Application.Current.MainWindow).PixelsPerDip;
             double GetWidth(string text)
             {
                 var formattedLine = new FormattedText(text, CultureInfo.CurrentCulture,
-                                                                                    FlowDirection.LeftToRight,typeface,fontSize,Brushes.Black,pixelsPerDip!.Value);
+                                                                                    FlowDirection.LeftToRight, typeface, fontSize, Brushes.Black, pixelsPerDip!.Value);
                 return formattedLine.WidthIncludingTrailingWhitespace;
             }
             StringBuilder temp = new();
@@ -249,18 +369,18 @@ namespace LemonApp.Views.UserControls
             bool spaceSplit = preText.Contains(' ');
             if (spaceSplit)
                 blocks = preText.Split(' ');
-            else blocks = preText.Select(c=>c.ToString()).ToArray();
+            else blocks = preText.Select(c => c.ToString()).ToArray();
 
 
-            foreach(var block in blocks)
+            foreach (var block in blocks)
             {
-                if(string.IsNullOrWhiteSpace(block)) continue;
+                if (string.IsNullOrWhiteSpace(block)) continue;
                 temp.Append(block);
-                if(spaceSplit)temp.Append(' ');
+                if (spaceSplit) temp.Append(' ');
                 if (GetWidth(temp.ToString()) > maxWidth)
                 {
-                    int undoLength=block.Length+(spaceSplit? 1:0);
-                    temp.Remove(temp.Length-undoLength,undoLength);
+                    int undoLength = block.Length + (spaceSplit ? 1 : 0);
+                    temp.Remove(temp.Length - undoLength, undoLength);
                     temp.AppendLine();
                     temp.Append(block);
                     if (spaceSplit) temp.Append(' ');
@@ -274,11 +394,11 @@ namespace LemonApp.Views.UserControls
         {
             void reset(LrcItem? item)
             {
-                if(item==null|| item.LrcTb == null) return;
+                if (item == null || item.LrcTb == null) return;
                 //item.LrcTb.Foreground = NormalLrcColor;
                 item.LrcTb.FontWeight = NormalTextFontWeight;
                 item.LrcTb.BeginAnimation(FontSizeProperty, null);
-                item.LrcTb.BeginAnimation(OpacityProperty, new DoubleAnimation(LyricOpacity,TimeSpan.FromSeconds(0.5)));
+                item.LrcTb.BeginAnimation(OpacityProperty, new DoubleAnimation(LyricOpacity, TimeSpan.FromSeconds(0.5)));
                 item.LrcTb.Effect = NomalTextEffect;
             }
             var temp = LrcItems.LastOrDefault(p => p.Time <= ms);
@@ -305,7 +425,7 @@ namespace LemonApp.Views.UserControls
             double targetFontsize = LyricFontSize + 10;
             var mainLine = _currentLrc.LrcMain!;
             mainLine.TextWrapping = TextWrapping.NoWrap;
-            mainLine.Text = InsertLineBreaks(mainLine,_currentLrc.Lyric, targetFontsize, ActualWidth - LyricMargin.Left - LyricMargin.Right - 1);
+            mainLine.Text = InsertLineBreaks(mainLine, _currentLrc.Lyric, targetFontsize, ActualWidth - LyricMargin.Left - LyricMargin.Right - 1);
             var da = new DoubleAnimation(targetFontsize, TimeSpan.FromSeconds(0.4))
             {
                 EasingFunction = new SineEase { EasingMode = EasingMode.EaseOut }

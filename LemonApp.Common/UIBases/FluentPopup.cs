@@ -50,7 +50,7 @@ public static class FluentTooltip
         if(sender is ToolTip tip&& tip.Background is SolidColorBrush cb)
         {
             var hwnd = tip.GetNativeWindowHwnd();
-            FluentPopupFunc.SetPopupWindowMaterial(hwnd, cb.Color,MaterialApis.WindowCorner.Round);
+            FluentPopupFunc.SetPopupWindowMaterial(hwnd, cb.Color,MaterialApis.WindowCorner.RoundSmall);
         }
     }
 }
