@@ -39,12 +39,21 @@ namespace LemonApp.Views.Windows
 
             DataContext = _vm = mainWindowViewModel;
             _vm.RequestNavigateToPage += Vm_RequireNavigateToPage;
+            _vm.RequestNotify += Vm_RequestNotify;
             _vm.SyncCurrentPlayingWithPlayListPage += Vm_SyncCurrentPlayingWithPlayListPage;
             _vm.CacheStarted = Vm_CacheBegin;
             _vm.CacheFinished = Vm_CacheFinished;
 
 
             Loaded += MainWindow_Loaded;
+        }
+
+        private async void Vm_RequestNotify(string obj)
+        {
+            NotificationBox.IsOpen = true;
+            NotificationTb.Text = obj;
+            await Task.Delay(4000);
+            NotificationBox.IsOpen = false;
         }
 
         private readonly IServiceProvider _serviceProvider;
@@ -257,6 +266,18 @@ namespace LemonApp.Views.Windows
             if (PlaylistLb.SelectedItem is { } music)
                 PlaylistLb.ScrollIntoView(music);
         }
+        
+        private void PlaylistSearchBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Enter)
+            {
+                if (!string.IsNullOrWhiteSpace(PlaylistSearchBox.Text))
+                {
+                    var m = _vm.SearchPlaylist(PlaylistSearchBox.Text);
+                    PlaylistLb.ScrollIntoView(m);
+                }
+            }
+        }
 
         private void MainPageMenuItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -298,7 +319,8 @@ namespace LemonApp.Views.Windows
                 }
             }
         }
-        private HttpClient _hc;
+        private readonly HttpClient _hc = new();
+
         private async void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(SearchBox.Text))
@@ -318,7 +340,6 @@ namespace LemonApp.Views.Windows
                 await Task.Yield();
                 SearchHintPopup.IsOpen = true;
             }
-            _hc ??= new();
             var hints = await SearchHintAPI.GetSearchHintAsync(SearchBox.Text, _hc);// Manage HttpClient
             (SearchHintPopup.Child as SearchHintView)!.Hints = hints;
         }

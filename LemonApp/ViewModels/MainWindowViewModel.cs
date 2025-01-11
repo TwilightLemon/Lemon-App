@@ -67,18 +67,19 @@ public partial class MainWindowViewModel : ObservableObject
 
         _uiResourceService.OnColorModeChanged += UIResourceService_OnColorModeChanged;
 
-        _appSettingsService.OnExiting += _appSettingsService_OnExiting;
+        _appSettingsService.OnExiting += AppSettingsService_OnExiting;
 
-        _mediaPlayerService.OnLoaded += _mediaPlayerService_OnLoaded;
-        _mediaPlayerService.OnPlay += _mediaPlayerService_OnPlay;
-        _mediaPlayerService.OnPaused += _mediaPlayerService_OnPaused;
-        _mediaPlayerService.OnNewPlaylistReceived += _mediaPlayerService_OnNewPlaylistReceived;
-        _mediaPlayerService.OnAddToPlayNext += _mediaPlayerService_OnAddToPlayNext;
-        _mediaPlayerService.OnAddListToPlayNext += _mediaPlayerService_OnAddListToPlayNext;
-        _mediaPlayerService.OnEnd += _mediaPlayerService_OnEnd;
+        _mediaPlayerService.OnLoaded += MediaPlayerService_OnLoaded;
+        _mediaPlayerService.OnPlay += MediaPlayerService_OnPlay;
+        _mediaPlayerService.OnPaused += MediaPlayerService_OnPaused;
+        _mediaPlayerService.OnNewPlaylistReceived += MediaPlayerService_OnNewPlaylistReceived;
+        _mediaPlayerService.OnAddToPlayNext += MediaPlayerService_OnAddToPlayNext;
+        _mediaPlayerService.OnAddListToPlayNext += MediaPlayerService_OnAddListToPlayNext;
+        _mediaPlayerService.OnEnd += MediaPlayerService_OnEnd;
         _mediaPlayerService.OnPlayNext += PlayNext;
         _mediaPlayerService.OnPlayLast += PlayLast;
         _mediaPlayerService.CacheProgress = CacheProgress;
+        _mediaPlayerService.FailedToLoadMusic += MediaPlayerService_FailedToLoadMusic;
 
         LyricView = lyricView;
         LyricView.OnNextLrcReached += LyricView_OnNextLrcReached;
@@ -92,13 +93,14 @@ public partial class MainWindowViewModel : ObservableObject
         userProfileService.OnAuthExpired += UserProfileService_OnAuthExpired;
 
         _timer = new();
-        _timer.Elapsed += _timer_Elapsed;
+        _timer.Elapsed += Timer_Elapsed;
         _timer.Interval = 1000;
 
         LoadMainMenus();
         LoadComponent();
         _playlistDataWrapper = playlistDataWrapper;
     }
+
 
 
     private async void UIResourceService_OnColorModeChanged()
@@ -141,14 +143,14 @@ public partial class MainWindowViewModel : ObservableObject
             {
                 CurrentPlaying = new()
                 {
-                    MusicName = "暂无播放",
+                    MusicName = "Welcome~",
                     SingerText = "Lemon App"
                 };
             }
         }
     }
 
-    private void _timer_Elapsed(object? sender, ElapsedEventArgs e)
+    private void Timer_Elapsed(object? sender, ElapsedEventArgs e)
     {
         var dur = _mediaPlayerService.Duration;
         CurrentPlayingDuration = dur.TotalMilliseconds;
@@ -244,7 +246,12 @@ public partial class MainWindowViewModel : ObservableObject
         }
     }
 
-    private void _mediaPlayerService_OnEnd()
+    private void MediaPlayerService_FailedToLoadMusic(Music m)
+    {
+        _mainNavigationService.RequstNavigation(PageType.Notification, $"Failed to load music: {m.MusicName} - {m.SingerText}");
+    }
+
+    private void MediaPlayerService_OnEnd()
     {
         if (CircleMode == PlayingPreference.CircleMode.Single)
         {
@@ -253,7 +260,7 @@ public partial class MainWindowViewModel : ObservableObject
         }else PlayNext();
     }
 
-    private void _appSettingsService_OnExiting()
+    private void AppSettingsService_OnExiting()
     {
         _currentPlayingMgr!.Data ??= new();
         _currentPlayingMgr!.Data.Music = CurrentPlaying;
@@ -272,7 +279,7 @@ public partial class MainWindowViewModel : ObservableObject
         _playlistMgr!.Data.Playlist = temp;
     }
 
-    private void _mediaPlayerService_OnAddToPlayNext(Music obj)
+    private void MediaPlayerService_OnAddToPlayNext(Music obj)
     {
         int index = 0;
         if (CurrentPlaying != null)
@@ -282,7 +289,7 @@ public partial class MainWindowViewModel : ObservableObject
         }
         Playlist.Insert(index + 1, obj);
     }
-    private void _mediaPlayerService_OnAddListToPlayNext(IEnumerable<Music> obj)
+    private void MediaPlayerService_OnAddListToPlayNext(IList<Music> obj)
     {
         int index = 0;
         if (CurrentPlaying != null)
@@ -295,15 +302,32 @@ public partial class MainWindowViewModel : ObservableObject
             Playlist.Insert(index + 1, item);
             index++;
         }
+        _mainNavigationService.RequstNavigation(PageType.Notification, $"{obj.Count} songs have been added to the playlist.");
     }
 
-    private void _mediaPlayerService_OnNewPlaylistReceived(IEnumerable<Music> obj)
+    private void MediaPlayerService_OnNewPlaylistReceived(IEnumerable<Music> obj)
     {
         Playlist.Clear();
         foreach (var item in obj)
         {
             Playlist.Add(item);
         }
+    }
+
+    private WeakReference<Music[]?> _playlistSearchResult = new(null);
+    private int _playlistSearchIndex = 0;
+    private string? _playlistSearchKeyword;
+    public Music SearchPlaylist(string keyword)
+    {
+        if (keyword != _playlistSearchKeyword || _playlistSearchResult == null || !_playlistSearchResult.TryGetTarget(out var result))
+        {
+            _playlistSearchKeyword = keyword;
+            result = [.. Playlist.Where(m => TextHelper.FuzzySearch(m, keyword))];
+            _playlistSearchResult = new(result);
+            _playlistSearchIndex = 0;
+        }
+        _playlistSearchIndex= (_playlistSearchIndex + 1) % result.Length;
+        return result[_playlistSearchIndex];
     }
 
     [RelayCommand]
@@ -321,19 +345,19 @@ public partial class MainWindowViewModel : ObservableObject
     {
         CacheDownloadProgress = (double)downloaded / total;
     }
-    private void _mediaPlayerService_OnPaused(Music obj)
+    private void MediaPlayerService_OnPaused(Music obj)
     {
         IsPlaying = false;
         _timer?.Stop();
     }
 
-    private void _mediaPlayerService_OnPlay(Music m)
+    private void MediaPlayerService_OnPlay(Music m)
     {
         IsPlaying = true;
         _timer?.Start();
     }
     public event Action<string>? SyncCurrentPlayingWithPlayListPage;
-    private void _mediaPlayerService_OnLoaded(Music m)
+    private void MediaPlayerService_OnLoaded(Music m)
     {
         App.Current.Dispatcher.Invoke(async () =>
         {
@@ -359,7 +383,7 @@ public partial class MainWindowViewModel : ObservableObject
     #region userprofile
     private void UserProfileService_OnAuthExpired()
     {
-        if (ExMessageBox.Show("登录已失效，重新登录？"))
+        if (ExMessageBox.Show("Login token has expired. Log in again."))
         {
             UserMenuViewModel.Menu_LoginQQ();
         }
@@ -441,6 +465,7 @@ public partial class MainWindowViewModel : ObservableObject
     private bool _isLoading = false;
 
     public event Action<Page>? RequestNavigateToPage;
+    public event Action<string>? RequestNotify;
 
     private void MainNavigationService_OnNavigatingRequsted(PageType type, object? arg)
     {
@@ -473,6 +498,10 @@ public partial class MainWindowViewModel : ObservableObject
                 {
                     NavigateToSearchPage(pro.Name);
                 }
+                break;
+            case PageType.Notification:
+                if(arg is string { } str)
+                RequestNotify?.Invoke(str);
                 break;
             default:
                 break;
@@ -664,14 +693,12 @@ public partial class MainWindowViewModel : ObservableObject
 
     async partial void OnCurrentPlayingChanged(Music? value)
     {
-        //只负责更新UI的ViewModel
         if (value == null||string.IsNullOrEmpty(value.MusicID)) return;
 
         await UpdateCover();
 
         CurrentPlayingPosition = 0;
         CurrentPlayingPositionText = "00:00";
-        //CurrentPlayingVolume = _mediaPlayerService.Volume;
 
         PlaylistChoosen = value;
     }

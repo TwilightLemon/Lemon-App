@@ -8,8 +8,8 @@ public partial class NotifyIconMenuViewModel : ObservableObject
 {
     public record SimpleActionMenu(string Name, Action? Action);
     public ObservableCollection<SimpleActionMenu> Menus { get; set; } = [
-        new SimpleActionMenu("显示",Menu_Show),
-        new SimpleActionMenu("退出",Menu_Exit)
+        new SimpleActionMenu("Show",Menu_Show),
+        new SimpleActionMenu("Exit",Menu_Exit)
         ];
     public Action? RequestCloseMenu;
     [ObservableProperty]

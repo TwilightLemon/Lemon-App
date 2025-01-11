@@ -29,7 +29,7 @@ public partial class UserMenuViewModel:ObservableObject
         {
             IsLoginQQ = Visibility.Visible;
             //只有登录到QQ音乐之后才能绑定网易云
-            Menus.Insert(1, new ActionMenu("登录到网易云音乐",(Geometry)App.Current.FindResource("NeteaseIcon"), Menu_LoginNetease));
+            Menus.Insert(1, new ActionMenu("Log in by Netease Music",(Geometry)App.Current.FindResource("NeteaseIcon"), Menu_LoginNetease));
             //载入profile info
             var a = async () =>
             {
@@ -78,10 +78,10 @@ public partial class UserMenuViewModel:ObservableObject
     }
 
     public ObservableCollection<ActionMenu> Menus { get; set; } = [
-        new ActionMenu("登录到QQ音乐",(Geometry)App.Current.FindResource("QQMusicIcon"),Menu_LoginQQ),
-        new ActionMenu("设置",(Geometry)App.Current.FindResource("Icon_Settings"),Menu_GotoSettingsPage),
-        new ActionMenu("主题",(Geometry)App.Current.FindResource("Menu_Theme"),Menu_Theme),
-        new ActionMenu("退出",null,Menu_Exit)
+        new ActionMenu("Log in by QQ Music",(Geometry)App.Current.FindResource("QQMusicIcon"),Menu_LoginQQ),
+        new ActionMenu("Settings",(Geometry)App.Current.FindResource("Icon_Settings"),Menu_GotoSettingsPage),
+        new ActionMenu("View Theme Config",(Geometry)App.Current.FindResource("Menu_Theme"),Menu_Theme),
+        new ActionMenu("Exit",null,Menu_Exit)
     ];
     public static void Menu_LoginQQ()
     {
@@ -98,7 +98,7 @@ public partial class UserMenuViewModel:ObservableObject
     {
         var settings = App.Host!.Services.GetRequiredService<AppSettingsService>();
         var mgr = settings.GetConfigMgr<UserProfile>()!;
-        mgr.Data!.NeteaseUserAuth = new NeteaseUserAuth() { Id = "100101010" };
+        mgr.Data!.NeteaseUserAuth = new NeteaseUserAuth() { Id = "100101010" };//for test onlys
         await mgr.SaveAsync();
     }
     static void Menu_Theme()

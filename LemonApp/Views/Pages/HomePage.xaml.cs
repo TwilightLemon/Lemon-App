@@ -19,7 +19,7 @@ namespace LemonApp.Views.Pages
 
         private void Grid_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            new ExMessageBox().Show();
+            _mainNavigationService.RequstNavigation(PageType.Notification,"Powered by TwlmGatito. Meowwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww!");
         }
     }
 }

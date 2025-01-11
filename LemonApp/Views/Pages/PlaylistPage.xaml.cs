@@ -107,7 +107,8 @@ namespace LemonApp.Views.Pages
             foreach (var m in listBox.SelectedItems)
                 list.Add((Music)m);
             _vm?.AddToPlayNextCommand.Execute(list);
-            listBox.SelectedItems.Clear();
+            if (listBox.SelectionMode == SelectionMode.Multiple)
+                listBox.SelectedItems.Clear();
         }
 
         public PlaylistPageViewModel? ViewModel

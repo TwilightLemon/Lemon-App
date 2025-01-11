@@ -80,7 +80,7 @@
                 <ws:Button x:Name="PlayLastBtn"
                            Width="48"
                            Height="48"
-                           ToolTip="上一曲"
+                           ToolTip="Play the last one"
                            Command="{Binding PlayLastCommand}"
                            HorizontalAlignment="Left"
                            Style="{StaticResource SimpleIconButtonStyleForWs}">
@@ -92,7 +92,7 @@
                 <ws:Button x:Name="PlayBtn"
                            Width="54"
                            Height="54"
-                           ToolTip="播放"
+                           ToolTip="Play or Pause"
                            Command="{Binding PlayOrPauseCommand}"
                            Style="{StaticResource SimpleIconButtonStyleForWs}">
                     <ws:ConditionalControl Condition="{Binding IsPlaying}">
@@ -111,7 +111,7 @@
                 <ws:Button x:Name="PlayNextBtn"
                            Width="48"
                            Height="48"
-                           ToolTip="下一曲"
+                           ToolTip="Play the next one"
                            Command="{Binding PlayNextCommand}"
                            HorizontalAlignment="Right"
                            Style="{StaticResource SimpleIconButtonStyleForWs}">
@@ -125,7 +125,7 @@
             <ws:Button x:Name="CloseBtn"
                        Content="&#xE8BB;"
                        FontFamily="Segoe Fluent Icons"
-                       ToolTip="关闭桌面歌词"
+                       ToolTip="Close desktop lyric viewer"
                        Click="CloseBtn_Click"
                        FontSize="10"
                        HorizontalAlignment="Right"

@@ -277,7 +277,7 @@
                                     Foreground="{DynamicResource ForeColor}"
                                     Height="32"
                                     Padding="6 7 0 0"
-                                    Placeholder="搜索"
+                                    Placeholder="Search"
                                     CornerRadius="6"
                                     TextChanged="SearchBox_TextChanged"
                                     PreviewKeyDown="SearchBox_PreviewKeyDown" />
@@ -296,7 +296,7 @@
                                Cursor="Hand"
                                CornerRadius="18"
                                BorderThickness="0"
-                               ToolTip="菜单"
+                               ToolTip="Main Menu"
                                Background="{DynamicResource MaskColor}"
                                HoverBackground="{DynamicResource FocusMaskColor}"
                                PressedBackground="{DynamicResource FocusMaskColor}"
@@ -364,7 +364,7 @@
                                                        FontSize="14"
                                                        Opacity="0.8"
                                                        FontWeight="Bold"
-                                                       Margin="12 8 8 0" />
+                                                       Margin="12 8 8 2" />
                                         </DataTemplate>
                                     </GroupStyle.HeaderTemplate>
                                 </GroupStyle>
@@ -377,7 +377,7 @@
                                                Background="Transparent">
                                         <ws:StackPanel Orientation="Horizontal"
                                                        VerticalAlignment="Center"
-                                                       Spacing="8">
+                                                       Spacing="12">
                                             <Border x:Name="FocusedIcon"
                                                     Width="3"
                                                     Margin="-18 0 0 0"
@@ -557,6 +557,24 @@
                         <RowDefinition Height="2*" />
                         <RowDefinition Height="5*" />
                     </Grid.RowDefinitions>
+                    <base:FluentPopup x:Name="NotificationBox"
+                                      StaysOpen="True"
+                                      FollowWindowMoving="True"
+                                      ExtPopupAnimation="SlideUp"
+                                      Placement="Top"
+                                      Background="{DynamicResource PopupWndBgColor}"
+                                      VerticalOffset="-12"
+                                      HorizontalOffset="12">
+                        <Border HorizontalAlignment="Center"
+                                MaxWidth="320"
+                                VerticalAlignment="Bottom"
+                                Padding="12"
+                                d:Visibility="Visible">
+                            <TextBlock x:Name="NotificationTb"
+                                       TextWrapping="Wrap"
+                                       d:Text="xxxxxxxxxxxxxxx" />
+                        </Border>
+                    </base:FluentPopup>
                     <Grid>
                         <TextBlock x:Name="PlayingTimeTb"
                                    d:Text="00:00"
@@ -604,7 +622,7 @@
                                    Margin="6,4,0,4"
                                    Height="70"
                                    Cursor="Hand"
-                                   ToolTip="歌词页"
+                                   ToolTip="Lyric Page"
                                    HorizontalAlignment="Left"
                                    Background="Transparent"
                                    HoverBackground="{DynamicResource MaskColor}"
@@ -629,7 +647,7 @@
                                            VerticalAlignment="Center"
                                            LineHeight="24"
                                            HorizontalAlignment="Left">
-                                    <Run Text="{Binding CurrentPlaying.MusicName, TargetNullValue='暂无播放'}"
+                                    <Run Text="{Binding CurrentPlaying.MusicName, TargetNullValue='Welcome~'}"
                                          d:Text="Dancing With Our Hands Tied"
                                          FontWeight="Bold"
                                          FontSize="16" />
@@ -649,7 +667,7 @@
                             <ws:Button x:Name="PlayBtn"
                                        Width="45"
                                        Height="45"
-                                       ToolTip="播放"
+                                       ToolTip="Play or Pause"
                                        Command="{Binding PlayPauseCommand}"
                                        Style="{StaticResource SimpleIconButtonStyleForWs}">
                                 <ws:ConditionalControl Condition="{Binding IsPlaying}">
@@ -669,7 +687,7 @@
                                        Width="32"
                                        Height="32"
                                        Margin="48 0 0 0"
-                                       ToolTip="上一曲"
+                                       ToolTip="Play the last one"
                                        Command="{Binding PlayLastCommand}"
                                        HorizontalAlignment="Left"
                                        Style="{StaticResource SimpleIconButtonStyleForWs}">
@@ -682,7 +700,7 @@
                                        Width="32"
                                        Height="32"
                                        Margin="0 0 48 0"
-                                       ToolTip="下一曲"
+                                       ToolTip="Play the next one"
                                        Command="{Binding PlayNextCommand}"
                                        HorizontalAlignment="Right"
                                        Style="{StaticResource SimpleIconButtonStyleForWs}">
@@ -694,7 +712,7 @@
                             <ws:Button x:Name="CircleModeBtn"
                                        Width="32"
                                        Height="32"
-                                       ToolTip="播放模式"
+                                       ToolTip="Playback Mode"
                                        Command="{Binding ChangeCircleModeCommand}"
                                        HorizontalAlignment="Right"
                                        Style="{StaticResource SimpleIconButtonStyleForWs}">
@@ -708,7 +726,7 @@
                                           Width="32"
                                           Height="32"
                                           IsChecked="{Binding IsShowDesktopLyric}"
-                                          ToolTip="桌面歌词"
+                                          ToolTip="Desktop Lyric Viewer"
                                           HorizontalAlignment="Left"
                                           Tag="{DynamicResource OpenDesktopLyric}"
                                           Style="{StaticResource IconToggleButton}">
@@ -725,7 +743,7 @@
                             <ws:Button x:Name="FavoriteBtn"
                                        Width="32"
                                        Height="32"
-                                       ToolTip="收藏"
+                                       ToolTip="Add to my favorite"
                                        Style="{StaticResource SimpleIconButtonStyleForWs}">
                                 <Path Data="{DynamicResource HeartIcon}"
                                       Height="16"
@@ -735,7 +753,7 @@
                             <ws:Button x:Name="MoreMenuBtn"
                                        Width="32"
                                        Height="32"
-                                       ToolTip="更多"
+                                       ToolTip="More"
                                        Style="{StaticResource SimpleIconButtonStyleForWs}">
                                 <Path Data="{DynamicResource MoreMenu}"
                                       Height="16"
@@ -764,7 +782,7 @@
                             <ws:Button x:Name="AudioBtn"
                                        Width="32"
                                        Height="32"
-                                       ToolTip="音量"
+                                       ToolTip="Volume"
                                        Click="AudioBtn_Click"
                                        Style="{StaticResource SimpleIconButtonStyleForWs}">
                                 <Path Data="{DynamicResource AudioIcon}"
@@ -775,7 +793,7 @@
                             <ws:Button x:Name="OpenPlayListBtn"
                                        Width="32"
                                        Height="32"
-                                       ToolTip="播放列表"
+                                       ToolTip="Playlist"
                                        Style="{StaticResource SimpleIconButtonStyleForWs}">
                                 <Path Data="{DynamicResource OpenPlaylist}"
                                       Height="14"
@@ -787,24 +805,31 @@
                 </Grid>
             </Border>
         </Grid>
-        <Grid x:Name="PlayListPage"
-              Visibility="Collapsed">
+        <Grid x:Name="PlayListPage" Visibility="Collapsed">
             <Border x:Name="PlayListPageMask"
                     Background="#7F000000" />
             <Grid x:Name="PlayListBar"
                   Width="320"
                   HorizontalAlignment="Right"
                   Background="{DynamicResource BackgroundColor}">
-                <TextBlock Margin="18"
+                <TextBlock Margin="18 18 18 0"
                            VerticalAlignment="Top">
-                    <Run Text="播放列表"
+                    <Run Text="Playlist"
                          FontSize="22" />
                     <LineBreak />
-                    一共<Run Text="{Binding Playlist.Count,Mode=OneWay}"
-                           d:Text="0" />首
+                    <Run Text="{Binding Playlist.Count,Mode=OneWay}"
+                         d:Text="0" /> Songs
                 </TextBlock>
+                <ws:TextBox x:Name="PlaylistSearchBox"
+                            Height="30"
+                            Margin="12 72 12 0"
+                            Padding="8 6"
+                            Placeholder="Search"
+                            VerticalAlignment="Top"
+                            PreviewKeyDown="PlaylistSearchBox_PreviewKeyDown"
+                            Style="{StaticResource SimpleTextBoxStyleForWs}" />
                 <ws:ListBox x:Name="PlaylistLb"
-                            Margin="0 80 0 0"
+                            Margin="0 108 0 0"
                             Style="{StaticResource SimpleListBoxStyle}"
                             ItemsSource="{Binding Playlist,Mode=OneWay}"
                             SelectedItem="{Binding PlaylistChoosen}"
@@ -820,7 +845,7 @@
                                         HorizontalAlignment="Left"
                                         Background="{DynamicResource HighlightThemeColor}"
                                         CornerRadius="1.5"
-                                        Height="28"
+                                        Height="24"
                                         Visibility="Hidden"
                                         d:Visibility="Visible" />
                                 <TextBlock  VerticalAlignment="Center"
@@ -828,6 +853,8 @@
                                     <Run Text="{Binding MusicName}" />
                                     <LineBreak />
                                     <Run Text="{Binding SingerText}" />
+                                    <Run Text="•"/>
+                                    <Run Text="{Binding Album.Name}" />
                                 </TextBlock>
                             </Grid>
                             <DataTemplate.Triggers>
@@ -839,7 +866,7 @@
                                                 <DoubleAnimation Storyboard.TargetName="FocusedIcon"
                                                                  Storyboard.TargetProperty="Height"
                                                                  From="0"
-                                                                 To="16"
+                                                                 To="24"
                                                                  Duration="0:0:0.3">
                                                     <DoubleAnimation.EasingFunction>
                                                         <CubicEase EasingMode="EaseOut" />

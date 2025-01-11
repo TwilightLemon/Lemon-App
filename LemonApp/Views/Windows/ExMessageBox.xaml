@@ -41,12 +41,12 @@
                           HorizontalSpacing="24"
                           Margin="0 0 12 0">
                 <ws:Button x:Name="ConfirmBtn"
-                           Content="确认"
+                           Content="Confirm"
                            Click="ConfirmBtn_Click"
                            Style="{StaticResource AccentButtonStyleForWs}">
                 </ws:Button>
                 <ws:Button x:Name="CancelBtn"
-                           Content="取消"
+                           Content="Discard"
                            Click="CancelBtn_Click"
                            Style="{StaticResource SimpleButtonStyleForWs}"
                            Grid.Column="1">

@@ -16,7 +16,7 @@ internal class MainMenuSourceConverter : IValueConverter
         {
             return menus.Where(menus => menus.Type == Type);
         }
-        return null;
+        return Binding.DoNothing;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -27,7 +27,7 @@ namespace LemonApp.Services
     {
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            //注册Hyperlink的跳转事件
+            //register handler for Hyperlink in Settings->About.
             EventManager.RegisterClassHandler(typeof(Hyperlink), Hyperlink.RequestNavigateEvent, new RequestNavigateEventHandler((sender, e) =>
             {
                 System.Diagnostics.Process.Start("explorer.exe", e.Uri.AbsoluteUri);

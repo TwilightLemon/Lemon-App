@@ -12,7 +12,7 @@ using System.Windows.Media;
 namespace LemonApp.Components;
 
 /// <summary>
-/// Basic Components for MainWindow, including TaskBar, NotifyIcon, Singleton Wakeup, Hot Keys, etc.
+/// Basic Components for MainWindow, including TaskBar, NotifyIcon, Singleton Wakeup, Hot Keys(TODO), etc.
 /// </summary>
 public class WindowBasicComponent(IServiceProvider serviceProvider,MediaPlayerService mediaPlayerService):IDisposable
 {

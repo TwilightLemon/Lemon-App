@@ -147,7 +147,7 @@ public partial class PlaylistPageViewModel(
     }
 
     [RelayCommand]
-    private void AddToPlayNext(IEnumerable<Music> list)
+    private void AddToPlayNext(IList<Music> list)
     {
         _mediaPlayerService.AddToPlayNext(list);
     }

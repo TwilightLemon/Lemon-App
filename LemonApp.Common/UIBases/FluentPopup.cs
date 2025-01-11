@@ -69,7 +69,51 @@ public class FluentPopup:Popup
         Opened += FluentPopup_Opened;
         Closed += FluentPopup_Closed;
     }
+    #region
 
+
+    public bool FollowWindowMoving
+    {
+        get { return (bool)GetValue(FollowWindowMovingProperty); }
+        set { SetValue(FollowWindowMovingProperty, value); }
+    }
+
+    // Using a DependencyProperty as the backing store for FollowWindowMoving.  This enables animation, styling, binding, etc...
+    public static readonly DependencyProperty FollowWindowMovingProperty =
+        DependencyProperty.Register("FollowWindowMoving", typeof(bool), typeof(FluentPopup), new PropertyMetadata(false, OnFollowWindowMovingChanged));
+    private static void OnFollowWindowMovingChanged(DependencyObject o,DependencyPropertyChangedEventArgs e)
+    {
+        if(o is FluentPopup popup&& Window.GetWindow(popup) is { } window)
+        {
+            if(e.NewValue is true)
+            {
+                window.LocationChanged += popup.AttachedWindow_LocationChanged;
+                window.SizeChanged += popup.AttachedWindow_SizeChanged;
+            }
+        }
+    }
+
+    private void AttachedWindow_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        FollowMove();
+    }
+
+    private void AttachedWindow_LocationChanged(object? sender, EventArgs e)
+    {
+        FollowMove();
+    }
+    private void FollowMove()
+    {
+        if (IsOpen)
+        {
+            var mi = typeof(Popup).GetMethod("UpdatePosition", BindingFlags.NonPublic | BindingFlags.Instance);
+            mi?.Invoke(this, null);
+        }
+    }
+
+
+
+    #endregion
     #region 启动动画控制
     private void FluentPopup_Closed(object? sender, EventArgs e)
     {

@@ -98,8 +98,8 @@ namespace LemonApp.Views.UserControls
         /// 高亮歌词效果
         /// </summary>
         public Effect? Hightlighter;
-        public Effect? NomalTextEffect = new BlurEffect() { Radius = 8 };
-        public Effect? AroundTextEffect = new BlurEffect() { Radius = 5 };
+        public Effect? NomalTextEffect = null;// new BlurEffect() { Radius = 8 };
+        public Effect? AroundTextEffect = null;//new BlurEffect() { Radius = 5 };
         /// <summary>
         /// 歌词的文本对齐方式
         /// </summary>
@@ -221,8 +221,10 @@ namespace LemonApp.Views.UserControls
             }
         }
 
+        private string? _handlingMusic = null;
         public async Task LoadFromMusic(Music m)
         {
+            Reset();
             var path = CacheManager.GetCachePath(CacheManager.CacheType.Lyric);
             path = System.IO.Path.Combine(path, m.MusicID + ".json");
             if (await Settings.LoadFromJsonAsync<LocalLyricData>(path, false) is { } local)
@@ -234,9 +236,11 @@ namespace LemonApp.Views.UserControls
                 if (_hc == null) return;
                 if (m.Source == Platform.qq)
                 {
+                    _handlingMusic = m.MusicID;
                     var ly = await GatitoGetLyric.GetTencLyricAsync(_hc, m.MusicID);
                     await Settings.SaveAsJsonAsync(ly, path, false);
-                    LoadLrc(ly);
+                    if(_handlingMusic == m.MusicID)//防止异步加载时已经切换歌曲
+                        LoadLrc(ly);
                     /*
                     var data=await TencGetLyric.GetLyricDataAsync(_hc,_auth, m.MusicID);
                     if(data != null&&data.Lyric!=null)
@@ -270,16 +274,19 @@ namespace LemonApp.Views.UserControls
                 }
             }
         }
-        private void LoadLrc(LocalLyricData data)
+        private void Reset()
         {
             scrollviewer.BeginAnimation(ScrollViewerUtils.VerticalOffsetProperty, null);
             scrollviewer.ScrollToTop();
-            IsTranslationAvailable = data.HasTrans;
-            IsRomajiAvailable = data.HasRomaji;
-
             LyricPanel.Children.Clear();
             LrcItems.Clear();
             GC.Collect();
+        }
+        private void LoadLrc(LocalLyricData data)
+        {
+            IsTranslationAvailable = data.HasTrans;
+            IsRomajiAvailable = data.HasRomaji;
+
             //占位
             LyricPanel.Children.Add(new Border() { Height = 200, Background = Brushes.Transparent });
             foreach (var line in data.LyricData)

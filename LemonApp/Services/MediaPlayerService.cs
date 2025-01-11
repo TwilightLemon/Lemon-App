@@ -29,10 +29,10 @@ public class MediaPlayerService(UserProfileService userProfileService,
 
     public Music? CurrentMusic { get; private set; }
     public MusicQuality CurrentQuality { get; private set; }
-    public event Action<Music>? OnLoaded,OnPlay,OnPaused, OnAddToPlayNext;
-    public event Action<IEnumerable<Music>>? OnAddListToPlayNext;
+    public event Action<Music>? OnLoaded,OnPlay,OnPaused, OnAddToPlayNext, FailedToLoadMusic;
+    public event Action<IList<Music>>? OnAddListToPlayNext;
     public event Action? OnEnd, OnPlayNext, OnPlayLast;
-    public event Action<IEnumerable<Music>>? OnNewPlaylistReceived;
+    public event Action<IList<Music>>? OnNewPlaylistReceived;
     public Action<long, long>? CacheProgress;
     public Action? CacheFinished,CacheStarted;
 
@@ -93,6 +93,7 @@ public class MediaPlayerService(UserProfileService userProfileService,
 
         Pause();
         CurrentMusic = music;
+        bool loadSucceeded= false;
 
         //先检索本地缓存 按照音质高到低依次检索
         bool playLocalFile = false;
@@ -106,6 +107,7 @@ public class MediaPlayerService(UserProfileService userProfileService,
                 _player.Load(cacheFile);
                 CurrentQuality = matched;
                 playLocalFile = true;
+                loadSucceeded = true;
                 break;
             }
             if (matched == MusicQuality.Std)
@@ -120,12 +122,19 @@ public class MediaPlayerService(UserProfileService userProfileService,
         if(!playLocalFile){
             var url = await audioGetter.GetUrlAsync(music, prefer);
             if (url is null || url.Url is null)
-                return false;
-            var quality = AudioGetter.QualityMatcher(url.Quality);
-            var cacheFile = Path.Combine(CacheManager.GetCachePath(CacheManager.CacheType.Music), music.MusicID + quality[0]);
-            _player.LoadUrl(cacheFile, url.Url, CacheProgress, CacheFinished);
-            CurrentQuality = url.Quality;
-            CacheStarted?.Invoke();
+            {
+                loadSucceeded = false;
+                FailedToLoadMusic?.Invoke(music);
+            }
+            else
+            {
+                var quality = AudioGetter.QualityMatcher(url.Quality);
+                var cacheFile = Path.Combine(CacheManager.GetCachePath(CacheManager.CacheType.Music), music.MusicID + quality[0]);
+                _player.LoadUrl(cacheFile, url.Url, CacheProgress, CacheFinished);
+                CurrentQuality = url.Quality;
+                loadSucceeded = true;
+                CacheStarted?.Invoke();
+            }
         }
 
         _smtc.SetMediaStatus(SMTCMediaStatus.Playing);
@@ -135,7 +144,7 @@ public class MediaPlayerService(UserProfileService userProfileService,
                         .Update();
 
         OnLoaded?.Invoke(music);
-        return true;
+        return loadSucceeded;
     }
     /// <summary>
     /// volume: 0~1
@@ -186,7 +195,7 @@ public class MediaPlayerService(UserProfileService userProfileService,
 
     public bool IsPlaying=> _isPlaying;
 
-    public void ReplacePlayList(IEnumerable<Music> list)
+    public void ReplacePlayList(IList<Music> list)
     {
         if(list!=null&&list.Any())
         {
@@ -197,7 +206,7 @@ public class MediaPlayerService(UserProfileService userProfileService,
     {
         OnAddToPlayNext?.Invoke(music);
     }
-    public void AddToPlayNext(IEnumerable<Music> list)
+    public void AddToPlayNext(IList<Music> list)
     {
         OnAddListToPlayNext?.Invoke(list);
     }
