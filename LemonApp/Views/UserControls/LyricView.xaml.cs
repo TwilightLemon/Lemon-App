@@ -1,6 +1,5 @@
 ﻿using EleCho.WpfSuite;
 using LemonApp.Common.Funcs;
-using LemonApp.MusicLib.Abstraction.UserAuth;
 using LemonApp.MusicLib.Lyric;
 using LemonApp.Services;
 using System;
@@ -20,14 +19,15 @@ using LemonApp.MusicLib.Abstraction.Entities;
 using LemonApp.Common.Configs;
 using CommunityToolkit.Mvvm.Input;
 
+//TODO: 提供效果选择
 namespace LemonApp.Views.UserControls
 {
-    internal class LrcItem
+    internal class LrcItem(TextBlock container, TextBlock main)
     {
         public double Time { get; set; }
         public string Lyric { get; set; } = string.Empty;
-        public TextBlock? LrcTb { get; set; }
-        public TextBlock? LrcMain { get; set; }
+        public TextBlock LrcTb { get; set; }=container;
+        public TextBlock LrcMain { get; set; } = main;
         public TextBlock? LrcTrans { get; set; }
         public TextBlock? Romaji { get; set; }
     }
@@ -98,8 +98,8 @@ namespace LemonApp.Views.UserControls
         /// 高亮歌词效果
         /// </summary>
         public Effect? Hightlighter;
-        public Effect? NomalTextEffect = null;// new BlurEffect() { Radius = 8 };
-        public Effect? AroundTextEffect = null;//new BlurEffect() { Radius = 5 };
+        public Effect? NomalTextEffect = new BlurEffect() { Radius = 8 };
+        public Effect? AroundTextEffect = new BlurEffect() { Radius = 5 };
         /// <summary>
         /// 歌词的文本对齐方式
         /// </summary>
@@ -225,6 +225,7 @@ namespace LemonApp.Views.UserControls
         public async Task LoadFromMusic(Music m)
         {
             Reset();
+            _handlingMusic = m.MusicID;
             var path = CacheManager.GetCachePath(CacheManager.CacheType.Lyric);
             path = System.IO.Path.Combine(path, m.MusicID + ".json");
             if (await Settings.LoadFromJsonAsync<LocalLyricData>(path, false) is { } local)
@@ -236,7 +237,6 @@ namespace LemonApp.Views.UserControls
                 if (_hc == null) return;
                 if (m.Source == Platform.qq)
                 {
-                    _handlingMusic = m.MusicID;
                     var ly = await GatitoGetLyric.GetTencLyricAsync(_hc, m.MusicID);
                     await Settings.SaveAsJsonAsync(ly, path, false);
                     if(_handlingMusic == m.MusicID)//防止异步加载时已经切换歌曲
@@ -291,8 +291,6 @@ namespace LemonApp.Views.UserControls
             LyricPanel.Children.Add(new Border() { Height = 200, Background = Brushes.Transparent });
             foreach (var line in data.LyricData)
             {
-                LrcItem item = new();
-                item.Time = line.Time;
                 //Container
                 TextBlock tb = new()
                 {
@@ -306,11 +304,11 @@ namespace LemonApp.Views.UserControls
                     Effect = NomalTextEffect,
                     FontWeight = NormalTextFontWeight
                 };
-                item.LrcTb = tb;
                 //Romaji
+                TextBlock? romaji = null;
                 if (line.Romaji != null)
                 {
-                    TextBlock romaji = new()
+                    romaji = new()
                     {
                         Text = line.Romaji,
                         Opacity = 0.8,
@@ -321,7 +319,6 @@ namespace LemonApp.Views.UserControls
                         TextTrimming = TextTrimming.None
                     };
                     if (!IsShowRomaji) romaji.Visibility = Visibility.Collapsed;
-                    item.Romaji = romaji;
                     tb.Inlines.Add(romaji);
                     tb.Inlines.Add(new LineBreak());
                 }
@@ -332,6 +329,9 @@ namespace LemonApp.Views.UserControls
                     TextWrapping = TextWrapping.Wrap,
                     TextTrimming = TextTrimming.None
                 };
+                LrcItem item = new(tb,lyric);
+                item.Romaji = romaji;
+                item.Time = line.Time;
                 item.LrcMain = lyric;
                 item.Lyric = line.Lyric;
                 tb.Inlines.Add(lyric);
@@ -402,11 +402,13 @@ namespace LemonApp.Views.UserControls
             void reset(LrcItem? item)
             {
                 if (item == null || item.LrcTb == null) return;
-                //item.LrcTb.Foreground = NormalLrcColor;
                 item.LrcTb.FontWeight = NormalTextFontWeight;
-                item.LrcTb.BeginAnimation(FontSizeProperty, null);
+                var da = new DoubleAnimation(LyricFontSize, TimeSpan.FromSeconds(0.3));
+                da.EasingFunction = new CubicEase();
+                item.LrcTb.BeginAnimation(FontSizeProperty, da);
                 item.LrcTb.BeginAnimation(OpacityProperty, new DoubleAnimation(LyricOpacity, TimeSpan.FromSeconds(0.5)));
                 item.LrcTb.Effect = NomalTextEffect;
+                //item.LrcMain.Text = item.Lyric;
             }
             var temp = LrcItems.LastOrDefault(p => p.Time <= ms);
             if (temp == null || temp == _currentLrc) return;

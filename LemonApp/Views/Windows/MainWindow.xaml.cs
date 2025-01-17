@@ -17,6 +17,7 @@ using System.Windows.Interop;
 using LemonApp.Views.UserControls;
 using LemonApp.MusicLib.Search;
 using System.Net.Http;
+using System.Diagnostics;
 
 namespace LemonApp.Views.Windows
 {
@@ -186,24 +187,36 @@ namespace LemonApp.Views.Windows
         private Storyboard? _openLyricPageAni, _closeLyricPageAni;
 
         /// <summary>
-        /// 打开/关闭歌词页
+        /// 打开歌词页
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void MusicControl_Info_Click(object sender, RoutedEventArgs e)
         {
             _openLyricPageAni ??= (Storyboard)Resources["OpenLyricPageAni"];
-            _closeLyricPageAni ??= (Storyboard)Resources["CloseLyricPageAni"];
-
-            if (_vm.IsLyricPageOpen)
+            double offset = this.ActualHeight - MusicControl.ActualHeight;
+            if (_openLyricPageAni.Children[0]is ThicknessAnimationUsingKeyFrames frames && frames.KeyFrames[0] is EasingThicknessKeyFrame frame)
             {
-                _closeLyricPageAni.Begin();
-                _vm.IsLyricPageOpen = false;
+                frame.Value = new Thickness(0, offset, 0, -offset);
             }
-            else
+            if (!_vm.IsLyricPageOpen)
             {
                 _openLyricPageAni.Begin();
                 _vm.IsLyricPageOpen = true;
+            }
+        }
+        private void LyricPage_BackBtn_Click(object sender, RoutedEventArgs e)
+        {
+            _closeLyricPageAni ??= (Storyboard)Resources["CloseLyricPageAni"];
+            double offset = this.ActualHeight - MusicControl.ActualHeight;
+            if (_closeLyricPageAni.Children[0] is ThicknessAnimationUsingKeyFrames frames && frames.KeyFrames[0] is EasingThicknessKeyFrame frame)
+            {
+                frame.Value = new Thickness(0, offset, 0, -offset);
+            }
+            if (_vm.IsLyricPageOpen)
+            {
+                _closeLyricPageAni.Begin();
+                _vm.IsLyricPageOpen= false;
             }
         }
         #endregion
@@ -225,7 +238,7 @@ namespace LemonApp.Views.Windows
         private bool _isSliderCtrl = false;
         private void PlaySlider_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed)
+            if (e.LeftButton == MouseButtonState.Pressed&& sender is Slider PlaySlider)
             {
                 double perc = e.GetPosition(PlaySlider).X / PlaySlider.ActualWidth;
                 double value = perc * PlaySlider.Maximum;
@@ -238,7 +251,7 @@ namespace LemonApp.Views.Windows
 
         private void PlaySlider_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (_isSliderCtrl)
+            if (_isSliderCtrl && sender is Slider PlaySlider)
             {
                 //提交value
                 _vm.SetCurrentPlayingPosition(PlaySlider.Value);
@@ -252,13 +265,6 @@ namespace LemonApp.Views.Windows
                 PlaySlider.SetBinding(Slider.ValueProperty, binding);
                 _isSliderCtrl = false;
             }
-        }
-
-        private void AudioAdjustSlider_PreviewMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            double perc = e.GetPosition(AudioAdjustSlider).X / AudioAdjustSlider.ActualWidth;
-            double value = perc * AudioAdjustSlider.Maximum;
-            _vm.CurrentPlayingVolume = value;
         }
 
         private void GotoPlayingBtn_Click(object sender, RoutedEventArgs e)
