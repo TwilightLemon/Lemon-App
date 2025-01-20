@@ -92,7 +92,16 @@ public class MediaPlayerService(UserProfileService userProfileService,
             throw new InvalidOperationException("MediaPlayerService not initialized.");
 
         Pause();
+        //set flag first
         CurrentMusic = music;
+        _smtc.SetMediaStatus(SMTCMediaStatus.Playing);
+        _smtc.Info.SetTitle(music.MusicName)
+                        .SetArtist(music.SingerText)
+                        .SetThumbnail(await CoverGetter.GetCoverImgUrl(() => hc, _userProfileService.GetAuth(), music))
+                        .Update();
+
+        OnLoaded?.Invoke(music);
+
         bool loadSucceeded= false;
 
         //先检索本地缓存 按照音质高到低依次检索
@@ -136,14 +145,6 @@ public class MediaPlayerService(UserProfileService userProfileService,
                 CacheStarted?.Invoke();
             }
         }
-
-        _smtc.SetMediaStatus(SMTCMediaStatus.Playing);
-        _smtc.Info.SetTitle(music.MusicName)
-                        .SetArtist(music.SingerText)
-                        .SetThumbnail(await CoverGetter.GetCoverImgUrl(() => hc, _userProfileService.GetAuth(), music))
-                        .Update();
-
-        OnLoaded?.Invoke(music);
         return loadSucceeded;
     }
     /// <summary>

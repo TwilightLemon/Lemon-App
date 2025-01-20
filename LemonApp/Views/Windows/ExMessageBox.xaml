@@ -28,7 +28,8 @@
                    VerticalAlignment="Top"
                    Margin="32" />
             <TextBlock x:Name="ContentTb"
-                       Margin="128,32,12,53"
+                       TextWrapping="Wrap"
+                       Margin="128,36,12,12"
                        Text="Hello"
                        FontSize="14" />
         </Grid>

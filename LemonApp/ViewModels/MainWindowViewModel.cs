@@ -162,7 +162,6 @@ public partial class MainWindowViewModel : ObservableObject
 
         try
         {
-            if(IsLyricPageOpen)
             LyricView.Dispatcher.Invoke(() =>
             {
                 LyricView.UpdateTime(pos.TotalMilliseconds);

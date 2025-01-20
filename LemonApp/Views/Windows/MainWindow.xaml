@@ -441,20 +441,28 @@
                         Grid.ColumnSpan="2" />
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="5*" />
-                        <RowDefinition Height="3*" />
+                        <RowDefinition Height="2*" />
+                        <RowDefinition Height="1*" />
                     </Grid.RowDefinitions>
+                    <Border x:Name="LyricPage_ImgEdge"
+                            Margin="60"
+                            MinWidth="200"
+                            MaxWidth="500"/>
                     <Border x:Name="LyricPage_Img"
                             HorizontalAlignment="Stretch"
-                            Width="auto"
-                            MinWidth="200"
-                            MaxWidth="500"
                             Height="{Binding ElementName=LyricPage_Img,Path=ActualWidth}"
                             d:Background="Pink"
                             RenderOptions.BitmapScalingMode="HighQuality"
                             Background="{Binding CurrentPlayingCover,TargetNullValue={StaticResource HighlightThemeColor}}"
-                            CornerRadius="12"
-                            Margin="80,0,60,0">
+                            CornerRadius="12">
+                        <Border.Width>
+                            <MultiBinding Converter="{x:Static converters:MinValueConverter.Instance}">
+                                <Binding Path="ActualWidth"
+                                         ElementName="LyricPage_ImgEdge" />
+                                <Binding Path="ActualHeight"
+                                         ElementName="LyricPage_ImgEdge" />
+                            </MultiBinding>
+                        </Border.Width>
                         <Border.Effect>
                             <DropShadowEffect Color="Black"
                                               Direction="0"
@@ -655,28 +663,15 @@
                     </StackPanel>
                 </Border>
                 <ws:Button  x:Name="LyricPage_BackBtn"
-                            Width="48"
-                            Height="48"
-                            HorizontalAlignment="Left"
+                            Width="64"
+                            Height="32"
+                            HorizontalAlignment="Stretch"
                             VerticalAlignment="Top"
-                            Margin="22"
+                            Margin="0 18 0 0"
                             WindowChrome.IsHitTestVisibleInChrome="True"
                             Click="LyricPage_BackBtn_Click"
                             Style="{StaticResource SimpleIconButtonStyleForWs}">
-                    <Path Fill="{DynamicResource ForeColor}"
-                          Data="{StaticResource Icon_Back}"
-                          Stretch="Uniform"
-                          RenderTransformOrigin="0.5,0.5"
-                          Height="18">
-                        <Path.RenderTransform>
-                            <TransformGroup>
-                                <ScaleTransform />
-                                <SkewTransform />
-                                <RotateTransform Angle="-90" />
-                                <TranslateTransform />
-                            </TransformGroup>
-                        </Path.RenderTransform>
-                    </Path>
+                    <Border Width="52" Height="6" CornerRadius="3" Background="{DynamicResource ForeColor}"/>
                 </ws:Button>
             </Grid>
             <Border x:Name="MusicControl"

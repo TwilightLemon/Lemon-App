@@ -399,27 +399,41 @@ namespace LemonApp.Views.UserControls
 
         public void UpdateTime(double ms)
         {
-            void reset(LrcItem? item)
+            async void reset(LrcItem? item)
             {
                 if (item == null || item.LrcTb == null) return;
                 item.LrcTb.FontWeight = NormalTextFontWeight;
-                var da = new DoubleAnimation(LyricFontSize, TimeSpan.FromSeconds(0.3));
-                da.EasingFunction = new CubicEase();
-                item.LrcTb.BeginAnimation(FontSizeProperty, da);
-                item.LrcTb.BeginAnimation(OpacityProperty, new DoubleAnimation(LyricOpacity, TimeSpan.FromSeconds(0.5)));
                 item.LrcTb.Effect = NomalTextEffect;
-                //item.LrcMain.Text = item.Lyric;
+                if (IsVisible)
+                {
+                    var da = new DoubleAnimation(LyricFontSize, TimeSpan.FromSeconds(0.2));
+                    da.Completed += delegate
+                    {
+                        item.LrcTb.BeginAnimation(FontSizeProperty, null);
+                    };
+                    da.EasingFunction = new CubicEase();
+                    item.LrcTb.BeginAnimation(FontSizeProperty, da);
+                    item.LrcTb.BeginAnimation(OpacityProperty, new DoubleAnimation(LyricOpacity, TimeSpan.FromSeconds(0.5)));
+                    await Task.Delay(200);
+                    item.LrcMain.TextWrapping = TextWrapping.Wrap;
+                    item.LrcMain.Text = item.Lyric;
+                    RefreshCurrentLrcStyle();
+                }
+                else
+                {
+                    item.LrcTb.BeginAnimation(FontSizeProperty, null);
+                    item.LrcTb.BeginAnimation(OpacityProperty, null);
+                    item.LrcMain.TextWrapping = TextWrapping.Wrap;
+                    item.LrcMain.Text = item.Lyric;
+                }
             }
             var temp = LrcItems.LastOrDefault(p => p.Time <= ms);
             if (temp == null || temp == _currentLrc) return;
 
-            reset(_currentLrc);
+            var last = _currentLrc;
             _currentLrc = temp;
+            reset(last);
             OnNextLrcReached?.Invoke(GetCurrentLrc());
-
-            //next lyric 
-            if (IsVisible)
-                RefreshCurrentLrcStyle();
         }
 
         private void RefreshCurrentLrcStyle()
@@ -437,7 +451,7 @@ namespace LemonApp.Views.UserControls
             mainLine.Text = InsertLineBreaks(mainLine, _currentLrc.Lyric, targetFontsize, ActualWidth - LyricMargin.Left - LyricMargin.Right - 1);
             var da = new DoubleAnimation(targetFontsize, TimeSpan.FromSeconds(0.4))
             {
-                EasingFunction = new SineEase { EasingMode = EasingMode.EaseOut }
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
             };
             Timeline.SetDesiredFrameRate(da, 60);
             ResetLrcviewScroll();
@@ -460,7 +474,7 @@ namespace LemonApp.Views.UserControls
                 Point p = gf.Transform(new Point(0, 0));
                 double os = p.Y - (scrollviewer.ActualHeight / 2) + 120;
                 var da = new DoubleAnimation(os, TimeSpan.FromMilliseconds(500));
-                da.EasingFunction = new SineEase { EasingMode = EasingMode.EaseOut };
+                da.EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut };
                 Timeline.SetDesiredFrameRate(da, 60);
                 scrollviewer.BeginAnimation(ScrollViewerUtils.VerticalOffsetProperty, da);
             }

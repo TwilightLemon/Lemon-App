@@ -103,10 +103,7 @@ namespace LemonApp.Views.Pages
 
         private void AddToNextBtn_Click(object sender, RoutedEventArgs e)
         {
-            List<Music> list = [];
-            foreach (var m in listBox.SelectedItems)
-                list.Add((Music)m);
-            _vm?.AddToPlayNextCommand.Execute(list);
+            _vm?.AddToPlayNextCommand.Execute(listBox.SelectedItems);
             if (listBox.SelectionMode == SelectionMode.Multiple)
                 listBox.SelectedItems.Clear();
         }

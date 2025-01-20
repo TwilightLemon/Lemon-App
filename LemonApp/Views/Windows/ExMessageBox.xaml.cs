@@ -7,7 +7,7 @@ namespace LemonApp.Views.Windows
     /// </summary>
     public partial class ExMessageBox : FluentWindowBase
     {
-        public ExMessageBox()
+        private ExMessageBox()
         {
             InitializeComponent();
         }
