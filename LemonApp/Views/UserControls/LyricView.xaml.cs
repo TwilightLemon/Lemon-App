@@ -427,7 +427,8 @@ namespace LemonApp.Views.UserControls
                     item.LrcMain.Text = item.Lyric;
                 }
             }
-            var temp = LrcItems.LastOrDefault(p => p.Time <= ms);
+            var temp =IsVisible? LrcItems.LastOrDefault(p => p.Time <= ms+400):
+                            LrcItems.LastOrDefault(p => p.Time <= ms);
             if (temp == null || temp == _currentLrc) return;
 
             var last = _currentLrc;

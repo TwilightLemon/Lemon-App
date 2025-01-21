@@ -27,11 +27,12 @@ public class MediaPlayerService(UserProfileService userProfileService,
     private readonly HttpClient hc= httpClientFactory.CreateClient(App.PublicClientFlag);
     private readonly SharedLaClient _sharedLaClient = sharedLaClient;
 
+    public MusicPlayer Player { get => _player; }
     public Music? CurrentMusic { get; private set; }
     public MusicQuality CurrentQuality { get; private set; }
     public event Action<Music>? OnLoaded,OnPlay,OnPaused, OnAddToPlayNext, FailedToLoadMusic;
     public event Action<IList<Music>>? OnAddListToPlayNext;
-    public event Action? OnEnd, OnPlayNext, OnPlayLast;
+    public event Action? OnEnd, OnPlayNext, OnPlayLast,OnQualityChanged;
     public event Action<IList<Music>>? OnNewPlaylistReceived;
     public Action<long, long>? CacheProgress;
     public Action? CacheFinished,CacheStarted;
@@ -145,6 +146,7 @@ public class MediaPlayerService(UserProfileService userProfileService,
                 CacheStarted?.Invoke();
             }
         }
+        OnQualityChanged?.Invoke();
         return loadSucceeded;
     }
     /// <summary>

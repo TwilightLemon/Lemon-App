@@ -21,7 +21,7 @@ namespace LemonApp.Common.UIBases
         private readonly WindowChrome _windowChrome;
 
         private readonly int _captionHeight = 48;
-        private readonly Thickness _resizeBorderThickness = new(12);
+        private Thickness _resizeBorderThickness = new(6);
 
         public MaterialType Mode
         {
@@ -114,7 +114,7 @@ namespace LemonApp.Common.UIBases
 
         private void MaxmizeBtn_Click(object sender, RoutedEventArgs e)
         {
-            WindowState = WindowState == WindowState.Normal ? WindowState.Maximized : WindowState.Normal;
+            WindowState = WindowState == WindowState.Normal ? WindowState.Maximized : WindowState.Normal;          
         }
 
         private void MinimizeBtn_Click(object sender, RoutedEventArgs e)

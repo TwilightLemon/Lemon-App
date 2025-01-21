@@ -78,6 +78,7 @@ public partial class MainWindowViewModel : ObservableObject
         _mediaPlayerService.OnEnd += MediaPlayerService_OnEnd;
         _mediaPlayerService.OnPlayNext += PlayNext;
         _mediaPlayerService.OnPlayLast += PlayLast;
+        _mediaPlayerService.OnQualityChanged += MediaPlayerService_OnQualityChanged;
         _mediaPlayerService.CacheProgress = CacheProgress;
         _mediaPlayerService.FailedToLoadMusic += MediaPlayerService_FailedToLoadMusic;
 
@@ -100,8 +101,6 @@ public partial class MainWindowViewModel : ObservableObject
         LoadComponent();
         _playlistDataWrapper = playlistDataWrapper;
     }
-
-
 
     private async void UIResourceService_OnColorModeChanged()
     {
@@ -362,9 +361,14 @@ public partial class MainWindowViewModel : ObservableObject
         App.Current.Dispatcher.Invoke(async () =>
         {
             CurrentPlaying = m;
-            CurrentQuality = _mediaPlayerService.CurrentQuality;
             SyncCurrentPlayingWithPlayListPage?.Invoke(m.MusicID);
             await LyricView.LoadFromMusic(m);
+        });
+    }
+    private void MediaPlayerService_OnQualityChanged()
+    {
+        App.Current.Dispatcher.Invoke(() => {
+            CurrentQuality = _mediaPlayerService.CurrentQuality;
         });
     }
     [RelayCommand]

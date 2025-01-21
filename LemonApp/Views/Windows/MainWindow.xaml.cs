@@ -112,6 +112,8 @@ namespace LemonApp.Views.Windows
             LyricViewHost.Child = _vm.LyricView;
 
             SystemThemeAPI.RegesterOnThemeChanged(this, OnThemeChanged, OnSystemColorChanged);
+
+            visualizer.Player = _serviceProvider.GetRequiredService<MediaPlayerService>().Player;
         }
 
         private void GoBackBtn_Click(object sender, RoutedEventArgs e)

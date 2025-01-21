@@ -671,9 +671,16 @@
                             WindowChrome.IsHitTestVisibleInChrome="True"
                             Click="LyricPage_BackBtn_Click"
                             Style="{StaticResource SimpleIconButtonStyleForWs}">
-                    <Border Width="52" Height="6" CornerRadius="3" Background="{DynamicResource ForeColor}"/>
+                    <Border Width="52" Height="6" CornerRadius="3" Background="{DynamicResource ForeColor}" Opacity="0.6"/>
                 </ws:Button>
             </Grid>
+            <uc:AudioVisualizer  x:Name="visualizer"
+                                 VerticalAlignment="Bottom" 
+                                 Height="214"
+                                 Opacity="0.8"
+                                 IsPlaying="{Binding IsPlaying,Mode=OneWay}"
+                                 Color="{DynamicResource HighlightThemeColor}"
+                                 Margin="8 0"/>
             <Border x:Name="MusicControl"
                     BorderThickness="0 1 0 0"
                     Height="110"
