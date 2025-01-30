@@ -14,6 +14,23 @@ public class AudioVisualizer : Control
     {
         DefaultStyleKeyProperty.OverrideMetadata(typeof(AudioVisualizer), new FrameworkPropertyMetadata(typeof(AudioVisualizer)));
     }
+    public AudioVisualizer()
+    {
+        this.IsVisibleChanged += AudioVisualizer_IsVisibleChanged;
+    }
+
+    private void AudioVisualizer_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+    {
+        if(e.NewValue is true)
+        {
+            Start();
+        }
+        else
+        {
+            Stop();
+        }
+    }
+
     internal void Start()
     {
         if (_isRunning || Player == null) return;

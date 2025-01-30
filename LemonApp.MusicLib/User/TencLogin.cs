@@ -13,10 +13,12 @@ public class TencLogin(HttpClient httpClient)
     private string? _referUrl = null, _referCookie = null;
     private bool _loginSuccess = false;
     private Dictionary<string, string> _cookies = [];
+    private string? g_tk = null, qq = null;
 
     public event Action<TencUserAuth>? OnAuthCompleted;
+    public event Action? StopRequired;
 
-    public void CollectInfo(string url, string cookie)
+    public async void CollectInfo(string url, string cookie)
     {
         if (_loginSuccess) return;
         //收集过程中所有cookie
@@ -31,14 +33,18 @@ public class TencLogin(HttpClient httpClient)
         }
         if (cookie.Contains("p_skey"))
             _referCookie = cookie;
-        if (url.Contains("https://y.qq.com/portal/wx_redirect.html") && url.Contains("&code="))
+        if (url.Contains("https://y.qq.com/portal/wx_redirect.html") && url.Contains("&code=")){
             _referUrl = url;
-        if (_referUrl != null && _referCookie != null){
-            Login();
+            StopRequired?.Invoke();
         }
+        if (_referUrl != null && _referCookie != null){
+            await Login();
+        }
+        if(!_loginSuccess)
+            Debug.WriteLine("Login failed  "+url);
     }
 
-    private async void Login()
+    private async Task Login()
     {
         try
         {
@@ -51,7 +57,7 @@ public class TencLogin(HttpClient httpClient)
             {
                 hash += (hash << 5) + c;
             }
-            string g_tk = (hash & 0x7fffffff).ToString();
+            g_tk = (hash & 0x7fffffff).ToString();
             //POST music.fcg to log in
             string postData = "{\"comm\":{\"g_tk\":" + g_tk + ",\"platform\":\"yqq\",\"ct\":24,\"cv\":0},\"req\":{\"module\":\"QQConnectLogin.LoginServer\",\"method\":\"QQLogin\",\"param\":{\"code\":\"" + l_code + "\"}}}";
             var result = await _hc.SetForMusicuFcg(_referCookie!)
@@ -66,13 +72,7 @@ public class TencLogin(HttpClient httpClient)
                     _cookies[temp[0]] = temp[1];
                 }
             }
-            else
-            {
-                return;
-            }
-            string json = await result.Content.ReadAsStringAsync();
-            var node = JsonNode.Parse(json);
-            string qq = _cookies["uin"];
+            qq = _cookies["uin"];
             //将_cookies转为cookie字符串
             List<string> list = _cookies.Select(item => $"{item.Key}={item.Value}").ToList();
             string cookie = string.Join(";", list);

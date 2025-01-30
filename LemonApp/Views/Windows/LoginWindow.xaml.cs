@@ -27,7 +27,14 @@ namespace LemonApp.Views.Windows
             host.Child = wb;
             loginAPI = new TencLogin(clientFactory.CreateClient(App.PublicClientFlag));
             loginAPI.OnAuthCompleted += LoginAPI_OnAuthCompleted;
+            loginAPI.StopRequired += LoginAPI_StopRequired;
             Loaded += LoginWindow_Loaded;
+        }
+
+        private void LoginAPI_StopRequired()
+        {
+            wb.DocumentTitleChanged -= Wb_DocumentTitleChanged;
+            wb.Stop();
         }
 
         private void LoginAPI_OnAuthCompleted(TencUserAuth obj)

@@ -65,6 +65,7 @@ namespace LemonApp.Views.UserControls
             IsShowTranslation = _settings?.Data?.ShowTranslation is true;
             IsShowRomaji = _settings?.Data?.ShowRomaji is true;
             SetFontSize(_settings?.Data?.FontSize ?? (int)LyricFontSize);
+            this.FontFamily = new FontFamily(_settings?.Data?.FontFamily ?? "Segou UI");
         }
 
         private void UpdateColorMode()
@@ -160,12 +161,8 @@ namespace LemonApp.Views.UserControls
 
         public bool IsShowTranslation
         {
-            get { return (bool)GetValue(IsShowTranslationProperty); }
-            set
-            {
-                SetValue(IsShowTranslationProperty, value);
-                _settings.Data.ShowTranslation = value;
-            }
+            get => (bool)GetValue(IsShowTranslationProperty);
+            set => SetValue(IsShowTranslationProperty, value);
         }
 
         public static readonly DependencyProperty IsShowTranslationProperty =
@@ -181,12 +178,8 @@ namespace LemonApp.Views.UserControls
 
         public bool IsShowRomaji
         {
-            get { return (bool)GetValue(IsShowRomajiProperty); }
-            set
-            {
-                SetValue(IsShowRomajiProperty, value);
-                _settings.Data.ShowRomaji = value;
-            }
+            get => (bool)GetValue(IsShowRomajiProperty);
+            set => SetValue(IsShowRomajiProperty, value);
         }
 
         public static readonly DependencyProperty IsShowRomajiProperty =
@@ -202,6 +195,7 @@ namespace LemonApp.Views.UserControls
 
         public void SetShowTranslation(bool show)
         {
+            _settings.Data.ShowTranslation = show;
             foreach (var item in LrcItems)
             {
                 if (item.LrcTrans != null)
@@ -212,6 +206,7 @@ namespace LemonApp.Views.UserControls
         }
         public void SetShowRomaji(bool show)
         {
+            _settings.Data.ShowRomaji = show;
             foreach (var item in LrcItems)
             {
                 if (item.Romaji != null)
