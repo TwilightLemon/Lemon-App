@@ -34,8 +34,13 @@ namespace LemonApp.Common.UIBases
         {
             Style = (Style)FindResource("FluentWindowStyle");
 
-            WindowOption.SetCorner(this, WindowCorner.Round);
-            WindowLongAPI.SetDwmAnimation(this, true);
+            var osVersion = Environment.OSVersion.Version;
+            var windows11 = new Version(10, 0, 22621);
+            if (osVersion >= windows11)
+            {
+                WindowOption.SetCorner(this, WindowCorner.Round);
+                WindowLongAPI.SetDwmAnimation(this, true);
+            }
 
             _behaviors = Interaction.GetBehaviors(this);
             _behaviors.Add(new WindowDragMoveBehavior());

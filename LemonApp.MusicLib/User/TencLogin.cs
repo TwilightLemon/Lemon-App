@@ -59,7 +59,7 @@ public class TencLogin(HttpClient httpClient)
             }
             g_tk = (hash & 0x7fffffff).ToString();
             //POST music.fcg to log in
-            string postData = "{\"comm\":{\"g_tk\":" + g_tk + ",\"platform\":\"yqq\",\"ct\":24,\"cv\":0},\"req\":{\"module\":\"QQConnectLogin.LoginServer\",\"method\":\"QQLogin\",\"param\":{\"code\":\"" + l_code + "\"}}}";
+            string postData = "{\"comm\":{\"g_tk\":5381,\"platform\":\"yqq\",\"ct\":24,\"cv\":0},\"req\":{\"module\":\"QQConnectLogin.LoginServer\",\"method\":\"QQLogin\",\"param\":{\"code\":\"" + l_code + "\"}}}";
             var result = await _hc.SetForMusicuFcg(_referCookie!)
                                             .PostAsync("https://u.y.qq.com/cgi-bin/musicu.fcg",
                                             new StringContent(postData, Encoding.UTF8));

@@ -250,7 +250,7 @@ internal static class FluentPopupFunc
         {
             int hexColor = compositionColor.ToHexColor();
             var hwndSource = HwndSource.FromHwnd(hwnd);
-            MaterialApis.SetWindowProperties(hwndSource, 0);
+            MaterialApis.SetWindowProperties(hwndSource, 1);
             MaterialApis.SetWindowComposition(hwnd, true, hexColor);
             MaterialApis.SetWindowCorner(hwnd, corner);
         }
