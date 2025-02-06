@@ -6,6 +6,7 @@ public enum PlaylistType
 }
 public class Playlist
 {
+    public Platform Source { set; get; } = Platform.qq;
     public Profile? Creator { set; get; }
     public string Name { set; get; } = string.Empty;
     public string Photo { set; get; } = string.Empty;

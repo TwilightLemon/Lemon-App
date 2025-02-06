@@ -1,19 +1,14 @@
 ﻿using LemonApp.Common.Funcs;
 using LemonApp.MusicLib.Abstraction.UserAuth;
 using LemonApp.MusicLib.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using LemonApp.MusicLib.Abstraction.Entities;
 
 namespace LemonApp.MusicLib.Media;
 
 public class AudioGetter(HttpClient hc,
     Func<TencUserAuth> tencAuth,
-    Func<NeteaseUserAuth>? neteAuth=null,
+    Func<NeteaseUserAuth?>? neteAuth=null,
     SharedLaClient? sharedLaClient=null,
     Func<string?>? sharedLaToken=null)
 {
@@ -43,11 +38,10 @@ public class AudioGetter(HttpClient hc,
 
     public async Task<MusicUrlData?> GetUrlAsync(Music m, MusicQuality preferQuality)
     {
-        if(m.Source == Platform.qq)
+        //歌曲品质   先选择preference | supported
+        var final = GetFinalQuality(m.Quality, preferQuality);
+        if (m.Source == Platform.qq)
         {
-            //歌曲品质   先选择preference | supported
-            var final=GetFinalQuality(m.Quality, preferQuality);
-
             //尝试通过SharedLaClient获取  TODO:完善异常情况处理(token过期...)
             //一般来说，共享的token都不会受音质限制，所以不遍历所有音质
             if (_laClient != null && _sharedLaToken is {Length:>0} token)
@@ -85,22 +79,40 @@ public class AudioGetter(HttpClient hc,
         }
         else if(m.Source == Platform.wyy)
         {
+            string? url = await GetUrlFromGdStudio(m.MusicID);
+            if (url is null)
+            {
+                url = await GetUrlFromWYY(m.MusicID);
+                final = MusicQuality.Std;
+            }
             return new MusicUrlData()
             {
-                Quality = MusicQuality.Std,
+                Quality = final,
                 SourceText = "WYY",
-                Url = await GetUrlFromWYY(m.MusicID)
+                Url = url
             };
         }
         return null;
     }
-
-    private  async Task<string?> GetUrlFromWYY(string id)
+    private async Task<string?> GetUrlFromGdStudio(string id)
+    {
+        string url = $"https://music-api.gdstudio.xyz/api.php?types=url&source=netease&id={id}&br=999";
+        string data = await _hc.GetStringAsync(url);
+        if (JsonNode.Parse(data) is { } json)
+        {
+            if (json["url"]?.ToString() is { Length: > 0 } link)
+            {
+                return link;
+            }
+        }
+        return null;
+    }
+    private async Task<string?> GetUrlFromWYY(string id)
     {
         string url = $"http://music.163.com/api/song/enhance/player/url?ids=[{id}]&br=320000";
-        string data= await _hc.SetForNetease(_neteaseAuth?.Cookie??"")
+        string data = await _hc.SetForNetease(_neteaseAuth?.Cookie ?? "")
                                .GetStringAsync(url);
-        if(JsonNode.Parse(data)is { } obj)
+        if (JsonNode.Parse(data) is { } obj)
         {
             if (obj?["data"]?[0]?["url"]?.ToString() is { } result)
             {
@@ -109,6 +121,7 @@ public class AudioGetter(HttpClient hc,
         }
         return null;
     }
+
     private  async Task<string?> GetUrlFcgLine(string Musicid, MusicQuality quality)
     {
         string prefix = quality switch

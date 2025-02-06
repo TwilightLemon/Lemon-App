@@ -1,6 +1,4 @@
-﻿using LemonApp.Common.Configs;
-using SharedLaCreator.Core;
-using System.Net.Http;
+﻿using SharedLaCreator.Core;
 namespace LemonApp.MusicLib.Media;
 public class SharedLaClient(HttpClient httpClient)
 {

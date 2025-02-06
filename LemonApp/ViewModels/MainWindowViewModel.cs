@@ -491,7 +491,7 @@ public partial class MainWindowViewModel : ObservableObject
                     NavigateToSearchPage(keyword);
                 break;
             case PageType.PlaylistPage:
-                if (arg is string { } listId)
+                if (arg is Playlist { } listId)
                     NavigateToPlaylistPage(listId);
                 break;
             case PageType.AccountInfoPage:
@@ -554,12 +554,12 @@ public partial class MainWindowViewModel : ObservableObject
         SelectedMenu = null;
         IsLoading = false;
     }
-    private async void NavigateToPlaylistPage(string id)
+    private async void NavigateToPlaylistPage(Playlist info)
     {
         var sp=_serviceProvider.GetRequiredService<PlaylistPage>();
         if (sp != null)
         {
-            if (await LoadUserPlaylist(id) is { } vm)
+            if (await LoadUserPlaylist(info) is { } vm)
             {
                 sp.ViewModel = vm;
                 RequestNavigateToPage?.Invoke(sp);
@@ -571,19 +571,19 @@ public partial class MainWindowViewModel : ObservableObject
     {
         if(page is PlaylistPage view)
         {
-            if (_userProfileService.UserProfileGetter.MyFavorite?.Id is { } id)
+            if (_userProfileService.UserProfileGetter.MyFavorite is { } info)
             {
-                if(await LoadUserPlaylist(id) is { } vm)
+                if(await LoadUserPlaylist(info) is { } vm)
                 {
                     view.ViewModel = vm;
                 }
             }
         }
     }
-    private async Task<PlaylistPageViewModel?> LoadUserPlaylist(string id)
+    private async Task<PlaylistPageViewModel?> LoadUserPlaylist(Playlist info)
     {
         IsLoading = true;
-        var vm=await _playlistDataWrapper.LoadUserPlaylistVm(id);
+        var vm=await _playlistDataWrapper.LoadUserPlaylistVm(info);
         IsLoading = false;
         return vm;
     }

@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using Windows.Media.Protection.PlayReady;
 
 namespace LemonApp.Services;
 /*
@@ -27,6 +28,15 @@ public class UserProfileService(
         _profileMgr = appSettingsService.GetConfigMgr<UserProfile>()
                                  ?? throw new InvalidOperationException("where is user profile mgr??!!");
     }
+
+    public void UpdateNeteaseAuth(NeteaseUserAuth auth)
+    {
+        if (_profileMgr == null) throw new Exception("Failed to load components");
+
+        _profileMgr.Data.NeteaseUserAuth= auth;
+    }
+
+    public NeteaseUserAuth? GetNeteaseAuth() => _profileMgr?.Data.NeteaseUserAuth;
 
     public async Task UpdateAuthAndNotify(TencUserAuth auth)
     {

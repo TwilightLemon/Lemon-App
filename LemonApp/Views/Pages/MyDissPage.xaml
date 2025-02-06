@@ -11,19 +11,31 @@
       Foreground="{DynamicResource ForeColor}"
       d:DesignWidth="800"
       Title="MyDissPage">
+    <Page.Resources>
+        <Style x:Key="TitleTbStyle" TargetType="TextBlock">
+            <Setter Property="Margin"
+                    Value="24 12" />
+            <Setter Property="FontSize"
+                    Value="24" />
+            <Setter Property="VerticalAlignment"
+                    Value="Top" />
+            <Setter Property="FontWeight"
+                    Value="Bold" />
+        </Style>
+    </Page.Resources>
     <ws:ScrollViewer x:Name="sv" Style="{StaticResource SimpleVerticalScrollViewerStyle}">
         <ws:StackPanel>
             <TextBlock Text="My Diss"
-                   Margin="24 12"
-                   FontSize="24"
-                   VerticalAlignment="Top"
-                   FontWeight="Bold" />
+                       Style="{StaticResource TitleTbStyle}"/>
             <uc:PlaylistItemView x:Name="MyDissList"/>
+            <TextBlock Text="From Netease"
+                       x:Name="NeteaseTb"
+                       Visibility="Collapsed"
+                       Style="{StaticResource TitleTbStyle}" />
+            <uc:PlaylistItemView x:Name="NeteaseDissList"
+                                 Visibility="Collapsed" />
             <TextBlock Text="My Favorite"
-                       Margin="24 12"
-                       FontSize="24"
-                       VerticalAlignment="Top"
-                       FontWeight="Bold" />
+                       Style="{StaticResource TitleTbStyle}"/>
             <uc:PlaylistItemView x:Name="MyFarvoriteDissList" />
         </ws:StackPanel>
     </ws:ScrollViewer>

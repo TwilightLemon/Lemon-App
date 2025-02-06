@@ -43,7 +43,7 @@ public class MediaPlayerService(UserProfileService userProfileService,
     /// <returns></returns>
     public async Task Init()
     {
-        audioGetter = new(hc, _userProfileService.GetAuth,null,_sharedLaClient,_userProfileService.GetSharedLaToken);
+        audioGetter = new(hc, _userProfileService.GetAuth,_userProfileService.GetNeteaseAuth,_sharedLaClient,_userProfileService.GetSharedLaToken);
         _playingMgr = appSettingsService.GetConfigMgr<PlayingPreference>()!;
         await MusicPlayer.PrepareDll();
         _player = new();

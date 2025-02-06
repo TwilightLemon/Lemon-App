@@ -1,4 +1,5 @@
-﻿using LemonApp.Services;
+﻿using LemonApp.MusicLib.Playlist;
+using LemonApp.Services;
 using LemonApp.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -41,6 +42,15 @@ namespace LemonApp.Views.Pages
             //load my favorite
             MyFarvoriteDissList.ViewModel ??= sp.GetRequiredService<PlaylistItemViewModel>();
             _ = MyFarvoriteDissList.ViewModel.SetPlaylistItems(user.UserProfileGetter.MyFavoritePlaylists);
+            //load netease diss
+            if(user.GetNeteaseAuth() is { } netease)
+            {
+                NeteaseTb.Visibility = NeteaseDissList.Visibility = Visibility.Visible;
+                NeteaseDissList.ViewModel ??= sp.GetRequiredService<PlaylistItemViewModel>();
+                _ = NeteaseDissList.ViewModel.SetPlaylistItems(await NeteasePlaylistAPI.GetNeteaseUserPlaylistAsync(
+                    new HttpClient(),netease
+                    ));
+            }
             nav.CancelLoadingAni();
         }
     }

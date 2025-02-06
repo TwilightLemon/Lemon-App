@@ -88,14 +88,14 @@ public class PlaylistDataWrapper(IServiceProvider sp,MediaPlayerService ms, User
         return page;
     }
 
-    public async Task<PlaylistPageViewModel?> LoadUserPlaylistVm(string id)
+    public async Task<PlaylistPageViewModel?> LoadUserPlaylistVm(Playlist info)
     {
         var hc = sp.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
-        var auth = user.GetAuth();
         var vm = sp.GetRequiredService<PlaylistPageViewModel>();
-        if (hc != null && auth != null && vm != null)
+        if (hc != null && vm != null)
         {
-            var data = await PublicPlaylistAPI.LoadPlaylistById(hc, auth, id);
+            var data =info.Source==Platform.qq? await PublicPlaylistAPI.LoadPlaylistById(hc, user.GetAuth(), info.Id)
+                :await NeteasePlaylistAPI.GetNeteasePlaylistByIdAsync(hc,user.GetNeteaseAuth(),info.Id);
             if (data != null)
             {
                 vm.Cover = new ImageBrush(await ImageCacheHelper.FetchData(data.Photo));

@@ -88,18 +88,19 @@ public partial class UserMenuViewModel:ObservableObject
         var sp = App.Host!.Services;
         var loginWindow = sp.GetRequiredService<LoginWindow>();
         var user=sp.GetRequiredService<UserProfileService>();
-        loginWindow.OnLogin = async (auth) =>
+        loginWindow.OnLoginTenc = async (auth) =>
         {
             await user.UpdateAuthAndNotify(auth);
         };
-        loginWindow.Show();
+        loginWindow.ShowDialog();
     }
-    static async void Menu_LoginNetease()
+    static void Menu_LoginNetease()
     {
-        var settings = App.Host!.Services.GetRequiredService<AppSettingsService>();
-        var mgr = settings.GetConfigMgr<UserProfile>()!;
-        mgr.Data!.NeteaseUserAuth = new NeteaseUserAuth() { Id = "100101010" };//for test onlys
-        await mgr.SaveAsync();
+        var sp = App.Host!.Services;
+        var loginWindow = sp.GetRequiredService<LoginWindow>();
+        var user = sp.GetRequiredService<UserProfileService>();
+        loginWindow.OnLoginNetease = user.UpdateNeteaseAuth;
+        loginWindow.ShowDialog();
     }
     static void Menu_Theme()
     {

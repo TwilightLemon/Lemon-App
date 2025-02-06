@@ -22,7 +22,7 @@ public partial class PlaylistItemViewModel(
     [RelayCommand]
     private void Select(PlaylistItem value)
     {
-        mainNavigationService.RequstNavigation(PageType.PlaylistPage, value.ListInfo.Id);
+        mainNavigationService.RequstNavigation(PageType.PlaylistPage, value.ListInfo);
     }
 
     public ObservableCollection<PlaylistItem> Playlists { get; set; } = [];

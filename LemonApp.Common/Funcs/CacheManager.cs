@@ -6,7 +6,7 @@ public static class CacheManager
     private const string RootName= "LemonApp";
     public enum CacheType
     {
-        Music,Lyric,Image
+        Music,Lyric,Image,Other
     }
     private static SettingsMgr<CacheSettings> _settingsMgr =
         new(typeof(CacheManager).Name, typeof(CacheManager).Namespace!);

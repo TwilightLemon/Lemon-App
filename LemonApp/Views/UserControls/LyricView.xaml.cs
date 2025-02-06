@@ -230,43 +230,10 @@ namespace LemonApp.Views.UserControls
             else
             {
                 if (_hc == null) return;
-                if (m.Source == Platform.qq)
-                {
-                    var ly = await GatitoGetLyric.GetTencLyricAsync(_hc, m.MusicID);
-                    await Settings.SaveAsJsonAsync(ly, path, false);
-                    if(_handlingMusic == m.MusicID)//防止异步加载时已经切换歌曲
-                        LoadLrc(ly);
-                    /*
-                    var data=await TencGetLyric.GetLyricDataAsync(_hc,_auth, m.MusicID);
-                    if(data != null&&data.Lyric!=null)
-                    {
-                        LocalLyricData ly=new();
-                        ly.Id= m.MusicID;
-                        var lyrics = LyricHelper.Format(data.Lyric);
-                        List<(double, string?)>? trans = null;
-                        List<string>? romaji = null;
-                        if (data.Trans != null)
-                        {
-                             trans = LyricHelper.Format(data.Trans);
-                        }
-                        int i = 0;
-                        foreach(var line in lyrics)
-                        {
-                            var transText = trans?.FirstOrDefault(m => m.Item1 >= line.Item1 - 2).Item2;
-                            LrcLine lrcLine = new() {
-                                Time = line.Item1,
-                                Lyric = line.Item2!,
-                                Trans=transText,
-                                Romaji=romaji?[i]
-                            };
-                            i++;
-                            ly.LyricData.Add(lrcLine);
-                        }
-                        await Settings.SaveAsJsonAsync(ly, path,false);
-                        LoadLrc(ly);
-                    }
-                    */
-                }
+                var ly = await GatitoGetLyric.GetTencLyricAsync(_hc, m);
+                await Settings.SaveAsJsonAsync(ly, path, false);
+                if (_handlingMusic == m.MusicID)//防止异步加载时已经切换歌曲
+                    LoadLrc(ly);
             }
         }
         private void Reset()

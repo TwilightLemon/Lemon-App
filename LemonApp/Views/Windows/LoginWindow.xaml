@@ -4,12 +4,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LemonApp.Views.Windows"
+        xmlns:Wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         mc:Ignorable="d"
-        ResizeMode="CanMinimize"
+        ResizeMode="CanResize"
         WindowStyle="ToolWindow"
         Height="400"
         Width="600">
     <Grid>
-        <WindowsFormsHost x:Name="host" />
+        <Wpf:WebView2 x:Name="wb"/>
     </Grid>
 </Window>
