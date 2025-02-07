@@ -408,15 +408,10 @@
                             Grid.Column="1"
                             Background="{DynamicResource ContentBgColor}"
                             CornerRadius="8">
-                        <ws:Frame Name="MainContentFrame"
-                                  Navigated="MainContentFrame_Navigated"
-                                  NavigationUIVisibility="Hidden">
-                            <ws:Frame.Transition>
-                                <ws:SlideFadeTransition Orientation="Vertical"
-                                                        Duration="0:0:0.300"
-                                                        Distance="80" />
-                            </ws:Frame.Transition>
-                        </ws:Frame>
+                        <Frame Name="MainContentFrame"
+                               Navigated="MainContentFrame_Navigated"
+                               NavigationUIVisibility="Hidden">
+                        </Frame>
                     </Border>
                     <ws:ConditionalControl Condition="{Binding IsLoading}"
                                            Grid.Column="1"

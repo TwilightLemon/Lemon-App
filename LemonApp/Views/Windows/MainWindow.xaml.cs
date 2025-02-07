@@ -123,6 +123,9 @@ namespace LemonApp.Views.Windows
 
         private Storyboard? _showGoBackBtnAni = null;
         private bool _isGoBackBtnShow = false;
+        private Thickness Distance { get; set; } = new Thickness(0, 80, 0, -80);
+        private Thickness ReverseDistance { get; set; } = new Thickness(0, -80, 0, 80);
+        private CircleEase EasingFunction = new();
         private void MainContentFrame_Navigated(object sender, NavigationEventArgs e)
         {
             //GoBackBtn Animation
@@ -148,6 +151,26 @@ namespace LemonApp.Views.Windows
                 var selected = page.Tag as MainWindowViewModel.MainMenu;
                 _vm.SelectedMenu = selected;
             }
+
+            ThicknessAnimation translateAnimation = new()
+            {
+                EasingFunction = EasingFunction,
+                Duration = TimeSpan.FromMilliseconds(300),
+                From = MainContentFrame.CanGoForward?ReverseDistance:Distance,
+                To = default,
+            };
+
+            Storyboard.SetTarget(translateAnimation, (Page)MainContentFrame.Content);
+            Storyboard.SetTargetProperty(translateAnimation, new PropertyPath(nameof(FrameworkElement.Margin)));
+
+            var sb = new Storyboard()
+            {
+                Children =
+                {
+                    translateAnimation
+                }
+            };
+            sb.Begin();
         }
 #endregion
 
