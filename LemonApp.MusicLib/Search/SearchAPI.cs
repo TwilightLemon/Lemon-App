@@ -23,6 +23,7 @@ public static class SearchAPI
                 foreach (var dsli in dsl)
                 {
                     Music m = new();
+                    m.Littleid = dsli["id"].ToString();
                     m.MusicName = dsli["title"].ToString();
                     m.MusicName_Lyric = dsli["desc"].ToString();
                     List<string> Singer = [];

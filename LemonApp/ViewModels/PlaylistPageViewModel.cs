@@ -10,6 +10,7 @@ using System.Windows.Media;
 using LemonApp.MusicLib.Abstraction.Entities;
 using System.Collections.Generic;
 using LemonApp.Common.Funcs;
+using LemonApp.MusicLib.Playlist;
 
 namespace LemonApp.ViewModels;
 
@@ -34,6 +35,9 @@ public partial class PlaylistPageViewModel(
     private bool _showInfoView = true;
     [ObservableProperty]
     private Visibility _showGotoPlaying = Visibility.Collapsed;
+    [ObservableProperty]
+    private bool _isOwned = false;
+    public string? Dirid;
 
     public void Dispose()
     {
@@ -85,40 +89,6 @@ public partial class PlaylistPageViewModel(
     {
         _navigationService.RequstNavigation(PageType.AlbumPage, albumId);
     }
-    private void GotoArtistPage(Profile artist)
-    {
-        _navigationService.RequstNavigation(PageType.ArtistPage, artist);
-    }
-
-    [RelayCommand]
-    private void CheckIfGotoArtistsPopup(Music m)
-    {
-        if (m.Singer.Count == 1)
-        {
-            GotoArtistPage(m.Singer[0]);
-        }
-        else
-        {
-            ToChoosenArtists.Clear();
-            foreach(var s in m.Singer)
-                ToChoosenArtists.Add(s);
-            ShowCheckArtistsPopup = true;
-        }
-    }
-
-    [ObservableProperty]
-    private bool _showCheckArtistsPopup = false;
-    [ObservableProperty]
-    private Profile? _choosenArtist = null;
-
-    partial void OnChoosenArtistChanged(Profile? value)
-    {
-        if(value !=null){
-            GotoArtistPage(value);
-            ShowCheckArtistsPopup = false;
-        }
-    }
-    public ObservableCollection<Profile> ToChoosenArtists { get; set; } = [];
 
     private bool _hasAddToPlaylist = false;
     [RelayCommand]
@@ -150,6 +120,11 @@ public partial class PlaylistPageViewModel(
     private void AddToPlayNext(IList<Music> list)
     {
         _mediaPlayerService.AddToPlayNext(list);
+    }
+    [RelayCommand]
+    private void AddToPlayNextSingle(Music music)
+    {
+        _mediaPlayerService.AddToPlayNext(music);
     }
     public void UpdateCurrentPlaying(string? musicId)
     {

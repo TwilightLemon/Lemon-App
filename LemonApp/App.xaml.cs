@@ -24,6 +24,7 @@ namespace LemonApp
         public static IHost? Host { get; private set; } = null;
         public const string PublicClientFlag = "PublicClient";
         public static new App Current => (App)Application.Current;
+        public static IServiceProvider Services => Host!.Services;
         public new MainWindow MainWindow { get; set; }
         private static void BuildHost()
         {
@@ -86,6 +87,8 @@ namespace LemonApp
                 //MainWindow Components
                 services.AddSingleton<WindowBasicComponent>();
                 services.AddSingleton<PlaylistDataWrapper>();
+                services.AddSingleton<PublicPopupMenuHolder>();
+                services.AddSingleton<PopupSelector>();
 
                 //ViewModels
                 services.AddSingleton<MainWindowViewModel>();

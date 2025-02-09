@@ -1,4 +1,4 @@
-﻿using LemonApp.Common.Funcs;
+using LemonApp.Common.Funcs;
 using LemonApp.MusicLib.Abstraction.UserAuth;
 using LemonApp.MusicLib.User;
 using Microsoft.Web.WebView2.Core;
@@ -21,7 +21,7 @@ namespace LemonApp.Views.Windows
     {
         public Action<TencUserAuth>? OnLoginTenc;
         public Action<NeteaseUserAuth>? OnLoginNetease;
-        public bool LoginTenc { get; set; }
+        public bool LoginTenc { get; set; }=true;
         public LoginWindow(IHttpClientFactory clientFactory)
         {
             InitializeComponent();
@@ -47,7 +47,6 @@ namespace LemonApp.Views.Windows
             }
             var webView2Environment = await CoreWebView2Environment.CreateAsync(null, CacheManager.GetCachePath(CacheManager.CacheType.Other));
             await wb.EnsureCoreWebView2Async(webView2Environment);
-            wb.CoreWebView2.CookieManager.DeleteAllCookies();
             if (LoginTenc)
             {
                 wb.CoreWebView2.SourceChanged += CoreWebView2_SourceChanged;
@@ -67,10 +66,11 @@ namespace LemonApp.Views.Windows
             if (regex.Success)
             {
                 var cookie = await wb.CoreWebView2.CookieManager.GetCookiesAsync("https://music.163.com");
+                var cookieDict = cookie.ToDictionary(i => i.Name, i => i.Value);
                 string id = regex.Value;
                 OnLoginNetease?.Invoke(new()
                 {
-                    Cookie=ToCookieString(cookie),
+                    Cookie=ToCookieString(cookieDict),
                     Id=id
                 });
                 Close();
@@ -84,30 +84,31 @@ namespace LemonApp.Views.Windows
             {
                 var cookie = await wb.CoreWebView2.CookieManager.GetCookiesAsync("https://y.qq.com");
                 var cookie2 = await wb.CoreWebView2.CookieManager.GetCookiesAsync("https://graph.qq.com");
+                var cookieDict = cookie.ToDictionary(i => i.Name, i => i.Value);
 
                 if (cookie2.FirstOrDefault(i=>i.Name=="p_skey") is { } p_skey&&
                     cookie.FirstOrDefault(i=>i.Name=="uin") is { } uin)
                 {
                     string g_tk = TencLogin.CalculateGtk(p_skey.Value);
                     string qq = uin.Value;
+                    string cookieStr = ToCookieString(cookieDict);
                     OnLoginTenc?.Invoke(new TencUserAuth()
                     {
-                        Cookie=ToCookieString(cookie),
+                        Cookie=cookieStr,
                         Id=qq,
                         G_tk=g_tk
                     });
-                    Close();
                 }
             }
         }
 
-        private static string ToCookieString(IEnumerable<CoreWebView2Cookie> cookie)
+        private static string ToCookieString(Dictionary<string,string> cookie)
         {
             StringBuilder cookies = new();
             //format cookies string
             foreach (var item in cookie)
             {
-                cookies.Append(item.Name);
+                cookies.Append(item.Key);
                 cookies.Append('=');
                 cookies.Append(item.Value);
                 cookies.Append("; ");

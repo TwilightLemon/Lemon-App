@@ -35,6 +35,7 @@ public static class AlbumAPI
         {
             Music m = new();
             m.Album = md;
+            m.Littleid = a["songid"].ToString();
             m.MusicID = a["songmid"].ToString();
             m.MusicName = a["songname"].ToString();
             m.Singer = new List<Profile>();

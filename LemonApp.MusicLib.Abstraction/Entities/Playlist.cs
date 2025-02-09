@@ -16,7 +16,5 @@ public class Playlist
     public List<Music>? Musics { get; set; } = null;
 
     public string? DirId { get; set; }
-    public List<string>? Ids { get; set; }
     public bool IsOwner { get; set; } = false;
-    public bool IsFavorite { get; set; } = false;
 }

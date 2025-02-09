@@ -23,13 +23,11 @@ public static class PublicPlaylistAPI
                 Name = diss["nick"].ToString(),
                 Photo = diss["headurl"].ToString()
             };
-            pl.Ids = diss["songids"].ToString().Split(',').ToList();
             pl.IsOwner = diss["login"].ToString() == diss["uin"].ToString();
             pl.Description = diss["desc"].ToString();
             pl.Musics = [];
 
             var list = diss["songlist"].AsArray();
-            int index = 0;
             foreach (var item in list)
             {
                 string songtype = item["songtype"].ToString();
@@ -53,6 +51,7 @@ public static class PublicPlaylistAPI
                 m.MusicName = item["songname"].ToString();
                 m.SingerText = singerText;
                 m.Singer = singers;
+                m.Littleid = item["songid"].ToString();
                 if (songtype == "0")
                 {
                     m.MusicName_Lyric = item["albumdesc"].ToString();
@@ -66,13 +65,10 @@ public static class PublicPlaylistAPI
                             Name = item["albumname"].ToString()
                         };
                     m.Mvmid = item["vid"].ToString();
-                    m.Littleid = pl.Ids[index];
-
                     m.Quality = item["sizeflac"].ToString() != "0" ? MusicQuality.SQ : (item["size320"].ToString() != "0" ? MusicQuality.HQ : MusicQuality.Std);
                 }
 
                 pl.Musics.Add(m);
-                index++;
             }
             return pl;
         }

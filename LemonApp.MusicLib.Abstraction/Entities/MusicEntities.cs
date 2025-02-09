@@ -33,9 +33,6 @@ public class Music
     public AlbumInfo? Album { set; get; }
     public string? Mvmid { set; get; }
     public MusicQuality Quality { set; get; }
-
-    /// <summary>
-    /// 相对于个人歌单里的id   用于“我喜欢”歌单
-    /// </summary>
-    public string? Littleid { set; get; }
+    public string Littleid { set; get; } = "";
+    public int MusicType { set; get; } = 0;
 }

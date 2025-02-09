@@ -18,6 +18,7 @@ using LemonApp.Views.UserControls;
 using LemonApp.MusicLib.Search;
 using System.Net.Http;
 using System.Diagnostics;
+using LemonApp.Components;
 
 namespace LemonApp.Views.Windows
 {
@@ -30,13 +31,15 @@ namespace LemonApp.Views.Windows
            MainWindowViewModel mainWindowViewModel,
            MainNavigationService mainNavigationService,
            IServiceProvider serviceProvider,
-           UIResourceService uiResourceService)
+           UIResourceService uiResourceService,
+           PublicPopupMenuHolder publicPopupMenuHolder)
         {
             InitializeComponent();
 
             _serviceProvider = serviceProvider;
             _mainNavigationService = mainNavigationService;
             _uiResourceService= uiResourceService;
+            _publicPopupMenuHolder = publicPopupMenuHolder;
 
             DataContext = _vm = mainWindowViewModel;
             _vm.RequestNavigateToPage += Vm_RequireNavigateToPage;
@@ -57,6 +60,7 @@ namespace LemonApp.Views.Windows
             NotificationBox.IsOpen = false;
         }
 
+        private readonly PublicPopupMenuHolder _publicPopupMenuHolder;
         private readonly IServiceProvider _serviceProvider;
         private readonly UIResourceService _uiResourceService;
         private readonly MainNavigationService _mainNavigationService;
@@ -114,6 +118,7 @@ namespace LemonApp.Views.Windows
             SystemThemeAPI.RegesterOnThemeChanged(this, OnThemeChanged, OnSystemColorChanged);
 
             visualizer.Player = _serviceProvider.GetRequiredService<MediaPlayerService>().Player;
+            MainContentPage.Children.Add(_publicPopupMenuHolder.selector);
         }
 
         private void GoBackBtn_Click(object sender, RoutedEventArgs e)

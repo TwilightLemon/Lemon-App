@@ -105,6 +105,8 @@ public class PlaylistDataWrapper(IServiceProvider sp,MediaPlayerService ms, User
                 vm.CreatorAvatar = new ImageBrush(await ImageCacheHelper.FetchData(data.Creator!.Photo));
                 vm.CreatorName = data.Creator.Name;
                 vm.PlaylistType = PlaylistType.Playlist;
+                vm.IsOwned = info.IsOwner;
+                vm.Dirid = info.DirId;
 
                 vm.UpdateCurrentPlaying(ms.CurrentMusic?.MusicID);
             }

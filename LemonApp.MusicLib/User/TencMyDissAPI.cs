@@ -8,6 +8,12 @@ namespace LemonApp.MusicLib.User;
 
 public static class TencMyDissAPI
 {
+    /// <summary>
+    /// 我的已购专辑
+    /// </summary>
+    /// <param name="auth"></param>
+    /// <param name="hc"></param>
+    /// <returns></returns>
     public static async Task<List<DataType.AlbumInfo>> GetMyBoughtAlbumList(TencUserAuth auth,HttpClient hc)
     {
         string url = $"https://c.y.qq.com/shop/fcgi-bin/fcg_get_order?from=1&cmd=sales_album&type=1&format=json&inCharset=utf-8&outCharset=utf-8&notice=0&platform=yqq&needNewCode=1&uin={auth.Id}&g_tk={auth.G_tk}&start=0&num=50";
@@ -26,6 +32,12 @@ public static class TencMyDissAPI
         return list;
     }
 
+    /// <summary>
+    /// 我收藏的歌单列表
+    /// </summary>
+    /// <param name="auth"></param>
+    /// <param name="hc"></param>
+    /// <returns></returns>
     public static async Task<List<DataType.Playlist>> GetMyFavoritePlaylist(TencUserAuth auth,HttpClient hc)
     {
         string url = $"https://c.y.qq.com/fav/fcgi-bin/fcg_get_profile_order_asset.fcg?g_tk={auth.G_tk}&loginUin={auth.Id}&hostUin=0&format=json&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq&needNewCode=0&ct=20&cid=205360956&userid={auth.Id}&reqtype=3&sin=0&ein=25";

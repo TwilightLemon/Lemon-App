@@ -8,6 +8,7 @@
       xmlns:ws="https://schemas.elecho.dev/wpfsuite"
       xmlns:converter="clr-namespace:LemonApp.Converters"
       xmlns:common="clr-namespace:LemonApp.Common;assembly=LemonApp.Common"
+      xmlns:component="clr-namespace:LemonApp.Components"
       xmlns:uc="clr-namespace:LemonApp.Views.UserControls"
       xmlns:vm="clr-namespace:LemonApp.ViewModels"
       mc:Ignorable="d"
@@ -215,7 +216,7 @@
         </Border>
 
         <Grid x:Name="ContentView"
-                       Margin="0 208 0 0">
+              Margin="0 208 0 0">
             <Border BorderThickness="1"
                     BorderBrush="{DynamicResource BorderColor}"
                     Background="{DynamicResource TabMaskColor}"
@@ -236,24 +237,33 @@
                                 Placeholder="Search"
                                 TextChanged="ListSearchBox_TextChanged"
                                 Style="{StaticResource SimpleTextBoxStyleForWs}" />
-                    <ws:WrapPanel HorizontalSpacing="12" ItemHeight="30" Margin="20 0" VerticalAlignment="Center">
+                    <ws:WrapPanel HorizontalSpacing="12"
+                                  ItemHeight="30"
+                                  Margin="20 0"
+                                  VerticalAlignment="Center">
                         <TextBlock VerticalAlignment="Center">
-                            <Run Text="{Binding Musics.Count,Mode=OneWay}" d:Text="520"/>
+                            <Run Text="{Binding Musics.Count,Mode=OneWay}"
+                                 d:Text="520" />
                             <Run Text=" Songs" />
                         </TextBlock>
-                        <ToggleButton x:Name="SelectModeTB" Style="{StaticResource AccentToggleButtonStyle}"
+                        <ToggleButton x:Name="SelectModeTB"
+                                      Style="{StaticResource AccentToggleButtonStyle}"
                                       Padding="16 0"
                                       Click="SelectModeTB_Click">
                             Select
                         </ToggleButton>
-                        <ws:Button x:Name="AddToDissBtn" Style="{StaticResource SimpleButtonStyleForWs}"
-                                   Padding="16 0">
-                            Add to My Diss
-                        </ws:Button>
-                        <ws:Button x:Name="AddToNextBtn" Style="{StaticResource SimpleButtonStyleForWs}"
+                        <ws:Button x:Name="AddToBtn"
+                                   Style="{StaticResource SimpleButtonStyleForWs}"
                                    Padding="16 0"
-                                   Click="AddToNextBtn_Click">
-                            Next to play
+                                   Click="AddToBtn_Click">
+                            Add to
+                        </ws:Button>
+                        <ws:Button x:Name="DeleteBtn"
+                                   Visibility="{Binding IsOwned,Converter={x:Static ws:BooleanToVisibilityConverter.Instance}}"
+                                   Style="{StaticResource SimpleButtonStyleForWs}"
+                                   Padding="16 0"
+                                   Click="DeleteBtn_Click">
+                            Delete
                         </ws:Button>
                         <ws:Button Style="{StaticResource SimpleButtonStyleForWs}"
                                    Padding="16 0">
@@ -316,7 +326,7 @@
                                            HorizontalAlignment="Left"
                                            Padding="8 4"
                                            Grid.Column="1"
-                                           Command="{Binding DataContext.CheckIfGotoArtistsPopupCommand,RelativeSource={RelativeSource AncestorType=ws:ListBox}}"
+                                           Command="{x:Static component:PublicPopupMenuHolder.GotoArtistCommand}"
                                            CommandParameter="{Binding}"
                                            Style="{StaticResource SimpleIconButtonStyleForWs}">
                                     <TextBlock Text="{Binding SingerText}" />
@@ -357,30 +367,26 @@
                 </ws:ListBox.ItemTemplate>
             </ws:ListBox>
         </Grid>
-        <!--TODO:作为打开歌手页面选择弹窗，ListBox.Item绑定ViewModel的Command 由其决定如果数量为1则直接打开，数量>1则打开弹窗，弹窗绑定新的数据以选择歌手-->
-        <base:FluentPopup IsOpen="{Binding ShowCheckArtistsPopup}"
+        <base:FluentPopup x:Name="AddtoMenu"
                           StaysOpen="False"
+                          Background="{DynamicResource PopupWndBgColor}"
                           Placement="Mouse">
-            <Grid Width="200">
-                <ws:ListBox ItemsSource="{Binding ToChoosenArtists}"
-                            SelectedItem="{Binding ChoosenArtist}"
-                            Background="Transparent"
-                            BorderThickness="0"
-                            ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}">
-                    <ws:ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Height="40"
-                                  Margin="8 0"
-                                  Background="Transparent">
-                                <TextBlock VerticalAlignment="Center"
-                                           HorizontalAlignment="Center"
-                                           Text="{Binding Name}" />
-                            </Grid>
-                        </DataTemplate>
-                    </ws:ListBox.ItemTemplate>
-
-                </ws:ListBox>
-            </Grid>
+            <ws:StackPanel>
+                <ws:Button Style="{StaticResource SimpleButtonStyleForWs}"
+                           Padding="16 8"
+                           CornerRadius="0"
+                           Background="Transparent"
+                           Click="AddToDissBtn_Click">
+                    My Diss
+                </ws:Button>
+                <ws:Button Style="{StaticResource SimpleButtonStyleForWs}"
+                           Padding="16 8"
+                           CornerRadius="0"
+                           Background="Transparent"
+                           Click="AddToNextBtn_Click">
+                    Next To Play
+                </ws:Button>
+            </ws:StackPanel>
         </base:FluentPopup>
         <ws:Button x:Name="GotoPlayingBtn"
                    HorizontalAlignment="Right"

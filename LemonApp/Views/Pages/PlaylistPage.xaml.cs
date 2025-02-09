@@ -1,6 +1,11 @@
 ﻿using LemonApp.MusicLib.Abstraction.Entities;
+using LemonApp.Services;
 using LemonApp.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
@@ -103,9 +108,43 @@ namespace LemonApp.Views.Pages
 
         private void AddToNextBtn_Click(object sender, RoutedEventArgs e)
         {
-            _vm?.AddToPlayNextCommand.Execute(listBox.SelectedItems);
             if (listBox.SelectionMode == SelectionMode.Multiple)
+            {
+                _vm?.AddToPlayNextCommand.Execute(listBox.SelectedItems);
                 listBox.SelectedItems.Clear();
+            }
+            else
+            {
+                _vm?.AddToPlayNextSingleCommand.Execute(listBox.SelectedItem);
+            }
+            AddtoMenu.IsOpen = false;
+        }
+
+        private void AddToDissBtn_Click(object sender, RoutedEventArgs e)
+        {
+            List<Music> selectedItems = listBox.SelectionMode == SelectionMode.Multiple ?
+                                            [.. listBox.SelectedItems.Cast<Music>()] : [(Music)listBox.SelectedItem];
+            Components.PublicPopupMenuHolder.AddToMyDissCommand?.Execute(selectedItems);
+            AddtoMenu.IsOpen = false;
+        }
+
+        private  void DeleteBtn_Click(object sender, RoutedEventArgs e)
+        {
+            //TODO:  单独装一个service
+            List<Music> selectedItems = listBox.SelectionMode == SelectionMode.Multiple ?
+                                            [.. listBox.SelectedItems.Cast<Music>()] : [(Music)listBox.SelectedItem];
+
+            var hc = App.Services.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
+            var auth = App.Services.GetRequiredService<UserProfileService>().GetAuth();
+            var success = MusicLib.Playlist.PlaylistManageAPI.WriteMusicsToMyDissAsync(hc, auth, _vm.Dirid, selectedItems,delete:true);
+            App.Services.GetRequiredService<MainNavigationService>().RequstNavigation(PageType.Notification, $"Successfully deleted {selectedItems.Count} songs to {_vm.ListName}");
+
+        }
+
+        private async void AddToBtn_Click(object sender, RoutedEventArgs e)
+        {
+            await Task.Yield();
+            AddtoMenu.IsOpen = true;
         }
 
         public PlaylistPageViewModel? ViewModel
