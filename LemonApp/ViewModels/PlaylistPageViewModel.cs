@@ -16,11 +16,10 @@ namespace LemonApp.ViewModels;
 
 public partial class PlaylistPageViewModel(
     MainNavigationService navigationService,
-    MediaPlayerService mediaPlayerService
+    MediaPlayerService mediaPlayerService,
+    UserDataManager userDataManager
     ) :ObservableObject,IDisposable
 {
-    private readonly MainNavigationService _navigationService =navigationService;
-    private readonly MediaPlayerService _mediaPlayerService = mediaPlayerService;
     [ObservableProperty]
     private string _listName= "";
     [ObservableProperty]
@@ -59,6 +58,19 @@ public partial class PlaylistPageViewModel(
         }
     }
 
+    public async void DeleteMusicFromDirid(IList<Music> musics)
+    {
+        if (string.IsNullOrWhiteSpace(Dirid)) return;
+        bool success=await userDataManager.DeleteSongsFromDirid(Dirid, musics, ListName);
+        if (success)
+        {
+            foreach (var item in musics)
+            {
+                Musics.Remove(item);
+            }
+        }
+    }
+
     //TODO: 接入LoadMore
     public event Action? OnLoadMoreRequired;
     public void LoadMore()
@@ -87,7 +99,7 @@ public partial class PlaylistPageViewModel(
     [RelayCommand]
     private void GotoAlbumPage(string albumId)
     {
-        _navigationService.RequstNavigation(PageType.AlbumPage, albumId);
+        navigationService.RequstNavigation(PageType.AlbumPage, albumId);
     }
 
     private bool _hasAddToPlaylist = false;
@@ -98,13 +110,13 @@ public partial class PlaylistPageViewModel(
         //在当前页面第二次点击时添加整个列表
         if (PlaylistType == PlaylistType.Other&&!_hasAddToPlaylist)
         {
-            _mediaPlayerService.AddToPlayNext(m);
+            mediaPlayerService.AddToPlayNext(m);
             _hasAddToPlaylist = true;
         }
         else
-            _mediaPlayerService.ReplacePlayList(Musics);
+            mediaPlayerService.ReplacePlayList(Musics);
 
-        await _mediaPlayerService.LoadThenPlay(m);
+        await mediaPlayerService.LoadThenPlay(m);
     }
     [RelayCommand]
     private async Task PlayAll()
@@ -112,19 +124,19 @@ public partial class PlaylistPageViewModel(
         if(Musics.Count == 0)
             return;
 
-        _mediaPlayerService.ReplacePlayList(Musics);
-        await _mediaPlayerService.LoadThenPlay(Musics[0]);
+        mediaPlayerService.ReplacePlayList(Musics);
+        await mediaPlayerService.LoadThenPlay(Musics[0]);
     }
 
     [RelayCommand]
     private void AddToPlayNext(IList<Music> list)
     {
-        _mediaPlayerService.AddToPlayNext(list);
+        mediaPlayerService.AddToPlayNext(list);
     }
     [RelayCommand]
     private void AddToPlayNextSingle(Music music)
     {
-        _mediaPlayerService.AddToPlayNext(music);
+        mediaPlayerService.AddToPlayNext(music);
     }
     public void UpdateCurrentPlaying(string? musicId)
     {

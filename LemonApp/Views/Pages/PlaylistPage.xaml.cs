@@ -37,7 +37,7 @@ namespace LemonApp.Views.Pages
         }
         private Storyboard? _hideInfoViewAni, _showInfoViewAni;
         private bool _isHideInfoView = false;
-        private PlaylistPageViewModel? _vm;
+        private PlaylistPageViewModel _vm= null;
         private void PlaylistPage_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if (e.NewValue is PlaylistPageViewModel { } vm)
@@ -85,12 +85,12 @@ namespace LemonApp.Views.Pages
         private void listBox_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (listBox.SelectedItem is Music { } m)
-                _vm!.PlayMusicCommand.Execute(m);
+                _vm.PlayMusicCommand.Execute(m);
         }
 
         private void GotoPlayingBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (_vm?.Playing is Music { } m)
+            if (_vm.Playing is Music { } m)
             {
                 listBox.ScrollIntoView(m);
             }
@@ -98,7 +98,7 @@ namespace LemonApp.Views.Pages
 
         private void ListSearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            _vm?.SearchItem(ListSearchBox.Text);
+            _vm.SearchItem(ListSearchBox.Text);
         }
 
         private void SelectModeTB_Click(object sender, RoutedEventArgs e)
@@ -110,12 +110,12 @@ namespace LemonApp.Views.Pages
         {
             if (listBox.SelectionMode == SelectionMode.Multiple)
             {
-                _vm?.AddToPlayNextCommand.Execute(listBox.SelectedItems);
+                _vm.AddToPlayNextCommand.Execute(listBox.SelectedItems);
                 listBox.SelectedItems.Clear();
             }
             else
             {
-                _vm?.AddToPlayNextSingleCommand.Execute(listBox.SelectedItem);
+                _vm.AddToPlayNextSingleCommand.Execute(listBox.SelectedItem);
             }
             AddtoMenu.IsOpen = false;
         }
@@ -128,17 +128,12 @@ namespace LemonApp.Views.Pages
             AddtoMenu.IsOpen = false;
         }
 
-        private  void DeleteBtn_Click(object sender, RoutedEventArgs e)
+        private void DeleteBtn_Click(object sender, RoutedEventArgs e)
         {
-            //TODO:  单独装一个service
             List<Music> selectedItems = listBox.SelectionMode == SelectionMode.Multiple ?
                                             [.. listBox.SelectedItems.Cast<Music>()] : [(Music)listBox.SelectedItem];
 
-            var hc = App.Services.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
-            var auth = App.Services.GetRequiredService<UserProfileService>().GetAuth();
-            var success = MusicLib.Playlist.PlaylistManageAPI.WriteMusicsToMyDissAsync(hc, auth, _vm.Dirid, selectedItems,delete:true);
-            App.Services.GetRequiredService<MainNavigationService>().RequstNavigation(PageType.Notification, $"Successfully deleted {selectedItems.Count} songs to {_vm.ListName}");
-
+            _vm.DeleteMusicFromDirid(selectedItems);
         }
 
         private async void AddToBtn_Click(object sender, RoutedEventArgs e)

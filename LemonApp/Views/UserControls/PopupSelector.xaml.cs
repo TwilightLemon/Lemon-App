@@ -20,26 +20,20 @@ namespace LemonApp.Views.UserControls
     [ObservableObject]
     public partial class PopupSelector : UserControl
     {
-        public PopupSelector(MainNavigationService mainNavigationService,
-            IHttpClientFactory hcFactory,
-            UserProfileService userProfile)
+        public PopupSelector(MainNavigationService mainNavigationService, UserDataManager userDataManager)
         {
             InitializeComponent();
             DataContext = this;
             navigationService = mainNavigationService;
-            httpClientFactory = hcFactory;
-            userProfileService = userProfile;
+            this.userDataManager = userDataManager;
         }
-        private readonly IHttpClientFactory httpClientFactory;
-        private readonly UserProfileService userProfileService;
+        private readonly UserDataManager userDataManager;
         private readonly MainNavigationService navigationService;
 
         [RelayCommand]
         private async Task AddToMyDiss(IList<Music> musics)
         {
-            var hc = httpClientFactory.CreateClient(App.PublicClientFlag);
-            var auth = userProfileService.GetAuth();
-            var data = await PlaylistManageAPI.GetMyDissListAsync(hc,auth);
+            var data = await userDataManager.GetUserPlaylists();
             MyDissList.Clear();
             foreach(var item in data)
             {
@@ -48,20 +42,18 @@ namespace LemonApp.Views.UserControls
             ToAddedMusics = musics;
             IsShowDissSelector = true;
         }
-        private IList<Music> ToAddedMusics;
+        private IList<Music>? ToAddedMusics;
         public ObservableCollection<Playlist> MyDissList { get; set; } = [];
         [ObservableProperty]
         private bool _isShowDissSelector = false;
         [ObservableProperty]
         private Playlist? _selectedDiss;
-        partial void OnSelectedDissChanged(Playlist? value)
+        async partial void OnSelectedDissChanged(Playlist? value)
         {
             //add to diss
-            if (value == null) return;
-            var hc = httpClientFactory.CreateClient(App.PublicClientFlag);
-            var auth = userProfileService.GetAuth();
-            var success = PlaylistManageAPI.WriteMusicsToMyDissAsync(hc,auth,value.DirId,ToAddedMusics);
-            navigationService.RequstNavigation(PageType.Notification, $"Successfully added {ToAddedMusics.Count} songs to {value.Name}");
+            if (value == null||value.DirId==null||ToAddedMusics==null) return;
+
+            await userDataManager.AddSongsToDirid(value.DirId, ToAddedMusics, value.Name);
             IsShowDissSelector = false;
         }
 

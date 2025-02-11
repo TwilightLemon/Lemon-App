@@ -358,9 +358,9 @@
                                 <Setter TargetName="Highlighter"
                                         Property="Condition"
                                         Value="True" />
-                                <Setter TargetName="_border"
+                                <!--<Setter TargetName="_border"
                                         Property="Background"
-                                        Value="{DynamicResource MaskColor}" />
+                                        Value="{DynamicResource MaskColor}" />-->
                             </DataTrigger>
                         </DataTemplate.Triggers>
                     </DataTemplate>
@@ -369,6 +369,7 @@
         </Grid>
         <base:FluentPopup x:Name="AddtoMenu"
                           StaysOpen="False"
+                          ExtPopupAnimation="SlideDown"
                           Background="{DynamicResource PopupWndBgColor}"
                           Placement="Mouse">
             <ws:StackPanel>

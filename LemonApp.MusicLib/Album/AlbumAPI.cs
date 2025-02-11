@@ -28,7 +28,7 @@ public static class AlbumAPI
         {
             Name = o["data"]["singername"].ToString(),
             Mid = o["data"]["singermid"].ToString(),
-            Photo = $"https://y.gtimg.cn/music/photo_new/T001R500x500M000{o["data"]["singermid"].ToString()}.jpg?max_age=2592000"
+            Photo = $"https://y.gtimg.cn/music/photo_new/T001R500x500M000{o["data"]["singermid"]}.jpg?max_age=2592000"
         };
         int i = 0;
         foreach (var a in list.AsArray())

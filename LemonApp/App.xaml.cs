@@ -13,6 +13,9 @@ using System.Diagnostics;
 using System;
 using LemonApp.MusicLib.Media;
 using LemonApp.Components;
+using Polly.Extensions.Http;
+using Polly.Retry;
+using Polly;
 
 namespace LemonApp
 {
@@ -26,6 +29,12 @@ namespace LemonApp
         public static new App Current => (App)Application.Current;
         public static IServiceProvider Services => Host!.Services;
         public new MainWindow MainWindow { get; set; }
+
+        // 定义重试策略
+        internal static AsyncRetryPolicy<HttpResponseMessage> retryPolicy = HttpPolicyExtensions
+            .HandleTransientHttpError()
+            .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
+            .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
         private static void BuildHost()
         {
             var builder = new HostBuilder();
@@ -37,7 +46,7 @@ namespace LemonApp
                     AutomaticDecompression = System.Net.DecompressionMethods.GZip,
                     UseCookies=true,
                     UseProxy = true
-                });
+                }).AddPolicyHandler(retryPolicy);
 
 
                 //host
@@ -60,6 +69,7 @@ namespace LemonApp
                 services.AddSingleton<UserProfileService>();
                 services.AddSingleton<MainNavigationService>();
                 services.AddSingleton<MediaPlayerService>();
+                services.AddSingleton<UserDataManager>();
 
                 //window
                 services.AddSingleton<MainWindow>();

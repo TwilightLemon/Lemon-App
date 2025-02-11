@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Segoe Fluent Icons.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
 	  <PackageReference Include="EleCho.WpfSuite" Version="0.8.1" />
 	  <PackageReference Include="System.Runtime.Caching" Version="8.0.1" />
@@ -38,6 +42,10 @@
     <Reference Include="Bass.Net">
       <HintPath>Resources\Bass.Net.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Segoe Fluent Icons.ttf" />
   </ItemGroup>
 
 </Project>

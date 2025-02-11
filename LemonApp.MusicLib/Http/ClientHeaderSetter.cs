@@ -1,17 +1,5 @@
-﻿using LemonApp.Common.Funcs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LemonApp.MusicLib.Http;
-
-/*
- TODO: re-design HttpClientFactory for each header, and use DI to inject them.
- */
-
-internal static class ClientHeaderSetter
+﻿namespace LemonApp.MusicLib.Http;
+public static class ClientHeaderSetter
 {
     /// <summary>
     /// c.y.qq.com
@@ -72,6 +60,12 @@ internal static class ClientHeaderSetter
         hc.DefaultRequestHeaders.TryAddWithoutValidation("Host", "music.163.com");
         return hc;
     }
+    /// <summary>
+    /// pure cookie and useragent
+    /// </summary>
+    /// <param name="hc"></param>
+    /// <param name="cookie"></param>
+    /// <returns></returns>
     public static HttpClient SetCookie(this HttpClient hc, string cookie) {
         hc.DefaultRequestHeaders.Clear();
         hc.DefaultRequestHeaders.UserAgent.TryParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.110 Safari/537.36");

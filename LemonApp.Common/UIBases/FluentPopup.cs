@@ -64,6 +64,11 @@ public class FluentPopup:Popup
         SlideDown
     }
     private DoubleAnimation? _slideAni;
+    static FluentPopup()
+    {
+        //对IsOpenProperty添加PropertyChangedCallback
+        IsOpenProperty.OverrideMetadata(typeof(FluentPopup), new FrameworkPropertyMetadata(false, OnIsOpenChanged));
+    }
     public FluentPopup()
     {
         Opened += FluentPopup_Opened;
@@ -115,6 +120,16 @@ public class FluentPopup:Popup
 
     #endregion
     #region 启动动画控制
+    private static void OnIsOpenChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if (d is FluentPopup popup)
+        {
+            if ((bool)e.NewValue)
+            {
+                popup.BuildAnimation();
+            }
+        }
+    }
     private void FluentPopup_Closed(object? sender, EventArgs e)
     {
         ResetAnimation();
@@ -143,18 +158,17 @@ public class FluentPopup:Popup
         if (ExtPopupAnimation is ExPopupAnimation.SlideUp or ExPopupAnimation.SlideDown)
         {
             BeginAnimation(VerticalOffsetProperty, null);
-            VerticalOffset -= ExtPopupAnimation == ExPopupAnimation.SlideUp ? SlideAnimationOffset : -SlideAnimationOffset;
         }
     }
     public void BuildAnimation()
     {
         if (ExtPopupAnimation is ExPopupAnimation.SlideUp or ExPopupAnimation.SlideDown)
         {
-            _slideAni = new DoubleAnimation(VerticalOffset, TimeSpan.FromMilliseconds(300))
+            _slideAni = new DoubleAnimation(VerticalOffset+(ExtPopupAnimation == ExPopupAnimation.SlideUp ?
+                SlideAnimationOffset : -SlideAnimationOffset),VerticalOffset, TimeSpan.FromMilliseconds(300))
             {
                 EasingFunction = new CubicEase()
             };
-            VerticalOffset += ExtPopupAnimation ==ExPopupAnimation.SlideUp ? SlideAnimationOffset : -SlideAnimationOffset;
         }
     }
     public void RunPopupAnimation()

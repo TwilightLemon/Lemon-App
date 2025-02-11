@@ -14,6 +14,7 @@
         <!--添加到歌单弹窗-->
         <base:FluentPopup IsOpen="{Binding IsShowDissSelector}"
                           StaysOpen="False"
+                          ExtPopupAnimation="SlideDown"
                           Background="{DynamicResource PopupWndBgColor}"
                           Placement="Mouse">
             <Grid MaxHeight="500">
@@ -41,6 +42,7 @@
         <!--选择歌手弹窗-->
         <base:FluentPopup IsOpen="{Binding ShowCheckArtistsPopup}"
                           StaysOpen="False"
+                          ExtPopupAnimation="SlideDown"
                           Background="{DynamicResource PopupWndBgColor}"
                           Placement="Mouse">
             <Grid>

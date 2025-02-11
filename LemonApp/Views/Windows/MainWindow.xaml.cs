@@ -52,6 +52,16 @@ namespace LemonApp.Views.Windows
             Loaded += MainWindow_Loaded;
         }
 
+        private readonly PublicPopupMenuHolder _publicPopupMenuHolder;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly UIResourceService _uiResourceService;
+        private readonly MainNavigationService _mainNavigationService;
+        private readonly MainWindowViewModel _vm;
+
+        /// <summary>
+        /// Show Notification
+        /// </summary>
+        /// <param name="obj"></param>
         private async void Vm_RequestNotify(string obj)
         {
             NotificationBox.IsOpen = true;
@@ -59,12 +69,6 @@ namespace LemonApp.Views.Windows
             await Task.Delay(4000);
             NotificationBox.IsOpen = false;
         }
-
-        private readonly PublicPopupMenuHolder _publicPopupMenuHolder;
-        private readonly IServiceProvider _serviceProvider;
-        private readonly UIResourceService _uiResourceService;
-        private readonly MainNavigationService _mainNavigationService;
-        private readonly MainWindowViewModel _vm;
 
         /// <summary>
         /// Respond to system theme color (dark mode) changed.
@@ -88,6 +92,7 @@ namespace LemonApp.Views.Windows
             WindowState = WindowState.Normal;
             Activate();
         }
+
         #region MainContentFrame
         private void Vm_SyncCurrentPlayingWithPlayListPage(string mid)
         {
@@ -355,7 +360,7 @@ namespace LemonApp.Views.Windows
                 }
             }
         }
-        private readonly HttpClient _hc = new();
+        private readonly HttpClient hcForSearch = App.Services.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
 
         private async void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -376,15 +381,9 @@ namespace LemonApp.Views.Windows
                 await Task.Yield();
                 SearchHintPopup.IsOpen = true;
             }
-            var hints = await SearchHintAPI.GetSearchHintAsync(SearchBox.Text, _hc);// Manage HttpClient
+            var hints = await SearchHintAPI.GetSearchHintAsync(SearchBox.Text, hcForSearch);
             (SearchHintPopup.Child as SearchHintView)!.Hints = hints;
         }
         #endregion
-        // private void Border_MouseDown(object sender, MouseButtonEventArgs e){
-        //     _appSettingsService.GetConfigMgr<Appearence>().Data.AccentColorMode=Appearence.AccentColorType.Custome;
-        //     _appSettingsService.GetConfigMgr<Appearence>().Data.AccentColor=Colors.LightYellow;
-
-        //     _uiResourceService.UpdateAccentColor();
-        // }
     }
 }
