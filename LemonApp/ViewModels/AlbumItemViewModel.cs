@@ -41,7 +41,7 @@ public partial class AlbumItemViewModel(
         Albums.Clear();
         foreach (var item in list)
         {
-            var cover = await ImageCacheHelper.FetchData(item.Photo);
+            var cover = await ImageCacheService.FetchData(item.Photo);
             Albums.Add(new(item,cover));
         }
     }

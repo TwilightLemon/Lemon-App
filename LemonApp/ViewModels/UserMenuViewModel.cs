@@ -100,6 +100,7 @@ public partial class UserMenuViewModel:ObservableObject
         var loginWindow = sp.GetRequiredService<LoginWindow>();
         var user = sp.GetRequiredService<UserProfileService>();
         loginWindow.OnLoginNetease = user.UpdateNeteaseAuth;
+        loginWindow.LoginTenc = false;
         loginWindow.ShowDialog();
     }
     static void Menu_Theme()

@@ -83,6 +83,14 @@ public class MediaPlayerService(UserProfileService userProfileService,
         if (await Load(music))
             Play();
     }
+    public void ReplacePlayFile(string path)
+    {
+        if (File.Exists(path))
+        {
+            _player.Load(path);
+            _player.Play();
+        }
+    }
     public Task<bool> Load(Music music)
     {
         return LoadMusic(music, _playingMgr.Data.Quality);

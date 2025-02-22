@@ -245,6 +245,7 @@ public partial class MainWindowViewModel : ObservableObject
         }
     }
 
+    public void ReplacePlayFile(string path) => _mediaPlayerService.ReplacePlayFile(path);
     private void MediaPlayerService_FailedToLoadMusic(Music m)
     {
         _mainNavigationService.RequstNavigation(PageType.Notification, $"Failed to load music: {m.MusicName} - {m.SingerText}");
@@ -671,7 +672,7 @@ public partial class MainWindowViewModel : ObservableObject
     private async Task UpdateCover()
     {
         var hc = () => _serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
-        var cover = await ImageCacheHelper.FetchData(await CoverGetter.GetCoverImgUrl(hc, _userProfileService.GetAuth(), CurrentPlaying!));
+        var cover = await ImageCacheService.FetchData(await CoverGetter.GetCoverImgUrl(hc, _userProfileService.GetAuth(), CurrentPlaying!));
         if (cover != null)
         {
             CurrentPlayingCover = new ImageBrush(cover);

@@ -28,7 +28,7 @@ public class PlaylistDataWrapper(IServiceProvider sp,MediaPlayerService ms, User
             var data = await RankListAPI.GetRankListData(info.Id, hc);
             if (data != null)
             {
-                vm.Cover = new ImageBrush(await ImageCacheHelper.FetchData(info.CoverUrl));
+                vm.Cover = new ImageBrush(await ImageCacheService.FetchData(info.CoverUrl));
                 vm.Description = info.Description;
                 vm.ListName = info.Name;
                 vm.PlaylistType = PlaylistType.Ranklist;
@@ -52,11 +52,11 @@ public class PlaylistDataWrapper(IServiceProvider sp,MediaPlayerService ms, User
         if (page != null && hc != null && auth != null)
         {
             var data = await AlbumAPI.GetAlbumTracksByIdAync(hc, auth, AlbumId);
-            vm.Cover = new ImageBrush(await ImageCacheHelper.FetchData(data.Photo));
+            vm.Cover = new ImageBrush(await ImageCacheService.FetchData(data.Photo));
             vm.Description = data.Description ?? "";
             vm.ListName = data.Name;
             vm.InitMusicList(data.Musics!);
-            vm.CreatorAvatar = new ImageBrush(await ImageCacheHelper.FetchData(data.Creator!.Photo));
+            vm.CreatorAvatar = new ImageBrush(await ImageCacheService.FetchData(data.Creator!.Photo));
             vm.CreatorName = data.Creator.Name;
             vm.PlaylistType = PlaylistType.Album;
 
@@ -98,11 +98,11 @@ public class PlaylistDataWrapper(IServiceProvider sp,MediaPlayerService ms, User
                 :await NeteasePlaylistAPI.GetNeteasePlaylistByIdAsync(hc,user.GetNeteaseAuth(),info.Id);
             if (data != null)
             {
-                vm.Cover = new ImageBrush(await ImageCacheHelper.FetchData(data.Photo));
+                vm.Cover = new ImageBrush(await ImageCacheService.FetchData(data.Photo));
                 vm.Description = data.Description ?? "";
                 vm.ListName = data.Name;
                 vm.InitMusicList(data.Musics!);
-                vm.CreatorAvatar = new ImageBrush(await ImageCacheHelper.FetchData(data.Creator!.Photo));
+                vm.CreatorAvatar = new ImageBrush(await ImageCacheService.FetchData(data.Creator!.Photo));
                 vm.CreatorName = data.Creator.Name;
                 vm.PlaylistType = PlaylistType.Playlist;
                 vm.IsOwned = info.IsOwner;

@@ -92,7 +92,7 @@ public class UserProfileService(
     public async  Task<BitmapImage?> GetAvatorImg()
     {
         if(_profileMgr is { } mgr && mgr.Data.AvatarUrl is { } url)
-            return await ImageCacheHelper.FetchData(url);
+            return await ImageCacheService.FetchData(url);
 
         return null;
     }

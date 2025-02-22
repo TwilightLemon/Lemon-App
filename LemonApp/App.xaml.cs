@@ -70,6 +70,7 @@ namespace LemonApp
                 services.AddSingleton<MainNavigationService>();
                 services.AddSingleton<MediaPlayerService>();
                 services.AddSingleton<UserDataManager>();
+                services.AddSingleton<ImageCacheService>();
 
                 //window
                 services.AddSingleton<MainWindow>();

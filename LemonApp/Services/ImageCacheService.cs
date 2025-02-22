@@ -1,47 +1,53 @@
-﻿using System.Diagnostics;
+﻿using LemonApp.Common.Funcs;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Runtime.Caching;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
-namespace LemonApp.Common.Funcs;
+namespace LemonApp.Services;
 /*
  图片三级缓存  Memory->File->Internet
  */
 
-public class ImageCacheHelper
+public class ImageCacheService
 {
-    private static readonly MemoryCache _cache = new MemoryCache("ImageCache");
-    private static CacheItemPolicy _cachePolicy = new CacheItemPolicy
+    private readonly MemoryCache _cache = new MemoryCache("ImageCache");
+    private CacheItemPolicy _cachePolicy = new CacheItemPolicy
     {
         SlidingExpiration = TimeSpan.FromMinutes(10),
-        RemovedCallback=new CacheEntryRemovedCallback((e) => {
+        RemovedCallback = new CacheEntryRemovedCallback((e) =>
+        {
             Debug.WriteLine($"Cache item '{e.CacheItem.Key}' was removed because {e.RemovedReason}");
         })
     };
-    private static readonly HttpClient _client = new(new SocketsHttpHandler()
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly HttpClient _client;
+    public ImageCacheService(IHttpClientFactory httpClientFactory)
     {
-        AutomaticDecompression = DecompressionMethods.GZip,
-        AllowAutoRedirect = true
-    });
-    static ImageCacheHelper()
-    {
+        _httpClientFactory = httpClientFactory;
+        _client = _httpClientFactory.CreateClient(App.PublicClientFlag);
         _client.DefaultRequestHeaders.Accept.TryParseAdd("text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
         _client.DefaultRequestHeaders.AcceptLanguage.TryParseAdd("zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6");
         _client.DefaultRequestHeaders.Add("Upgrade-Insecure-Requests", "1");
         _client.DefaultRequestHeaders.UserAgent.TryParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.110 Safari/537.36");
     }
-
-    public static async Task<BitmapImage?> FetchData(string url)
+    static readonly ImageCacheService Instance = App.Services.GetRequiredService<ImageCacheService>();
+    public static Task<BitmapImage?> FetchData(string url)
+        => Instance.GetImage(url);
+    public async Task<BitmapImage?> GetImage(string url)
     {
         var img = GetFromMem(url);
         if (img is { })
         {
             return img;
         }
-        img = GetFromFile(url);
+        img = await GetFromFile(url);
         if (img != null)
         {
             _cache.Add(url, img, _cachePolicy);
@@ -60,7 +66,7 @@ public class ImageCacheHelper
         var fileName = TextHelper.MD5Hash(url) + ".jpg";
         return Path.Combine(CacheManager.GetCachePath(CacheManager.CacheType.Image), fileName);
     }
-    private static BitmapImage? GetFromMem(string url)
+    private BitmapImage? GetFromMem(string url)
     {
         if (_cache.Get(url) is BitmapImage img)
         {
@@ -69,44 +75,33 @@ public class ImageCacheHelper
         }
         return null;
     }
-    private static async Task<BitmapImage?> GetFromWeb(string url)
+    private async Task<BitmapImage?> GetFromWeb(string url)
     {
-        try
-        {
-            string file = GetLocalFilePath(url);
-            var fs= File.Create(file);
-            var stream = await _client.GetStreamAsync(url);
-            await stream.CopyToAsync(fs);
-            fs.Dispose();
-            stream.Dispose();
-            Debug.WriteLine("img loaded from web.");
-            return GetFromFile(url);
-        }
-        catch {
-            Debug.WriteLine("failed to load img from web.");
-            return null;
-        }
+        var res = await _client.GetAsync(url);
+        res.EnsureSuccessStatusCode();
+        using var stream = await res.Content.ReadAsStreamAsync();
+
+        string file = GetLocalFilePath(url);
+        using var fs = File.Create(file);
+        await stream.CopyToAsync(fs);
+        await fs.DisposeAsync();
+        Debug.WriteLine("img loaded from web.");
+        return await GetFromFile(url);
     }
-    private static BitmapImage? GetFromFile(string url)
+    private static Task<BitmapImage?> GetFromFile(string url)
     {
-        try
+        return Task.Run(() =>
         {
             string file = GetLocalFilePath(url);
             if (!Path.Exists(file)) return null;
-            using var fs = File.OpenRead(file);
+
             var img = new BitmapImage();
             img.BeginInit();
             img.CacheOption = BitmapCacheOption.OnLoad;
-            img.StreamSource = fs;
+            img.UriSource = new Uri(file);
             img.EndInit();
-            if (img.CanFreeze)
-                img.Freeze();
+            img.Freeze();
             return img;
-        }
-        catch
-        {
-            Debug.WriteLine("failed to load img from file.");
-            return null;
-        }
+        });
     }
 }

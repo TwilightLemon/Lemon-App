@@ -445,6 +445,8 @@
                             MaxWidth="500"/>
                     <Border x:Name="LyricPage_Img"
                             HorizontalAlignment="Stretch"
+                            AllowDrop="True"
+                            Drop="LyricPage_Img_Drop"
                             Height="{Binding ElementName=LyricPage_Img,Path=ActualWidth}"
                             d:Background="Pink"
                             RenderOptions.BitmapScalingMode="HighQuality"

@@ -362,6 +362,11 @@ namespace LemonApp.Views.Windows
         }
         private readonly HttpClient hcForSearch = App.Services.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
 
+        private void LyricPage_Img_Drop(object sender, DragEventArgs e)
+        {
+            _vm.ReplacePlayFile(((Array)e.Data.GetData(DataFormats.FileDrop)).GetValue(0).ToString());
+        }
+
         private async void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(SearchBox.Text))

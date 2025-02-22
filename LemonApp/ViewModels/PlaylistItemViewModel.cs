@@ -41,7 +41,7 @@ public partial class PlaylistItemViewModel(
         {
             foreach (var item in list)
             {
-                var cover = await ImageCacheHelper.FetchData(item.Photo);
+                var cover = await ImageCacheService.FetchData(item.Photo);
                 Playlists.Add(new(item, cover));
             }
         }
