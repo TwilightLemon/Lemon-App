@@ -28,6 +28,7 @@ public class AppSettingsService(
             _settingsMgrs.Add(typeof(T),mgr);
         return this;
     }
+    //TODO:  modify to required method
     public SettingsMgr<T>? GetConfigMgr<T>() where T : class{
         if(_settingsMgrs.TryGetValue(typeof(T),out var mgr))
             return (SettingsMgr<T>)mgr;

@@ -60,9 +60,17 @@ namespace LemonApp
                         .AddConfig<Appearance>()
                         .AddConfig<PlayingPreference>()
                         .AddConfig<PlaylistCache>(Common.Funcs.Settings.sType.Cache)
+                        .AddConfig<DownloadServiceCache>(Common.Funcs.Settings.sType.Cache)
                         .AddConfig<DesktopLyricOption>()
                         .AddConfig<LyricOption>()
                 );
+
+                /*services.AddSingleton<DownloadService>();
+                services.AddHostedService(p => p.GetRequiredService<DownloadService>());*/
+
+                services.AddSingleton<MyToolBarLyricClient>();
+                services.AddHostedService(p => p.GetRequiredService<MyToolBarLyricClient>());
+
 
                 //services
                 services.AddSingleton<UIResourceService>();

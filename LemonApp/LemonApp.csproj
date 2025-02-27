@@ -18,6 +18,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
+		<PackageReference Include="Downloader" Version="3.3.3" />
 		<PackageReference Include="EleCho.WpfSuite" Version="0.8.1" />
 		<PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />

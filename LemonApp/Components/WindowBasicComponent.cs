@@ -1,5 +1,6 @@
 ﻿using LemonApp.Common.WinAPI;
 using LemonApp.Services;
+using LemonApp.Views.UserControls;
 using LemonApp.Views.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.WindowsAPICodePack.Taskbar;
@@ -14,8 +15,10 @@ namespace LemonApp.Components;
 /// <summary>
 /// Basic Components for MainWindow, including TaskBar, NotifyIcon, Singleton Wakeup, Hot Keys(TODO), etc.
 /// </summary>
-public class WindowBasicComponent(IServiceProvider serviceProvider,MediaPlayerService mediaPlayerService):IDisposable
+public class WindowBasicComponent(IServiceProvider serviceProvider,
+    MediaPlayerService mediaPlayerService):IDisposable
 {
+    public event Action<string?>? OnCopyDataReceived;
     public void Dispose()
     {
         TaskBarImg?.Dispose();
@@ -164,12 +167,12 @@ public class WindowBasicComponent(IServiceProvider serviceProvider,MediaPlayerSe
             await procMgr.SaveAsync();
         }
     }
-    private static void RegisterWakeup()
+    private void RegisterWakeup()
     {
         HwndSource source = HwndSource.FromHwnd(new WindowInteropHelper(App.Current.MainWindow).Handle);
         source.AddHook(WndProc);
     }
-    private static IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+    private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
     {
         if (msg == MsgInteraction.WM_COPYDATA)
         {
@@ -178,6 +181,7 @@ public class WindowBasicComponent(IServiceProvider serviceProvider,MediaPlayerSe
             {
                 App.Current.MainWindow.ShowWindow();
             }
+            OnCopyDataReceived?.Invoke(msgStr);
         }
         return IntPtr.Zero;
     }

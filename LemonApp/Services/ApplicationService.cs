@@ -23,6 +23,7 @@ namespace LemonApp.Services
         UserProfileService userProfileService,
         MediaPlayerService mediaPlayerService,
         WindowBasicComponent windowBasicComponent
+        /*DownloadService downloadService*/
         ) : IHostedService
     {
         public Task StartAsync(CancellationToken cancellationToken)
@@ -44,6 +45,9 @@ namespace LemonApp.Services
 
                 //init userProfileService
                 userProfileService.Init();
+
+                //init DownloadService
+                //downloadService.Init();
 
                 //init media player
                 await mediaPlayerService.Init();

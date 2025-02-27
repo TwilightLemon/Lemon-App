@@ -10,6 +10,8 @@ using System.IO;
 using LemonApp.Common.Configs;
 using LemonApp.Common;
 using LemonApp.MusicLib.Abstraction.Entities;
+using LemonApp.Components;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LemonApp.Services;
 
@@ -21,12 +23,12 @@ public class MediaPlayerService(UserProfileService userProfileService,
     private MusicPlayer _player;
     private bool _isPlaying = false;
     private readonly SMTCCreator _smtc = new("Lemon App");
-    private AudioGetter? audioGetter = null;
-    private readonly UserProfileService _userProfileService = userProfileService!;
+    private readonly UserProfileService _userProfileService = userProfileService;
     private SettingsMgr<PlayingPreference> _playingMgr;
     private readonly HttpClient hc= httpClientFactory.CreateClient(App.PublicClientFlag);
     private readonly SharedLaClient _sharedLaClient = sharedLaClient;
 
+    public AudioGetter? AudioGetter { get; private set; }
     public MusicPlayer Player { get => _player; }
     public Music? CurrentMusic { get; private set; }
     public MusicQuality CurrentQuality { get; private set; }
@@ -43,13 +45,14 @@ public class MediaPlayerService(UserProfileService userProfileService,
     /// <returns></returns>
     public async Task Init()
     {
-        audioGetter = new(hc, _userProfileService.GetAuth,_userProfileService.GetNeteaseAuth,_sharedLaClient,_userProfileService.GetSharedLaToken);
+        AudioGetter = new(hc, _userProfileService.GetAuth,_userProfileService.GetNeteaseAuth,_sharedLaClient,_userProfileService.GetSharedLaToken);
         _playingMgr = appSettingsService.GetConfigMgr<PlayingPreference>()!;
         await MusicPlayer.PrepareDll();
         _player = new();
         _smtc.Next += Smtc_Next;
         _smtc.Previous += Smtc_Previous;
         _smtc.PlayOrPause += Smtc_PlayOrPause;
+        App.Services.GetRequiredService<MyToolBarLyricClient>().Connect();
     }
 
     private void Smtc_PlayOrPause(object? sender, EventArgs e)
@@ -97,7 +100,7 @@ public class MediaPlayerService(UserProfileService userProfileService,
     }
     private async Task<bool> LoadMusic(Music music, MusicQuality prefer)
     {
-        if (audioGetter == null)
+        if (AudioGetter == null)
             throw new InvalidOperationException("MediaPlayerService not initialized.");
 
         Pause();
@@ -138,7 +141,7 @@ public class MediaPlayerService(UserProfileService userProfileService,
 
         //本地文件未匹配成功则请求加载网络
         if(!playLocalFile){
-            var url = await audioGetter.GetUrlAsync(music, prefer);
+            var url = await AudioGetter.GetUrlAsync(music, prefer);
             if (url is null || url.Url is null)
             {
                 loadSucceeded = false;

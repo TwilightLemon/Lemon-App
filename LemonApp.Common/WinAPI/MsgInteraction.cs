@@ -10,6 +10,9 @@ namespace LemonApp.Common.WinAPI;
 public class MsgInteraction
 {
     public const int WM_COPYDATA = 0x004A;
+    /// <summary>
+    /// Called by new instance to show the window
+    /// </summary>
     public const string SEND_SHOW = "SEND_SHOW";
 
     [StructLayout(LayoutKind.Sequential)]
