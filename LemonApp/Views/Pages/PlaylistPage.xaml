@@ -241,14 +241,19 @@
                                   ItemHeight="30"
                                   Margin="20 0"
                                   VerticalAlignment="Center">
-                        <TextBlock VerticalAlignment="Center">
+                        <ToggleButton x:Name="SelectAllBtn" Style="{StaticResource AccentToggleButtonStyle}" 
+                                      Padding="6 0"
+                                      Click="SelectAllBtn_Click">
+                            <TextBlock  VerticalAlignment="Center">
                             <Run Text="{Binding Musics.Count,Mode=OneWay}"
                                  d:Text="520" />
                             <Run Text=" Songs" />
-                        </TextBlock>
+                            </TextBlock>
+                        </ToggleButton>
                         <ToggleButton x:Name="SelectModeTB"
                                       Style="{StaticResource AccentToggleButtonStyle}"
                                       Padding="16 0"
+                                      IsChecked="{Binding ElementName=listBox,Path=SelectionMode,Converter={x:Static ws:EqualConverter.Instance},ConverterParameter={x:Static SelectionMode.Multiple},Mode=OneWay}"
                                       Click="SelectModeTB_Click">
                             Select
                         </ToggleButton>
@@ -265,8 +270,9 @@
                                    Click="DeleteBtn_Click">
                             Delete
                         </ws:Button>
-                        <ws:Button Style="{StaticResource SimpleButtonStyleForWs}"
-                                   Padding="16 0">
+                        <ws:Button x:Name="DownloadBtn" Style="{StaticResource SimpleButtonStyleForWs}"
+                                   Padding="16 0"
+                                   Click="DownloadBtn_Click">
                             Download
                         </ws:Button>
                     </ws:WrapPanel>

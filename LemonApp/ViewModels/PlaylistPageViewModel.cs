@@ -17,7 +17,8 @@ namespace LemonApp.ViewModels;
 public partial class PlaylistPageViewModel(
     MainNavigationService navigationService,
     MediaPlayerService mediaPlayerService,
-    UserDataManager userDataManager
+    UserDataManager userDataManager,
+    DownloadService downloadService
     ) :ObservableObject,IDisposable
 {
     [ObservableProperty]
@@ -76,6 +77,13 @@ public partial class PlaylistPageViewModel(
     public void LoadMore()
     {
         OnLoadMoreRequired?.Invoke();
+    }
+
+    public void DownloadMusic(IList<Music> music)
+    {
+        foreach (var m in music)
+            downloadService.PushTask(m);
+        navigationService.RequstNavigation(PageType.Notification, $"{music.Count} songs have been added to the download queue.");
     }
 
     public void SearchItem(string key)

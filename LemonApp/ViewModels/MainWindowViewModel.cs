@@ -23,6 +23,7 @@ using Task = System.Threading.Tasks.Task;
 using LemonApp.MusicLib.Abstraction.Entities;
 using LemonApp.MusicLib.User;
 using LemonApp.Components;
+using System.Windows;
 
 //TODO: 将功能再细分为Component 简化ViewModel
 namespace LemonApp.ViewModels;
@@ -37,6 +38,7 @@ public partial class MainWindowViewModel : ObservableObject
     private readonly UIResourceService _uiResourceService;
     private readonly WindowBasicComponent _windowBasicComponent;
     private readonly PlaylistDataWrapper _playlistDataWrapper;
+    private readonly DownloadMenuDecorator _downloadMenuDecorator;
 
     private readonly Timer _timer;
     private SettingsMgr<PlayingPreference>? _currentPlayingMgr;
@@ -54,8 +56,10 @@ public partial class MainWindowViewModel : ObservableObject
         LyricView lyricView,
         DesktopLyricWindowViewModel lyricWindowViewModel,
         WindowBasicComponent windowBasicComponent,
-        PlaylistDataWrapper playlistDataWrapper)
+        PlaylistDataWrapper playlistDataWrapper,
+        DownloadMenuDecorator downloadMenuDecorator)
     {
+        _downloadMenuDecorator = downloadMenuDecorator;
         _userProfileService = userProfileService;
         _serviceProvider = serviceProvider;
         _mainNavigationService = mainNavigationService;
@@ -100,6 +104,7 @@ public partial class MainWindowViewModel : ObservableObject
         LoadMainMenus();
         LoadComponent();
         _playlistDataWrapper = playlistDataWrapper;
+        _downloadMenuDecorator = downloadMenuDecorator;
     }
 
     private async void UIResourceService_OnColorModeChanged()
@@ -414,6 +419,7 @@ public partial class MainWindowViewModel : ObservableObject
         public Type PageType { get; } = pageType;
         public MenuType Type { get; set; } = type;
         public Func<object,Task>? ProcessPage { get; } = process;
+        public UIElement? Decorator { get; set; }
     }
     /// <summary>
     /// 主菜单——音乐库
@@ -429,7 +435,9 @@ public partial class MainWindowViewModel : ObservableObject
         new MainMenu("Radio", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page)),
 
         new MainMenu("Bought", (Geometry)App.Current.FindResource("Menu_Bought"), typeof(MyBoughtPage),MenuType.Mine),
-        new MainMenu("Download", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page),MenuType.Mine),
+        new MainMenu("Download", (Geometry)App.Current.FindResource("Menu_Download"), typeof(DownloadPage),MenuType.Mine){
+            Decorator=_downloadMenuDecorator
+        },
         new MainMenu("Favorite",(Geometry)App.Current.FindResource("Menu_Favorite"), typeof(PlaylistPage),MenuType.Mine,LoadMyFavorite),
         new MainMenu("My Diss", (Geometry) App.Current.FindResource("Menu_MyDiss"), typeof(MyDissPage),MenuType.Mine)
         ];

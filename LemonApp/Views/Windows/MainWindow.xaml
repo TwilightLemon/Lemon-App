@@ -339,12 +339,13 @@
                             </ws:ListBox.GroupStyle>
                             <ws:ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <ws:Border Height="40"
-                                               Padding="10 0"
+                                    <ws:BoxPanel Height="40"
                                                d:Background="#3C000000"
                                                Background="Transparent">
+                                        <ContentControl Content="{Binding Decorator}"/>
                                         <ws:StackPanel Orientation="Horizontal"
                                                        VerticalAlignment="Center"
+                                                       Margin="10 0"
                                                        Spacing="12">
                                             <Border x:Name="FocusedIcon"
                                                     Width="3"
@@ -363,7 +364,7 @@
                                             <TextBlock Text="{Binding Name}"
                                                        VerticalAlignment="Center" />
                                         </ws:StackPanel>
-                                    </ws:Border>
+                                    </ws:BoxPanel>
                                     <DataTemplate.Triggers>
                                         <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}, Mode=FindAncestor}}"
                                                      Value="True">

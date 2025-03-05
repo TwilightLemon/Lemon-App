@@ -60,13 +60,13 @@ namespace LemonApp
                         .AddConfig<Appearance>()
                         .AddConfig<PlayingPreference>()
                         .AddConfig<PlaylistCache>(Common.Funcs.Settings.sType.Cache)
-                        .AddConfig<DownloadServiceCache>(Common.Funcs.Settings.sType.Cache)
+                        .AddConfig<DownloadPreference>()
                         .AddConfig<DesktopLyricOption>()
                         .AddConfig<LyricOption>()
                 );
 
-                /*services.AddSingleton<DownloadService>();
-                services.AddHostedService(p => p.GetRequiredService<DownloadService>());*/
+                services.AddSingleton<DownloadService>();
+                services.AddHostedService(p => p.GetRequiredService<DownloadService>());
 
                 services.AddSingleton<MyToolBarLyricClient>();
                 services.AddHostedService(p => p.GetRequiredService<MyToolBarLyricClient>());
@@ -95,10 +95,12 @@ namespace LemonApp
                 services.AddSingleton<MyDissPage>();
                 services.AddSingleton<MyBoughtPage>();
                 services.AddSingleton<AccountInfoPage>();
+                services.AddSingleton<DownloadPage>();
 
                 //UI Components
                 services.AddSingleton<LyricView>();
                 services.AddSingleton<SearchHintView>();
+                services.AddSingleton<DownloadMenuDecorator>();
 
                 //MusicLib Components
                 services.AddSingleton<SharedLaClient>();
@@ -118,6 +120,7 @@ namespace LemonApp
                 services.AddTransient<AlbumItemViewModel>();
                 services.AddSingleton<DesktopLyricWindowViewModel>();
                 services.AddSingleton<AccountInfoPageViewModel>();
+                services.AddSingleton<DownloadPageViewModel>();
                 services.AddTransient<SettingsPageViewModel>();
                 services.AddTransient<RanklistPageViewModel>();
 

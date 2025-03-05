@@ -103,7 +103,7 @@ namespace LemonApp.Views.Pages
 
         private void SelectModeTB_Click(object sender, RoutedEventArgs e)
         {
-            listBox.SelectionMode=SelectModeTB.IsChecked ==true ? SelectionMode.Multiple : SelectionMode.Single;
+            listBox.SelectionMode = SelectModeTB.IsChecked == true ? SelectionMode.Multiple : SelectionMode.Single;
         }
 
         private void AddToNextBtn_Click(object sender, RoutedEventArgs e)
@@ -120,19 +120,19 @@ namespace LemonApp.Views.Pages
             AddtoMenu.IsOpen = false;
         }
 
+        private List<Music> SelectedMusic=> listBox.SelectionMode == SelectionMode.Multiple ?
+                                            [.. listBox.SelectedItems.Cast<Music>()] : [(Music)listBox.SelectedItem];
+
         private void AddToDissBtn_Click(object sender, RoutedEventArgs e)
         {
-            List<Music> selectedItems = listBox.SelectionMode == SelectionMode.Multiple ?
-                                            [.. listBox.SelectedItems.Cast<Music>()] : [(Music)listBox.SelectedItem];
+            List<Music> selectedItems = SelectedMusic;
             Components.PublicPopupMenuHolder.AddToMyDissCommand?.Execute(selectedItems);
             AddtoMenu.IsOpen = false;
         }
 
         private void DeleteBtn_Click(object sender, RoutedEventArgs e)
         {
-            List<Music> selectedItems = listBox.SelectionMode == SelectionMode.Multiple ?
-                                            [.. listBox.SelectedItems.Cast<Music>()] : [(Music)listBox.SelectedItem];
-
+            List<Music> selectedItems = SelectedMusic;
             _vm.DeleteMusicFromDirid(selectedItems);
         }
 
@@ -140,6 +140,24 @@ namespace LemonApp.Views.Pages
         {
             await Task.Yield();
             AddtoMenu.IsOpen = true;
+        }
+
+        private void DownloadBtn_Click(object sender, RoutedEventArgs e)
+        {
+            _vm.DownloadMusic(SelectedMusic);
+        }
+
+        private void SelectAllBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (SelectAllBtn.IsChecked is true)
+            {
+                listBox.SelectionMode = SelectionMode.Multiple;
+                listBox.SelectAll();
+            }
+            else
+            {
+                listBox.SelectionMode = SelectionMode.Single;
+            }
         }
 
         public PlaylistPageViewModel? ViewModel

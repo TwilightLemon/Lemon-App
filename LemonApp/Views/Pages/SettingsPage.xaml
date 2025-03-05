@@ -41,8 +41,7 @@
                                Margin="12"
                                Text="Quality Preference"
                                HorizontalAlignment="Left" />
-                    <ws:ComboBox x:Name="MainMenuIconCombox"
-                                 Height="24"
+                    <ws:ComboBox Height="24"
                                  HorizontalAlignment="Right"
                                  Margin="0 0 48 0"
                                  Style="{StaticResource SimpleComboBoxStyleForWs}"
@@ -51,6 +50,44 @@
                     </ws:ComboBox>
                 </Grid>
             </Border>
+            <Border Background="{DynamicResource MaskColor}"
+                    CornerRadius="12"
+                    Height="48">
+                <Grid>
+                    <TextBlock VerticalAlignment="Center"
+                               Margin="12"
+                               Text="Quality Preference for Download"
+                               HorizontalAlignment="Left" />
+                    <ws:ComboBox Height="24"
+                                 HorizontalAlignment="Right"
+                                 Margin="0 0 48 0"
+                                 Style="{StaticResource SimpleComboBoxStyleForWs}"
+                                 ItemsSource="{Binding Source={StaticResource QualityEnumData}}"
+                                 SelectedItem="{Binding DlQuality}">
+                    </ws:ComboBox>
+                </Grid>
+            </Border>
+            <Border Background="{DynamicResource MaskColor}"
+                    CornerRadius="12"
+                    Height="56">
+                <Grid>
+                    <TextBlock VerticalAlignment="Center"
+                               Margin="12 0"
+                               HorizontalAlignment="Left">
+                        <Run Text="Download Path" />
+                        <LineBreak />
+                        <Run Text="{Binding DownloadPath}" d:Text="xxxxx"/>
+                    </TextBlock>
+                    <ws:Button HorizontalAlignment="Right"
+                               Margin="0 0 48 0"
+                               Height="32"
+                               Padding="12 0"
+                               Style="{StaticResource SimpleButtonStyleForWs}">
+                        Select
+                    </ws:Button>
+                </Grid>
+            </Border>
+
             <Border Background="{DynamicResource MaskColor}"
                     Height="80"
                     CornerRadius="8">
