@@ -112,9 +112,11 @@ public partial class MainWindowViewModel : ObservableObject
         await UpdateCover();
     }
 
-    private void LyricView_OnNextLrcReached(LrcLine obj)
+    private void LyricView_OnNextLrcReached(LrcLine now,LrcLine? next)
     {
-        _lyricWindowViewModel.Update(obj);
+        CurrentLyric = now;
+        NextLyric = next;
+        _lyricWindowViewModel.Update(now);
     }
     #endregion
     #region common components
@@ -624,7 +626,12 @@ public partial class MainWindowViewModel : ObservableObject
     public ObservableCollection<Music> Playlist { get;private set; } = [];
     [ObservableProperty]
     private Music? _playlistChoosen = null;
-
+    [ObservableProperty]
+    private LrcLine? _currentLyric = null;
+    [ObservableProperty]
+    private LrcLine? _nextLyric = null;
+    [ObservableProperty]
+    private bool _isImmerseMode = false;
     [ObservableProperty]
     private bool _isShowDesktopLyric = false;
     private DesktopLyricWindow? lrcWindow;

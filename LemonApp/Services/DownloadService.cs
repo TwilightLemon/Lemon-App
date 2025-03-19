@@ -27,7 +27,7 @@ public partial class DownloadItemTask(Music music,string filePath,MusicQuality m
     [ObservableProperty]
     private MusicQuality _quality = musicQuality;
     [ObservableProperty]
-    private double _downloadingProcess = 0d;
+    private double _downloadingProgress = 0d;
     [ObservableProperty]
     private bool _finished = false;
     [ObservableProperty]
@@ -102,7 +102,7 @@ public class DownloadService(AppSettingsService appSettingsService,
         dl.DownloadProgressChanged += (s, e) =>
         {
             if (downloadingTask != null)
-                downloadingTask.DownloadingProcess = e.ProgressPercentage;
+                downloadingTask.DownloadingProgress = e.ProgressPercentage;
         };
         dl.DownloadFileCompleted += (s, e) =>
         {
@@ -163,7 +163,7 @@ public class DownloadService(AppSettingsService appSettingsService,
         {
             //copy to download path
             File.Copy(cacheFile, dlFile);
-            return new DownloadItemTask(music, dlFile, DownloadQuality) { Finished=true,DownloadingProcess = 100 };
+            return new DownloadItemTask(music, dlFile, DownloadQuality) { Finished=true,DownloadingProgress = 100 };
         }
         //add to download queue
         if (tasks.Any(m => m.Music.MusicID == music.MusicID))

@@ -22,7 +22,7 @@ using CommunityToolkit.Mvvm.Input;
 //TODO: 提供效果选择
 namespace LemonApp.Views.UserControls
 {
-    internal class LrcItem(TextBlock container, TextBlock main)
+    public class LrcItem(TextBlock container, TextBlock main)
     {
         public double Time { get; set; }
         public string Lyric { get; set; } = string.Empty;
@@ -112,12 +112,12 @@ namespace LemonApp.Views.UserControls
         #endregion
 
 
-        public event Action<LrcLine>? OnNextLrcReached;
-        public LrcLine GetCurrentLrc() => new()
+        public event Action<LrcLine,LrcLine?>? OnNextLrcReached;
+        public LrcLine? ToLrcLine(LrcItem? item) =>item==null?null: new()
         {
-            Lyric = _currentLrc?.Lyric ?? "",
-            Trans = _currentLrc?.LrcTrans?.Text ?? "",
-            Romaji = _currentLrc?.Romaji?.Text ?? "",
+            Lyric = item?.Lyric ?? "",
+            Trans = item?.LrcTrans?.Text ?? "",
+            Romaji = item?.Romaji?.Text ?? "",
             Time = double.NaN
         };
 
@@ -396,7 +396,8 @@ namespace LemonApp.Views.UserControls
             var last = _currentLrc;
             _currentLrc = temp;
             reset(last);
-            OnNextLrcReached?.Invoke(GetCurrentLrc());
+            var next = LrcItems.FirstOrDefault(p => p.Time > temp.Time);
+            OnNextLrcReached?.Invoke(ToLrcLine(_currentLrc)!,ToLrcLine(next));
         }
 
         private void RefreshCurrentLrcStyle()

@@ -1,17 +1,19 @@
 ﻿using LemonApp.Common.Configs;
 using LemonApp.Common.Funcs;
+using LemonApp.Common.WinAPI;
+using LemonApp.Components;
 using LemonApp.Views.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using System.ComponentModel.Design;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Documents;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Interop;
 using System.Windows.Navigation;
-using LemonApp.Components;
 
 namespace LemonApp.Services
 {
@@ -61,6 +63,7 @@ namespace LemonApp.Services
                 mainWindow.Show();
 
                 //apply theme config
+                SystemThemeAPI.RegesterOnThemeChanged(mainWindow, OnThemeChanged, OnSystemColorChanged);
                 uiResourceService.UpdateThemeConfig();
 
                 //init window basic components
@@ -73,6 +76,22 @@ namespace LemonApp.Services
             });
 
             return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Respond to system theme color (dark mode) changed.
+        /// </summary>
+        private void OnThemeChanged()
+        {
+            uiResourceService.UpdateColorMode();
+            uiResourceService.UpdateAccentColor();
+        }
+        /// <summary>
+        /// Respond to system accent color changed.
+        /// </summary>
+        private void OnSystemColorChanged()
+        {
+            uiResourceService.UpdateAccentColor();
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

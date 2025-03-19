@@ -19,6 +19,7 @@ using LemonApp.MusicLib.Search;
 using System.Net.Http;
 using System.Diagnostics;
 using LemonApp.Components;
+using System.Windows.Media;
 
 namespace LemonApp.Views.Windows
 {
@@ -39,6 +40,7 @@ namespace LemonApp.Views.Windows
             _serviceProvider = serviceProvider;
             _mainNavigationService = mainNavigationService;
             _uiResourceService= uiResourceService;
+            _uiResourceService.OnColorModeChanged += _uiResourceService_OnColorModeChanged;
             _publicPopupMenuHolder = publicPopupMenuHolder;
 
             DataContext = _vm = mainWindowViewModel;
@@ -70,27 +72,16 @@ namespace LemonApp.Views.Windows
             NotificationBox.IsOpen = false;
         }
 
-        /// <summary>
-        /// Respond to system theme color (dark mode) changed.
-        /// </summary>
-        private void OnThemeChanged()
-        {
-            _uiResourceService.UpdateColorMode();
-            _uiResourceService.UpdateAccentColor();
-        }
-        /// <summary>
-        /// Respond to system accent color changed.
-        /// </summary>
-        private void OnSystemColorChanged()
-        {
-            _uiResourceService.UpdateAccentColor();
-        }
-
         public void ShowWindow()
         {
             Show();
             WindowState = WindowState.Normal;
             Activate();
+        }
+
+        private void _uiResourceService_OnColorModeChanged()
+        {
+            Im_Effect.Color = _uiResourceService.GetIsDarkMode() ? Colors.White : Colors.Black;
         }
 
         #region MainContentFrame
@@ -119,8 +110,7 @@ namespace LemonApp.Views.Windows
             _vm.SelectedMenu = _vm.MainMenus.FirstOrDefault();
             _vm.RequireCreateNewPage();
             LyricViewHost.Child = _vm.LyricView;
-
-            SystemThemeAPI.RegesterOnThemeChanged(this, OnThemeChanged, OnSystemColorChanged);
+            _uiResourceService_OnColorModeChanged();
 
             visualizer.Player = _serviceProvider.GetRequiredService<MediaPlayerService>().Player;
             MainContentPage.Children.Add(_publicPopupMenuHolder.selector);
@@ -182,7 +172,23 @@ namespace LemonApp.Views.Windows
             };
             sb.Begin();
         }
-#endregion
+        #endregion
+
+        #region LyricPage
+        private void SwitchLrcImmerseModeBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (SwitchLrcImmerseModeBtn.IsChecked == true)
+            {
+                LyricPage_Main.Visibility = Visibility.Collapsed;
+                LyricPage_Immerse.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                LyricPage_Main.Visibility = Visibility.Visible;
+                LyricPage_Immerse.Visibility = Visibility.Collapsed;
+            }
+        }
+        #endregion
 
         #region  Open Popups
 

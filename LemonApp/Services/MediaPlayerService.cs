@@ -111,6 +111,7 @@ public class MediaPlayerService(UserProfileService userProfileService,
                         .SetArtist(music.SingerText)
                         .SetThumbnail(await CoverGetter.GetCoverImgUrl(() => hc, _userProfileService.GetAuth(), music))
                         .Update();
+        _smtc.SetMediaStatus(SMTCMediaStatus.Paused);
 
         OnLoaded?.Invoke(music);
 
@@ -177,6 +178,7 @@ public class MediaPlayerService(UserProfileService userProfileService,
             {
                 OnEnd?.Invoke();
             }
+            _smtc.SetMediaPosition(Duration, _player.Position);
             return _player.Position;
         }
         set => _player.Position = value;

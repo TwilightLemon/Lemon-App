@@ -53,7 +53,7 @@
                 <DataTemplate>
                     <Grid Height="50">
                         <ws:ProgressBar Maximum="100"
-                                        Value="{Binding DownloadingProcess}"
+                                        Value="{Binding DownloadingProgress}"
                                         BorderThickness="0"
                                         Background="Transparent" 
                                         Foreground="{DynamicResource HighlightThemeColor}"

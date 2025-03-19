@@ -80,6 +80,14 @@ public class SMTCCreator:IDisposable
         };
     }
 
+    public void SetMediaPosition(TimeSpan duration,TimeSpan position)
+    {
+        _smtc.UpdateTimelineProperties(new() {
+        EndTime = duration,
+        Position= position,
+        StartTime=default
+        });
+    }
 
     private void _smtc_ButtonPressed(SystemMediaTransportControls sender, SystemMediaTransportControlsButtonPressedEventArgs args)
     {

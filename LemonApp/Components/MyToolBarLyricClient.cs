@@ -38,7 +38,7 @@ public class MyToolBarLyricClient(LyricView lyricView, WindowBasicComponent wbc)
         }
     }
 
-    private async void LyricView_OnNextLrcReached(LrcLine lrc)
+    private async void LyricView_OnNextLrcReached(LrcLine lrc,LrcLine? next)
     {
         if (client != null && client.Connected)
         {
