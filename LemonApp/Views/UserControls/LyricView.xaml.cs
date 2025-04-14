@@ -44,12 +44,12 @@ namespace LemonApp.Views.UserControls
         private LrcItem? _currentLrc = null;
         public LyricView(IHttpClientFactory httpClientFactory,
             UIResourceService uiResourceService,
-            AppSettingsService appSettingsService)
+            AppSettingService appSettingsService)
         {
             InitializeComponent();
             UpdateColorMode();
 
-            _settings = appSettingsService.GetConfigMgr<LyricOption>()!;
+            _settings = appSettingsService.GetConfigMgr<LyricOption>();
             _hc = httpClientFactory.CreateClient(App.PublicClientFlag);
             _uiResourceService = uiResourceService;
             _uiResourceService.OnColorModeChanged += UiResourceService_OnColorModeChanged;

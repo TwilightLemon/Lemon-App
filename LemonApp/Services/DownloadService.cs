@@ -45,10 +45,10 @@ public partial class DownloadItemTask(Music music,string filePath,MusicQuality m
     }
 }
 
-public class DownloadService(AppSettingsService appSettingsService,
+public class DownloadService(AppSettingService appSettingsService,
     MediaPlayerService mediaPlayerService) : IHostedService
 {
-    private SettingsMgr<DownloadPreference>? settingsMgr;
+    private SettingsMgr<DownloadPreference> settingsMgr = appSettingsService.GetConfigMgr<DownloadPreference>();
 
     private AudioGetter AudioGetter => mediaPlayerService.AudioGetter ?? throw new InvalidOperationException("Media Components is not ready yet.");
     private readonly ConcurrentQueue<DownloadItemTask> tasks = new();
@@ -87,29 +87,6 @@ public class DownloadService(AppSettingsService appSettingsService,
     }
 
     public ObservableCollection<DownloadItemTask> History { get; internal set; } = [];
-
-    public void Init()
-    {
-        settingsMgr = appSettingsService.GetConfigMgr<DownloadPreference>()!;
-        if(string.IsNullOrEmpty(settingsMgr.Data.DefaultPath) || !Directory.Exists(settingsMgr.Data.DefaultPath))
-        {
-            settingsMgr.Data.DefaultPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic),"Lemon App");
-        }
-        if (!Directory.Exists(settingsMgr.Data.DefaultPath))
-        {
-            Directory.CreateDirectory(settingsMgr.Data.DefaultPath);
-        }
-        dl.DownloadProgressChanged += (s, e) =>
-        {
-            if (downloadingTask != null)
-                downloadingTask.DownloadingProgress = e.ProgressPercentage;
-        };
-        dl.DownloadFileCompleted += (s, e) =>
-        {
-            if (downloadingTask != null)
-                downloadingTask.Finished = true;
-        };
-    }
     private static string SanitizeFileName(string fileName)
     {
         foreach (char c in Path.GetInvalidFileNameChars())
@@ -201,6 +178,24 @@ public class DownloadService(AppSettingsService appSettingsService,
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
+        if (string.IsNullOrEmpty(settingsMgr.Data.DefaultPath) || !Directory.Exists(settingsMgr.Data.DefaultPath))
+        {
+            settingsMgr.Data.DefaultPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic), "Lemon App");
+        }
+        if (!Directory.Exists(settingsMgr.Data.DefaultPath))
+        {
+            Directory.CreateDirectory(settingsMgr.Data.DefaultPath);
+        }
+        dl.DownloadProgressChanged += (s, e) =>
+        {
+            if (downloadingTask != null)
+                downloadingTask.DownloadingProgress = e.ProgressPercentage;
+        };
+        dl.DownloadFileCompleted += (s, e) =>
+        {
+            if (downloadingTask != null)
+                downloadingTask.Finished = true;
+        };
         return Task.CompletedTask;
     }
 

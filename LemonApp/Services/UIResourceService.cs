@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using LemonApp.Common.Behaviors;
@@ -10,14 +11,13 @@ using LemonApp.Common.Funcs;
 
 namespace LemonApp.Services;
 /*
- UpdateColorMode: system msg -> main window -> UIResourceService -> other components
-TODO: add weak reference events mgr for mode changed
+ UpdateColorMode: system msg -> ApplicationService -> UIResourceService -> other components
  */
 /// <summary>
 /// 设置全局UI资源
 /// </summary>
 public class UIResourceService(
-    AppSettingsService appSettingsService)
+    AppSettingService appSettingsService)
 {
     public event Action? OnColorModeChanged;
     private SettingsMgr<Appearance>? _settingsMgr;
@@ -113,7 +113,9 @@ public class UIResourceService(
                 break;
             case Appearance.BackgroundType.Music:
                 mw.Mode = Common.WinAPI.MaterialType.None;
-                mw.SetBinding(Control.BackgroundProperty, "LyricPageBackgound");
+                var brush = new ImageBrush();
+                BindingOperations.SetBinding(brush, ImageBrush.ImageSourceProperty, new Binding("LyricPageBackgroundSource"));
+                mw.Background = brush;
                 break;
         }
     }

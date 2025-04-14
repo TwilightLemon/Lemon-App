@@ -10,24 +10,14 @@ using System.Windows.Media.Imaging;
 using Windows.Media.Protection.PlayReady;
 
 namespace LemonApp.Services;
-/*
- TODO: 为Lib提供接口，改用静态方式GetAuth和其他Profile信息
- */
-
 public class UserProfileService(
-    AppSettingsService appSettingsService,
+    AppSettingService appSettingsService,
     IHttpClientFactory httpClientFactory)
 {
     public event Action<TencUserAuth>? OnAuth;
     public event Action? OnAuthExpired;
     public TencUserProfileGetter UserProfileGetter { get; } = new();
-    private SettingsMgr<UserProfile>? _profileMgr = null;
-
-    public void Init()
-    {
-        _profileMgr = appSettingsService.GetConfigMgr<UserProfile>()
-                                 ?? throw new InvalidOperationException("where is user profile mgr??!!");
-    }
+    private readonly SettingsMgr<UserProfile> _profileMgr = appSettingsService.GetConfigMgr<UserProfile>();
 
     public void UpdateNeteaseAuth(NeteaseUserAuth auth)
     {

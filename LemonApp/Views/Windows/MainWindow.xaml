@@ -12,6 +12,11 @@
                        xmlns:uc="clr-namespace:LemonApp.Views.UserControls"
                        d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
                        mc:Ignorable="d"
+                       RenderOptions.BitmapScalingMode="HighQuality"
+                       RenderOptions.ClearTypeHint="Enabled"
+                       TextOptions.TextFormattingMode="Ideal"
+                       TextOptions.TextRenderingMode="Auto"
+                       TextOptions.TextHintingMode="Auto"
                        Background="{DynamicResource WindowBackgroundColor}"
                        ExitOnCloseBtnClicked="False"
                        Mode="Acrylic"
@@ -188,7 +193,7 @@
             </ThicknessAnimationUsingKeyFrames>
         </Storyboard>
     </base:FluentWindowBase.Resources>
-    <ws:BoxPanel x:Name="Container">
+    <ws:BoxPanel x:Name="Container" ClipToBounds="True">
         <Grid x:Name="MainContentPage">
             <Grid x:Name="MainPage"
                   Margin="0 0 0 110">
@@ -434,8 +439,27 @@
             <Grid x:Name="LyricPage"
                   Visibility="Collapsed">
                 <Border x:Name="LyricPage_Background"
-                        Background="{Binding LyricPageBackgound}"
-                        Grid.ColumnSpan="2" />
+                        Grid.ColumnSpan="2">
+                    <Border.Background>
+                        <ImageBrush ImageSource="{Binding LyricPageBackgroundSource}"
+                                    Stretch="UniformToFill"
+                                    RenderOptions.BitmapScalingMode="LowQuality">
+                            <ImageBrush.RelativeTransform>
+                                <TransformGroup>
+                                    <ScaleTransform CenterX="0.5"
+                                                    CenterY="0.5"
+                                                    ScaleX="1.4"
+                                                    ScaleY="1.4" />
+                                    <RotateTransform x:Name="LyricImgRT"
+                                                     CenterY="0.5"
+                                                     CenterX="0.5"
+                                                     Angle="0" />
+                                    <TranslateTransform />
+                                </TransformGroup>
+                            </ImageBrush.RelativeTransform>
+                        </ImageBrush>
+                    </Border.Background>
+                </Border>
                 <Border x:Name="LyricToolBar"
                         Grid.Column="1"
                         Background="{DynamicResource MaskColor}"
@@ -483,7 +507,119 @@
                     </StackPanel>
                 </Border>
                 <Grid x:Name="LyricPage_Immerse"
-                      Visibility="Collapsed">
+                      Visibility="Collapsed"
+                      ClipToBounds="True">
+                    <Grid HorizontalAlignment="Left"
+                          Margin="48"
+                          VerticalAlignment="Top">
+                        <TextBlock Name="ImLyric_MusicNameTb"
+                                   Text="{Binding CurrentPlaying.MusicName}"
+                                   Margin="140 12 0 0"
+                                   FontSize="32"
+                                   FontWeight="Bold"
+                                   Opacity="0.8" />
+                        <TextBlock Name="ImLyric_SingerTb"
+                                   Margin="140 58 0 0"
+                                   FontSize="24"
+                                   FontWeight="Bold"
+                                   Opacity="0.6"
+                                   Text="{Binding CurrentPlaying.SingerText}" />
+                        <Border Height="128"
+                                Width="128"
+                                HorizontalAlignment="Left"
+                                AllowDrop="True"
+                                Drop="LyricPage_Img_Drop"
+                                d:Background="Pink"
+                                RenderOptions.BitmapScalingMode="HighQuality"
+                                Background="{Binding CurrentPlayingCover,TargetNullValue={StaticResource HighlightThemeColor}}"
+                                CornerRadius="12"
+                                BorderThickness="4"
+                                BorderBrush="{DynamicResource MaskColor}">
+                            <Border.Effect>
+                                <DropShadowEffect Color="Black"
+                                                  Direction="0"
+                                                  ShadowDepth="0"
+                                                  Opacity="0.6"
+                                                  BlurRadius="30" />
+                            </Border.Effect>
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="MouseEnter">
+                                    <i:EventTrigger.Actions>
+                                        <i:ControlStoryboardAction>
+                                            <i:ControlStoryboardAction.Storyboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                                     Storyboard.TargetName="ImLyric_MusicNameTb"
+                                                                     From="0.5"
+                                                                     To="0.8"
+                                                                     Duration="0:0:0.3" />
+                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                                     Storyboard.TargetName="ImLyric_SingerTb"
+                                                                     From="0.5"
+                                                                     To="0.6"
+                                                                     Duration="0:0:0.5" />
+                                                    <ThicknessAnimation Storyboard.TargetProperty="Margin"
+                                                                        Storyboard.TargetName="ImLyric_MusicNameTb"
+                                                                        From="10 12 0 0"
+                                                                        To="140 12 0 0"
+                                                                        Duration="0:0:0.3">
+                                                        <ThicknessAnimation.EasingFunction>
+                                                            <CubicEase />
+                                                        </ThicknessAnimation.EasingFunction>
+                                                    </ThicknessAnimation>
+                                                    <ThicknessAnimation Storyboard.TargetProperty="Margin"
+                                                                        Storyboard.TargetName="ImLyric_SingerTb"
+                                                                        From="10 58 0 0"
+                                                                        To="140 58 0 0"
+                                                                        Duration="0:0:0.5">
+                                                        <ThicknessAnimation.EasingFunction>
+                                                            <CubicEase />
+                                                        </ThicknessAnimation.EasingFunction>
+                                                    </ThicknessAnimation>
+                                                </Storyboard>
+                                            </i:ControlStoryboardAction.Storyboard>
+                                        </i:ControlStoryboardAction>
+                                    </i:EventTrigger.Actions>
+                                </i:EventTrigger>
+                                <i:EventTrigger EventName="MouseLeave">
+                                    <i:EventTrigger.Actions>
+                                        <i:ControlStoryboardAction>
+                                            <i:ControlStoryboardAction.Storyboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                                     Storyboard.TargetName="ImLyric_MusicNameTb"
+                                                                     To="0"
+                                                                     Duration="0:0:0.3" />
+                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                                     Storyboard.TargetName="ImLyric_SingerTb"
+                                                                     To="0"
+                                                                     Duration="0:0:0.3" />
+                                                    <ThicknessAnimation Storyboard.TargetProperty="Margin"
+                                                                        Storyboard.TargetName="ImLyric_MusicNameTb"
+                                                                        From="140 12 0 0"
+                                                                        To="10 12 0 0"
+                                                                        Duration="0:0:0.3">
+                                                        <ThicknessAnimation.EasingFunction>
+                                                            <CubicEase />
+                                                        </ThicknessAnimation.EasingFunction>
+                                                    </ThicknessAnimation>
+                                                    <ThicknessAnimation Storyboard.TargetProperty="Margin"
+                                                                        Storyboard.TargetName="ImLyric_SingerTb"
+                                                                        From="140 58 0 0"
+                                                                        To="10 58 0 0"
+                                                                        Duration="0:0:0.5">
+                                                        <ThicknessAnimation.EasingFunction>
+                                                            <CubicEase />
+                                                        </ThicknessAnimation.EasingFunction>
+                                                    </ThicknessAnimation>
+                                                </Storyboard>
+                                            </i:ControlStoryboardAction.Storyboard>
+                                        </i:ControlStoryboardAction>
+                                    </i:EventTrigger.Actions>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </Border>
+                    </Grid>
                     <ws:Button  x:Name="LyricPage_BackBtn_Center"
                                 Width="64"
                                 Height="32"
@@ -503,7 +639,7 @@
                                  VerticalAlignment="Center">
                         <TextBlock x:Name="ImmerseModeLrcTb"
                                    Margin="100 0 100 50"
-                                   Opacity="0.6"
+                                   Opacity="0.8"
                                    FontFamily="Comic Sans MS,KaiTi"
                                    DataContext="{Binding CurrentLyric,NotifyOnTargetUpdated=True}"
                                    TextAlignment="Center"
@@ -512,17 +648,17 @@
                                    Visibility="{Binding DataContext.LyricView.IsShowRomaji,
                                                                  RelativeSource={RelativeSource AncestorType=Window},
                                                                  Converter={StaticResource BoolToVisibility}}"
-                             FontSize="22" />
+                                   FontSize="24" />
                         <LineBreak />
                         <Run Text="{Binding Lyric}"
-                             FontSize="64"
+                             FontSize="78"
                              FontWeight="Bold" />
                         <LineBreak />
                         <TextBlock Text="{Binding Trans}"
                                    Visibility="{Binding DataContext.LyricView.IsShowTranslation,
                                                                 RelativeSource={RelativeSource AncestorType=Window},
                                                                 Converter={StaticResource BoolToVisibility}}"
-                                   FontSize="22" />
+                                   FontSize="24" />
                             <TextBlock.Effect>
                                 <DropShadowEffect x:Name="Im_Effect"
                                                   BlurRadius="20"
@@ -538,7 +674,7 @@
                                 <DoubleAnimation Storyboard.TargetProperty="Opacity"
                                                  Storyboard.TargetName="ImmerseModeLrcTb"
                                                  From="0"
-                                                 To="0.6"
+                                                 To="0.8"
                                                  Duration="0:0:0.6" />
                                 <ThicknessAnimation Storyboard.TargetProperty="Margin"
                                                     Storyboard.TargetName="ImmerseModeLrcTb"
@@ -556,7 +692,8 @@
             </i:Interaction.Triggers>
                         </TextBlock>
                     </StackPanel>
-                    <TextBlock x:Name="Im_NextLrcTb" FontSize="32"
+                    <TextBlock x:Name="Im_NextLrcTb"
+                               FontSize="32"
                                Margin="100 0 0 180"
                                TextAlignment="Left"
                                VerticalAlignment="Bottom"
@@ -580,7 +717,7 @@
                                                              Storyboard.TargetName="Im_NextLrcTb"
                                                              BeginTime="0:0:0.5"
                                                              To="0.4"
-                                                             Duration="0:0:0.3"/>
+                                                             Duration="0:0:0.3" />
                                         </Storyboard>
                                     </i:ControlStoryboardAction.Storyboard>
                                 </i:ControlStoryboardAction>

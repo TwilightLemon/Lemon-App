@@ -18,13 +18,13 @@ namespace LemonApp.Services;
 public class MediaPlayerService(UserProfileService userProfileService,
     IHttpClientFactory httpClientFactory,
     SharedLaClient sharedLaClient,
-    AppSettingsService appSettingsService):IDisposable
+    AppSettingService appSettingsService):IDisposable
 {
     private MusicPlayer _player;
     private bool _isPlaying = false;
     private readonly SMTCCreator _smtc = new("Lemon App");
     private readonly UserProfileService _userProfileService = userProfileService;
-    private SettingsMgr<PlayingPreference> _playingMgr;
+    private SettingsMgr<PlayingPreference> _playingMgr = appSettingsService.GetConfigMgr<PlayingPreference>();
     private readonly HttpClient hc= httpClientFactory.CreateClient(App.PublicClientFlag);
     private readonly SharedLaClient _sharedLaClient = sharedLaClient;
 
@@ -46,7 +46,6 @@ public class MediaPlayerService(UserProfileService userProfileService,
     public async Task Init()
     {
         AudioGetter = new(hc, _userProfileService.GetAuth,_userProfileService.GetNeteaseAuth,_sharedLaClient,_userProfileService.GetSharedLaToken);
-        _playingMgr = appSettingsService.GetConfigMgr<PlayingPreference>()!;
         await MusicPlayer.PrepareDll();
         _player = new();
         _smtc.Next += Smtc_Next;

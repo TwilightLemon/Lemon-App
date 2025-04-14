@@ -8,30 +8,39 @@ using Microsoft.Extensions.Hosting;
 
 namespace LemonApp.Components;
 
+/// <summary>
+/// Lyric interaction with MyToolBar
+/// </summary>
+/// <param name="lyricView"></param>
+/// <param name="wbc"></param>
 public class MyToolBarLyricClient(LyricView lyricView, WindowBasicComponent wbc) : IHostedService
 {
     private TcpClient? client;
-    private CancellationTokenSource cts = new();
+    private readonly CancellationTokenSource cts = new();
     public Task StartAsync(CancellationToken cancellationToken)
     {
         lyricView.OnNextLrcReached += LyricView_OnNextLrcReached;
         wbc.OnCopyDataReceived += Wbc_OnCopyDataReceived;
         return Task.CompletedTask;
     }
+    //connect after startup or called by MyToolBar
     public void Connect()
     {
-        try
+        Task.Run(() =>
         {
-            client = new("127.0.0.1", 12587);
-        }
-        catch { }
+            try
+            {
+                client = new("127.0.0.1", 12587);
+            }
+            catch { }
+        });
     }
     public const string INTERACT_MTB_SYNC = "INTERACT_MTB_SYNC";
     private void Wbc_OnCopyDataReceived(string? msg)
     {
         if (msg == INTERACT_MTB_SYNC)
         {
-            //reconnect
+            //reconnect called by MyToolBar
             client?.Dispose();
             client = null;
             Connect();

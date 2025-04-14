@@ -271,6 +271,32 @@ public static class ImageHelper
         }
     }
 
+    public static void ScaleImage(this Bitmap bitmap, double scale)
+    {
+        // 计算新的尺寸
+        int newWidth = (int)(bitmap.Width * scale);
+        int newHeight = (int)(bitmap.Height * scale);
+
+        // 创建目标位图
+        Bitmap newBitmap = new Bitmap(newWidth, newHeight, bitmap.PixelFormat);
+
+        // 设置高质量绘图参数
+        using (Graphics graphics = Graphics.FromImage(newBitmap))
+        {
+            graphics.CompositingQuality = CompositingQuality.HighQuality;
+            graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            graphics.SmoothingMode = SmoothingMode.HighQuality;
+            graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+            // 绘制缩放后的图像
+            graphics.DrawImage(bitmap,
+                new Rectangle(0, 0, newWidth, newHeight),
+                new Rectangle(0, 0, bitmap.Width, bitmap.Height),
+                GraphicsUnit.Pixel);
+        }
+        bitmap = newBitmap;
+    }
+
     private static void HslToRgb(float h, float s, float l, out float r, out float g, out float b)
     {
         if (s == 0.0f)
@@ -300,8 +326,9 @@ public static class ImageHelper
     public static void ApplyMicaEffect(this Bitmap bitmap,bool isDarkmode)
     {
         var rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
-        bitmap.AdjustContrast(isDarkmode?5:-20);
+        bitmap.AdjustContrast(isDarkmode?-1:-20);
         bitmap.AddMask(isDarkmode);
-        bitmap.GaussianBlur(ref rect, 160f, false);
+        bitmap.ScaleImage(2);
+        bitmap.GaussianBlur(ref rect, 80f, false);
     }
 }

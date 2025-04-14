@@ -1,25 +1,26 @@
-﻿using System;
+﻿using EleCho.WpfSuite;
+using LemonApp.Common.UIBases;
+using LemonApp.Common.WinAPI;
+using LemonApp.Components;
+using LemonApp.MusicLib.Search;
+using LemonApp.Services;
+using LemonApp.ViewModels;
+using LemonApp.Views.Pages;
+using LemonApp.Views.UserControls;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Input;
+using System.Windows.Interop;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Navigation;
-using LemonApp.Common.UIBases;
-using LemonApp.Services;
-using LemonApp.ViewModels;
-using Microsoft.Extensions.DependencyInjection;
-using System.Windows.Input;
-using System.Windows.Data;
-using LemonApp.Common.WinAPI;
-using LemonApp.Views.Pages;
-using System.Windows.Interop;
-using LemonApp.Views.UserControls;
-using LemonApp.MusicLib.Search;
-using System.Net.Http;
-using System.Diagnostics;
-using LemonApp.Components;
-using System.Windows.Media;
 
 namespace LemonApp.Views.Windows
 {
@@ -52,6 +53,12 @@ namespace LemonApp.Views.Windows
 
 
             Loaded += MainWindow_Loaded;
+            ContentRendered += MainWindow_ContentRendered;
+        }
+
+        private void MainWindow_ContentRendered(object? sender, EventArgs e)
+        {
+
         }
 
         private readonly PublicPopupMenuHolder _publicPopupMenuHolder;
@@ -81,7 +88,10 @@ namespace LemonApp.Views.Windows
 
         private void _uiResourceService_OnColorModeChanged()
         {
-            Im_Effect.Color = _uiResourceService.GetIsDarkMode() ? Colors.White : Colors.Black;
+            bool isdarkmode = _uiResourceService.GetIsDarkMode();
+            Im_Effect.Color = isdarkmode ? Colors.White : Colors.Black;
+            var color = isdarkmode ? Color.FromRgb(0x1E, 0x1E, 0x1E) : Color.FromRgb(0xD0,0xD0,0xD0);
+            WindowOption.SetBorderColor(App.Current.MainWindow, new WindowOptionColor() { R = color.R, G = color.G, B = color.B });
         }
 
         #region MainContentFrame
@@ -114,6 +124,38 @@ namespace LemonApp.Views.Windows
 
             visualizer.Player = _serviceProvider.GetRequiredService<MediaPlayerService>().Player;
             MainContentPage.Children.Add(_publicPopupMenuHolder.selector);
+        }
+
+        //以下是歌词页背景的旋转动画，，但是写的很烂，改日再改。🐱
+        private Storyboard? LyricImgRTAni;
+       public void BeginOrPauseLyricImgAnimation(bool play)
+        {
+            //LyricImgRT
+            if(LyricImgRTAni == null)
+            {
+                LyricImgRTAni = new();
+                DoubleAnimation da = new(0, 360, TimeSpan.FromSeconds(30))
+                {
+                    RepeatBehavior = RepeatBehavior.Forever
+                };
+                Storyboard.SetTarget(da, LyricImgRT);
+                Storyboard.SetTargetProperty(da, new PropertyPath("(RotateTransform.Angle)"));
+                LyricImgRTAni.Children.Add(da);
+                LyricImgRTAni.Freeze();
+                LyricImgRTAni.Begin();
+            }
+            else
+            {
+                if(play)
+                {
+                    LyricImgRTAni.Resume();
+                }
+                else
+                {
+                    LyricImgRTAni.Pause();
+                }
+            }
+
         }
 
         private void GoBackBtn_Click(object sender, RoutedEventArgs e)

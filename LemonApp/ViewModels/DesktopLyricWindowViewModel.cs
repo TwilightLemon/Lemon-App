@@ -13,7 +13,7 @@ public partial class DesktopLyricWindowViewModel:ObservableObject
 {
     public DesktopLyricWindowViewModel(
         MediaPlayerService mediaPlayerService,
-        AppSettingsService appSettingsService)
+        AppSettingService appSettingsService)
     {
         _mediaPlayerService = mediaPlayerService;
         IsPlaying = _mediaPlayerService.IsPlaying;

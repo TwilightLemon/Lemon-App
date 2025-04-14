@@ -21,7 +21,6 @@ using System.Threading.Tasks;
 using LemonApp.Views.Windows;
 using Task = System.Threading.Tasks.Task;
 using LemonApp.MusicLib.Abstraction.Entities;
-using LemonApp.MusicLib.User;
 using LemonApp.Components;
 using System.Windows;
 
@@ -34,15 +33,15 @@ public partial class MainWindowViewModel : ObservableObject
     private readonly UserProfileService _userProfileService;
     private readonly MainNavigationService _mainNavigationService;
     private readonly MediaPlayerService _mediaPlayerService;
-    private readonly AppSettingsService _appSettingsService;
+    private readonly AppSettingService _appSettingsService;
     private readonly UIResourceService _uiResourceService;
     private readonly WindowBasicComponent _windowBasicComponent;
     private readonly PlaylistDataWrapper _playlistDataWrapper;
     private readonly DownloadMenuDecorator _downloadMenuDecorator;
 
     private readonly Timer _timer;
-    private SettingsMgr<PlayingPreference>? _currentPlayingMgr;
-    private SettingsMgr<PlaylistCache>? _playlistMgr;
+    private SettingsMgr<PlayingPreference> _currentPlayingMgr;
+    private SettingsMgr<PlaylistCache> _playlistMgr;
 
     private DesktopLyricWindowViewModel _lyricWindowViewModel;
 
@@ -51,7 +50,7 @@ public partial class MainWindowViewModel : ObservableObject
         IServiceProvider serviceProvider,
         MainNavigationService mainNavigationService,
         MediaPlayerService mediaPlayerService,
-        AppSettingsService appSettingsService,
+        AppSettingService appSettingsService,
         UIResourceService uIResourceService,
         LyricView lyricView,
         DesktopLyricWindowViewModel lyricWindowViewModel,
@@ -68,6 +67,9 @@ public partial class MainWindowViewModel : ObservableObject
         _uiResourceService = uIResourceService;
         _windowBasicComponent = windowBasicComponent;
         _playlistDataWrapper = playlistDataWrapper;
+
+        _currentPlayingMgr = _appSettingsService.GetConfigMgr<PlayingPreference>();
+        _playlistMgr = _appSettingsService.GetConfigMgr<PlaylistCache>();
 
         _uiResourceService.OnColorModeChanged += UIResourceService_OnColorModeChanged;
 
@@ -123,8 +125,6 @@ public partial class MainWindowViewModel : ObservableObject
     private async void LoadComponent()
     {
         //update current playing from Settings:
-        _currentPlayingMgr = _appSettingsService.GetConfigMgr<PlayingPreference>();
-        _playlistMgr = _appSettingsService.GetConfigMgr<PlaylistCache>();
         if (_currentPlayingMgr is { } mgr&&_playlistMgr is { } pl)
         {
             if (mgr.Data?.Music is { MusicID: not "" } music)
@@ -269,11 +269,11 @@ public partial class MainWindowViewModel : ObservableObject
 
     private void AppSettingsService_OnExiting()
     {
-        _currentPlayingMgr!.Data ??= new();
-        _currentPlayingMgr!.Data.Music = CurrentPlaying;
-        _currentPlayingMgr!.Data.Volume = CurrentPlayingVolume;
-        _currentPlayingMgr!.Data.PlayMode = CircleMode;
-        _currentPlayingMgr!.Data.ShowDesktopLyric = IsShowDesktopLyric;
+        _currentPlayingMgr.Data ??= new();
+        _currentPlayingMgr.Data.Music = CurrentPlaying;
+        _currentPlayingMgr.Data.Volume = CurrentPlayingVolume;
+        _currentPlayingMgr.Data.PlayMode = CircleMode;
+        _currentPlayingMgr.Data.ShowDesktopLyric = IsShowDesktopLyric;
         var temp = Playlist.ToList();
         foreach(var item in temp)
         {
@@ -356,12 +356,14 @@ public partial class MainWindowViewModel : ObservableObject
     {
         IsPlaying = false;
         _timer?.Stop();
+        App.Current.MainWindow.BeginOrPauseLyricImgAnimation(false);
     }
 
     private void MediaPlayerService_OnPlay(Music m)
     {
         IsPlaying = true;
         _timer?.Start();
+        App.Current.MainWindow.BeginOrPauseLyricImgAnimation(true);
     }
     public event Action<string>? SyncCurrentPlayingWithPlayListPage;
     private void MediaPlayerService_OnLoaded(Music m)
@@ -440,6 +442,7 @@ public partial class MainWindowViewModel : ObservableObject
         new MainMenu("Download", (Geometry)App.Current.FindResource("Menu_Download"), typeof(DownloadPage),MenuType.Mine){
             Decorator=_downloadMenuDecorator
         },
+        new MainMenu("Local",(Geometry)App.Current.FindResource("Menu_Local"),typeof(Page),MenuType.Mine),
         new MainMenu("Favorite",(Geometry)App.Current.FindResource("Menu_Favorite"), typeof(PlaylistPage),MenuType.Mine,LoadMyFavorite),
         new MainMenu("My Diss", (Geometry) App.Current.FindResource("Menu_MyDiss"), typeof(MyDissPage),MenuType.Mine)
         ];
@@ -461,7 +464,7 @@ public partial class MainWindowViewModel : ObservableObject
         {
             if (value.PageType is { } type)
             {
-                if (App.Host!.Services.GetService(type) is Page{ } page)
+                if (App.Services.GetService(type) is Page{ } page)
                 {
                     if (value.ProcessPage != null)
                         await value.ProcessPage(page);
@@ -637,7 +640,7 @@ public partial class MainWindowViewModel : ObservableObject
     private DesktopLyricWindow? lrcWindow;
 
     [ObservableProperty]
-    private Brush? _lyricPageBackgound = null;
+    private ImageSource? _lyricPageBackgroundSource = null;
     partial void OnIsShowDesktopLyricChanged(bool value)
     {
         if (value)
@@ -686,8 +689,9 @@ public partial class MainWindowViewModel : ObservableObject
 
     private async Task UpdateCover()
     {
+        if (CurrentPlaying == null) return;
         var hc = () => _serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
-        var cover = await ImageCacheService.FetchData(await CoverGetter.GetCoverImgUrl(hc, _userProfileService.GetAuth(), CurrentPlaying!));
+        var cover = await ImageCacheService.FetchData(await CoverGetter.GetCoverImgUrl(hc, _userProfileService.GetAuth(), CurrentPlaying));
         if (cover != null)
         {
             CurrentPlayingCover = new ImageBrush(cover);
@@ -698,16 +702,17 @@ public partial class MainWindowViewModel : ObservableObject
             bool isDarkMode = _uiResourceService.GetIsDarkMode();
             if (_uiResourceService.UsingMusicTheme)
             {
-                _uiResourceService.SettingsMgr.Data.AccentColor = bitmap.GetMajorColor().AdjustColor();
+                var color = bitmap.GetMajorColor().AdjustColor();
+                _uiResourceService.SettingsMgr.Data.AccentColor =color;
                 _uiResourceService.UpdateAccentColor();
             }
             //process img
             bitmap.ApplyMicaEffect(isDarkMode);
-            LyricPageBackgound = new ImageBrush(bitmap.ToBitmapImage());
+            LyricPageBackgroundSource = bitmap.ToBitmapImage();
         }
         else
         {
-            LyricPageBackgound = null;
+            LyricPageBackgroundSource = null;
         }
     }
 

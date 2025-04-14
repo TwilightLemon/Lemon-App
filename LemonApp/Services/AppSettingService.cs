@@ -2,7 +2,6 @@
 using LemonApp.Common.Configs;
 using LemonApp.Common.Funcs;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,26 +12,22 @@ namespace LemonApp.Services;
 /// <summary>
 /// Manage user settings.
 /// </summary>
-/// <param name="logger"></param>
-public class AppSettingsService(
-    ILogger<AppSettingsService> logger
-    ) :IHostedService,IConfigManager
+public class AppSettingService :IHostedService,IConfigManager
 {
     private readonly Dictionary<Type, object> _settingsMgrs = [];
-    private readonly ILogger<AppSettingsService> _logger = logger;
     public event Action? OnExiting;
 
-    public AppSettingsService AddConfig<T>(Settings.sType type=Settings.sType.Settings) where T : class{
+    public AppSettingService AddConfig<T>(Settings.sType type=Settings.sType.Settings) where T : class{
         if(Activator.CreateInstance(typeof(SettingsMgr<>).MakeGenericType(typeof(T)),
-        [typeof(T).Name,typeof(AppSettingsService).Namespace,type]) is {} mgr)
+        [typeof(T).Name,typeof(AppSettingService).Namespace,type]) is {} mgr)
             _settingsMgrs.Add(typeof(T),mgr);
         return this;
     }
-    //TODO:  modify to required method
-    public SettingsMgr<T>? GetConfigMgr<T>() where T : class{
+
+    public SettingsMgr<T> GetConfigMgr<T>() where T : class{
         if(_settingsMgrs.TryGetValue(typeof(T),out var mgr))
             return (SettingsMgr<T>)mgr;
-        return null;
+        throw new InvalidOperationException($"{typeof(T)} is not registered.");
     }
     public bool AddEventHandler<T>(Action handler) where T : class
     {
@@ -46,17 +41,20 @@ public class AppSettingsService(
         }
         return false;
     }
-    public async void LoadAsync(Action<bool> callback){
+    public void Load(){
         GlobalConstants.ConfigManager = this;
         foreach (var mgr in _settingsMgrs.Values)
         {
-            var loadMethod = mgr.GetType().GetMethod("LoadAsync");
-            if (loadMethod?.Invoke(mgr, null) is Task<bool> task)
-                await task;
+            var loadMethod = mgr.GetType().GetMethod("Load");
+            if (loadMethod?.Invoke(mgr, null) is false)
+                throw new Exception($"failed to load AppSettings: {mgr}");
         }
-        callback(true);
     }
-    public Task StartAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        Load();
+        return Task.CompletedTask;
+    }
 
     public Task StopAsync(CancellationToken cancellationToken)
     {

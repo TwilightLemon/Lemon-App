@@ -17,15 +17,15 @@ namespace LemonApp.ViewModels;
 public partial class UserMenuViewModel:ObservableObject
 {
     public record ActionMenu(string Name,Geometry? Icon,Action? Action);
-    private readonly SettingsMgr<UserProfile>? profileMgr;
+    private readonly SettingsMgr<UserProfile> profileMgr;
     public Action? RequestCloseMenu;
     public UserMenuViewModel(
-        AppSettingsService appSettingsService,
+        AppSettingService appSettingsService,
         UserProfileService userProfileService)
     {
         profileMgr = appSettingsService.GetConfigMgr<UserProfile>();
-        userProfile = profileMgr?.Data;
-        if(!string.IsNullOrEmpty(userProfile?.TencUserAuth?.Id))
+        userProfile = profileMgr.Data;
+        if(!string.IsNullOrEmpty(userProfile.TencUserAuth?.Id))
         {
             IsLoginQQ = Visibility.Visible;
             //只有登录到QQ音乐之后才能绑定网易云
@@ -49,7 +49,7 @@ public partial class UserMenuViewModel:ObservableObject
 
     [RelayCommand]
     private void GotoProfilePage() {
-        var navigator = App.Host!.Services.GetRequiredService<MainNavigationService>();
+        var navigator = App.Services.GetRequiredService<MainNavigationService>();
         navigator.RequstNavigation(PageType.AccountInfoPage);
         RequestCloseMenu?.Invoke();
     }
@@ -85,7 +85,7 @@ public partial class UserMenuViewModel:ObservableObject
     ];
     public static void Menu_LoginQQ()
     {
-        var sp = App.Host!.Services;
+        var sp = App.Services;
         var loginWindow = sp.GetRequiredService<LoginWindow>();
         var user=sp.GetRequiredService<UserProfileService>();
         loginWindow.OnLoginTenc = async (auth) =>
@@ -96,7 +96,7 @@ public partial class UserMenuViewModel:ObservableObject
     }
     static void Menu_LoginNetease()
     {
-        var sp = App.Host!.Services;
+        var sp = App.Services;
         var loginWindow = sp.GetRequiredService<LoginWindow>();
         var user = sp.GetRequiredService<UserProfileService>();
         loginWindow.OnLoginNetease = user.UpdateNeteaseAuth;
@@ -111,7 +111,7 @@ public partial class UserMenuViewModel:ObservableObject
     }
     static void Menu_GotoSettingsPage()
     {
-        var navigator = App.Host!.Services.GetRequiredService<MainNavigationService>();
+        var navigator = App.Services.GetRequiredService<MainNavigationService>();
         navigator.RequstNavigation(PageType.SettingsPage);
     }
     static void Menu_Exit()

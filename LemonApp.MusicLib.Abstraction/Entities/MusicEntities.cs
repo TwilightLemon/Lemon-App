@@ -9,7 +9,11 @@ public class MusicUrlData
 }
 public enum Platform
 {
-    qq, wyy
+    qq, wyy,
+    /// <summary>
+    /// none means a  local file cannot match with any platform
+    /// </summary>
+    none
 }
 public class Profile
 {

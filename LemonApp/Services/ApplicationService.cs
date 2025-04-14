@@ -17,15 +17,12 @@ using System.Windows.Navigation;
 
 namespace LemonApp.Services
 {
+    //only basic services are injected. make sure AppSettingsService ready.
     public class ApplicationService(
          IServiceProvider serviceProvider,
         ILogger<ApplicationService> logger,
-        AppSettingsService appSettingsService,
-        UIResourceService uiResourceService,
-        UserProfileService userProfileService,
-        MediaPlayerService mediaPlayerService,
-        WindowBasicComponent windowBasicComponent
-        ) : IHostedService
+        AppSettingService appSettingsService,
+        UIResourceService uiResourceService) : IHostedService
     {
         public Task StartAsync(CancellationToken cancellationToken)
         {
@@ -35,45 +32,30 @@ namespace LemonApp.Services
                 System.Diagnostics.Process.Start("explorer.exe", e.Uri.AbsoluteUri);
                 e.Handled = true;
             }));
-            // Load settings
-            appSettingsService.LoadAsync(async(success)=>{
-                if(!success){
-                    logger.LogError("Failed to load settings.");
-                    return;
-                }
-                //load cache manager
+
+            var startup = async() =>{
                 await CacheManager.LoadPath();
+                await serviceProvider.GetRequiredService<MediaPlayerService>().Init();
 
-                //init userProfileService
-                userProfileService.Init();
-
-                //init media player
-                await mediaPlayerService.Init();
-
-                //init DownloadService
-                App.Services.GetRequiredService<DownloadService>().Init();
-
-                //apply settings
-                uiResourceService.UpdateColorMode();
-                uiResourceService.UpdateAccentColor();
-                
                 //show main window
                 var mainWindow = serviceProvider.GetRequiredService<MainWindow>();
                 App.Current.MainWindow = mainWindow;
                 mainWindow.Show();
 
                 //apply theme config
+                uiResourceService.UpdateColorMode();
+                uiResourceService.UpdateAccentColor();
                 SystemThemeAPI.RegesterOnThemeChanged(mainWindow, OnThemeChanged, OnSystemColorChanged);
                 uiResourceService.UpdateThemeConfig();
 
                 //init window basic components
-                windowBasicComponent.Init();
+                serviceProvider.GetRequiredService<WindowBasicComponent>().Init();
 
                 //check & update user profile
-                if (appSettingsService.GetConfigMgr<UserProfile>()?.Data?.TencUserAuth is {Id.Length:>5} auth)
-                    await userProfileService.UpdateAuthAndNotify(auth);
-
-            });
+                if (appSettingsService.GetConfigMgr<UserProfile>().Data.TencUserAuth is { Id.Length: > 5 } auth)
+                    _ = serviceProvider.GetRequiredService<UserProfileService>().UpdateAuthAndNotify(auth);
+            };
+            startup();
 
             return Task.CompletedTask;
         }

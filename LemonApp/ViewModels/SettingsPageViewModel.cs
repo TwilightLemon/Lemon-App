@@ -14,7 +14,7 @@ namespace LemonApp.ViewModels
 {
     public partial class SettingsPageViewModel:ObservableObject
     {
-        public SettingsPageViewModel(IHttpClientFactory httpClientFactory,AppSettingsService appSettingsService)
+        public SettingsPageViewModel(IHttpClientFactory httpClientFactory,AppSettingService appSettingsService)
         {
             _playingMgr = appSettingsService.GetConfigMgr<PlayingPreference>()!;
             _dlConfigMgr = appSettingsService.GetConfigMgr<DownloadPreference>()!;
