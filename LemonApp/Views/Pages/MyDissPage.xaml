@@ -5,6 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:LemonApp.Views.Pages"
       xmlns:uc="clr-namespace:LemonApp.Views.UserControls"
+      xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
       xmlns:ws="https://schemas.elecho.dev/wpfsuite"
       mc:Ignorable="d"
       d:DesignHeight="450"
@@ -23,7 +24,7 @@
                     Value="Bold" />
         </Style>
     </Page.Resources>
-    <ws:ScrollViewer x:Name="sv" Style="{StaticResource SimpleVerticalScrollViewerStyle}">
+    <base:ScrollViewer x:Name="sv" Style="{StaticResource SimpleVerticalScrollViewerStyle}">
         <ws:StackPanel>
             <TextBlock Text="My Diss"
                        Style="{StaticResource TitleTbStyle}"/>
@@ -38,5 +39,5 @@
                        Style="{StaticResource TitleTbStyle}"/>
             <uc:PlaylistItemView x:Name="MyFarvoriteDissList" />
         </ws:StackPanel>
-    </ws:ScrollViewer>
+    </base:ScrollViewer>
 </Page>

@@ -7,7 +7,7 @@
       xmlns:ws="https://schemas.elecho.dev/wpfsuite"
       mc:Ignorable="d"
       Foreground="{DynamicResource ForeColor}"
-      d:DesignHeight="450"
+      d:DesignHeight="800"
       d:DesignWidth="800"
       Title="SingerPage">
 
@@ -115,13 +115,32 @@
                                             d:Background="#69f"
                                             Margin="12 0 0 0" />
                                     <TextBlock VerticalAlignment="Center"
-                                               Margin="86 0 0 0"><Run d:Text="reputation(Taylor's Version)"
-                                                                      FontWeight="Bold"
-                                                                      FontSize="18" /><LineBreak /><Run d:Text="2024-1-21"
-                                                                                                        FontSize="14" /></TextBlock>
+                                               Margin="86 0 0 0">
+                                        <Run d:Text="reputation(Taylor's Version)"
+                                             FontWeight="Bold"
+                                             FontSize="18" />
+                                        <LineBreak /><Run d:Text="2024-1-21"  FontSize="14" />
+                                    </TextBlock>
                                 </Grid>
                             </ws:Button>
                         </Grid>
+                        <ws:Button Style="{StaticResource SimpleButtonStyleForWs}" Height="58"
+                                   HorizontalContentAlignment="Stretch"
+                                   VerticalContentAlignment="Center">
+                            <Grid Margin="24  0">
+                                <TextBlock Text="Hot Songs" FontWeight="Bold"
+                                           FontSize="20"/>
+                                <Path Data="{StaticResource Icon_Back}" Stretch="Uniform" HorizontalAlignment="Right" Fill="{DynamicResource ForeColor}"
+                                      Height="16"
+                                      RenderTransformOrigin="0.5,0.5">
+                                    <Path.RenderTransform>
+                                        <RotateTransform Angle="180" />
+                                    </Path.RenderTransform>
+                                </Path>
+                            </Grid>
+                        </ws:Button>
+                        <TextBlock Text="Related Singers" FontSize="22" FontWeight="Bold"
+                                   Margin="12"/>
                     </StackPanel>
                 </ws:TabItem>
                 <ws:TabItem Header="About">

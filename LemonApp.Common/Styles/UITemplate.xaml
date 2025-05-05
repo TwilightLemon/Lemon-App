@@ -3,6 +3,7 @@
                     xmlns:ws="https://schemas.elecho.dev/wpfsuite"
                     xmlns:av="http://schemas.microsoft.com/expression/blend/2008"
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                    xmlns:base="clr-namespace:LemonApp.Common.UIBases"
                     mc:Ignorable="av">
 
     <Style x:Key="IconToggleButton" TargetType="ToggleButton">
@@ -53,7 +54,7 @@
         </Setter>
     </Style>
     <Style x:Key="SimpleVerticalScrollViewerStyle"
-           TargetType="{x:Type ws:ScrollViewer}">
+           TargetType="{x:Type ScrollViewer}">
         <Setter Property="ws:StylusTouchDevice.Simulate"
                 Value="True" />
         <Setter Property="PanningMode"
@@ -288,9 +289,9 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBox}">
                     <Border x:Name="Bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="1" SnapsToDevicePixels="true">
-                        <ws:ScrollViewer Focusable="false" Padding="{TemplateBinding Padding}" Style="{StaticResource SimpleVerticalScrollViewerStyle}">
+                        <base:ScrollViewer Focusable="false" Padding="{TemplateBinding Padding}" Style="{StaticResource SimpleVerticalScrollViewerStyle}">
                             <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                        </ws:ScrollViewer>
+                        </base:ScrollViewer>
                     </Border>
                     <ControlTemplate.Triggers>
                         <MultiTrigger>

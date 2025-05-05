@@ -8,6 +8,7 @@
       xmlns:ws="https://schemas.elecho.dev/wpfsuite"
       xmlns:music="clr-namespace:LemonApp.MusicLib.Abstraction.Entities;assembly=LemonApp.MusicLib.Abstraction"
       xmlns:vm="clr-namespace:LemonApp.ViewModels"
+      xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
       mc:Ignorable="d"
       d:DesignHeight="900"
       d:DesignWidth="800"
@@ -24,7 +25,7 @@
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
     </Page.Resources>
-    <ws:ScrollViewer Style="{StaticResource SimpleVerticalScrollViewerStyle}">
+    <base:ScrollViewer Style="{StaticResource SimpleVerticalScrollViewerStyle}">
         <ws:StackPanel x:Name="ContentPanel" Spacing="8" Margin="8 0">
             <TextBlock VerticalAlignment="Top"
                        HorizontalAlignment="Left"
@@ -140,5 +141,5 @@
             </Border>
             <!--Dynamic Content-->
         </ws:StackPanel>
-    </ws:ScrollViewer>
+    </base:ScrollViewer>
 </Page>

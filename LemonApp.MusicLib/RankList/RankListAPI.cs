@@ -20,7 +20,7 @@ public static class RankListAPI
                 List<string> content = [];
                 foreach (var a in d["song"].AsArray())
                     content.Add(a["title"] + " - " + a["singerName"]);
-                list.Add(new RankListInfo()
+                list.Add(new RankListInfo(default, default, default, default, default)
                 {
                     Name = d["title"].ToString(),
                     CoverUrl = d["frontPicUrl"].ToString().Replace("http://", "https://"),

@@ -26,7 +26,13 @@ namespace LemonApp.Views.UserControls
     {
         public double Time { get; set; }
         public string Lyric { get; set; } = string.Empty;
+        /// <summary>
+        /// Container TextBlock
+        /// </summary>
         public TextBlock LrcTb { get; set; }=container;
+        /// <summary>
+        /// Main Lyric Tb
+        /// </summary>
         public TextBlock LrcMain { get; set; } = main;
         public TextBlock? LrcTrans { get; set; }
         public TextBlock? Romaji { get; set; }
@@ -42,6 +48,7 @@ namespace LemonApp.Views.UserControls
         private readonly UIResourceService _uiResourceService;
         private readonly List<LrcItem> LrcItems = [];
         private LrcItem? _currentLrc = null;
+
         public LyricView(IHttpClientFactory httpClientFactory,
             UIResourceService uiResourceService,
             AppSettingService appSettingsService)
@@ -50,6 +57,7 @@ namespace LemonApp.Views.UserControls
             UpdateColorMode();
 
             _settings = appSettingsService.GetConfigMgr<LyricOption>();
+            _settings.OnDataChanged += Settings_OnDataChanged;
             _hc = httpClientFactory.CreateClient(App.PublicClientFlag);
             _uiResourceService = uiResourceService;
             _uiResourceService.OnColorModeChanged += UiResourceService_OnColorModeChanged;
@@ -60,19 +68,40 @@ namespace LemonApp.Views.UserControls
         }
 
         #region Self-adaption
+        /// <summary>
+        /// respond to LyricOption changed
+        /// </summary>
+        private async void Settings_OnDataChanged()
+        {
+            await _settings.LoadAsync();
+            ApplySettings();
+        }
         private void LyricView_Loaded(object sender, RoutedEventArgs e)
         {
-            IsShowTranslation = _settings?.Data?.ShowTranslation is true;
-            IsShowRomaji = _settings?.Data?.ShowRomaji is true;
-            SetFontSize(_settings?.Data?.FontSize ?? (int)LyricFontSize);
-            this.FontFamily = new FontFamily(_settings?.Data?.FontFamily ?? "Segou UI");
+            ApplySettings();
+        }
+        private void ApplySettings()
+        {
+            this.Dispatcher.Invoke(() =>
+            {
+                IsShowTranslation = _settings?.Data?.ShowTranslation is true;
+                IsShowRomaji = _settings?.Data?.ShowRomaji is true;
+                SetFontSize(_settings?.Data?.FontSize ?? (int)LyricFontSize);
+                this.FontFamily = new FontFamily(_settings?.Data?.FontFamily ?? "Segou UI");
+            });
         }
 
         private void UpdateColorMode()
         {
             if (Foreground is SolidColorBrush color)
             {
-                Hightlighter = new DropShadowEffect() { BlurRadius = 20, Color = color.Color, Opacity = 0.5, ShadowDepth = 0, Direction = 0 };
+                Hightlighter = new DropShadowEffect() { 
+                    BlurRadius = 20, 
+                    Color = color.Color, 
+                    Opacity = 0.5, 
+                    ShadowDepth = 0, 
+                    Direction = 0
+                };
             }
         }
         private void UiResourceService_OnColorModeChanged() => UpdateColorMode();
@@ -81,7 +110,7 @@ namespace LemonApp.Views.UserControls
         {
             if (e.NewValue is true)
             {
-                await Task.Delay(300);
+                await Task.Delay(300);//?? 为什么这里不等待会导致TransformToVisual抛出异常
                 RefreshCurrentLrcStyle();
             }
         }
@@ -113,7 +142,7 @@ namespace LemonApp.Views.UserControls
 
 
         public event Action<LrcLine,LrcLine?>? OnNextLrcReached;
-        public LrcLine? ToLrcLine(LrcItem? item) =>item==null?null: new()
+        public static LrcLine? ToLrcLine(LrcItem? item) =>item==null?null: new()
         {
             Lyric = item?.Lyric ?? "",
             Trans = item?.LrcTrans?.Text ?? "",
@@ -323,9 +352,9 @@ namespace LemonApp.Views.UserControls
 
 
         private static double? pixelsPerDip;
-        private static string InsertLineBreaks(TextBlock tb, string preText, double fontSize, double maxWidth)
+        private static string InsertLineBreaks(TextBlock tb, string preText, double fontSize, double maxWidth,FontWeight fontWeight)
         {
-            var typeface = new Typeface(tb.FontFamily, tb.FontStyle, FontWeights.Bold, tb.FontStretch);
+            var typeface = new Typeface(tb.FontFamily, tb.FontStyle, fontWeight, tb.FontStretch);
             pixelsPerDip ??= VisualTreeHelper.GetDpi(Application.Current.MainWindow).PixelsPerDip;
             double GetWidth(string text)
             {
@@ -338,7 +367,7 @@ namespace LemonApp.Views.UserControls
             bool spaceSplit = preText.Contains(' ');
             if (spaceSplit)
                 blocks = preText.Split(' ');
-            else blocks = preText.Select(c => c.ToString()).ToArray();
+            else blocks = [.. preText.Select(c => c.ToString())];
 
 
             foreach (var block in blocks)
@@ -361,25 +390,27 @@ namespace LemonApp.Views.UserControls
 
         public void UpdateTime(double ms)
         {
-            async void reset(LrcItem? item)
+            void reset(LrcItem? item)
             {
                 if (item == null || item.LrcTb == null) return;
                 item.LrcTb.FontWeight = NormalTextFontWeight;
                 item.LrcTb.Effect = NomalTextEffect;
                 if (IsVisible)
                 {
-                    var da = new DoubleAnimation(LyricFontSize, TimeSpan.FromSeconds(0.2));
-                    da.Completed += delegate
-                    {
+                    //last lyric block
+                    var da = new DoubleAnimation(LyricFontSize, TimeSpan.FromMilliseconds(100));
+                   // da.EasingFunction = new CubicEase();
+                    da.Completed += delegate {
                         item.LrcTb.BeginAnimation(FontSizeProperty, null);
+                        item.LrcMain.Text = item.Lyric;
+                        item.LrcMain.TextWrapping = TextWrapping.Wrap;
+                        RefreshCurrentLrcStyle();
                     };
-                    da.EasingFunction = new CubicEase();
+                    //计算原歌词的宽度并插入换行符，此时NoWrap
+                    item.LrcMain.Text=InsertLineBreaks(item.LrcMain, item.Lyric, LyricFontSize, 
+                                                    ActualWidth - LyricMargin.Left - LyricMargin.Right-1, NormalTextFontWeight);
                     item.LrcTb.BeginAnimation(FontSizeProperty, da);
-                    item.LrcTb.BeginAnimation(OpacityProperty, new DoubleAnimation(LyricOpacity, TimeSpan.FromSeconds(0.5)));
-                    await Task.Delay(200);
-                    item.LrcMain.TextWrapping = TextWrapping.Wrap;
-                    item.LrcMain.Text = item.Lyric;
-                    RefreshCurrentLrcStyle();
+                    item.LrcTb.BeginAnimation(OpacityProperty, new DoubleAnimation(LyricOpacity, TimeSpan.FromMilliseconds(300)));
                 }
                 else
                 {
@@ -389,8 +420,7 @@ namespace LemonApp.Views.UserControls
                     item.LrcMain.Text = item.Lyric;
                 }
             }
-            var temp =IsVisible? LrcItems.LastOrDefault(p => p.Time <= ms+400):
-                            LrcItems.LastOrDefault(p => p.Time <= ms);
+            var temp = LrcItems.LastOrDefault(p => p.Time <= ms);
             if (temp == null || temp == _currentLrc) return;
 
             var last = _currentLrc;
@@ -412,12 +442,12 @@ namespace LemonApp.Views.UserControls
             double targetFontsize = LyricFontSize + 10;
             var mainLine = _currentLrc.LrcMain!;
             mainLine.TextWrapping = TextWrapping.NoWrap;
-            mainLine.Text = InsertLineBreaks(mainLine, _currentLrc.Lyric, targetFontsize, ActualWidth - LyricMargin.Left - LyricMargin.Right - 1);
+            mainLine.Text = InsertLineBreaks(mainLine, _currentLrc.Lyric, targetFontsize, ActualWidth - LyricMargin.Left - LyricMargin.Right - 1, FontWeights.Bold);
             var da = new DoubleAnimation(targetFontsize, TimeSpan.FromSeconds(0.4))
             {
                 EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
             };
-            Timeline.SetDesiredFrameRate(da, 60);
+            //Timeline.SetDesiredFrameRate(da, 60);
             ResetLrcviewScroll();
             container.BeginAnimation(FontSizeProperty, da);
 
@@ -439,11 +469,15 @@ namespace LemonApp.Views.UserControls
                 double os = p.Y - (scrollviewer.ActualHeight / 2) + 120;
                 var da = new DoubleAnimation(os, TimeSpan.FromMilliseconds(500));
                 da.EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut };
-                Timeline.SetDesiredFrameRate(da, 60);
+                //Timeline.SetDesiredFrameRate(da, 60);
                 scrollviewer.BeginAnimation(ScrollViewerUtils.VerticalOffsetProperty, da);
             }
             catch { }
         }
 
+        private void scrollviewer_PreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            e.Handled = true;
+        }
     }
 }

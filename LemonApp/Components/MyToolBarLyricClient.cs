@@ -51,11 +51,15 @@ public class MyToolBarLyricClient(LyricView lyricView, WindowBasicComponent wbc)
     {
         if (client != null && client.Connected)
         {
-            var msg = lrc.Lyric + "\r\n";
-            var data = Encoding.UTF8.GetBytes(msg);
-            var stream = client.GetStream();
-            await stream.WriteAsync(data, cts.Token);
-            await stream.FlushAsync(cts.Token);
+            try
+            {
+                var msg = lrc.Lyric + "\r\n";
+                var data = Encoding.UTF8.GetBytes(msg);
+                var stream = client.GetStream();
+                await stream.WriteAsync(data, cts.Token);
+                await stream.FlushAsync(cts.Token);
+            }
+            catch { }
         }
     }
 

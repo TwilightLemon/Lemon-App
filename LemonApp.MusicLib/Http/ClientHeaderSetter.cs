@@ -1,4 +1,6 @@
-﻿namespace LemonApp.MusicLib.Http;
+﻿using LemonApp.Common.Funcs;
+
+namespace LemonApp.MusicLib.Http;
 public static class ClientHeaderSetter
 {
     /// <summary>
@@ -21,6 +23,23 @@ public static class ClientHeaderSetter
         hc.DefaultRequestHeaders.Add("sec-fetch-site", "same-site");
         return hc;
     }
+
+    public static HttpClient SetForUYV17(this HttpClient hc,string cookie)
+    {
+        hc.DefaultRequestHeaders.TryAddWithoutValidation("ContentType", "application/x-www-form-urlencoded");
+        hc.DefaultRequestHeaders.Host = "u.y.qq.com";
+        hc.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
+        hc.DefaultRequestHeaders.Add("Origin", "http://y.qq.com");
+        hc.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.47.134 Safari/537.36 QBCore/3.53.47.400 QQBrowser/9.0.2524.400 pcqqmusic/17.10.5105.0801 SkinId/10001|1ecc94|145|1|||1fd4af");
+        hc.DefaultRequestHeaders.Add("Referer", "http://y.qq.com/wk_v17/");
+        hc.DefaultRequestHeaders.TryAddWithoutValidation("AcceptLanguage", "zh-CN,zh;q=0.8,en-US;q=0.6,en;q=0.5;q=0.4");
+        hc.DefaultRequestHeaders.Add("Cookie", cookie);
+        return hc;
+    }
+
+    public static Task<HttpResponseMessage> PostTextAsync(this HttpClient hc, string url, string content)
+        => hc.PostAsync(url, new StringContent(content, System.Text.Encoding.UTF8, "application/x-www-form-urlencoded"));
+    public static Task<string> AsTextAsync(this HttpResponseMessage res) => res.Content.ReadAsStringAsync();
     /// <summary>
     /// u.y.qq.com for Musicu.fcg
     /// </summary>

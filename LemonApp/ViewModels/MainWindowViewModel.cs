@@ -442,7 +442,7 @@ public partial class MainWindowViewModel : ObservableObject
         new MainMenu("Download", (Geometry)App.Current.FindResource("Menu_Download"), typeof(DownloadPage),MenuType.Mine){
             Decorator=_downloadMenuDecorator
         },
-        new MainMenu("Local",(Geometry)App.Current.FindResource("Menu_Local"),typeof(Page),MenuType.Mine),
+        //new MainMenu("Local",(Geometry)App.Current.FindResource("Menu_Local"),typeof(Page),MenuType.Mine),    //先留几天再做吧  有点懒
         new MainMenu("Favorite",(Geometry)App.Current.FindResource("Menu_Favorite"), typeof(PlaylistPage),MenuType.Mine,LoadMyFavorite),
         new MainMenu("My Diss", (Geometry) App.Current.FindResource("Menu_MyDiss"), typeof(MyDissPage),MenuType.Mine)
         ];

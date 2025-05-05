@@ -5,14 +5,14 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:uc="clr-namespace:LemonApp.Views.UserControls"
       xmlns:local="clr-namespace:LemonApp.Views.Pages"
-      xmlns:ws="https://schemas.elecho.dev/wpfsuite"
+      xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
       mc:Ignorable="d"
       d:DesignHeight="450"
       d:DesignWidth="800"
       Foreground="{DynamicResource ForeColor}"
       Title="MyBoughtPage">
 
-    <ws:ScrollViewer Style="{StaticResource SimpleVerticalScrollViewerStyle}">
+    <base:ScrollViewer Style="{StaticResource SimpleVerticalScrollViewerStyle}">
         <StackPanel>
             <TextBlock Text="My Bought Album"
                        Margin="24 12"
@@ -21,5 +21,5 @@
                        FontWeight="Bold" />
             <uc:AlbumItemView x:Name="viewer" />
         </StackPanel>
-    </ws:ScrollViewer>
+    </base:ScrollViewer>
 </Page>

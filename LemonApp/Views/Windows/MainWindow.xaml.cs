@@ -53,12 +53,6 @@ namespace LemonApp.Views.Windows
 
 
             Loaded += MainWindow_Loaded;
-            ContentRendered += MainWindow_ContentRendered;
-        }
-
-        private void MainWindow_ContentRendered(object? sender, EventArgs e)
-        {
-
         }
 
         private readonly PublicPopupMenuHolder _publicPopupMenuHolder;
@@ -71,12 +65,15 @@ namespace LemonApp.Views.Windows
         /// Show Notification
         /// </summary>
         /// <param name="obj"></param>
-        private async void Vm_RequestNotify(string obj)
+        private void Vm_RequestNotify(string obj)
         {
-            NotificationBox.IsOpen = true;
-            NotificationTb.Text = obj;
-            await Task.Delay(4000);
-            NotificationBox.IsOpen = false;
+            App.Current.MainWindow.Dispatcher.Invoke(async () =>
+            {
+                NotificationBox.IsOpen = true;
+                NotificationTb.Text = obj;
+                await Task.Delay(4000);
+                NotificationBox.IsOpen = false;
+            });
         }
 
         public void ShowWindow()
@@ -134,7 +131,7 @@ namespace LemonApp.Views.Windows
             if(LyricImgRTAni == null)
             {
                 LyricImgRTAni = new();
-                DoubleAnimation da = new(0, 360, TimeSpan.FromSeconds(30))
+                DoubleAnimation da = new(0, 360, TimeSpan.FromSeconds(15))
                 {
                     RepeatBehavior = RepeatBehavior.Forever
                 };

@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace LemonApp.MusicLib.Abstraction.Entities;
 
-namespace LemonApp.MusicLib.Abstraction.Entities;
-
-public class SingerEntities
-{
-
-}
+public record class SingerPageData(Profile SingerProfile,
+                                   List<AlbumInfo> RecentAlbums,
+                                   List<Music> HotMusics,
+                                   bool IsFollowed,
+                                   string Description,
+                                   string FansCount);

@@ -10,6 +10,7 @@
         <ScrollViewer x:Name="scrollviewer"
                       VerticalScrollBarVisibility="Hidden"
                       HorizontalScrollBarVisibility="Hidden"
+                      PreviewMouseWheel="scrollviewer_PreviewMouseWheel"
                       FocusVisualStyle="{x:Null}">
             <StackPanel Name="LyricPanel" Orientation="Vertical"
                                     Width="{Binding ElementName=scrollviewer, Path=ActualWidth}">

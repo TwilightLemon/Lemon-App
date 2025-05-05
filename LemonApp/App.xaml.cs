@@ -48,7 +48,6 @@ namespace LemonApp
 
 
             //host
-
             services.AddSingleton<AppSettingService>();
             services.AddHostedService(
                 p => p.GetRequiredService<AppSettingService>()
