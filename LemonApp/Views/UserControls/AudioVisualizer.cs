@@ -35,7 +35,7 @@ public class AudioVisualizer : Control
     {
         if (_isRunning || Player == null) return;
         _isRunning = true;
-        _dataPool = ArrayPool<float>.Create();
+        _spectrumData = _dataPool.Rent(1024);
 
         if (_renderLoop != null) return;
         _renderCancel = new CancellationTokenSource();
@@ -46,6 +46,7 @@ public class AudioVisualizer : Control
         if (!_isRunning|| _renderCancel==null|| _spectrumData==null) return;
         _isRunning = false;
         _dataPool.Return(_spectrumData);
+        _spectrumData = null;
         _renderCancel.Cancel();
         _renderLoop = null;
         InvalidateVisual();
@@ -57,8 +58,8 @@ public class AudioVisualizer : Control
     float[]? _spectrumData;
     CancellationTokenSource? _renderCancel;
     Task? _renderLoop;
-    ArrayPool<float> _dataPool;
-    int StripCount = 128;
+    private ArrayPool<float> _dataPool = ArrayPool<float>.Shared;
+    public int StripCount { get; set; } = 128;
     float StripSpacing = 0.2f;
 
     public Brush Color
@@ -102,10 +103,9 @@ public class AudioVisualizer : Control
         {
             if (token.IsCancellationRequested)
                 break;
-            _spectrumData = _dataPool.Rent(StripCount *8);
-            Player.GetFFTDataRef(ref _spectrumData);
+            Player.GetFFTDataRef(ref _spectrumData); // FFT 1024 截取前StripCount
             InvalidateVisual();
-            await Task.Delay(8);
+            await Task.Delay(16);
         }
     }
 
@@ -117,6 +117,7 @@ public class AudioVisualizer : Control
         DrawStrips(drawingContext, _spectrumData);
     }
 
+    private PathGeometry _pathGeometry = new();
     private void DrawStrips(DrawingContext drawingContext, float[] spectrumData)
     {
         int stripCount = StripCount;
@@ -125,16 +126,17 @@ public class AudioVisualizer : Control
         if (thickness < 0)
             thickness = 1;
 
-        PathGeometry pathGeometry = new();
+        _pathGeometry.Figures.Clear();
         int total = stripCount - 1;
         int index = 0;
-        void add(int di,int pos)
+       
+        for(int i = stripCount - 1; i >= 0; i--,index++)
         {
-            double value = spectrumData[di];
+            double value = spectrumData[i];
             double y = ActualHeight * (1 - value);
-            double x = ((double)pos / total) * ActualWidth;
+            double x = ((double)index / total) * ActualWidth;
 
-            pathGeometry.Figures.Add(new PathFigure()
+            _pathGeometry.Figures.Add(new PathFigure()
             {
                 StartPoint = new Point(x, ActualHeight),
                 Segments =
@@ -146,13 +148,8 @@ public class AudioVisualizer : Control
                     }
             });
         }
-       
-        for(int i = stripCount - 1; i >= 0; i--,index++)
-        {
-            add(i, index);
-        }
         Pen pen = new(Color, thickness);
-        drawingContext.DrawGeometry(null, pen, pathGeometry);
+        drawingContext.DrawGeometry(null, pen, _pathGeometry);
     }
 
 }

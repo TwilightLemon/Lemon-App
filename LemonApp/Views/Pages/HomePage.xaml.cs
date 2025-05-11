@@ -1,5 +1,6 @@
 ﻿using LemonApp.Services;
 using LemonApp.Views.Windows;
+using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -20,6 +21,7 @@ namespace LemonApp.Views.Pages
         private void Grid_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             _mainNavigationService.RequstNavigation(PageType.Notification,"Powered by TwlmGatito. Meowwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww!");
+            App.Services.GetRequiredService<TerminalStyleWindow>().Show();
         }
     }
 }

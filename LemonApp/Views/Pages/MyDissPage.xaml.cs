@@ -48,8 +48,7 @@ namespace LemonApp.Views.Pages
                 NeteaseTb.Visibility = NeteaseDissList.Visibility = Visibility.Visible;
                 NeteaseDissList.ViewModel ??= sp.GetRequiredService<PlaylistItemViewModel>();
                 _ = NeteaseDissList.ViewModel.SetPlaylistItems(await NeteasePlaylistAPI.GetNeteaseUserPlaylistAsync(
-                    new HttpClient(),netease
-                    ));
+                    new HttpClient(),netease));
             }
             nav.CancelLoadingAni();
         }
