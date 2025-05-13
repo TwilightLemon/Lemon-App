@@ -282,10 +282,8 @@
                         Margin="0 46 0 0"
                         ItemsSource="{Binding Musics}"
                         ScrollViewer.ScrollChanged="listBox_ScrollChanged"
-                        AlternationCount="{Binding Musics.Count}"
                         MouseDoubleClick="listBox_MouseDoubleClick"
                         d:ItemsSource="{d:SampleData ItemCount=5}"
-                        d:AlternationCount="5"
                         Style="{DynamicResource SimpleListBoxStyle}"
                         ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}">
                 <ws:ListBox.ItemTemplate>

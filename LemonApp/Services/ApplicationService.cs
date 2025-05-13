@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.ComponentModel.Design;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -26,6 +27,9 @@ namespace LemonApp.Services
     {
         public Task StartAsync(CancellationToken cancellationToken)
         {
+            EncodingProvider provider = CodePagesEncodingProvider.Instance;
+            Encoding.RegisterProvider(provider);
+
             //register handler for Hyperlink in Settings->About.
             EventManager.RegisterClassHandler(typeof(Hyperlink), Hyperlink.RequestNavigateEvent, new RequestNavigateEventHandler((sender, e) =>
             {

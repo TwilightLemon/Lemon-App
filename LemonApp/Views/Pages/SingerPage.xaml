@@ -4,15 +4,20 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:LemonApp.Views.Pages"
+      xmlns:converter="clr-namespace:LemonApp.Converters"
+      xmlns:component="clr-namespace:LemonApp.Components"
       xmlns:ws="https://schemas.elecho.dev/wpfsuite"
+      xmlns:uc="clr-namespace:LemonApp.Views.UserControls"
+      xmlns:vm="clr-namespace:LemonApp.ViewModels"
       mc:Ignorable="d"
       Foreground="{DynamicResource ForeColor}"
       d:DesignHeight="800"
       d:DesignWidth="800"
+      d:DataContext="{d:DesignInstance Type=vm:SingerPageViewModel}"
       Title="SingerPage">
 
     <ws:ScrollViewer Style="{StaticResource SimpleVerticalScrollViewerStyle}">
-        <StackPanel>
+        <ws:StackPanel Spacing="12">
             <Grid Height="240"
                   VerticalAlignment="Top">
                 <Border HorizontalAlignment="Left"
@@ -21,26 +26,29 @@
                         Width="200"
                         Margin="20 0 0 0"
                         CornerRadius="100"
+                        Background="{Binding CoverImg}"
                         d:Background="#69f" />
                 <TextBlock VerticalAlignment="Top"
                            Margin="260 50 10 0"
                            FontSize="42"
                            FontWeight="Bold"
                            TextWrapping="NoWrap"
+                           Text="{Binding SingerPageData.SingerProfile.Name}"
                            d:Text="Taylor Swift" />
                 <TextBlock VerticalAlignment="Top"
                            Margin="260 120 10 0"
                            Opacity="0.8"
                            FontSize="14">
                     <Run Text="Fans: " />
-                    <Run d:Text="9999w" />
+                    <Run d:Text="9999w"
+                         Text="{Binding SingerPageData.FansCount}" />
                 </TextBlock>
                 <ToggleButton x:Name="FollowBtn"
                               Template="{DynamicResource AccentToggleButtonTemplate}"
                               VerticalAlignment="Top"
                               HorizontalAlignment="Left"
                               Margin="260 144 0 0"
-                              IsChecked="True"
+                              IsChecked="{Binding SingerPageData.IsFollowed,Mode=OneWay}"
                               Padding="8"
                               Height="32">
                     <ws:ConditionalControl Condition="{Binding ElementName=FollowBtn,Path=IsChecked}">
@@ -53,102 +61,234 @@
                     </ws:ConditionalControl>
                 </ToggleButton>
             </Grid>
-            <ws:WrapPanel Height=" 36"
-                          ItemHeight="36"
-                          Visibility="Collapsed"
-                          HorizontalSpacing="16"
-                          Margin="12 0 0 0">
-                <RadioButton Style="{DynamicResource MenuRadioButton}"
-                             Content="Recommend"
-                             IsChecked="True" />
-                <RadioButton Style="{DynamicResource MenuRadioButton}"
-                             Content="Songs" />
-                <RadioButton Style="{DynamicResource MenuRadioButton}"
-                             Content="Albums" />
-                <RadioButton Style="{DynamicResource MenuRadioButton}"
-                             Content="About" />
-            </ws:WrapPanel>
-            <ws:TabControl Background="{x:Null}"
-                           BorderBrush="{x:Null}"
-                           BorderThickness="0,0,0,0">
-                <ws:TabItem Header="Recommend">
-                    <StackPanel x:Name="RecommendTab">
-                        <Grid Margin="0 6 0 0"
-                              Height="88">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1*" />
-                                <ColumnDefinition Width="1*" />
-                            </Grid.ColumnDefinitions>
-                            <ws:Button Grid.Column="0"
-                                       Margin="4"
-                                       HorizontalContentAlignment="Stretch"
-                                       VerticalContentAlignment="Stretch"
-                                       Style="{StaticResource SimpleButtonStyleForWs}">
-                                <Grid>
-                                    <Border HorizontalAlignment="Left"
-                                            Width="60"
-                                            Height="60"
-                                            CornerRadius="8"
-                                            d:Background="#69f"
-                                            Margin="12 0 0 0" />
-                                    <TextBlock VerticalAlignment="Center"
-                                               Margin="86 0 0 0">
-                            <Run d:Text="reputation(Taylor's Version)"
-                                        FontWeight="Bold"
-                                        FontSize="18" />
-                            <LineBreak />
-                            <Run d:Text="2024-1-21"
-                                        FontSize="14" />
+            <Border Background="{DynamicResource MaskColor}"
+                    CornerRadius="12"
+                    Padding="12"
+                    Margin="12 0 12 0">
+                <ItemsControl ItemsSource="{Binding SingerPageData.Introduction.Basic}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ws:UniformGrid  />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock TextWrapping="Wrap"
+                                       Opacity="0.8"
+                                       Height="24"
+                                       ToolTip="{Binding Value,Mode=OneWay}">
+                                <Run Text="{Binding Key,Mode=OneWay}" Foreground="{DynamicResource HighlightThemeColor}"/>:
+                                <Run Text="{Binding Value,Mode=OneWay}" />
+                            </TextBlock>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Border>
+            <Border Background="{DynamicResource MaskColor}"
+                    CornerRadius="12"
+                    Padding="8"
+                    Margin="12 0 12 0">
+                <Grid>
+                    <TextBlock HorizontalAlignment="Left"
+                               VerticalAlignment="Top"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Margin="16 8 0 0"
+                               Text="Recent Albums" />
+                    <ws:Button HorizontalAlignment="Right"
+                               VerticalAlignment="Top"
+                               Padding="12 8"
+                               Content="More"
+                               Style="{StaticResource AccentButtonStyleForWs}" />
+                    <ItemsControl x:Name="AlbumViewer"
+                                  Margin="0 32 0 0"
+                                  d:ItemsSource="{d:SampleData ItemCount=2}"
+                                  ItemsSource="{Binding Albums}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <ws:UniformGrid Columns="2" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <ws:Button Command="{Binding DataContext.SelectCommand,RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                           CommandParameter="{Binding}"
+                                           Style="{StaticResource SimpleIconButtonStyleForWs}"
+                                           VerticalContentAlignment="Stretch"
+                                           HorizontalContentAlignment="Stretch">
+                                    <Grid>
+                                        <Border x:Name="CoverImg"
+                                                Margin="12"
+                                                BorderBrush="{DynamicResource BorderColor}"
+                                                BorderThickness="4"
+                                                CornerRadius="8"
+                                                HorizontalAlignment="Left"
+                                                RenderOptions.BitmapScalingMode="HighQuality"
+                                                Width="80"
+                                                Height="80">
+                                            <Border.Background>
+                                                <ImageBrush ImageSource="{Binding Cover,IsAsync=True,Mode=OneWay}" />
+                                            </Border.Background>
+                                        </Border>
+                                        <TextBlock HorizontalAlignment="Left"
+                                                   VerticalAlignment="Center"
+                                                   TextWrapping="Wrap"
+                                                   Margin="110 0 0 0"
+                                                   LineHeight="30">
+                                            <Run Text="{Binding ListInfo.Name}"
+                                                 FontSize="22" />
+                                            <LineBreak />
+                                            <Run Text="{Binding ListInfo.PublishDate}" />
+                                        </TextBlock>
+                                    </Grid>
+                                </ws:Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+            </Border>
+
+            <Border Background="{DynamicResource MaskColor}"
+                    CornerRadius="12"
+                    Padding="8"
+                    Margin="12 0 12 0">
+                <Grid>
+                    <TextBlock HorizontalAlignment="Left"
+                               VerticalAlignment="Top"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Margin="16 8 0 0"
+                               Text="Hot Songs" />
+                    <ws:Button HorizontalAlignment="Right"
+                               VerticalAlignment="Top"
+                               Padding="12 8"
+                               Content="More"
+                               Style="{StaticResource AccentButtonStyleForWs}" />
+                    <ws:ListBox x:Name="HotSongList"
+                                Style="{StaticResource DisplayListBoxStyle}"
+                                ItemsSource="{Binding SingerPageData.HotMusics}"
+                                d:ItemsSource="{d:SampleData ItemCount=5}"
+                                MouseDoubleClick="HotSongList_MouseDoubleClick"
+                                SelectedItem="{Binding SelectedHotSong}"
+                                ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}"
+                                Margin="0 36 0 0">
+                        <ws:ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Height="38">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1.5*" />
+                                        <ColumnDefinition Width="1*" />
+                                        <ColumnDefinition Width="1*" />
+                                    </Grid.ColumnDefinitions>
+                                    <ws:ConditionalControl x:Name="Highlighter"
+                                                           d:Condition="True"
+                                                           Width="4"
+                                                           Height="22"
+                                                           HorizontalAlignment="Left">
+                                        <ws:ConditionalControl.ContentWhenTrue>
+                                            <Border Background="{DynamicResource HighlightThemeColor}"
+                                                    CornerRadius="2" />
+                                        </ws:ConditionalControl.ContentWhenTrue>
+                                    </ws:ConditionalControl>
+                                    <TextBlock HorizontalAlignment="Left"
+                                               VerticalAlignment="Center"
+                                               Opacity="0.6"
+                                               FontSize="12"
+                                               d:Text="1"
+                                               Margin="10 0 0 0">
+                                        <TextBlock.Text>
+                                            <MultiBinding Converter="{x:Static converter:IndexOfConverter.Instance}">
+                                                <Binding />
+                                                <Binding ElementName="HotSongList"
+                                                         Path="ItemsSource" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
                                     </TextBlock>
+                                    <ws:WrapPanel VerticalAlignment="Center"
+                                                  Margin="38 0"
+                                                  HorizontalSpacing="4"
+                                                  VerticalSpacing="2"
+                                                  HorizontalAlignment="Stretch">
+                                        <TextBlock Text="{Binding MusicName}"
+                                                   VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding MusicName_Lyric}"
+                                                   VerticalAlignment="Center"
+                                                   FontSize="10"
+                                                   FontWeight="Normal"
+                                                   Opacity="0.6" />
+                                        <uc:MusicInfoLand x:Name="InfoLand"
+                                                          HorizontalAlignment="Right"
+                                                          VerticalAlignment="Center"
+                                                          Quality="{Binding Quality}"
+                                                          MvId="{Binding Mvmid}" />
+                                    </ws:WrapPanel>
+                                    <ws:Button Margin="4"
+                                               HorizontalAlignment="Left"
+                                               Padding="8 4"
+                                               Grid.Column="1"
+                                               Command="{x:Static component:PublicPopupMenuHolder.GotoArtistCommand}"
+                                               CommandParameter="{Binding}"
+                                               Style="{StaticResource SimpleIconButtonStyleForWs}">
+                                        <TextBlock Text="{Binding SingerText}" />
+                                    </ws:Button>
+                                    <ws:Button Margin="4"
+                                               HorizontalAlignment="Left"
+                                               Padding="8 4"
+                                               Grid.Column="2"
+                                               Command="{Binding ElementName=HotSongList,Path=DataContext.GoToAlbumPageCommand}"
+                                               CommandParameter="{Binding Album.Id}"
+                                               Style="{StaticResource SimpleIconButtonStyleForWs}">
+                                        <TextBlock Text="{Binding Album.Name}" />
+                                    </ws:Button>
                                 </Grid>
-                            </ws:Button>
-                            <ws:Button Grid.Column="1"
-                                       Margin="4,4,4,4"
-                                       HorizontalContentAlignment="Stretch"
-                                       VerticalContentAlignment="Stretch"
-                                       Style="{StaticResource SimpleButtonStyleForWs}">
-                                <Grid>
-                                    <Border HorizontalAlignment="Left"
-                                            Width="60"
-                                            Height="60"
-                                            CornerRadius="8"
-                                            d:Background="#69f"
-                                            Margin="12 0 0 0" />
-                                    <TextBlock VerticalAlignment="Center"
-                                               Margin="86 0 0 0">
-                                        <Run d:Text="reputation(Taylor's Version)"
-                                             FontWeight="Bold"
-                                             FontSize="18" />
-                                        <LineBreak /><Run d:Text="2024-1-21"  FontSize="14" />
-                                    </TextBlock>
-                                </Grid>
-                            </ws:Button>
-                        </Grid>
-                        <ws:Button Style="{StaticResource SimpleButtonStyleForWs}" Height="58"
-                                   HorizontalContentAlignment="Stretch"
-                                   VerticalContentAlignment="Center">
-                            <Grid Margin="24  0">
-                                <TextBlock Text="Hot Songs" FontWeight="Bold"
-                                           FontSize="20"/>
-                                <Path Data="{StaticResource Icon_Back}" Stretch="Uniform" HorizontalAlignment="Right" Fill="{DynamicResource ForeColor}"
-                                      Height="16"
-                                      RenderTransformOrigin="0.5,0.5">
-                                    <Path.RenderTransform>
-                                        <RotateTransform Angle="180" />
-                                    </Path.RenderTransform>
-                                </Path>
-                            </Grid>
-                        </ws:Button>
-                        <TextBlock Text="Related Singers" FontSize="22" FontWeight="Bold"
-                                   Margin="12"/>
-                    </StackPanel>
-                </ws:TabItem>
-                <ws:TabItem Header="About">
-                    <Grid x:Name="AboutTab">
-                        <TextBlock x:Name="AboutTb" Margin="20"/>
-                    </Grid>
-                </ws:TabItem>
-            </ws:TabControl>
-        </StackPanel>
+                            </DataTemplate>
+                        </ws:ListBox.ItemTemplate>
+                    </ws:ListBox>
+                </Grid>
+            </Border>
+            <Border Background="{DynamicResource MaskColor}"
+                    CornerRadius="12"
+                    Padding="8"
+                    Margin="12 0 12 0">
+                <Grid>
+                    <TextBlock HorizontalAlignment="Left"
+                               VerticalAlignment="Top"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Margin="16 8 0 0"
+                               Text="Related Artists" />
+                    <!--TODO: RELATED ARTISTS before this 先整理各个ItemsControl的关系-->
+                </Grid>
+            </Border>
+            <Border Background="{DynamicResource MaskColor}"
+                    CornerRadius="12"
+                    Padding="8"
+                    Margin="12 0 12 12">
+                <ws:StackPanel>
+                    <TextBlock HorizontalAlignment="Left"
+                               VerticalAlignment="Top"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Margin="16 8 0 0"
+                               Text="Introduction" />
+                    <TextBlock Margin="12 4 12 12"
+                               Text="{Binding SingerPageData.Introduction.Desc}"
+                               TextWrapping="Wrap" />
+                    <ItemsControl ItemsSource="{Binding SingerPageData.Introduction.Other}" Margin="12 0 12 8">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock TextWrapping="Wrap"
+                                           Opacity="0.8" Margin="0 4 0 0">
+                                    <Run Text="{Binding Key,Mode=OneWay}" FontSize="22" FontWeight="Bold"
+                                         Foreground="{DynamicResource HighlightThemeColor}" />
+                                     <LineBreak />
+                                    <Run Text="{Binding Value,Mode=OneWay}" />
+                                </TextBlock>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ws:StackPanel>
+            </Border>
+        </ws:StackPanel>
     </ws:ScrollViewer>
 </Page>

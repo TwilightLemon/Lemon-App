@@ -64,7 +64,7 @@ namespace LemonApp.Views.Pages
                         _hideInfoViewAni?.Begin();
                     }
                 }
-                if(e.VerticalOffset==0)
+                if(e.VerticalOffset<=6)
                 {
                     if (_showInfoViewAni != null && _isHideInfoView)
                     {

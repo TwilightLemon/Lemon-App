@@ -97,6 +97,7 @@ namespace LemonApp
             services.AddSingleton<MyBoughtPage>();
             services.AddSingleton<AccountInfoPage>();
             services.AddSingleton<DownloadPage>();
+            services.AddTransient<SingerPage>();
 
             //UI Components
             services.AddSingleton<LyricView>();
@@ -124,6 +125,7 @@ namespace LemonApp
             services.AddSingleton<DownloadPageViewModel>();
             services.AddTransient<SettingsPageViewModel>();
             services.AddTransient<RanklistPageViewModel>();
+            services.AddTransient<SingerPageViewModel>();
 
             //Logger
             services.AddLogging(builder =>

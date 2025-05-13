@@ -23,6 +23,7 @@ using Task = System.Threading.Tasks.Task;
 using LemonApp.MusicLib.Abstraction.Entities;
 using LemonApp.Components;
 using System.Windows;
+using LemonApp.MusicLib.Singer;
 
 //TODO: 将功能再细分为Component 简化ViewModel
 namespace LemonApp.ViewModels;
@@ -470,7 +471,7 @@ public partial class MainWindowViewModel : ObservableObject
                         await value.ProcessPage(page);
                     //tag of page refers to tagetted main menu
                     page.Tag = value;
-                    RequestNavigateToPage?.Invoke(page);
+                    RequestNavigateToPage.Invoke(page);
                 }
             }
         }
@@ -482,7 +483,7 @@ public partial class MainWindowViewModel : ObservableObject
     [ObservableProperty]
     private bool _isLoading = false;
 
-    public event Action<Page>? RequestNavigateToPage;
+    public event Action<Page> RequestNavigateToPage = delegate { };
     public event Action<string>? RequestNotify;
 
     private void MainNavigationService_OnNavigatingRequsted(PageType type, object? arg)
@@ -514,7 +515,7 @@ public partial class MainWindowViewModel : ObservableObject
             case PageType.ArtistPage:
                 if(arg is Profile pro)
                 {
-                    NavigateToSearchPage(pro.Name);
+                    NavigateToSingerPage(pro);
                 }
                 break;
             case PageType.Notification:
@@ -525,12 +526,21 @@ public partial class MainWindowViewModel : ObservableObject
                 break;
         }
     }
+    private async void NavigateToSingerPage(Profile p)
+    {
+        IsLoading = true;
+        if(await _playlistDataWrapper.LoadSingerPage(p) is { } page)
+        {
+            RequestNavigateToPage.Invoke(page);
+        }
+        IsLoading = false;
+    }
     private void NavigateToAccountInfoPage()
     {
         var sp = _serviceProvider.GetRequiredService<AccountInfoPage>();
         if (sp != null)
         {
-            RequestNavigateToPage?.Invoke(sp);
+            RequestNavigateToPage.Invoke(sp);
         }
         SelectedMenu = null;
     }
@@ -539,7 +549,7 @@ public partial class MainWindowViewModel : ObservableObject
         var sp = _serviceProvider.GetRequiredService<SettingsPage>();
         if (sp != null)
         {
-            RequestNavigateToPage?.Invoke(sp);
+            RequestNavigateToPage.Invoke(sp);
         }
         SelectedMenu = null;
     }
@@ -547,14 +557,14 @@ public partial class MainWindowViewModel : ObservableObject
     {
         IsLoading = true;
         if (await _playlistDataWrapper.LoadRanklist(info) is { } page)
-            RequestNavigateToPage?.Invoke(page);
+            RequestNavigateToPage.Invoke(page);
         IsLoading = false;
     }
     private async void NavigateToAlbumPage(string AlbumId)
     {
         IsLoading = true;
         if(await _playlistDataWrapper.LoadAlbumPage(AlbumId) is { } page)
-            RequestNavigateToPage?.Invoke(page);
+            RequestNavigateToPage.Invoke(page);
         SelectedMenu = null;
         IsLoading = false;
     }
@@ -564,7 +574,7 @@ public partial class MainWindowViewModel : ObservableObject
             return;
         IsLoading = true;
         if(await _playlistDataWrapper.LoadSearchPage(keyword) is { } page)
-            RequestNavigateToPage?.Invoke(page);
+            RequestNavigateToPage.Invoke(page);
         SelectedMenu = null;
         IsLoading = false;
     }
@@ -576,7 +586,7 @@ public partial class MainWindowViewModel : ObservableObject
             if (await LoadUserPlaylist(info) is { } vm)
             {
                 sp.ViewModel = vm;
-                RequestNavigateToPage?.Invoke(sp);
+                RequestNavigateToPage.Invoke(sp);
             }
         }
     }

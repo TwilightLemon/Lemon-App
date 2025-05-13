@@ -4,6 +4,7 @@ using LemonApp.MusicLib.Album;
 using LemonApp.MusicLib.Playlist;
 using LemonApp.MusicLib.RankList;
 using LemonApp.MusicLib.Search;
+using LemonApp.MusicLib.Singer;
 using LemonApp.Services;
 using LemonApp.ViewModels;
 using LemonApp.Views.Pages;
@@ -18,6 +19,21 @@ namespace LemonApp.Components;
 //TODO: simplify
 public class PlaylistDataWrapper(IServiceProvider sp,MediaPlayerService ms, UserProfileService user)
 {
+    public async Task<Page?> LoadSingerPage(Profile p)
+    {
+        var page = sp.GetRequiredService<SingerPage>();
+        var vm = sp.GetRequiredService<SingerPageViewModel>();
+        var hc = sp.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
+        var data = await SingerAPI.GetPageDataAsync(hc, p.Mid, user.GetAuth());
+        if (data != null)
+        {
+            vm.SingerPageData = data;
+            vm.CoverImg= new ImageBrush(await ImageCacheService.FetchData(data.SingerProfile.Photo));
+
+            page.DataContext = vm;
+        }
+        return page;
+    }
     public async  Task<Page?> LoadRanklist(RankListInfo info)
     {
         var page = sp.GetRequiredService<PlaylistPage>();
