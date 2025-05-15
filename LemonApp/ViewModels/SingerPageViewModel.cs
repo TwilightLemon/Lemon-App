@@ -2,11 +2,6 @@
 using CommunityToolkit.Mvvm.Input;
 using LemonApp.MusicLib.Abstraction.Entities;
 using LemonApp.Services;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 
@@ -25,6 +20,8 @@ public partial class SingerPageViewModel(
     private Brush? _coverImg;
     [ObservableProperty]
     private Music? _selectedHotSong;
+    [ObservableProperty]
+    private Brush? _bigBackground;
 
     private bool _hasAddToPlayList;
     public async Task PlayHotSongs()

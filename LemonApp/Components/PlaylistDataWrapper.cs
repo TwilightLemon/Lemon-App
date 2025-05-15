@@ -29,6 +29,10 @@ public class PlaylistDataWrapper(IServiceProvider sp,MediaPlayerService ms, User
         {
             vm.SingerPageData = data;
             vm.CoverImg= new ImageBrush(await ImageCacheService.FetchData(data.SingerProfile.Photo));
+            if (!string.IsNullOrEmpty(data.BigBackground))
+            {
+                vm.BigBackground = new ImageBrush(await ImageCacheService.FetchData(data.BigBackground)) { Stretch = Stretch.UniformToFill };
+            }
 
             page.DataContext = vm;
         }

@@ -45,4 +45,13 @@ public partial class AlbumItemViewModel(
             Albums.Add(new(item,cover));
         }
     }
+
+    public async Task AppendMore(IEnumerable<AlbumInfo> list)
+    {
+        foreach (var item in list)
+        {
+            var cover = await ImageCacheService.FetchData(item.Photo);
+            Albums.Add(new(item, cover));
+        }
+    }
 }

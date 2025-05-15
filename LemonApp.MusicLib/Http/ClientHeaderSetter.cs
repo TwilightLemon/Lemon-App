@@ -26,6 +26,7 @@ public static class ClientHeaderSetter
 
     public static HttpClient SetForUYV17(this HttpClient hc,string cookie)
     {
+        hc.DefaultRequestHeaders.Clear();
         hc.DefaultRequestHeaders.TryAddWithoutValidation("ContentType", "application/x-www-form-urlencoded");
         hc.DefaultRequestHeaders.Host = "u.y.qq.com";
         hc.DefaultRequestHeaders.Accept.TryParseAdd("application/json");

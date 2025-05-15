@@ -126,6 +126,7 @@ namespace LemonApp
             services.AddTransient<SettingsPageViewModel>();
             services.AddTransient<RanklistPageViewModel>();
             services.AddTransient<SingerPageViewModel>();
+            services.AddTransient<SingerItemViewModel>();
 
             //Logger
             services.AddLogging(builder =>

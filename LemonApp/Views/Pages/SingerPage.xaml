@@ -15,60 +15,72 @@
       d:DesignWidth="800"
       d:DataContext="{d:DesignInstance Type=vm:SingerPageViewModel}"
       Title="SingerPage">
+    <Page.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </Page.Resources>
 
     <ws:ScrollViewer Style="{StaticResource SimpleVerticalScrollViewerStyle}">
         <ws:StackPanel Spacing="12">
-            <Grid Height="240"
-                  VerticalAlignment="Top">
-                <Border HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Height="200"
-                        Width="200"
-                        Margin="20 0 0 0"
-                        CornerRadius="100"
-                        Background="{Binding CoverImg}"
-                        d:Background="#69f" />
-                <TextBlock VerticalAlignment="Top"
-                           Margin="260 50 10 0"
-                           FontSize="42"
-                           FontWeight="Bold"
-                           TextWrapping="NoWrap"
-                           Text="{Binding SingerPageData.SingerProfile.Name}"
-                           d:Text="Taylor Swift" />
-                <TextBlock VerticalAlignment="Top"
-                           Margin="260 120 10 0"
-                           Opacity="0.8"
-                           FontSize="14">
+            <Border x:Name="BigBackground"
+                    Height="250"
+                    CornerRadius="8"
+                    Background="{Binding BigBackground}">
+                <Grid >
+                    <Border x:Name="CoverImg"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Height="200"
+                            Width="200"
+                            Margin="20 0 0 0"
+                            CornerRadius="100"
+                            Background="{Binding CoverImg}"
+                            d:Background="#69f" />
+                    <StackPanel x:Name="SingerNamePanel"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Top"
+                                    Margin="250 50 0 0">
+                            <TextBlock VerticalAlignment="Top"
+                                       FontSize="46"
+                                       FontWeight="Bold"
+                                       TextWrapping="NoWrap"
+                                       Text="{Binding SingerPageData.SingerProfile.Name}"
+                                       d:Text="Taylor Swift" />
+                            <TextBlock VerticalAlignment="Top"
+                                       Margin="0 18 0 0"
+                                       Opacity="0.8"
+                                       FontSize="14">
                     <Run Text="Fans: " />
                     <Run d:Text="9999w"
-                         Text="{Binding SingerPageData.FansCount}" />
-                </TextBlock>
-                <ToggleButton x:Name="FollowBtn"
-                              Template="{DynamicResource AccentToggleButtonTemplate}"
-                              VerticalAlignment="Top"
-                              HorizontalAlignment="Left"
-                              Margin="260 144 0 0"
-                              IsChecked="{Binding SingerPageData.IsFollowed,Mode=OneWay}"
-                              Padding="8"
-                              Height="32">
-                    <ws:ConditionalControl Condition="{Binding ElementName=FollowBtn,Path=IsChecked}">
-                        <ws:ConditionalControl.ContentWhenTrue>
-                            <TextBlock Text="Followed" />
-                        </ws:ConditionalControl.ContentWhenTrue>
-                        <ws:ConditionalControl.ContentWhenFalse>
-                            <TextBlock Text="Follow" />
-                        </ws:ConditionalControl.ContentWhenFalse>
-                    </ws:ConditionalControl>
-                </ToggleButton>
-            </Grid>
+                                Text="{Binding SingerPageData.FansCount,StringFormat=N0}" />
+                            </TextBlock>
+                            <ToggleButton x:Name="FollowBtn"
+                                          Margin="0 8 0 0"
+                                          Template="{DynamicResource AccentToggleButtonTemplate}"
+                                          VerticalAlignment="Top"
+                                          HorizontalAlignment="Left"
+                                          IsChecked="{Binding SingerPageData.IsFollowed,Mode=OneWay}"
+                                          Padding="8"
+                                          Height="32">
+                                <ws:ConditionalControl Condition="{Binding ElementName=FollowBtn,Path=IsChecked}">
+                                    <ws:ConditionalControl.ContentWhenTrue>
+                                        <TextBlock Text="Followed" />
+                                    </ws:ConditionalControl.ContentWhenTrue>
+                                    <ws:ConditionalControl.ContentWhenFalse>
+                                        <TextBlock Text="Follow" />
+                                    </ws:ConditionalControl.ContentWhenFalse>
+                                </ws:ConditionalControl>
+                            </ToggleButton>
+                        </StackPanel>
+                    </Grid>
+            </Border>
             <Border Background="{DynamicResource MaskColor}"
                     CornerRadius="12"
                     Padding="12"
-                    Margin="12 0 12 0">
+                    Margin="12 0 12 12">
                 <ItemsControl ItemsSource="{Binding SingerPageData.Introduction.Basic}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <ws:UniformGrid  />
+                            <ws:UniformGrid Columns="3" />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
@@ -77,31 +89,22 @@
                                        Opacity="0.8"
                                        Height="24"
                                        ToolTip="{Binding Value,Mode=OneWay}">
-                                <Run Text="{Binding Key,Mode=OneWay}" Foreground="{DynamicResource HighlightThemeColor}"/>:
+                                <Run Text="{Binding Key,Mode=OneWay}"
+                                     Foreground="{DynamicResource HighlightThemeColor}" />:
                                 <Run Text="{Binding Value,Mode=OneWay}" />
                             </TextBlock>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </Border>
-            <Border Background="{DynamicResource MaskColor}"
+
+            <Border x:Name="RecentCard"
+                    Background="{DynamicResource MaskColor}"
                     CornerRadius="12"
                     Padding="8"
                     Margin="12 0 12 0">
-                <Grid>
-                    <TextBlock HorizontalAlignment="Left"
-                               VerticalAlignment="Top"
-                               FontSize="18"
-                               FontWeight="Bold"
-                               Margin="16 8 0 0"
-                               Text="Recent Albums" />
-                    <ws:Button HorizontalAlignment="Right"
-                               VerticalAlignment="Top"
-                               Padding="12 8"
-                               Content="More"
-                               Style="{StaticResource AccentButtonStyleForWs}" />
-                    <ItemsControl x:Name="AlbumViewer"
-                                  Margin="0 32 0 0"
+                <ItemsControl x:Name="RecentViewer"
+                                  d:DataContext="{d:DesignInstance Type=vm:AlbumItemViewModel}"
                                   d:ItemsSource="{d:SampleData ItemCount=2}"
                                   ItemsSource="{Binding Albums}">
                         <ItemsControl.ItemsPanel>
@@ -145,7 +148,6 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-                </Grid>
             </Border>
 
             <Border Background="{DynamicResource MaskColor}"
@@ -174,7 +176,7 @@
                                 Margin="0 36 0 0">
                         <ws:ListBox.ItemTemplate>
                             <DataTemplate>
-                                <Grid Height="38">
+                                <Grid MinHeight="38">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="1.5*" />
                                         <ColumnDefinition Width="1*" />
@@ -246,7 +248,31 @@
                     </ws:ListBox>
                 </Grid>
             </Border>
-            <Border Background="{DynamicResource MaskColor}"
+            
+            <Border x:Name="AlbumListCard"
+                    Background="{DynamicResource MaskColor}"
+                    CornerRadius="12"
+                    Padding="8"
+                    Margin="12 0 12 0">
+                <Grid>
+                    <TextBlock HorizontalAlignment="Left"
+                               VerticalAlignment="Top"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Margin="16 8 0 0"
+                               Text="Albums" />
+                    <ws:Button HorizontalAlignment="Right"
+                               VerticalAlignment="Top"
+                               Padding="12 8"
+                               Content="More"
+                               Style="{StaticResource AccentButtonStyleForWs}" />
+                    <uc:AlbumItemView x:Name="AlbumListView"
+                                       Margin="0 36 0 0" />
+                </Grid>
+            </Border>
+
+            <Border x:Name="RelatedSingerCard"
+                    Background="{DynamicResource MaskColor}"
                     CornerRadius="12"
                     Padding="8"
                     Margin="12 0 12 0">
@@ -257,24 +283,36 @@
                                FontWeight="Bold"
                                Margin="16 8 0 0"
                                Text="Related Artists" />
-                    <!--TODO: RELATED ARTISTS before this 先整理各个ItemsControl的关系-->
+                    <uc:SingerItemView x:Name="RelatedSingerView"
+                                       Margin="0 36 0 0" />
                 </Grid>
             </Border>
+
             <Border Background="{DynamicResource MaskColor}"
                     CornerRadius="12"
                     Padding="8"
                     Margin="12 0 12 12">
                 <ws:StackPanel>
+                    <Grid>
                     <TextBlock HorizontalAlignment="Left"
                                VerticalAlignment="Top"
                                FontSize="18"
                                FontWeight="Bold"
                                Margin="16 8 0 0"
                                Text="Introduction" />
+                        <ToggleButton Name="Intro_ShowDetailTB" HorizontalAlignment="Right"
+                                      VerticalAlignment="Top"
+                                      Padding="12 8"
+                                      Content="Show"
+                                      Style="{StaticResource AccentToggleButtonStyle}" />
+                    </Grid>
                     <TextBlock Margin="12 4 12 12"
+                               Visibility="{Binding ElementName=Intro_ShowDetailTB,Path=IsChecked,Converter={StaticResource BoolToVisibilityConverter}}"
                                Text="{Binding SingerPageData.Introduction.Desc}"
                                TextWrapping="Wrap" />
-                    <ItemsControl ItemsSource="{Binding SingerPageData.Introduction.Other}" Margin="12 0 12 8">
+                    <!--大量TextBlock内容影响绘制，改为expander模式-->
+                    <ItemsControl Visibility="{Binding ElementName=Intro_ShowDetailTB,Path=IsChecked,Converter={StaticResource BoolToVisibilityConverter}}"
+                        ItemsSource="{Binding SingerPageData.Introduction.Other}" Margin="12 0 12 8">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock TextWrapping="Wrap"
