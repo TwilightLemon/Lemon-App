@@ -27,6 +27,45 @@ public static class SingerAPI
         }
         return albums;
     }
+    public static async Task<List<Music>> GetSongsOfSingerAsync(HttpClient hc, string id, TencUserAuth auth, int page = 0, int capcity = 20)
+    {
+        int begin = page * capcity;
+        var jsonData = await hc.SetForUYV17(auth.Cookie).PostTextAsync("https://u.y.qq.com/cgi-bin/musicu.fcg", "{\"comm\":{\"g_tk\":\"" + auth.G_tk + "\",\"uin\":\"" + auth.Id + "\",\"format\":\"json\",\"ct\":20,\"cv\":1710},\"req_1\":{\"method\":\"GetSingerSongList\",\"param\":{\"singermid\":\"" + id + "\",\"order\":1,\"begin\":" + begin + ",\"num\":" + capcity + "},\"module\":\"musichall.song_list_server\"}}");
+        var json = JsonNode.Parse(await jsonData.AsTextAsync());
+        var req1 = json["req_1"]["data"]["songList"].AsArray();
+        List<Music> list = [];
+        try
+        {
+            foreach (var c in req1)
+            {
+                Debug.Print(c.ToString());
+                var data = c["songInfo"];
+                Music m = new Music();
+                m.MusicName = data["name"].ToString();
+                m.MusicName_Lyric = data["subtitle"].ToString();
+                m.MusicID = data["mid"].ToString();
+                List<Profile> lm = [];
+                foreach (var s in data["singer"].AsArray())
+                {
+                    lm.Add(new() { Name = s["name"].ToString(), Mid = s["mid"].ToString() });
+                }
+                m.Singer = lm;
+                m.SingerText = string.Join("/", lm.Select(x => x.Name));
+                string amid = data["album"]["mid"].ToString();
+                if (amid != "")
+                    m.Album = new AlbumInfo() { Name = data["album"]["name"].ToString(), Id = amid, Photo = $"https://y.gtimg.cn/music/photo_new/T002R500x500M000{amid}.jpg?max_age=2592000" };
+                var file = data["file"];
+                if (file["size_320mp3"].ToString() != "0")
+                    m.Quality = MusicQuality.HQ;
+                if (file["size_flac"].ToString() != "0")
+                    m.Quality = MusicQuality.SQ;
+                m.Mvmid = data["mv"]["vid"].ToString();
+                list.Add(m);
+            }
+        }
+        catch { }
+        return list;
+    }
     public static async Task<SingerPageData> GetPageDataAsync(HttpClient hc, string id,TencUserAuth auth)
     {
         var param = "{\"req_0\":{\"module\":\"musichall.singer_info_server\",\"method\":\"GetSingerDetail\",\"param\":{\"singer_mids\":[\"" + id + "\"],\"pic\":1,\"group_singer\":1,\"wiki_singer\":1,\"ex_singer\":1}},\"req_1\":{\"module\":\"musichall.song_list_server\",\"method\":\"GetSingerSongList\",\"param\":{\"singerMid\":\"" + id + "\",\"begin\":0,\"num\":10,\"order\":1}},\"req_2\":{\"module\":\"Concern.ConcernSystemServer\",\"method\":\"cgi_qry_concern_status\",\"param\":{\"vec_userinfo\":[{\"usertype\":1,\"userid\":\"" + id + "\"}],\"opertype\":5,\"encrypt_singerid\":1}},\"req_3\":{\"module\":\"music.musichallAlbum.SelectedAlbumServer\",\"method\":\"SelectedAlbumList\",\"param\":{\"singerMid\":\"" + id + "\"}},\"comm\":{\"g_tk\":" + auth.G_tk + ",\"uin\":\"" + auth.Id + "\",\"format\":\"json\",\"ct\":20,\"cv\":1710}}";

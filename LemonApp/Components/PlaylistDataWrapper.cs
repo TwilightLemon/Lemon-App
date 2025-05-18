@@ -1,5 +1,4 @@
-﻿using LemonApp.Common.Funcs;
-using LemonApp.MusicLib.Abstraction.Entities;
+﻿using LemonApp.MusicLib.Abstraction.Entities;
 using LemonApp.MusicLib.Album;
 using LemonApp.MusicLib.Playlist;
 using LemonApp.MusicLib.RankList;
@@ -19,12 +18,12 @@ namespace LemonApp.Components;
 //TODO: simplify
 public class PlaylistDataWrapper(IServiceProvider sp,MediaPlayerService ms, UserProfileService user)
 {
-    public async Task<Page?> LoadSingerPage(Profile p)
+    public async Task<Page?> LoadSingerPage(string singerId)
     {
         var page = sp.GetRequiredService<SingerPage>();
         var vm = sp.GetRequiredService<SingerPageViewModel>();
         var hc = sp.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
-        var data = await SingerAPI.GetPageDataAsync(hc, p.Mid, user.GetAuth());
+        var data = await SingerAPI.GetPageDataAsync(hc, singerId, user.GetAuth());
         if (data != null)
         {
             vm.SingerPageData = data;
@@ -88,6 +87,29 @@ public class PlaylistDataWrapper(IServiceProvider sp,MediaPlayerService ms, User
         return null;
     }
 
+    public async Task<Page?> LoadSongsOfSinger(string singerId)
+    {
+        var page = sp.GetRequiredService<PlaylistPage>();
+        var vm = sp.GetRequiredService<PlaylistPageViewModel>();
+        var hc = sp.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
+        var auth = user.GetAuth();
+        if (page != null && hc != null && auth != null && vm != null)
+        {
+            vm.ShowInfoView = false;
+            var data = await SingerAPI.GetSongsOfSingerAsync(hc, singerId, auth);
+            vm.InitMusicList(data);
+            vm.PlaylistType = PlaylistType.Other;
+            vm.UpdateCurrentPlaying(ms.CurrentMusic?.MusicID);
+            vm.OnLoadMoreRequired = async (sender, index) => { 
+            sender.AppendMusicList(await SingerAPI.GetSongsOfSingerAsync(hc,singerId,auth,index));
+            };
+
+            page.ViewModel = vm;
+            return page;
+        }
+        return null;
+    }
+
     public async Task<Page?> LoadSearchPage(string keyword)
     {
         var page = sp.GetRequiredService<PlaylistPage>();
@@ -99,8 +121,11 @@ public class PlaylistDataWrapper(IServiceProvider sp,MediaPlayerService ms, User
             vm.ShowInfoView = false;
             var search = await SearchAPI.SearchMusicAsync(hc, auth, keyword);
             vm.InitMusicList(search);
-            vm.UpdateCurrentPlaying(ms.CurrentMusic?.MusicID);
+            vm.UpdateCurrentPlaying(ms.CurrentMusic?.MusicID);//??优化一下
             vm.PlaylistType = PlaylistType.Other;
+            vm.OnLoadMoreRequired =async (sender, index) => {//index在内部自增
+                sender.AppendMusicList(await SearchAPI.SearchMusicAsync(hc, auth, keyword, index));
+            };
 
             page.ViewModel = vm;
             return page;

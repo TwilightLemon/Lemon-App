@@ -94,7 +94,7 @@ namespace LemonApp
             services.AddSingleton<RanklistPage>();
             services.AddTransient<PlaylistPage>();
             services.AddSingleton<MyDissPage>();
-            services.AddSingleton<MyBoughtPage>();
+            services.AddTransient<AlbumListPage>();
             services.AddSingleton<AccountInfoPage>();
             services.AddSingleton<DownloadPage>();
             services.AddTransient<SingerPage>();

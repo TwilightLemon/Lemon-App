@@ -1,29 +1,30 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using LemonApp.Common.Configs;
 using LemonApp.Common.Funcs;
-using LemonApp.Native;
+using LemonApp.Components;
+using LemonApp.MusicLib.Abstraction.Entities;
 using LemonApp.MusicLib.Abstraction.UserAuth;
+using LemonApp.MusicLib.Media;
+using LemonApp.MusicLib.Singer;
+using LemonApp.MusicLib.User;
+using LemonApp.Native;
 using LemonApp.Services;
 using LemonApp.Views.Pages;
+using LemonApp.Views.UserControls;
+using LemonApp.Views.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
+using System.Timers;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using LemonApp.Common.Configs;
-using LemonApp.MusicLib.Media;
-using CommunityToolkit.Mvvm.Input;
-using System.Timers;
-using LemonApp.Views.UserControls;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using LemonApp.Views.Windows;
 using Task = System.Threading.Tasks.Task;
-using LemonApp.MusicLib.Abstraction.Entities;
-using LemonApp.Components;
-using System.Windows;
-using LemonApp.MusicLib.Singer;
 
 //TODO: 将功能再细分为Component 简化ViewModel
 namespace LemonApp.ViewModels;
@@ -439,7 +440,7 @@ public partial class MainWindowViewModel : ObservableObject
         new MainMenu("Playlists", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page)),
         new MainMenu("Radio", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page)),
 
-        new MainMenu("Bought", (Geometry)App.Current.FindResource("Menu_Bought"), typeof(MyBoughtPage),MenuType.Mine),
+        new MainMenu("Bought", (Geometry)App.Current.FindResource("Menu_Bought"), typeof(AlbumListPage),MenuType.Mine,LoadMyBoughtAlbum),
         new MainMenu("Download", (Geometry)App.Current.FindResource("Menu_Download"), typeof(DownloadPage),MenuType.Mine){
             Decorator=_downloadMenuDecorator
         },
@@ -513,9 +514,24 @@ public partial class MainWindowViewModel : ObservableObject
                 NavigateToAccountInfoPage();
                 break;
             case PageType.ArtistPage:
-                if(arg is Profile pro)
+                string singerId = arg switch
                 {
-                    NavigateToSingerPage(pro);
+                    string { } mid => mid,
+                    Profile { } pro => pro.Mid,
+                    _ => throw new InvalidCastException()
+                };
+                NavigateToSingerPage(singerId);
+                break;
+            case PageType.SongsOfSinger:
+                if(arg is string { } sid)
+                {
+                    NavigateToSongsOfSinger(sid);
+                }
+                break;
+            case PageType.AlbumsOfSinger:
+                if(arg is string { } aid)
+                {
+                    NavigateToAlbumsOfSinger(aid);
                 }
                 break;
             case PageType.Notification:
@@ -526,13 +542,42 @@ public partial class MainWindowViewModel : ObservableObject
                 break;
         }
     }
-    private async void NavigateToSingerPage(Profile p)
+    private async void NavigateToSingerPage(string mid)
     {
         IsLoading = true;
-        if(await _playlistDataWrapper.LoadSingerPage(p) is { } page)
+        if(await _playlistDataWrapper.LoadSingerPage(mid) is { } page)
         {
             RequestNavigateToPage.Invoke(page);
         }
+        IsLoading = false;
+    }
+    private void NavigateToAlbumsOfSinger(string mid)
+    {
+        if (string.IsNullOrWhiteSpace(mid))
+            return;
+        IsLoading = true;
+
+        var view=_serviceProvider.GetRequiredService<AlbumListPage>();
+        var auth = _userProfileService.GetAuth();
+        var hc=_serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
+        view.Title = "Albums";
+        view.DataProvider = () => SingerAPI.GetAlbumOfSingerAsync(hc, mid, auth);
+        view.NextPage = async (vm, index) => {
+           await vm.AppendMore(await SingerAPI.GetAlbumOfSingerAsync(hc, mid, auth, index));
+        };
+        RequestNavigateToPage.Invoke(view);
+
+        SelectedMenu = null;
+        IsLoading = false;
+    }
+    private async void NavigateToSongsOfSinger(string mid)
+    {
+        if (string.IsNullOrWhiteSpace(mid))
+            return;
+        IsLoading = true;
+        if (await _playlistDataWrapper.LoadSongsOfSinger(mid) is { } page)
+            RequestNavigateToPage.Invoke(page);
+        SelectedMenu = null;
         IsLoading = false;
     }
     private void NavigateToAccountInfoPage()
@@ -589,6 +634,18 @@ public partial class MainWindowViewModel : ObservableObject
                 RequestNavigateToPage.Invoke(sp);
             }
         }
+    }
+
+    private Task LoadMyBoughtAlbum(object page)
+    {
+        if(page is AlbumListPage view)
+        {
+            view.Title = "My Bought Album";
+            var auth = _userProfileService.GetAuth();
+            var hc=_serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
+            view.DataProvider = () => TencMyDissAPI.GetMyBoughtAlbumList(auth, hc);
+        }
+        return Task.CompletedTask;
     }
 
     private async Task LoadMyFavorite(object page)

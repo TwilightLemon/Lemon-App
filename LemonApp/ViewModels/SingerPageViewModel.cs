@@ -38,5 +38,18 @@ public partial class SingerPageViewModel(
     {
         navigationService.RequstNavigation(PageType.AlbumPage, albumId);
     }
-    
+    [RelayCommand]
+    private void GoToSongsOfSingerPage()
+    {
+        if (SingerPageData == null) return;
+        navigationService.RequstNavigation(PageType.SongsOfSinger, SingerPageData.SingerProfile.Mid);
+    }
+
+    [RelayCommand]
+    private void GoToAlbumsOfSingerPage()
+    {
+        if (SingerPageData == null) return;
+        navigationService.RequstNavigation(PageType.AlbumsOfSinger, SingerPageData.SingerProfile.Mid);
+    }
+
 }

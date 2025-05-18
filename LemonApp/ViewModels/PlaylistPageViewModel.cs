@@ -58,6 +58,14 @@ public partial class PlaylistPageViewModel(
             Musics.Add(m);
         }
     }
+    public void AppendMusicList(IList<Music> list)
+    {
+        if (list == null) return;
+        foreach (var m in list)
+        {
+            Musics.Add(m);
+        }
+    }
 
     public async void DeleteMusicFromDirid(IList<Music> musics)
     {
@@ -72,11 +80,18 @@ public partial class PlaylistPageViewModel(
         }
     }
 
-    //TODO: 接入LoadMore
-    public event Action? OnLoadMoreRequired;
-    public void LoadMore()
+    public Func<PlaylistPageViewModel,int,Task>? OnLoadMoreRequired;
+    /// <summary>
+    /// 指示当前加载的页码，从0开始
+    /// </summary>
+    private int _pageIndex = 0;
+    public async void LoadMore()
     {
-        OnLoadMoreRequired?.Invoke();
+        navigationService.BeginLoadingAni();
+        _pageIndex++;
+        if (OnLoadMoreRequired?.Invoke(this, _pageIndex) is Task { } task)
+            await task;
+        navigationService.CancelLoadingAni();
     }
 
     public void DownloadMusic(IList<Music> music)
