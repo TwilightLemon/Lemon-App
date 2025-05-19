@@ -30,6 +30,11 @@ namespace LemonApp.Services
             EncodingProvider provider = CodePagesEncodingProvider.Instance;
             Encoding.RegisterProvider(provider);
 
+            //异常捕获+写日志
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            App.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
+            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+
             //register handler for Hyperlink in Settings->About.
             EventManager.RegisterClassHandler(typeof(Hyperlink), Hyperlink.RequestNavigateEvent, new RequestNavigateEventHandler((sender, e) =>
             {
@@ -78,6 +83,27 @@ namespace LemonApp.Services
         private void OnSystemColorChanged()
         {
             uiResourceService.UpdateAccentColor();
+        }
+
+        private void TaskScheduler_UnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
+        {
+            logger.LogError(new EventId(-1), e.Exception, e.Exception.Message);
+        }
+
+        private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            logger.LogError(new EventId(-1), e.Exception, e.Exception.Message);
+#if !DEBUG
+            e.Handled = true;
+#endif
+        }
+
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            if (e.ExceptionObject is not Exception exception)
+                return;
+
+            logger.LogError(new EventId(-1), exception, exception.Message);
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

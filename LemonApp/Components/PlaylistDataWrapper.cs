@@ -15,14 +15,17 @@ using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace LemonApp.Components;
-//TODO: simplify
-public class PlaylistDataWrapper(IServiceProvider sp,MediaPlayerService ms, UserProfileService user)
+
+public class PlaylistDataWrapper(IServiceProvider sp,
+                                 MediaPlayerService ms,
+                                 UserProfileService user,
+                                 IHttpClientFactory hcf)
 {
     public async Task<Page?> LoadSingerPage(string singerId)
     {
         var page = sp.GetRequiredService<SingerPage>();
         var vm = sp.GetRequiredService<SingerPageViewModel>();
-        var hc = sp.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
+        var hc = hcf.CreateClient(App.PublicClientFlag);
         var data = await SingerAPI.GetPageDataAsync(hc, singerId, user.GetAuth());
         if (data != null)
         {
@@ -41,7 +44,7 @@ public class PlaylistDataWrapper(IServiceProvider sp,MediaPlayerService ms, User
     {
         var page = sp.GetRequiredService<PlaylistPage>();
         var vm = sp.GetRequiredService<PlaylistPageViewModel>();
-        var hc = sp.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
+        var hc = hcf.CreateClient(App.PublicClientFlag);
         if (page != null && hc != null && vm != null)
         {
             var data = await RankListAPI.GetRankListData(info.Id, hc);
@@ -66,7 +69,7 @@ public class PlaylistDataWrapper(IServiceProvider sp,MediaPlayerService ms, User
     {
         var page = sp.GetRequiredService<PlaylistPage>();
         var vm = sp.GetRequiredService<PlaylistPageViewModel>();
-        var hc = sp.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
+        var hc = hcf.CreateClient(App.PublicClientFlag);
         var auth = user.GetAuth();
         if (page != null && hc != null && auth != null)
         {
@@ -91,7 +94,7 @@ public class PlaylistDataWrapper(IServiceProvider sp,MediaPlayerService ms, User
     {
         var page = sp.GetRequiredService<PlaylistPage>();
         var vm = sp.GetRequiredService<PlaylistPageViewModel>();
-        var hc = sp.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
+        var hc = hcf.CreateClient(App.PublicClientFlag);
         var auth = user.GetAuth();
         if (page != null && hc != null && auth != null && vm != null)
         {
@@ -113,7 +116,7 @@ public class PlaylistDataWrapper(IServiceProvider sp,MediaPlayerService ms, User
     public async Task<Page?> LoadSearchPage(string keyword)
     {
         var page = sp.GetRequiredService<PlaylistPage>();
-        var hc = sp.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
+        var hc = hcf.CreateClient(App.PublicClientFlag);
         var auth = user.GetAuth();
         var vm = sp.GetRequiredService<PlaylistPageViewModel>();
         if (page != null && hc != null && auth != null && vm != null)
@@ -135,7 +138,7 @@ public class PlaylistDataWrapper(IServiceProvider sp,MediaPlayerService ms, User
 
     public async Task<PlaylistPageViewModel?> LoadUserPlaylistVm(Playlist info)
     {
-        var hc = sp.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
+        var hc = hcf.CreateClient(App.PublicClientFlag);
         var vm = sp.GetRequiredService<PlaylistPageViewModel>();
         if (hc != null && vm != null)
         {

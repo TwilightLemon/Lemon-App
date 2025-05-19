@@ -431,23 +431,36 @@ public partial class MainWindowViewModel : ObservableObject
     /// 主菜单——音乐库
     /// </summary>
     public ObservableCollection<MainMenu> MainMenus { get; set; } = [];
+    private MainMenu? homeMenu, rankMenu, singerMenu, playlistMenu,
+        radioMenu, boughtMenu, downloadMenu, favMenu, mydissMenu;
     private void LoadMainMenus()
     {
-        IEnumerable<MainMenu> list = [
-        new MainMenu("Home", (Geometry)App.Current.FindResource("Menu_Home"), typeof(HomePage)),
-        new MainMenu("Rank",(Geometry)App.Current.FindResource("Menu_Ranklist"), typeof(RanklistPage)),
-        new MainMenu("Singer", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page)),
-        new MainMenu("Playlists", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page)),
-        new MainMenu("Radio", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page)),
+        homeMenu = new MainMenu("Home", (Geometry)App.Current.FindResource("Menu_Home"), typeof(HomePage));
+        rankMenu = new MainMenu("Rank", (Geometry)App.Current.FindResource("Menu_Ranklist"), typeof(RanklistPage));
+        singerMenu = new MainMenu("Singer", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page));
+        playlistMenu = new MainMenu("Playlists", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page));
+        radioMenu = new MainMenu("Radio", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(Page));
+        
+        boughtMenu = new MainMenu("Bought", (Geometry)App.Current.FindResource("Menu_Bought"), typeof(AlbumListPage), MenuType.Mine, LoadMyBoughtAlbum);
+        downloadMenu = new MainMenu("Download", (Geometry)App.Current.FindResource("Menu_Download"), typeof(DownloadPage), MenuType.Mine) {
+            Decorator = _downloadMenuDecorator
+        };
+        favMenu = new MainMenu("Favorite", (Geometry)App.Current.FindResource("Menu_Favorite"), typeof(PlaylistPage), MenuType.Mine, LoadMyFavorite);
+        mydissMenu = new MainMenu("My Diss", (Geometry)App.Current.FindResource("Menu_MyDiss"), typeof(MyDissPage), MenuType.Mine);
 
-        new MainMenu("Bought", (Geometry)App.Current.FindResource("Menu_Bought"), typeof(AlbumListPage),MenuType.Mine,LoadMyBoughtAlbum),
-        new MainMenu("Download", (Geometry)App.Current.FindResource("Menu_Download"), typeof(DownloadPage),MenuType.Mine){
-            Decorator=_downloadMenuDecorator
-        },
-        //new MainMenu("Local",(Geometry)App.Current.FindResource("Menu_Local"),typeof(Page),MenuType.Mine),    //先留几天再做吧  有点懒
-        new MainMenu("Favorite",(Geometry)App.Current.FindResource("Menu_Favorite"), typeof(PlaylistPage),MenuType.Mine,LoadMyFavorite),
-        new MainMenu("My Diss", (Geometry) App.Current.FindResource("Menu_MyDiss"), typeof(MyDissPage),MenuType.Mine)
+        List<MainMenu> list = [
+            homeMenu,
+            rankMenu,
+            singerMenu, 
+            playlistMenu,
+            radioMenu,
+            boughtMenu,
+            downloadMenu,
+            //new MainMenu("Local",(Geometry)App.Current.FindResource("Menu_Local"),typeof(Page),MenuType.Mine),    //先留几天再做吧  有点懒
+            favMenu,
+            mydissMenu
         ];
+
         foreach (var item in list)
         {
             MainMenus.Add(item);
@@ -547,8 +560,10 @@ public partial class MainWindowViewModel : ObservableObject
         IsLoading = true;
         if(await _playlistDataWrapper.LoadSingerPage(mid) is { } page)
         {
+            page.Tag = singerMenu;
             RequestNavigateToPage.Invoke(page);
         }
+        SelectedMenu = singerMenu;
         IsLoading = false;
     }
     private void NavigateToAlbumsOfSinger(string mid)
@@ -567,7 +582,7 @@ public partial class MainWindowViewModel : ObservableObject
         };
         RequestNavigateToPage.Invoke(view);
 
-        SelectedMenu = null;
+        view.Tag = SelectedMenu = singerMenu;
         IsLoading = false;
     }
     private async void NavigateToSongsOfSinger(string mid)
@@ -576,8 +591,11 @@ public partial class MainWindowViewModel : ObservableObject
             return;
         IsLoading = true;
         if (await _playlistDataWrapper.LoadSongsOfSinger(mid) is { } page)
+        {
+            page.Tag = singerMenu;
             RequestNavigateToPage.Invoke(page);
-        SelectedMenu = null;
+        }
+        SelectedMenu = singerMenu;
         IsLoading = false;
     }
     private void NavigateToAccountInfoPage()
@@ -602,15 +620,20 @@ public partial class MainWindowViewModel : ObservableObject
     {
         IsLoading = true;
         if (await _playlistDataWrapper.LoadRanklist(info) is { } page)
+        {
+            page.Tag = rankMenu;
             RequestNavigateToPage.Invoke(page);
+        }
         IsLoading = false;
     }
     private async void NavigateToAlbumPage(string AlbumId)
     {
         IsLoading = true;
         if(await _playlistDataWrapper.LoadAlbumPage(AlbumId) is { } page)
+        {
+            page.Tag = SelectedMenu;
             RequestNavigateToPage.Invoke(page);
-        SelectedMenu = null;
+        }
         IsLoading = false;
     }
     private async void NavigateToSearchPage(string keyword)
@@ -625,15 +648,18 @@ public partial class MainWindowViewModel : ObservableObject
     }
     private async void NavigateToPlaylistPage(Playlist info)
     {
+        IsLoading = true;
         var sp=_serviceProvider.GetRequiredService<PlaylistPage>();
         if (sp != null)
         {
             if (await LoadUserPlaylist(info) is { } vm)
             {
                 sp.ViewModel = vm;
+                sp.Tag = SelectedMenu;
                 RequestNavigateToPage.Invoke(sp);
             }
         }
+        IsLoading = false;
     }
 
     private Task LoadMyBoughtAlbum(object page)
