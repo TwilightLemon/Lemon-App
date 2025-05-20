@@ -20,7 +20,7 @@
                        Background="{DynamicResource WindowBackgroundColor}"
                        ExitOnCloseBtnClicked="False"
                        Mode="Acrylic"
-                       FontFamily=".PingFang SC,Segoe UI"
+                       FontFamily="{StaticResource DefaultFontFamily}"
                        Foreground="{DynamicResource ForeColor}"
                        Title="Lemon App"
                        Height="750"
@@ -420,6 +420,7 @@
                             Background="{DynamicResource ContentBgColor}"
                             CornerRadius="8">
                         <Frame Name="MainContentFrame"
+                               FontFamily="{StaticResource DefaultFontFamily}"
                                Navigated="MainContentFrame_Navigated"
                                NavigationUIVisibility="Hidden">
                         </Frame>
@@ -636,12 +637,42 @@
                                 Background="{DynamicResource ForeColor}"
                                 Opacity="0.6" />
                     </ws:Button>
-                    <StackPanel  HorizontalAlignment="Stretch"
-                                 VerticalAlignment="Center">
+                    <Grid  HorizontalAlignment="Stretch"
+                           VerticalAlignment="Center"
+                           Margin="100 0 100 0">
+                        <TextBlock x:Name="BlurLyricTb" FontFamily="Georgia,KaiTi"
+                                   VerticalAlignment="Center"
+                                   Margin="0 0 0 80"
+                                   Opacity="0.6"
+                                   Foreground="{DynamicResource HighlightThemeColor}"
+                                   DataContext="{Binding CurrentLyric,NotifyOnTargetUpdated=True}"
+                                   TextAlignment="Center">
+                            <Run Text="{Binding Lyric,Converter={x:Static converters:WordRandomSpiltConverter.Instance}}"
+                                 FontSize="180"
+                                 FontWeight="Bold" />
+                            <TextBlock.Effect>
+                                <BlurEffect  Radius="12"/>
+                            </TextBlock.Effect>
+                            <i:Interaction.Triggers>
+                                  <i:EventTrigger EventName="TargetUpdated">
+                                       <i:ControlStoryboardAction>
+                                           <i:ControlStoryboardAction.Storyboard>
+                                               <Storyboard>
+                                                   <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                                    Storyboard.TargetName="BlurLyricTb"
+                                                                    From="0"
+                                                                    To="1"
+                                                                    Duration="0:0:0.3" />
+                                               </Storyboard>
+                                            </i:ControlStoryboardAction.Storyboard>
+                                        </i:ControlStoryboardAction>
+                                   </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </TextBlock>
                         <TextBlock x:Name="ImmerseModeLrcTb"
-                                   Margin="100 0 100 50"
-                                   Opacity="0.8"
-                                   FontFamily="Comic Sans MS,KaiTi"
+                                   Margin="0 0 0 50"
+                                   FontFamily="Georgia,KaiTi"
+                                   LineHeight="100"
                                    DataContext="{Binding CurrentLyric,NotifyOnTargetUpdated=True}"
                                    TextAlignment="Center"
                                    TextWrapping="Wrap">
@@ -665,7 +696,7 @@
                                                   BlurRadius="20"
                                                   ShadowDepth="0"
                                                   Color="Black"
-                                                  Opacity="0.5" />
+                                                  Opacity="0.6" />
                             </TextBlock.Effect>
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="TargetUpdated">
@@ -675,8 +706,8 @@
                                 <DoubleAnimation Storyboard.TargetProperty="Opacity"
                                                  Storyboard.TargetName="ImmerseModeLrcTb"
                                                  From="0"
-                                                 To="0.8"
-                                                 Duration="0:0:0.6" />
+                                                 To="1"
+                                                 Duration="0:0:0.3" />
                                 <ThicknessAnimation Storyboard.TargetProperty="Margin"
                                                     Storyboard.TargetName="ImmerseModeLrcTb"
                                                     From="100 0 100 60"
@@ -692,7 +723,7 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
                         </TextBlock>
-                    </StackPanel>
+                    </Grid>
                     <TextBlock x:Name="Im_NextLrcTb"
                                FontSize="32"
                                Margin="100 0 0 180"
@@ -734,7 +765,7 @@
                             CornerRadius="18"
                             Height="78"
                             Width="360"
-                            Margin="0 0 0 100">
+                            Margin="0 0 0 90">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="MouseEnter">
                                 <i:ControlStoryboardAction>

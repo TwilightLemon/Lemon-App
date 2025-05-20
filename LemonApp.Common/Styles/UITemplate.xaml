@@ -6,6 +6,160 @@
                     xmlns:base="clr-namespace:LemonApp.Common.UIBases"
                     mc:Ignorable="av">
 
+    <!--#region ScrollViewer 模板-->
+    <ControlTemplate x:Key="ScrollViewerControlTemplate"
+                     TargetType="{x:Type base:ScrollViewer}">
+        <ControlTemplate.Resources>
+            <Storyboard x:Key="OnMouseEnter1">
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)"
+                                               Storyboard.TargetName="PART_VerticalScrollBar">
+                    <EasingDoubleKeyFrame KeyTime="0:0:0.2"
+                                          Value="1" />
+                </DoubleAnimationUsingKeyFrames>
+            </Storyboard>
+            <Storyboard x:Key="OnMouseLeave1">
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)"
+                                               Storyboard.TargetName="PART_VerticalScrollBar">
+                    <EasingDoubleKeyFrame KeyTime="0:0:0.2"
+                                          Value="0" />
+                </DoubleAnimationUsingKeyFrames>
+            </Storyboard>
+        </ControlTemplate.Resources>
+        <ControlTemplate.Triggers>
+            <EventTrigger RoutedEvent="UIElement.MouseEnter">
+                <BeginStoryboard Storyboard="{StaticResource OnMouseEnter1}" />
+            </EventTrigger>
+            <EventTrigger RoutedEvent="UIElement.MouseLeave">
+                <BeginStoryboard x:Name="OnMouseLeave1_BeginStoryboard"
+                                 Storyboard="{StaticResource OnMouseLeave1}" />
+            </EventTrigger>
+        </ControlTemplate.Triggers>
+        <Grid x:Name="Grid"
+              Background="{TemplateBinding Background}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Rectangle x:Name="Corner"
+                       Grid.Column="1"
+                       Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
+                       Grid.Row="1" />
+            <ScrollContentPresenter x:Name="PART_ScrollContentPresenter"
+                                    CanContentScroll="{TemplateBinding CanContentScroll}"
+                                    CanHorizontallyScroll="False"
+                                    CanVerticallyScroll="False"
+                                    ContentTemplate="{TemplateBinding ContentTemplate}"
+                                    Content="{TemplateBinding Content}"
+                                    Grid.Column="0"
+                                    Margin="{TemplateBinding Padding}"
+                                    Grid.Row="0"
+                                    Grid.ColumnSpan="2" />
+            <ScrollBar x:Name="PART_VerticalScrollBar"
+                       AutomationProperties.AutomationId="VerticalScrollBar"
+                       Cursor="Arrow"
+                       Grid.Column="1"
+                       Maximum="{TemplateBinding ScrollableHeight}"
+                       Minimum="0"
+                       Grid.Row="0"
+                       Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
+                       Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"
+                       ViewportSize="{TemplateBinding ViewportHeight}"
+                       Style="{DynamicResource ScrollBarStyle}"
+                       Width="10"
+                       MinWidth="0"
+                       Margin="0,0,2,0"
+                       Opacity="0" />
+            <ScrollBar x:Name="PART_HorizontalScrollBar"
+                       AutomationProperties.AutomationId="HorizontalScrollBar"
+                       Cursor="Arrow"
+                       Grid.Column="0"
+                       Maximum="{TemplateBinding ScrollableWidth}"
+                       Minimum="0"
+                       Orientation="Horizontal"
+                       Grid.Row="1"
+                       Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"
+                       Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"
+                       ViewportSize="{TemplateBinding ViewportWidth}" />
+        </Grid>
+    </ControlTemplate>
+    <Style x:Key="ScrollBarThumbVertical"
+           TargetType="{x:Type Thumb}">
+        <Setter Property="OverridesDefaultStyle"
+                Value="true" />
+        <Setter Property="IsTabStop"
+                Value="false" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Thumb}">
+                    <Rectangle x:Name="rectangle"
+                               Fill="{DynamicResource  ForeColor}"
+                               Height="{TemplateBinding Height}"
+                               SnapsToDevicePixels="True"
+                               Width="{TemplateBinding Width}"
+                               RadiusX="5"
+                               RadiusY="5"
+                               Opacity="0.6"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="ScrollBarStyle"
+           TargetType="{x:Type ScrollBar}">
+        <Setter Property="Stylus.IsPressAndHoldEnabled"
+                Value="false" />
+        <Setter Property="Stylus.IsFlicksEnabled"
+                Value="false" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ScrollBar}">
+                    <Grid x:Name="Bg"
+                          SnapsToDevicePixels="true">
+                        <Grid.RowDefinitions>
+                            <RowDefinition MaxHeight="{DynamicResource {x:Static SystemParameters.VerticalScrollBarButtonHeightKey}}"
+                                           Height="0*" />
+                            <RowDefinition Height="448*" />
+                            <RowDefinition MaxHeight="{DynamicResource {x:Static SystemParameters.VerticalScrollBarButtonHeightKey}}"
+                                           Height="17*" />
+                        </Grid.RowDefinitions>
+                        <Border Grid.Row="1"
+                                Background="#00000000" />
+                        <RepeatButton x:Name="PART_LineUpButton"
+                                      Command="{x:Static ScrollBar.LineUpCommand}"
+                                      IsEnabled="{TemplateBinding IsMouseOver}"
+                                      Visibility="Collapsed" />
+                        <Track x:Name="PART_Track"
+                               IsDirectionReversed="true"
+                               IsEnabled="{TemplateBinding IsMouseOver}"
+                               Grid.Row="1"
+                               Width="Auto">
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton Command="{x:Static ScrollBar.PageUpCommand}"
+                                              Visibility="Collapsed" />
+                            </Track.DecreaseRepeatButton>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton Command="{x:Static ScrollBar.PageDownCommand}"
+                                              Visibility="Collapsed" />
+                            </Track.IncreaseRepeatButton>
+                            <Track.Thumb>
+                                <Thumb Style="{StaticResource ScrollBarThumbVertical}" />
+                            </Track.Thumb>
+                        </Track>
+                        <RepeatButton x:Name="PART_LineDownButton"
+                                      Command="{x:Static ScrollBar.LineDownCommand}"
+                                      IsEnabled="{TemplateBinding IsMouseOver}"
+                                      Grid.Row="2"
+                                      Visibility="Collapsed" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!--#endregion-->
+
     <Style x:Key="IconToggleButton" TargetType="ToggleButton">
         <Setter Property="Cursor"
                 Value="Hand" />
@@ -54,13 +208,13 @@
         </Setter>
     </Style>
     <Style x:Key="SimpleVerticalScrollViewerStyle"
-           TargetType="{x:Type ScrollViewer}">
+           TargetType="{x:Type base:ScrollViewer}">
         <Setter Property="ws:StylusTouchDevice.Simulate"
                 Value="True" />
         <Setter Property="PanningMode"
                 Value="VerticalOnly" />
-        <Setter Property="VerticalScrollBarVisibility"
-                Value="Hidden" />
+        <Setter Property="Template"
+                Value="{StaticResource ScrollViewerControlTemplate}" />
     </Style>
     <Style x:Key="AccentToggleButtonStyle"
            TargetType="{x:Type ToggleButton}">
@@ -619,6 +773,9 @@
 
     <FontFamily x:Key="SegoeFluentIcon">
         pack://application:,,,/LemonApp.Common;component/Resources/Segoe Fluent Icons.ttf#Segoe Fluent Icons
+    </FontFamily>
+    <FontFamily x:Key="DefaultFontFamily">
+        .PingFang SC,Segoe UI
     </FontFamily>
     <Style x:Key="FluentWindowStyle"
            TargetType="{x:Type Window}">

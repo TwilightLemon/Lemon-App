@@ -7,6 +7,7 @@
       xmlns:converter="clr-namespace:LemonApp.Converters"
       xmlns:component="clr-namespace:LemonApp.Components"
       xmlns:ws="https://schemas.elecho.dev/wpfsuite"
+      xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
       xmlns:uc="clr-namespace:LemonApp.Views.UserControls"
       xmlns:vm="clr-namespace:LemonApp.ViewModels"
       mc:Ignorable="d"
@@ -19,13 +20,13 @@
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </Page.Resources>
 
-    <ws:ScrollViewer Style="{StaticResource SimpleVerticalScrollViewerStyle}">
+    <base:ScrollViewer Style="{StaticResource SimpleVerticalScrollViewerStyle}">
         <ws:StackPanel Spacing="12">
             <Border x:Name="BigBackground"
                     Height="250"
                     CornerRadius="8"
                     Background="{Binding BigBackground}">
-                <Grid >
+                <Grid>
                     <Border x:Name="CoverImg"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
@@ -36,42 +37,44 @@
                             Background="{Binding CoverImg}"
                             d:Background="#69f" />
                     <StackPanel x:Name="SingerNamePanel"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Top"
-                                    Margin="250 50 0 0">
-                            <TextBlock VerticalAlignment="Top"
-                                       FontSize="46"
-                                       FontWeight="Bold"
-                                       TextWrapping="NoWrap"
-                                       Text="{Binding SingerPageData.SingerProfile.Name}"
-                                       d:Text="Taylor Swift" />
-                            <TextBlock VerticalAlignment="Top"
-                                       Margin="0 18 0 0"
-                                       Opacity="0.8"
-                                       FontSize="14">
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Margin="250 50 0 0">
+                        <TextBlock VerticalAlignment="Top"
+                                   FontSize="46"
+                                   FontWeight="Bold"
+                                   Foreground="WhiteSmoke"
+                                   TextWrapping="NoWrap"
+                                   Text="{Binding SingerPageData.SingerProfile.Name}"
+                                   d:Text="Taylor Swift" />
+                        <TextBlock VerticalAlignment="Top"
+                                   Margin="0 18 0 0"
+                                   Foreground="WhiteSmoke"
+                                   Opacity="0.8"
+                                   FontSize="14">
                     <Run Text="Fans: " />
                     <Run d:Text="9999w"
-                                Text="{Binding SingerPageData.FansCount,StringFormat=N0}" />
-                            </TextBlock>
-                            <ToggleButton x:Name="FollowBtn"
-                                          Margin="0 8 0 0"
-                                          Template="{DynamicResource AccentToggleButtonTemplate}"
-                                          VerticalAlignment="Top"
-                                          HorizontalAlignment="Left"
-                                          IsChecked="{Binding SingerPageData.IsFollowed,Mode=OneWay}"
-                                          Padding="8"
-                                          Height="32">
-                                <ws:ConditionalControl Condition="{Binding ElementName=FollowBtn,Path=IsChecked}">
-                                    <ws:ConditionalControl.ContentWhenTrue>
-                                        <TextBlock Text="Followed" />
-                                    </ws:ConditionalControl.ContentWhenTrue>
-                                    <ws:ConditionalControl.ContentWhenFalse>
-                                        <TextBlock Text="Follow" />
-                                    </ws:ConditionalControl.ContentWhenFalse>
-                                </ws:ConditionalControl>
-                            </ToggleButton>
-                        </StackPanel>
-                    </Grid>
+                            Text="{Binding SingerPageData.FansCount,StringFormat=N0}" />
+                        </TextBlock>
+                        <ToggleButton x:Name="FollowBtn"
+                                      Margin="0 8 0 0"
+                                      Template="{DynamicResource AccentToggleButtonTemplate}"
+                                      VerticalAlignment="Top"
+                                      HorizontalAlignment="Left"
+                                      IsChecked="{Binding SingerPageData.IsFollowed,Mode=OneWay}"
+                                      Padding="8"
+                                      Height="32">
+                            <ws:ConditionalControl Condition="{Binding ElementName=FollowBtn,Path=IsChecked}">
+                                <ws:ConditionalControl.ContentWhenTrue>
+                                    <TextBlock Text="Followed" />
+                                </ws:ConditionalControl.ContentWhenTrue>
+                                <ws:ConditionalControl.ContentWhenFalse>
+                                    <TextBlock Text="Follow" />
+                                </ws:ConditionalControl.ContentWhenFalse>
+                            </ws:ConditionalControl>
+                        </ToggleButton>
+                    </StackPanel>
+                </Grid>
             </Border>
             <Border Background="{DynamicResource MaskColor}"
                     CornerRadius="12"
@@ -104,50 +107,50 @@
                     Padding="8"
                     Margin="12 0 12 0">
                 <ItemsControl x:Name="RecentViewer"
-                                  d:DataContext="{d:DesignInstance Type=vm:AlbumItemViewModel}"
-                                  d:ItemsSource="{d:SampleData ItemCount=2}"
-                                  ItemsSource="{Binding Albums}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <ws:UniformGrid Columns="2" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <ws:Button Command="{Binding DataContext.SelectCommand,RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                           CommandParameter="{Binding}"
-                                           Style="{StaticResource SimpleIconButtonStyleForWs}"
-                                           VerticalContentAlignment="Stretch"
-                                           HorizontalContentAlignment="Stretch">
-                                    <Grid>
-                                        <Border x:Name="CoverImg"
-                                                Margin="12"
-                                                BorderBrush="{DynamicResource BorderColor}"
-                                                BorderThickness="4"
-                                                CornerRadius="8"
-                                                HorizontalAlignment="Left"
-                                                RenderOptions.BitmapScalingMode="HighQuality"
-                                                Width="80"
-                                                Height="80">
-                                            <Border.Background>
-                                                <ImageBrush ImageSource="{Binding Cover,IsAsync=True,Mode=OneWay}" />
-                                            </Border.Background>
-                                        </Border>
-                                        <TextBlock HorizontalAlignment="Left"
-                                                   VerticalAlignment="Center"
-                                                   TextWrapping="Wrap"
-                                                   Margin="110 0 0 0"
-                                                   LineHeight="30">
+                              d:DataContext="{d:DesignInstance Type=vm:AlbumItemViewModel}"
+                              d:ItemsSource="{d:SampleData ItemCount=2}"
+                              ItemsSource="{Binding Albums}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ws:UniformGrid Columns="2" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <ws:Button Command="{Binding DataContext.SelectCommand,RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                       CommandParameter="{Binding}"
+                                       Style="{StaticResource SimpleIconButtonStyleForWs}"
+                                       VerticalContentAlignment="Stretch"
+                                       HorizontalContentAlignment="Stretch">
+                                <Grid>
+                                    <Border x:Name="CoverImg"
+                                            Margin="12"
+                                            BorderBrush="{DynamicResource BorderColor}"
+                                            BorderThickness="4"
+                                            CornerRadius="8"
+                                            HorizontalAlignment="Left"
+                                            RenderOptions.BitmapScalingMode="HighQuality"
+                                            Width="80"
+                                            Height="80">
+                                        <Border.Background>
+                                            <ImageBrush ImageSource="{Binding Cover,IsAsync=True,Mode=OneWay}" />
+                                        </Border.Background>
+                                    </Border>
+                                    <TextBlock HorizontalAlignment="Left"
+                                               VerticalAlignment="Center"
+                                               TextWrapping="Wrap"
+                                               Margin="110 0 0 0"
+                                               LineHeight="30">
                                             <Run Text="{Binding ListInfo.Name}"
                                                  FontSize="22" />
                                             <LineBreak />
                                             <Run Text="{Binding ListInfo.PublishDate}" />
-                                        </TextBlock>
-                                    </Grid>
-                                </ws:Button>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                                    </TextBlock>
+                                </Grid>
+                            </ws:Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </Border>
 
             <Border Background="{DynamicResource MaskColor}"
@@ -249,7 +252,7 @@
                     </ws:ListBox>
                 </Grid>
             </Border>
-            
+
             <Border x:Name="AlbumListCard"
                     Background="{DynamicResource MaskColor}"
                     CornerRadius="12"
@@ -269,7 +272,7 @@
                                Command="{Binding GoToAlbumsOfSingerPageCommand}"
                                Style="{StaticResource AccentButtonStyleForWs}" />
                     <uc:AlbumItemView x:Name="AlbumListView"
-                                       Margin="0 36 0 0" />
+                                      Margin="0 36 0 0" />
                 </Grid>
             </Border>
 
@@ -296,13 +299,14 @@
                     Margin="12 0 12 12">
                 <ws:StackPanel>
                     <Grid>
-                    <TextBlock HorizontalAlignment="Left"
-                               VerticalAlignment="Top"
-                               FontSize="18"
-                               FontWeight="Bold"
-                               Margin="16 8 0 0"
-                               Text="Introduction" />
-                        <ToggleButton Name="Intro_ShowDetailTB" HorizontalAlignment="Right"
+                        <TextBlock HorizontalAlignment="Left"
+                                   VerticalAlignment="Top"
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   Margin="16 8 0 0"
+                                   Text="Introduction" />
+                        <ToggleButton Name="Intro_ShowDetailTB"
+                                      HorizontalAlignment="Right"
                                       VerticalAlignment="Top"
                                       Padding="12 8"
                                       Content="Show"
@@ -314,12 +318,16 @@
                                TextWrapping="Wrap" />
                     <!--大量TextBlock内容影响绘制，改为expander模式-->
                     <ItemsControl Visibility="{Binding ElementName=Intro_ShowDetailTB,Path=IsChecked,Converter={StaticResource BoolToVisibilityConverter}}"
-                        ItemsSource="{Binding SingerPageData.Introduction.Other}" Margin="12 0 12 8">
+                                  ItemsSource="{Binding SingerPageData.Introduction.Other}"
+                                  Margin="12 0 12 8">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock TextWrapping="Wrap"
-                                           Opacity="0.8" Margin="0 4 0 0">
-                                    <Run Text="{Binding Key,Mode=OneWay}" FontSize="22" FontWeight="Bold"
+                                           Opacity="0.8"
+                                           Margin="0 4 0 0">
+                                    <Run Text="{Binding Key,Mode=OneWay}"
+                                         FontSize="22"
+                                         FontWeight="Bold"
                                          Foreground="{DynamicResource HighlightThemeColor}" />
                                      <LineBreak />
                                     <Run Text="{Binding Value,Mode=OneWay}" />
@@ -330,5 +338,5 @@
                 </ws:StackPanel>
             </Border>
         </ws:StackPanel>
-    </ws:ScrollViewer>
+    </base:ScrollViewer>
 </Page>
