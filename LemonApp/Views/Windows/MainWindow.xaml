@@ -20,6 +20,7 @@
                        Background="{DynamicResource WindowBackgroundColor}"
                        ExitOnCloseBtnClicked="False"
                        Mode="Acrylic"
+                       FontFamily=".PingFang SC,Segoe UI"
                        Foreground="{DynamicResource ForeColor}"
                        Title="Lemon App"
                        Height="750"

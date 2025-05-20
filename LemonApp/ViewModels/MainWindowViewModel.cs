@@ -103,7 +103,7 @@ public partial class MainWindowViewModel : ObservableObject
 
         _timer = new();
         _timer.Elapsed += Timer_Elapsed;
-        _timer.Interval = 1000;
+        _timer.Interval = 300;
 
         LoadMainMenus();
         LoadComponent();

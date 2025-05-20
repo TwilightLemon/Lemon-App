@@ -288,7 +288,7 @@
                         ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}">
                 <ws:ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Border Height="48"
+                        <Border MinHeight="48"
                                 x:Name="_border"
                                 CornerRadius="8"
                                 Background="Transparent">
