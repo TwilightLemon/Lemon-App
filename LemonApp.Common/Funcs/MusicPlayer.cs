@@ -1,9 +1,6 @@
 ﻿using System.IO;
 using System.Runtime.InteropServices;
 using Un4seen.Bass;
-/*
-使用Bass解码器 还是自带的mediaplayer呢？
- */
 namespace LemonApp.Common.Funcs;
 
 /// <summary>

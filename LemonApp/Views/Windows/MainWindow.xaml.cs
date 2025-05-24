@@ -86,7 +86,7 @@ namespace LemonApp.Views.Windows
         private void _uiResourceService_OnColorModeChanged()
         {
             bool isdarkmode = _uiResourceService.GetIsDarkMode();
-            Im_Effect.Color = isdarkmode ? Colors.White : Colors.Black;
+            //Im_Effect.Color = isdarkmode ? Colors.White : Colors.Black;
             var color = isdarkmode ? Color.FromRgb(0x1E, 0x1E, 0x1E) : Color.FromRgb(0xD0,0xD0,0xD0);
             WindowOption.SetBorderColor(App.Current.MainWindow, new WindowOptionColor() { R = color.R, G = color.G, B = color.B });
         }

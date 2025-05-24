@@ -8,4 +8,5 @@ namespace LemonApp.MusicLib.Abstraction.Entities;
 
 public class HomePageEntities
 {
+
 }

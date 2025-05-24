@@ -1,83 +1,68 @@
 ﻿<base:FluentWindowBase x:Class="LemonApp.Views.Windows.MainWindow"
                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                       xmlns:local="clr-namespace:LemonApp.Views.Windows"
                        xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
-                       xmlns:ws="https://schemas.elecho.dev/wpfsuite"
-                       xmlns:viewmodels="clr-namespace:LemonApp.ViewModels"
                        xmlns:converters="clr-namespace:LemonApp.Converters"
+                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+                       xmlns:local="clr-namespace:LemonApp.Views.Windows"
+                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                        xmlns:uc="clr-namespace:LemonApp.Views.UserControls"
+                       xmlns:viewmodels="clr-namespace:LemonApp.ViewModels"
+                       xmlns:ws="https://schemas.elecho.dev/wpfsuite"
+                       Title="Lemon App"
+                       Width="1080"
+                       Height="750"
                        d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
-                       mc:Ignorable="d"
+                       Background="{DynamicResource WindowBackgroundColor}"
+                       ExitOnCloseBtnClicked="False"
+                       Foreground="{DynamicResource ForeColor}"
+                       Mode="Acrylic"
                        RenderOptions.BitmapScalingMode="HighQuality"
                        RenderOptions.ClearTypeHint="Enabled"
                        TextOptions.TextFormattingMode="Ideal"
-                       TextOptions.TextRenderingMode="Auto"
                        TextOptions.TextHintingMode="Auto"
-                       Background="{DynamicResource WindowBackgroundColor}"
-                       ExitOnCloseBtnClicked="False"
-                       Mode="Acrylic"
-                       FontFamily="{StaticResource DefaultFontFamily}"
-                       Foreground="{DynamicResource ForeColor}"
-                       Title="Lemon App"
-                       Height="750"
-                       Width="1080">
+                       TextOptions.TextRenderingMode="Auto"
+                       mc:Ignorable="d">
     <base:FluentWindowBase.Triggers>
-        <EventTrigger SourceName="OpenPlayListBtn"
-                      RoutedEvent="ws:Button.Click">
+        <EventTrigger RoutedEvent="ws:Button.Click" SourceName="OpenPlayListBtn">
             <BeginStoryboard Storyboard="{DynamicResource OpenPlaylistAni}" />
         </EventTrigger>
-        <EventTrigger SourceName="LyricPage_OpenPlayListBtn"
-                      RoutedEvent="ws:Button.Click">
+        <EventTrigger RoutedEvent="ws:Button.Click" SourceName="LyricPage_OpenPlayListBtn">
             <BeginStoryboard Storyboard="{DynamicResource OpenPlaylistAni}" />
         </EventTrigger>
-        <EventTrigger SourceName="ImmerseMode_OpenPlayListBtn"
-                      RoutedEvent="ws:Button.Click">
+        <EventTrigger RoutedEvent="ws:Button.Click" SourceName="ImmerseMode_OpenPlayListBtn">
             <BeginStoryboard Storyboard="{DynamicResource OpenPlaylistAni}" />
         </EventTrigger>
-        <EventTrigger SourceName="PlayListPageMask"
-                      RoutedEvent="MouseDown">
+        <EventTrigger RoutedEvent="MouseDown" SourceName="PlayListPageMask">
             <BeginStoryboard Storyboard="{DynamicResource ClosePlaylistAni}" />
         </EventTrigger>
     </base:FluentWindowBase.Triggers>
     <base:FluentWindowBase.Resources>
-        <BooleanToVisibilityConverter  x:Key="BoolToVisibility" />
-        <CollectionViewSource x:Key="MainMenuSource"
-                              Source="{Binding MainMenus}">
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+        <CollectionViewSource x:Key="MainMenuSource" Source="{Binding MainMenus}">
             <CollectionViewSource.GroupDescriptions>
                 <PropertyGroupDescription PropertyName="Type" />
             </CollectionViewSource.GroupDescriptions>
         </CollectionViewSource>
 
         <Storyboard x:Key="OpenLyricPageAni">
-            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="LyricPage"
-                                              Storyboard.TargetProperty="Margin">
-                <EasingThicknessKeyFrame KeyTime="00"
-                                         Value="0 1390 0 -1390" />
-                <EasingThicknessKeyFrame KeyTime="00:00:00.3"
-                                         Value="0">
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="LyricPage" Storyboard.TargetProperty="Margin">
+                <EasingThicknessKeyFrame KeyTime="00" Value="0 1390 0 -1390" />
+                <EasingThicknessKeyFrame KeyTime="00:00:00.3" Value="0">
                     <EasingThicknessKeyFrame.EasingFunction>
                         <CubicEase EasingMode="EaseOut" />
                     </EasingThicknessKeyFrame.EasingFunction>
                 </EasingThicknessKeyFrame>
             </ThicknessAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="MainPage"
-                                           Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00.3"
-                                        Value="{x:Static Visibility.Collapsed}" />
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="MainPage" Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00.3" Value="{x:Static Visibility.Collapsed}" />
             </ObjectAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LyricPage"
-                                           Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00"
-                                        Value="{x:Static Visibility.Visible}" />
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LyricPage" Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Visible}" />
             </ObjectAnimationUsingKeyFrames>
-            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="MusicControl"
-                                              Storyboard.TargetProperty="(FrameworkElement.Margin)">
-                <EasingThicknessKeyFrame KeyTime="00:00:00.3"
-                                         Value="0,110,0,-110">
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="MusicControl" Storyboard.TargetProperty="(FrameworkElement.Margin)">
+                <EasingThicknessKeyFrame KeyTime="00:00:00.3" Value="0,110,0,-110">
                     <EasingThicknessKeyFrame.EasingFunction>
                         <CubicEase EasingMode="EaseOut" />
                     </EasingThicknessKeyFrame.EasingFunction>
@@ -85,108 +70,76 @@
             </ThicknessAnimationUsingKeyFrames>
         </Storyboard>
         <Storyboard x:Key="CloseLyricPageAni">
-            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="LyricPage"
-                                              Storyboard.TargetProperty="Margin">
-                <EasingThicknessKeyFrame KeyTime="00:00:00.3"
-                                         Value="0 1390 0 -1390">
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="LyricPage" Storyboard.TargetProperty="Margin">
+                <EasingThicknessKeyFrame KeyTime="00:00:00.3" Value="0 1390 0 -1390">
                     <EasingThicknessKeyFrame.EasingFunction>
                         <CubicEase EasingMode="EaseIn" />
                     </EasingThicknessKeyFrame.EasingFunction>
                 </EasingThicknessKeyFrame>
             </ThicknessAnimationUsingKeyFrames>
-            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="MusicControl"
-                                              Storyboard.TargetProperty="(FrameworkElement.Margin)">
-                <EasingThicknessKeyFrame KeyTime="00:00:00.3"
-                                         Value="0">
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="MusicControl" Storyboard.TargetProperty="(FrameworkElement.Margin)">
+                <EasingThicknessKeyFrame KeyTime="00:00:00.3" Value="0">
                     <EasingThicknessKeyFrame.EasingFunction>
                         <CubicEase EasingMode="EaseOut" />
                     </EasingThicknessKeyFrame.EasingFunction>
                 </EasingThicknessKeyFrame>
             </ThicknessAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LyricPage"
-                                           Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00.3"
-                                        Value="{x:Static Visibility.Collapsed}" />
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LyricPage" Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00.3" Value="{x:Static Visibility.Collapsed}" />
             </ObjectAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="MainPage"
-                                           Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00"
-                                        Value="{x:Static Visibility.Visible}" />
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="MainPage" Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Visible}" />
             </ObjectAnimationUsingKeyFrames>
         </Storyboard>
         <Storyboard x:Key="OpenPlaylistAni">
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PlayListPage"
-                                           Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00"
-                                        Value="{x:Static Visibility.Visible}" />
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PlayListPage" Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Visible}" />
             </ObjectAnimationUsingKeyFrames>
-            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="PlayListBar"
-                                              Storyboard.TargetProperty="(FrameworkElement.Margin)">
-                <EasingThicknessKeyFrame KeyTime="00:00:00"
-                                         Value="0 0 -320 0" />
-                <EasingThicknessKeyFrame KeyTime="00:00:00.2500"
-                                         Value="0">
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="PlayListBar" Storyboard.TargetProperty="(FrameworkElement.Margin)">
+                <EasingThicknessKeyFrame KeyTime="00:00:00" Value="0 0 -320 0" />
+                <EasingThicknessKeyFrame KeyTime="00:00:00.2500" Value="0">
                     <EasingThicknessKeyFrame.EasingFunction>
                         <CubicEase EasingMode="EaseOut" />
                     </EasingThicknessKeyFrame.EasingFunction>
                 </EasingThicknessKeyFrame>
             </ThicknessAnimationUsingKeyFrames>
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PlayListPageMask"
-                                           Storyboard.TargetProperty="(UIElement.Opacity)">
-                <EasingDoubleKeyFrame KeyTime="00:00:00"
-                                      Value="0" />
-                <EasingDoubleKeyFrame KeyTime="00:00:00.2500"
-                                      Value="1" />
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PlayListPageMask" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0" />
+                <EasingDoubleKeyFrame KeyTime="00:00:00.2500" Value="1" />
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
         <Storyboard x:Key="ClosePlaylistAni">
-            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="PlayListBar"
-                                              Storyboard.TargetProperty="(FrameworkElement.Margin)">
-                <EasingThicknessKeyFrame KeyTime="00:00:00.2500"
-                                         Value="0 0 -320 0">
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="PlayListBar" Storyboard.TargetProperty="(FrameworkElement.Margin)">
+                <EasingThicknessKeyFrame KeyTime="00:00:00.2500" Value="0 0 -320 0">
                     <EasingThicknessKeyFrame.EasingFunction>
                         <CubicEase EasingMode="EaseOut" />
                     </EasingThicknessKeyFrame.EasingFunction>
                 </EasingThicknessKeyFrame>
             </ThicknessAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PlayListPage"
-                                           Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00.2500"
-                                        Value="{x:Static Visibility.Collapsed}" />
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PlayListPage" Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00.2500" Value="{x:Static Visibility.Collapsed}" />
             </ObjectAnimationUsingKeyFrames>
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PlayListPageMask"
-                                           Storyboard.TargetProperty="(UIElement.Opacity)">
-                <EasingDoubleKeyFrame KeyTime="00:00:00.2500"
-                                      Value="0" />
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PlayListPageMask" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.2500" Value="0" />
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
         <Storyboard x:Key="ShowGoBackBtnAni">
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="GoBackBtn"
-                                           Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00"
-                                        Value="{x:Static Visibility.Hidden}" />
-                <DiscreteObjectKeyFrame KeyTime="00:00:00.2200000"
-                                        Value="{x:Static Visibility.Visible}" />
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="GoBackBtn" Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Hidden}" />
+                <DiscreteObjectKeyFrame KeyTime="00:00:00.2200000" Value="{x:Static Visibility.Visible}" />
             </ObjectAnimationUsingKeyFrames>
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GoBackBtn"
-                                           Storyboard.TargetProperty="(FrameworkElement.Width)">
-                <EasingDoubleKeyFrame KeyTime="00:00:00"
-                                      Value="0" />
-                <EasingDoubleKeyFrame KeyTime="00:00:00.1500000"
-                                      Value="28">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GoBackBtn" Storyboard.TargetProperty="(FrameworkElement.Width)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0" />
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1500000" Value="28">
                     <EasingDoubleKeyFrame.EasingFunction>
                         <CircleEase EasingMode="EaseOut" />
                     </EasingDoubleKeyFrame.EasingFunction>
                 </EasingDoubleKeyFrame>
             </DoubleAnimationUsingKeyFrames>
-            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="GoBackBtn"
-                                              Storyboard.TargetProperty="(Control.Padding)">
-                <EasingThicknessKeyFrame KeyTime="00:00:00"
-                                         Value="1,1,1,1" />
-                <EasingThicknessKeyFrame KeyTime="00:00:00.2000000"
-                                         Value="0,14,0,-14" />
-                <EasingThicknessKeyFrame KeyTime="00:00:00.4000000"
-                                         Value="0,0,0,0">
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="GoBackBtn" Storyboard.TargetProperty="(Control.Padding)">
+                <EasingThicknessKeyFrame KeyTime="00:00:00" Value="1,1,1,1" />
+                <EasingThicknessKeyFrame KeyTime="00:00:00.2000000" Value="0,14,0,-14" />
+                <EasingThicknessKeyFrame KeyTime="00:00:00.4000000" Value="0,0,0,0">
                     <EasingThicknessKeyFrame.EasingFunction>
                         <CircleEase EasingMode="EaseOut" />
                     </EasingThicknessKeyFrame.EasingFunction>
@@ -196,153 +149,138 @@
     </base:FluentWindowBase.Resources>
     <ws:BoxPanel x:Name="Container" ClipToBounds="True">
         <Grid x:Name="MainContentPage">
-            <Grid x:Name="MainPage"
-                  Margin="0 0 0 110">
+            <Grid x:Name="MainPage" Margin="0,0,0,110">
                 <Grid x:Name="TitleBar"
                       Height="48"
-                      WindowChrome.IsHitTestVisibleInChrome="True"
-                      VerticalAlignment="Top">
-                    <!--中部功能区-->
-                    <!--三大按钮占位 Width:144-->
-                    <!--左侧Icon-->
-                    <ws:WrapPanel HorizontalAlignment="Left"
+                      VerticalAlignment="Top"
+                      WindowChrome.IsHitTestVisibleInChrome="True">
+                    <!--  中部功能区  -->
+                    <!--  三大按钮占位 Width:144  -->
+                    <!--  左侧Icon  -->
+                    <ws:WrapPanel Margin="16,0,0,0"
+                                  HorizontalAlignment="Left"
                                   VerticalAlignment="Center"
                                   ClipToBounds="True"
-                                  Margin="16 0 0 0"
                                   HorizontalSpacing="12"
                                   Orientation="Horizontal">
                         <ws:Button x:Name="GoBackBtn"
-                                   d:Visibility="Visible"
-                                   Visibility="{Binding ElementName=MainContentFrame,
-                                                    Path=CanGoBack,Converter={StaticResource BoolToVisibility}}"
-                                   Style="{StaticResource SimpleIconButtonStyleForWs}"
                                    Width="28"
                                    Height="28"
-                                   Click="GoBackBtn_Click"
                                    Margin="0,0,0,0"
-                                   Padding="1,1,1,1">
-                            <Path Fill="{DynamicResource ForeColor}"
-                                  Width="12"
+                                   Padding="1,1,1,1"
+                                   d:Visibility="Visible"
+                                   Click="GoBackBtn_Click"
+                                   Style="{StaticResource SimpleIconButtonStyleForWs}"
+                                   Visibility="{Binding ElementName=MainContentFrame, Path=CanGoBack, Converter={StaticResource BoolToVisibility}}">
+                            <Path Width="12"
                                   Height="12"
-                                  Stretch="Uniform"
-                                  Data="{StaticResource Icon_Back}" />
+                                  Data="{StaticResource Icon_Back}"
+                                  Fill="{DynamicResource ForeColor}"
+                                  Stretch="Uniform" />
                         </ws:Button>
-                        <Image HorizontalAlignment="Left"
-                               Width="22"
+                        <Image Width="22"
                                Height="22"
+                               HorizontalAlignment="Left"
                                RenderOptions.BitmapScalingMode="HighQuality"
                                Source="/Resources/icon.ico" />
-                        <TextBlock VerticalAlignment="Center"
-                                   HorizontalAlignment="Left"
+                        <TextBlock HorizontalAlignment="Left"
+                                   VerticalAlignment="Center"
                                    FontSize="14"
                                    Text="Lemon App" />
                     </ws:WrapPanel>
-                    <Grid Margin="220 8"
-                          MaxWidth="380">
+                    <Grid MaxWidth="380" Margin="220,8">
                         <base:FluentPopup x:Name="SearchHintPopup"
                                           ExtPopupAnimation="SlideDown"
-                                          StaysOpen="False"
+                                          Placement="Bottom"
                                           SlideAnimationOffset="20"
-                                          Placement="Bottom" />
+                                          StaysOpen="False" />
                         <ws:TextBox x:Name="SearchBox"
-                                    Background="{DynamicResource MaskColor}"
-                                    HoverBackground="{DynamicResource FocusMaskColor}"
-                                    FocusedBackground="{DynamicResource FocusMaskColor}"
-                                    BorderBrush="{DynamicResource BorderColor}"
-                                    FocusedBorderBrush="{DynamicResource FocusMaskColor}"
-                                    HoverBorderBrush="{DynamicResource FocusMaskColor}"
-                                    SelectionBrush="{DynamicResource HighlightThemeColor}"
-                                    CaretBrush="{DynamicResource ForeColor}"
-                                    Foreground="{DynamicResource ForeColor}"
                                     Height="32"
-                                    Padding="6 7 0 0"
-                                    Placeholder="Search"
+                                    Padding="6,7,0,0"
+                                    Background="{DynamicResource MaskColor}"
+                                    BorderBrush="{DynamicResource BorderColor}"
+                                    CaretBrush="{DynamicResource ForeColor}"
                                     CornerRadius="6"
-                                    TextChanged="SearchBox_TextChanged"
-                                    PreviewKeyDown="SearchBox_PreviewKeyDown" />
+                                    FocusedBackground="{DynamicResource FocusMaskColor}"
+                                    FocusedBorderBrush="{DynamicResource FocusMaskColor}"
+                                    Foreground="{DynamicResource ForeColor}"
+                                    HoverBackground="{DynamicResource FocusMaskColor}"
+                                    HoverBorderBrush="{DynamicResource FocusMaskColor}"
+                                    Placeholder="Search"
+                                    PreviewKeyDown="SearchBox_PreviewKeyDown"
+                                    SelectionBrush="{DynamicResource HighlightThemeColor}"
+                                    TextChanged="SearchBox_TextChanged" />
                     </Grid>
-                    <!--用户头像&菜单-->
-                    <Border HorizontalAlignment="Right"
-                            Margin="0 0 144 0"
+                    <!--  用户头像&菜单  -->
+                    <Border Margin="0,0,144,0"
+                            HorizontalAlignment="Right"
                             VerticalAlignment="Bottom">
                         <base:FluentPopup x:Name="UserProfilePopup"
                                           ExtPopupAnimation="SlideDown"
-                                          StaysOpen="False"
-                                          Placement="Bottom" />
+                                          Placement="Bottom"
+                                          StaysOpen="False" />
                     </Border>
                     <ws:Button x:Name="UserProfileBtn"
-                               HorizontalAlignment="Right"
-                               Cursor="Hand"
-                               CornerRadius="18"
-                               BorderThickness="0"
-                               ToolTip="Main Menu"
-                               Background="{DynamicResource MaskColor}"
-                               HoverBackground="{DynamicResource FocusMaskColor}"
-                               PressedBackground="{DynamicResource FocusMaskColor}"
                                Width="32"
                                Height="32"
-                               Margin="0 0 156 0"
-                               Click="UserProfileBtn_Click">
-                        <Border Background="{Binding Avator,TargetNullValue={StaticResource HighlightThemeColor}}"
+                               Margin="0,0,156,0"
+                               HorizontalAlignment="Right"
+                               Background="{DynamicResource MaskColor}"
+                               BorderThickness="0"
+                               Click="UserProfileBtn_Click"
+                               CornerRadius="18"
+                               Cursor="Hand"
+                               HoverBackground="{DynamicResource FocusMaskColor}"
+                               PressedBackground="{DynamicResource FocusMaskColor}"
+                               ToolTip="Main Menu">
+                        <Border Width="28"
+                                Height="28"
                                 d:Background="LightPink"
-                                RenderOptions.BitmapScalingMode="HighQuality"
-                                Width="28"
+                                Background="{Binding Avator, TargetNullValue={StaticResource HighlightThemeColor}}"
                                 CornerRadius="14"
-                                Height="28" />
+                                RenderOptions.BitmapScalingMode="HighQuality" />
                     </ws:Button>
                 </Grid>
-                <Grid x:Name="ContentPage"
-                      Margin="0,48,0,0">
+                <Grid x:Name="ContentPage" Margin="0,48,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*"
-                                          MaxWidth="320"
-                                          MinWidth="50" />
+                                          MinWidth="50"
+                                          MaxWidth="320" />
                         <ColumnDefinition Width="4*" />
                     </Grid.ColumnDefinitions>
 
                     <Grid x:Name="MainMenuGrid">
                         <ws:ListBox x:Name="MainPageMenu"
-                                    ItemsSource="{Binding Source={StaticResource MainMenuSource}}"
+                                    VerticalAlignment="Top"
                                     d:ItemsSource="{d:SampleData ItemCount=5}"
+                                    ItemsSource="{Binding Source={StaticResource MainMenuSource}}"
                                     SelectedItem="{Binding SelectedMenu}"
-                                    Style="{StaticResource SimpleListBoxStyle}"
-                                    VerticalAlignment="Top">
+                                    Style="{StaticResource SimpleListBoxStyle}">
                             <ws:ListBox.ItemContainerStyle>
                                 <Style TargetType="{x:Type ws:ListBoxItem}">
-                                    <EventSetter Event="PreviewMouseLeftButtonDown"
-                                                 Handler="MainPageMenuItem_PreviewMouseLeftButtonDown" />
-                                    <EventSetter Event="MouseLeave"
-                                                 Handler="MainPageMenuItem_MouseLeave" />
-                                    <EventSetter Event="MouseLeftButtonUp"
-                                                 Handler="MainPageMenuItem_MouseLeftButtonUp" />
-                                    <Setter Property="FocusVisualStyle"
-                                            Value="{x:Null}" />
-                                    <Setter Property="Margin"
-                                            Value="5 2" />
-                                    <Setter Property="CornerRadius"
-                                            Value="8" />
-                                    <Setter Property="BorderThickness"
-                                            Value="0" />
-                                    <Setter Property="Foreground"
-                                            Value="{DynamicResource ForeColor}" />
-                                    <Setter Property="HoverBackground"
-                                            Value="{DynamicResource MaskColor}" />
-                                    <Setter Property="SelectedBackground"
-                                            Value="{DynamicResource MaskColor}" />
-                                    <Setter Property="SelectedActiveBackground"
-                                            Value="{DynamicResource MaskColor}" />
+                                    <EventSetter Event="PreviewMouseLeftButtonDown" Handler="MainPageMenuItem_PreviewMouseLeftButtonDown" />
+                                    <EventSetter Event="MouseLeave" Handler="MainPageMenuItem_MouseLeave" />
+                                    <EventSetter Event="MouseLeftButtonUp" Handler="MainPageMenuItem_MouseLeftButtonUp" />
+                                    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                                    <Setter Property="Margin" Value="5,2" />
+                                    <Setter Property="CornerRadius" Value="8" />
+                                    <Setter Property="BorderThickness" Value="0" />
+                                    <Setter Property="Foreground" Value="{DynamicResource ForeColor}" />
+                                    <Setter Property="HoverBackground" Value="{DynamicResource MaskColor}" />
+                                    <Setter Property="SelectedBackground" Value="{DynamicResource MaskColor}" />
+                                    <Setter Property="SelectedActiveBackground" Value="{DynamicResource MaskColor}" />
                                 </Style>
                             </ws:ListBox.ItemContainerStyle>
                             <ws:ListBox.GroupStyle>
                                 <GroupStyle>
                                     <GroupStyle.HeaderTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding Name}"
-                                                       Foreground="{DynamicResource ForeColor}"
+                                            <TextBlock Margin="12,8,8,2"
                                                        FontSize="14"
-                                                       Opacity="0.8"
                                                        FontWeight="Bold"
-                                                       Margin="12 8 8 2" />
+                                                       Foreground="{DynamicResource ForeColor}"
+                                                       Opacity="0.8"
+                                                       Text="{Binding Name}" />
                                         </DataTemplate>
                                     </GroupStyle.HeaderTemplate>
                                 </GroupStyle>
@@ -353,31 +291,29 @@
                                                  d:Background="#3C000000"
                                                  Background="Transparent">
                                         <ContentControl Content="{Binding Decorator}" />
-                                        <ws:StackPanel Orientation="Horizontal"
+                                        <ws:StackPanel Margin="10,0"
                                                        VerticalAlignment="Center"
-                                                       Margin="10 0"
+                                                       Orientation="Horizontal"
                                                        Spacing="12">
                                             <Border x:Name="FocusedIcon"
                                                     Width="3"
-                                                    Margin="-18 0 0 0"
+                                                    Height="16"
+                                                    Margin="-18,0,0,0"
+                                                    d:Visibility="Visible"
                                                     Background="{DynamicResource HighlightThemeColor}"
                                                     CornerRadius="1.5"
-                                                    Height="16"
-                                                    Visibility="Hidden"
-                                                    d:Visibility="Visible" />
-                                            <Path VerticalAlignment="Center"
-                                                  Fill="{DynamicResource ForeColor}"
+                                                    Visibility="Hidden" />
+                                            <Path Width="14"
+                                                  Height="14"
+                                                  VerticalAlignment="Center"
                                                   Data="{Binding Icon}"
-                                                  Stretch="Uniform"
-                                                  Width="14"
-                                                  Height="14" />
-                                            <TextBlock Text="{Binding Name}"
-                                                       VerticalAlignment="Center" />
+                                                  Fill="{DynamicResource ForeColor}"
+                                                  Stretch="Uniform" />
+                                            <TextBlock VerticalAlignment="Center" Text="{Binding Name}" />
                                         </ws:StackPanel>
                                     </ws:BoxPanel>
                                     <DataTemplate.Triggers>
-                                        <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}, Mode=FindAncestor}}"
-                                                     Value="True">
+                                        <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}, Mode=FindAncestor}}" Value="True">
                                             <DataTrigger.EnterActions>
                                                 <BeginStoryboard>
                                                     <Storyboard>
@@ -393,15 +329,10 @@
                                                     </Storyboard>
                                                 </BeginStoryboard>
                                             </DataTrigger.EnterActions>
-                                            <Setter TargetName="FocusedIcon"
-                                                    Property="Visibility"
-                                                    Value="Visible" />
+                                            <Setter TargetName="FocusedIcon" Property="Visibility" Value="Visible" />
                                         </DataTrigger>
-                                        <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}, Mode=FindAncestor}}"
-                                                     Value="False">
-                                            <Setter TargetName="FocusedIcon"
-                                                    Property="Visibility"
-                                                    Value="Hidden" />
+                                        <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}, Mode=FindAncestor}}" Value="False">
+                                            <Setter TargetName="FocusedIcon" Property="Visibility" Value="Hidden" />
                                         </DataTrigger>
                                     </DataTemplate.Triggers>
                                 </DataTemplate>
@@ -415,20 +346,18 @@
                                    TextWrapping="Wrap" />-->
                     </Grid>
                     <Border x:Name="ContentHost"
-                            Margin="8 0 8 8"
                             Grid.Column="1"
+                            Margin="8,0,8,8"
                             Background="{DynamicResource ContentBgColor}"
                             CornerRadius="8">
                         <Frame Name="MainContentFrame"
-                               FontFamily="{StaticResource DefaultFontFamily}"
                                Navigated="MainContentFrame_Navigated"
-                               NavigationUIVisibility="Hidden">
-                        </Frame>
+                               NavigationUIVisibility="Hidden" />
                     </Border>
-                    <ws:ConditionalControl Condition="{Binding IsLoading}"
-                                           Grid.Column="1"
+                    <ws:ConditionalControl Grid.Column="1"
                                            HorizontalAlignment="Center"
-                                           VerticalAlignment="Center">
+                                           VerticalAlignment="Center"
+                                           Condition="{Binding IsLoading}">
                         <ws:ConditionalControl.ContentWhenTrue>
                             <base:LoadingIcon x:Name="LoadingIcon"
                                               Grid.Column="1"
@@ -438,24 +367,16 @@
                     </ws:ConditionalControl>
                 </Grid>
             </Grid>
-            <Grid x:Name="LyricPage"
-                  Visibility="Collapsed">
-                <Border x:Name="LyricPage_Background"
-                        Grid.ColumnSpan="2">
+            <Grid x:Name="LyricPage" Visibility="Collapsed">
+                <Border x:Name="LyricPage_Background" Grid.ColumnSpan="2">
                     <Border.Background>
                         <ImageBrush ImageSource="{Binding LyricPageBackgroundSource}"
-                                    Stretch="UniformToFill"
-                                    RenderOptions.BitmapScalingMode="LowQuality">
+                                    RenderOptions.BitmapScalingMode="LowQuality"
+                                    Stretch="UniformToFill">
                             <ImageBrush.RelativeTransform>
                                 <TransformGroup>
-                                    <ScaleTransform CenterX="0.5"
-                                                    CenterY="0.5"
-                                                    ScaleX="1.4"
-                                                    ScaleY="1.4" />
-                                    <RotateTransform x:Name="LyricImgRT"
-                                                     CenterY="0.5"
-                                                     CenterX="0.5"
-                                                     Angle="0" />
+                                    <ScaleTransform CenterX="0.5" CenterY="0.5" ScaleX="1.4" ScaleY="1.4" />
+                                    <RotateTransform x:Name="LyricImgRT" Angle="0" CenterX="0.5" CenterY="0.5" />
                                     <TranslateTransform />
                                 </TransformGroup>
                             </ImageBrush.RelativeTransform>
@@ -464,85 +385,85 @@
                 </Border>
                 <Border x:Name="LyricToolBar"
                         Grid.Column="1"
-                        Background="{DynamicResource MaskColor}"
-                        CornerRadius="8"
+                        Width="36"
+                        Margin="0,0,36,0"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Center"
-                        Margin="0 0 36 0"
-                        Width="36">
+                        Background="{DynamicResource MaskColor}"
+                        CornerRadius="8">
                     <StackPanel>
                         <ws:ToggleButton x:Name="SwitchLrcImmerseModeBtn"
-                                         Style="{StaticResource IconToggleButton}"
-                                         Tag="{DynamicResource LyricImmerseIcon}"
                                          Height="36"
                                          Padding="10"
+                                         Click="SwitchLrcImmerseModeBtn_Click"
                                          IsChecked="{Binding IsImmerseMode}"
-                                         Click="SwitchLrcImmerseModeBtn_Click" />
-                        <ws:Button Style="{StaticResource SimpleIconButtonStyleForWs}"
-                                   Height="36"
+                                         Style="{StaticResource IconToggleButton}"
+                                         Tag="{DynamicResource LyricImmerseIcon}" />
+                        <ws:Button Height="36"
                                    Padding="10"
-                                   Command="{Binding LyricView.FontSizeUpCommand}">
-                            <Path Stretch="Uniform"
+                                   Command="{Binding LyricView.FontSizeUpCommand}"
+                                   Style="{StaticResource SimpleIconButtonStyleForWs}">
+                            <Path Data="{StaticResource Icon_FontUp}"
                                   Fill="{DynamicResource ForeColor}"
-                                  Data="{StaticResource Icon_FontUp}" />
+                                  Stretch="Uniform" />
                         </ws:Button>
-                        <ws:Button Style="{StaticResource SimpleIconButtonStyleForWs}"
-                                   Height="36"
+                        <ws:Button Height="36"
                                    Padding="10"
-                                   Command="{Binding LyricView.FontSizeDownCommand}">
-                            <Path Stretch="Uniform"
+                                   Command="{Binding LyricView.FontSizeDownCommand}"
+                                   Style="{StaticResource SimpleIconButtonStyleForWs}">
+                            <Path Data="{StaticResource Icon_FontDown}"
                                   Fill="{DynamicResource ForeColor}"
-                                  Data="{StaticResource Icon_FontDown}" />
+                                  Stretch="Uniform" />
                         </ws:Button>
                         <ToggleButton Height="36"
-                                      Style="{StaticResource IconToggleButton}"
-                                      Visibility="{Binding LyricView.IsTranslationAvailable,Converter={StaticResource BoolToVisibility}}"
                                       Padding="10"
                                       IsChecked="{Binding LyricView.IsShowTranslation}"
-                                      Tag="{StaticResource Icon_Trans}" />
-                        <ToggleButton Height="36"
                                       Style="{StaticResource IconToggleButton}"
-                                      Visibility="{Binding LyricView.IsRomajiAvailable,Converter={StaticResource BoolToVisibility}}"
+                                      Tag="{StaticResource Icon_Trans}"
+                                      Visibility="{Binding LyricView.IsTranslationAvailable, Converter={StaticResource BoolToVisibility}}" />
+                        <ToggleButton Height="36"
                                       Padding="10"
                                       IsChecked="{Binding LyricView.IsShowRomaji}"
-                                      Tag="{StaticResource Icon_Romaji}" />
+                                      Style="{StaticResource IconToggleButton}"
+                                      Tag="{StaticResource Icon_Romaji}"
+                                      Visibility="{Binding LyricView.IsRomajiAvailable, Converter={StaticResource BoolToVisibility}}" />
                     </StackPanel>
                 </Border>
                 <Grid x:Name="LyricPage_Immerse"
-                      Visibility="Collapsed"
-                      ClipToBounds="True">
-                    <Grid HorizontalAlignment="Left"
-                          Margin="48"
+                      ClipToBounds="True"
+                      Visibility="Collapsed">
+                    <Grid Margin="48"
+                          HorizontalAlignment="Left"
                           VerticalAlignment="Top">
                         <TextBlock Name="ImLyric_MusicNameTb"
-                                   Text="{Binding CurrentPlaying.MusicName}"
-                                   Margin="140 12 0 0"
+                                   Margin="140,12,0,0"
                                    FontSize="32"
                                    FontWeight="Bold"
-                                   Opacity="0.8" />
+                                   Opacity="0.8"
+                                   Text="{Binding CurrentPlaying.MusicName}" />
                         <TextBlock Name="ImLyric_SingerTb"
-                                   Margin="140 58 0 0"
+                                   Margin="140,58,0,0"
                                    FontSize="24"
                                    FontWeight="Bold"
                                    Opacity="0.6"
                                    Text="{Binding CurrentPlaying.SingerText}" />
-                        <Border Height="128"
-                                Width="128"
+                        <Border Width="128"
+                                Height="128"
                                 HorizontalAlignment="Left"
-                                AllowDrop="True"
-                                Drop="LyricPage_Img_Drop"
                                 d:Background="Pink"
-                                RenderOptions.BitmapScalingMode="HighQuality"
-                                Background="{Binding CurrentPlayingCover,TargetNullValue={StaticResource HighlightThemeColor}}"
-                                CornerRadius="12"
+                                AllowDrop="True"
+                                Background="{Binding CurrentPlayingCover, TargetNullValue={StaticResource HighlightThemeColor}}"
+                                BorderBrush="{DynamicResource MaskColor}"
                                 BorderThickness="4"
-                                BorderBrush="{DynamicResource MaskColor}">
+                                CornerRadius="12"
+                                Drop="LyricPage_Img_Drop"
+                                RenderOptions.BitmapScalingMode="HighQuality">
                             <Border.Effect>
-                                <DropShadowEffect Color="Black"
+                                <DropShadowEffect BlurRadius="30"
                                                   Direction="0"
-                                                  ShadowDepth="0"
                                                   Opacity="0.6"
-                                                  BlurRadius="30" />
+                                                  ShadowDepth="0"
+                                                  Color="Black" />
                             </Border.Effect>
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="MouseEnter">
@@ -550,18 +471,18 @@
                                         <i:ControlStoryboardAction>
                                             <i:ControlStoryboardAction.Storyboard>
                                                 <Storyboard>
-                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                                                                     Storyboard.TargetName="ImLyric_MusicNameTb"
+                                                    <DoubleAnimation Storyboard.TargetName="ImLyric_MusicNameTb"
+                                                                     Storyboard.TargetProperty="Opacity"
                                                                      From="0.5"
                                                                      To="0.8"
                                                                      Duration="0:0:0.3" />
-                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                                                                     Storyboard.TargetName="ImLyric_SingerTb"
+                                                    <DoubleAnimation Storyboard.TargetName="ImLyric_SingerTb"
+                                                                     Storyboard.TargetProperty="Opacity"
                                                                      From="0.5"
                                                                      To="0.6"
                                                                      Duration="0:0:0.5" />
-                                                    <ThicknessAnimation Storyboard.TargetProperty="Margin"
-                                                                        Storyboard.TargetName="ImLyric_MusicNameTb"
+                                                    <ThicknessAnimation Storyboard.TargetName="ImLyric_MusicNameTb"
+                                                                        Storyboard.TargetProperty="Margin"
                                                                         From="10 12 0 0"
                                                                         To="140 12 0 0"
                                                                         Duration="0:0:0.3">
@@ -569,8 +490,8 @@
                                                             <CubicEase />
                                                         </ThicknessAnimation.EasingFunction>
                                                     </ThicknessAnimation>
-                                                    <ThicknessAnimation Storyboard.TargetProperty="Margin"
-                                                                        Storyboard.TargetName="ImLyric_SingerTb"
+                                                    <ThicknessAnimation Storyboard.TargetName="ImLyric_SingerTb"
+                                                                        Storyboard.TargetProperty="Margin"
                                                                         From="10 58 0 0"
                                                                         To="140 58 0 0"
                                                                         Duration="0:0:0.5">
@@ -588,16 +509,16 @@
                                         <i:ControlStoryboardAction>
                                             <i:ControlStoryboardAction.Storyboard>
                                                 <Storyboard>
-                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                                                                     Storyboard.TargetName="ImLyric_MusicNameTb"
+                                                    <DoubleAnimation Storyboard.TargetName="ImLyric_MusicNameTb"
+                                                                     Storyboard.TargetProperty="Opacity"
                                                                      To="0"
                                                                      Duration="0:0:0.3" />
-                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                                                                     Storyboard.TargetName="ImLyric_SingerTb"
+                                                    <DoubleAnimation Storyboard.TargetName="ImLyric_SingerTb"
+                                                                     Storyboard.TargetProperty="Opacity"
                                                                      To="0"
                                                                      Duration="0:0:0.3" />
-                                                    <ThicknessAnimation Storyboard.TargetProperty="Margin"
-                                                                        Storyboard.TargetName="ImLyric_MusicNameTb"
+                                                    <ThicknessAnimation Storyboard.TargetName="ImLyric_MusicNameTb"
+                                                                        Storyboard.TargetProperty="Margin"
                                                                         From="140 12 0 0"
                                                                         To="10 12 0 0"
                                                                         Duration="0:0:0.3">
@@ -605,8 +526,8 @@
                                                             <CubicEase />
                                                         </ThicknessAnimation.EasingFunction>
                                                     </ThicknessAnimation>
-                                                    <ThicknessAnimation Storyboard.TargetProperty="Margin"
-                                                                        Storyboard.TargetName="ImLyric_SingerTb"
+                                                    <ThicknessAnimation Storyboard.TargetName="ImLyric_SingerTb"
+                                                                        Storyboard.TargetProperty="Margin"
                                                                         From="140 58 0 0"
                                                                         To="10 58 0 0"
                                                                         Duration="0:0:0.5">
@@ -622,117 +543,138 @@
                             </i:Interaction.Triggers>
                         </Border>
                     </Grid>
-                    <ws:Button  x:Name="LyricPage_BackBtn_Center"
-                                Width="64"
-                                Height="32"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Top"
-                                Margin="0 18 0 0"
-                                WindowChrome.IsHitTestVisibleInChrome="True"
-                                Click="LyricPage_BackBtn_Click"
-                                Style="{StaticResource SimpleIconButtonStyleForWs}">
+                    <ws:Button x:Name="LyricPage_BackBtn_Center"
+                               Width="64"
+                               Height="32"
+                               Margin="0,18,0,0"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Top"
+                               Click="LyricPage_BackBtn_Click"
+                               Style="{StaticResource SimpleIconButtonStyleForWs}"
+                               WindowChrome.IsHitTestVisibleInChrome="True">
                         <Border Width="52"
                                 Height="6"
-                                CornerRadius="3"
                                 Background="{DynamicResource ForeColor}"
+                                CornerRadius="3"
                                 Opacity="0.6" />
                     </ws:Button>
-                    <Grid  HorizontalAlignment="Stretch"
-                           VerticalAlignment="Center"
-                           Margin="100 0 100 0">
-                        <TextBlock x:Name="BlurLyricTb" FontFamily="Georgia,KaiTi"
+                    <Grid Margin="80,0,80,0"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Center">
+                        <TextBlock x:Name="BlurLyricTb"
+                                   Margin="0,0,0,60"
                                    VerticalAlignment="Center"
-                                   Margin="0 0 0 80"
-                                   Opacity="0.6"
-                                   Foreground="{DynamicResource HighlightThemeColor}"
-                                   DataContext="{Binding CurrentLyric,NotifyOnTargetUpdated=True}"
+                                   DataContext="{Binding CurrentLyric, NotifyOnTargetUpdated=True}"
+                                   FontFamily="{StaticResource LyricFont}"
+                                   Foreground="{DynamicResource FocusAccentColor}"
                                    TextAlignment="Center">
-                            <Run Text="{Binding Lyric,Converter={x:Static converters:WordRandomSpiltConverter.Instance}}"
-                                 FontSize="180"
-                                 FontWeight="Bold" />
+                            <Run d:Text="hands tied"
+                                 FontSize="150"
+                                 FontWeight="Bold"
+                                 Text="{Binding Lyric, Converter={x:Static converters:WordRandomSpiltConverter.Instance}}" />
                             <TextBlock.Effect>
-                                <BlurEffect  Radius="12"/>
+                                <BlurEffect Radius="6"/>
                             </TextBlock.Effect>
                             <i:Interaction.Triggers>
-                                  <i:EventTrigger EventName="TargetUpdated">
-                                       <i:ControlStoryboardAction>
-                                           <i:ControlStoryboardAction.Storyboard>
-                                               <Storyboard>
-                                                   <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                                                                    Storyboard.TargetName="BlurLyricTb"
-                                                                    From="0"
-                                                                    To="1"
-                                                                    Duration="0:0:0.3" />
-                                               </Storyboard>
-                                            </i:ControlStoryboardAction.Storyboard>
-                                        </i:ControlStoryboardAction>
-                                   </i:EventTrigger>
+                                <i:EventTrigger EventName="TargetUpdated">
+                                    <i:ControlStoryboardAction>
+                                        <i:ControlStoryboardAction.Storyboard>
+                                            <Storyboard>
+                                                <DoubleAnimation BeginTime="0:0:00"
+                                                                 Storyboard.TargetName="BlurLyricTb"
+                                                                 Storyboard.TargetProperty="Opacity"
+                                                                 From="0"
+                                                                 To="0"
+                                                                 Duration="0:0:0.6" />
+                                                <DoubleAnimation BeginTime="0:0:0.6"
+                                                                 Storyboard.TargetName="BlurLyricTb"
+                                                                 Storyboard.TargetProperty="Opacity"
+                                                                 From="0"
+                                                                 To="0.5"
+                                                                 Duration="0:0:0.3" />
+                                            </Storyboard>
+                                        </i:ControlStoryboardAction.Storyboard>
+                                    </i:ControlStoryboardAction>
+                                </i:EventTrigger>
                             </i:Interaction.Triggers>
                         </TextBlock>
                         <TextBlock x:Name="ImmerseModeLrcTb"
-                                   Margin="0 0 0 50"
-                                   FontFamily="Georgia,KaiTi"
-                                   LineHeight="100"
-                                   DataContext="{Binding CurrentLyric,NotifyOnTargetUpdated=True}"
+                                   VerticalAlignment="Center"
+                                   DataContext="{Binding CurrentLyric, NotifyOnTargetUpdated=True}"
+                                   FontFamily="{StaticResource LyricFont}"
+                                   FontWeight="Bold"
+                                   RenderTransformOrigin="0.5,0.5"
                                    TextAlignment="Center"
                                    TextWrapping="Wrap">
-                        <TextBlock Text="{Binding Romaji}"
-                                   Visibility="{Binding DataContext.LyricView.IsShowRomaji,
-                                                                 RelativeSource={RelativeSource AncestorType=Window},
-                                                                 Converter={StaticResource BoolToVisibility}}"
-                                   FontSize="24" />
-                        <LineBreak />
-                        <Run Text="{Binding Lyric}"
-                             FontSize="78"
-                             FontWeight="Bold" />
-                        <LineBreak />
-                        <TextBlock Text="{Binding Trans}"
-                                   Visibility="{Binding DataContext.LyricView.IsShowTranslation,
-                                                                RelativeSource={RelativeSource AncestorType=Window},
-                                                                Converter={StaticResource BoolToVisibility}}"
-                                   FontSize="24" />
-                            <TextBlock.Effect>
+                            <TextBlock.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform />
+                                    <SkewTransform />
+                                    <RotateTransform />
+                                    <TranslateTransform />
+                                </TransformGroup>
+                            </TextBlock.RenderTransform>
+                            <TextBlock FontSize="24"
+                                       Opacity="0.7"
+                                       Text="{Binding Romaji}"
+                                       Visibility="{Binding DataContext.LyricView.IsShowRomaji, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisibility}}" />
+                            <LineBreak />
+                            <TextBlock d:Text="Dancing with our hands tied"
+                                       FontSize="64"
+                                       Foreground="{DynamicResource HighlightThemeColor}"
+                                       LineHeight="140"
+                                       Text="{Binding Lyric}"
+                                       TextWrapping="Wrap" />
+                            <LineBreak />
+                            <TextBlock FontSize="24"
+                                       Opacity="0.6"
+                                       Text="{Binding Trans}"
+                                       Visibility="{Binding DataContext.LyricView.IsShowTranslation, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisibility}}" />
+                            <!--<TextBlock.Effect>
                                 <DropShadowEffect x:Name="Im_Effect"
                                                   BlurRadius="20"
                                                   ShadowDepth="0"
                                                   Color="Black"
                                                   Opacity="0.6" />
-                            </TextBlock.Effect>
-                        <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="TargetUpdated">
-                                <i:ControlStoryboardAction>
-                                 <i:ControlStoryboardAction.Storyboard>
-                            <Storyboard>
-                                <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                                                 Storyboard.TargetName="ImmerseModeLrcTb"
-                                                 From="0"
-                                                 To="1"
-                                                 Duration="0:0:0.3" />
-                                <ThicknessAnimation Storyboard.TargetProperty="Margin"
-                                                    Storyboard.TargetName="ImmerseModeLrcTb"
-                                                    From="100 0 100 60"
-                                                    To="100 0 100 100"
-                                                    Duration="0:0:0.6">
-                                    <ThicknessAnimation.EasingFunction>
-                                        <CubicEase EasingMode="EaseOut" />
-                                    </ThicknessAnimation.EasingFunction>
-                                </ThicknessAnimation>
-                            </Storyboard>
-                       </i:ControlStoryboardAction.Storyboard>
-                    </i:ControlStoryboardAction>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
+                            </TextBlock.Effect>-->
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="TargetUpdated">
+                                    <i:ControlStoryboardAction>
+                                        <i:ControlStoryboardAction.Storyboard>
+                                            <Storyboard>
+                                                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ImmerseModeLrcTb" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                                    <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0" />
+                                                    <EasingDoubleKeyFrame KeyTime="00:00:00.5" Value="1" />
+                                                </DoubleAnimationUsingKeyFrames>
+                                                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ImmerseModeLrcTb" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)">
+                                                    <EasingDoubleKeyFrame KeyTime="00:00:00" Value="8">
+                                                        <EasingDoubleKeyFrame.EasingFunction>
+                                                            <BackEase EasingMode="EaseOut" />
+                                                        </EasingDoubleKeyFrame.EasingFunction>
+                                                    </EasingDoubleKeyFrame>
+                                                    <EasingDoubleKeyFrame KeyTime="00:00:00.6" Value="0">
+                                                        <EasingDoubleKeyFrame.EasingFunction>
+                                                            <BackEase EasingMode="EaseOut" />
+                                                        </EasingDoubleKeyFrame.EasingFunction>
+                                                    </EasingDoubleKeyFrame>
+                                                </DoubleAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </i:ControlStoryboardAction.Storyboard>
+                                    </i:ControlStoryboardAction>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
                         </TextBlock>
                     </Grid>
                     <TextBlock x:Name="Im_NextLrcTb"
-                               FontSize="32"
-                               Margin="100 0 0 180"
-                               TextAlignment="Left"
+                               Margin="100,0,0,180"
                                VerticalAlignment="Bottom"
-                               DataContext="{Binding NextLyric,NotifyOnTargetUpdated=True}"
-                               Opacity="0.4">
-                            <Run Text=">>" />
-                            <Run Text="{Binding Lyric,FallbackValue=''}" />
+                               DataContext="{Binding NextLyric, NotifyOnTargetUpdated=True}"
+                               FontSize="32"
+                               Opacity="0.4"
+                               TextAlignment="Left"
+                               TextWrapping="Wrap">
+                        <Run Text="&gt;&gt;" />
+                        <Run Text="{Binding Lyric, FallbackValue=''}" />
                         <TextBlock.Effect>
                             <BlurEffect Radius="6" />
                         </TextBlock.Effect>
@@ -741,13 +683,13 @@
                                 <i:ControlStoryboardAction>
                                     <i:ControlStoryboardAction.Storyboard>
                                         <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                                                             Storyboard.TargetName="Im_NextLrcTb"
+                                            <DoubleAnimation Storyboard.TargetName="Im_NextLrcTb"
+                                                             Storyboard.TargetProperty="Opacity"
                                                              To="0"
                                                              Duration="0:0:0" />
-                                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                            <DoubleAnimation BeginTime="0:0:0.5"
                                                              Storyboard.TargetName="Im_NextLrcTb"
-                                                             BeginTime="0:0:0.5"
+                                                             Storyboard.TargetProperty="Opacity"
                                                              To="0.4"
                                                              Duration="0:0:0.3" />
                                         </Storyboard>
@@ -757,22 +699,22 @@
                         </i:Interaction.Triggers>
                     </TextBlock>
                     <Border x:Name="Im_ControlBd"
+                            Width="360"
+                            Height="78"
+                            Margin="0,0,0,90"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Bottom"
                             Background="{DynamicResource MaskColor}"
-                            BorderThickness="1"
                             BorderBrush="{DynamicResource BorderColor}"
-                            CornerRadius="18"
-                            Height="78"
-                            Width="360"
-                            Margin="0 0 0 90">
+                            BorderThickness="1"
+                            CornerRadius="18">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="MouseEnter">
                                 <i:ControlStoryboardAction>
                                     <i:ControlStoryboardAction.Storyboard>
                                         <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                                                             Storyboard.TargetName="Im_ControlBd"
+                                            <DoubleAnimation Storyboard.TargetName="Im_ControlBd"
+                                                             Storyboard.TargetProperty="Opacity"
                                                              From="0.5"
                                                              To="1"
                                                              Duration="0:0:0.2" />
@@ -784,8 +726,8 @@
                                 <i:ControlStoryboardAction>
                                     <i:ControlStoryboardAction.Storyboard>
                                         <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                                                             Storyboard.TargetName="Im_ControlBd"
+                                            <DoubleAnimation Storyboard.TargetName="Im_ControlBd"
+                                                             Storyboard.TargetProperty="Opacity"
                                                              To="0"
                                                              Duration="0:0:0.2" />
                                         </Storyboard>
@@ -796,30 +738,30 @@
                         <ws:FlexPanel MainAlignment="SpaceEvenly">
                             <ws:Button Width="42"
                                        Height="42"
-                                       ToolTip="Playback Mode"
                                        Command="{Binding ChangeCircleModeCommand}"
-                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
-                                <Path Data="{Binding CircleMode, Converter={x:Static converters:CircleModeToPathDataConverter.Instance}}"
+                                       Style="{StaticResource SimpleIconButtonStyleForWs}"
+                                       ToolTip="Playback Mode">
+                                <Path Height="18"
                                       d:Data="{DynamicResource CircleMode_Circle}"
-                                      Height="18"
+                                      Data="{Binding CircleMode, Converter={x:Static converters:CircleModeToPathDataConverter.Instance}}"
                                       Fill="{DynamicResource ForeColor}"
                                       Stretch="Uniform" />
                             </ws:Button>
                             <ws:Button Width="42"
                                        Height="42"
-                                       ToolTip="Play the last one"
                                        Command="{Binding PlayLastCommand}"
-                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
-                                <Path Data="{DynamicResource PlayIcon_Last}"
-                                      Height="18"
+                                       Style="{StaticResource SimpleIconButtonStyleForWs}"
+                                       ToolTip="Play the last one">
+                                <Path Height="18"
+                                      Data="{DynamicResource PlayIcon_Last}"
                                       Fill="{DynamicResource ForeColor}"
                                       Stretch="Uniform" />
                             </ws:Button>
                             <ws:Button Width="52"
                                        Height="52"
-                                       ToolTip="Play or Pause"
                                        Command="{Binding PlayPauseCommand}"
-                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
+                                       Style="{StaticResource SimpleIconButtonStyleForWs}"
+                                       ToolTip="Play or Pause">
                                 <ws:ConditionalControl Condition="{Binding IsPlaying}">
                                     <ws:ConditionalControl.ContentWhenFalse>
                                         <Path Data="{DynamicResource PlayIcon_Play}"
@@ -833,21 +775,21 @@
                             </ws:Button>
                             <ws:Button Width="42"
                                        Height="42"
-                                       ToolTip="Play the next one"
                                        Command="{Binding PlayNextCommand}"
-                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
-                                <Path Data="{DynamicResource PlayIcon_Next}"
-                                      Height="18"
+                                       Style="{StaticResource SimpleIconButtonStyleForWs}"
+                                       ToolTip="Play the next one">
+                                <Path Height="18"
+                                      Data="{DynamicResource PlayIcon_Next}"
                                       Fill="{DynamicResource ForeColor}"
                                       Stretch="Uniform" />
                             </ws:Button>
                             <ws:Button x:Name="ImmerseMode_OpenPlayListBtn"
-                                       ToolTip="Playlist"
-                                       Height="42"
                                        Width="42"
-                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
-                                <Path Data="{DynamicResource OpenPlaylist}"
-                                      Height="16"
+                                       Height="42"
+                                       Style="{StaticResource SimpleIconButtonStyleForWs}"
+                                       ToolTip="Playlist">
+                                <Path Height="16"
+                                      Data="{DynamicResource OpenPlaylist}"
                                       Fill="{DynamicResource ForeColor}"
                                       Stretch="Uniform" />
                             </ws:Button>
@@ -865,84 +807,81 @@
                             <RowDefinition Height="1*" />
                         </Grid.RowDefinitions>
                         <Border x:Name="LyricPage_ImgEdge"
-                                Margin="60"
                                 MinWidth="200"
-                                MaxWidth="500" />
+                                MaxWidth="500"
+                                Margin="60" />
                         <Border x:Name="LyricPage_Img"
+                                Height="{Binding ElementName=LyricPage_Img, Path=ActualWidth}"
                                 HorizontalAlignment="Stretch"
-                                AllowDrop="True"
-                                Drop="LyricPage_Img_Drop"
-                                Height="{Binding ElementName=LyricPage_Img,Path=ActualWidth}"
                                 d:Background="Pink"
-                                RenderOptions.BitmapScalingMode="HighQuality"
-                                Background="{Binding CurrentPlayingCover,TargetNullValue={StaticResource HighlightThemeColor}}"
-                                CornerRadius="12">
+                                AllowDrop="True"
+                                Background="{Binding CurrentPlayingCover, TargetNullValue={StaticResource HighlightThemeColor}}"
+                                CornerRadius="12"
+                                Drop="LyricPage_Img_Drop"
+                                RenderOptions.BitmapScalingMode="HighQuality">
                             <Border.Width>
                                 <MultiBinding Converter="{x:Static converters:MinValueConverter.Instance}">
-                                    <Binding Path="ActualWidth"
-                                             ElementName="LyricPage_ImgEdge" />
-                                    <Binding Path="ActualHeight"
-                                             ElementName="LyricPage_ImgEdge" />
+                                    <Binding ElementName="LyricPage_ImgEdge" Path="ActualWidth" />
+                                    <Binding ElementName="LyricPage_ImgEdge" Path="ActualHeight" />
                                 </MultiBinding>
                             </Border.Width>
                             <Border.Effect>
-                                <DropShadowEffect Color="Black"
+                                <DropShadowEffect BlurRadius="30"
                                                   Direction="0"
-                                                  ShadowDepth="0"
                                                   Opacity="0.6"
-                                                  BlurRadius="30" />
+                                                  ShadowDepth="0"
+                                                  Color="Black" />
                             </Border.Effect>
                         </Border>
                         <ws:FlexPanel Grid.Row="1"
-                                      Margin="0 -50 0 40"
+                                      Margin="0,-50,0,40"
                                       Direction="Column"
                                       MainAlignment="SpaceEvenly">
-                            <TextBlock Margin="48 0"
-                                       MinWidth="150"
-                                       Foreground="{DynamicResource ForeColor}"
+                            <TextBlock MinWidth="150"
+                                       Margin="48,0"
+                                       HorizontalAlignment="Stretch"
                                        VerticalAlignment="Top"
+                                       Foreground="{DynamicResource ForeColor}"
                                        LineHeight="32"
-                                       TextAlignment="Center"
-                                       HorizontalAlignment="Stretch">
-                                    <Run Text="{Binding CurrentPlaying.MusicName, TargetNullValue='Welcome~'}"
-                                         d:Text="Dancing With Our Hands Tied"
-                                         FontWeight="Bold"
-                                         FontSize="18" />
-                                    <LineBreak />
-                                    <Run Text="{Binding CurrentPlaying.SingerText ,TargetNullValue='Lemon App'}"
-                                         d:Text="Taylor Swift"
-                                         FontSize="14" />
-                                     · <Run Text="{Binding CurrentPlaying.Album.Name}"
-                                            d:Text="reputation"
-                                            FontSize="12" />
+                                       TextAlignment="Center">
+                                <Run d:Text="Dancing With Our Hands Tied"
+                                     FontSize="18"
+                                     FontWeight="Bold"
+                                     Text="{Binding CurrentPlaying.MusicName, TargetNullValue='Welcome~'}" />
+                                <LineBreak />
+                                <Run d:Text="Taylor Swift"
+                                     FontSize="14"
+                                     Text="{Binding CurrentPlaying.SingerText, TargetNullValue='Lemon App'}" />
+                                ·<Run d:Text="reputation"
+                                     FontSize="12"
+                                     Text="{Binding CurrentPlaying.Album.Name}" />
                             </TextBlock>
-                            <Grid Margin="58 0"
-                                  MaxWidth="580">
-                                <TextBlock d:Text="00:00"
-                                           Text="{Binding CurrentPlayingPositionText}"
-                                           HorizontalAlignment="Left"
-                                           VerticalAlignment="Center" />
-                                <TextBlock d:Text="00:00"
-                                           Text="{Binding CurrentPlayingDurationText}"
-                                           HorizontalAlignment="Right"
-                                           VerticalAlignment="Center" />
-                                <Slider Style="{DynamicResource FluentSliderStyle}"
+                            <Grid MaxWidth="580" Margin="58,0">
+                                <TextBlock HorizontalAlignment="Left"
+                                           VerticalAlignment="Center"
+                                           d:Text="00:00"
+                                           Text="{Binding CurrentPlayingPositionText}" />
+                                <TextBlock HorizontalAlignment="Right"
+                                           VerticalAlignment="Center"
+                                           d:Text="00:00"
+                                           Text="{Binding CurrentPlayingDurationText}" />
+                                <Slider Margin="42,0"
+                                        VerticalAlignment="Center"
+                                        Maximum="{Binding CurrentPlayingDuration}"
                                         PreviewMouseDown="PlaySlider_PreviewMouseDown"
                                         PreviewMouseUp="PlaySlider_PreviewMouseUp"
-                                        Maximum="{Binding CurrentPlayingDuration}"
-                                        Margin="42 0"
-                                        VerticalAlignment="Center"
+                                        Style="{DynamicResource FluentSliderStyle}"
                                         Value="{Binding CurrentPlayingPosition, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
                             </Grid>
                             <ws:FlexPanel MaxWidth="580"
-                                          MainAlignment="SpaceEvenly"
-                                          Margin="32,0">
-                                <ws:Button ToolTip="Add to my favorite"
-                                           Width="42"
+                                          Margin="32,0"
+                                          MainAlignment="SpaceEvenly">
+                                <ws:Button Width="42"
                                            Height="42"
-                                           Style="{StaticResource SimpleIconButtonStyleForWs}">
-                                    <Path Data="{DynamicResource HeartIcon}"
-                                          Height="18"
+                                           Style="{StaticResource SimpleIconButtonStyleForWs}"
+                                           ToolTip="Add to my favorite">
+                                    <Path Height="18"
+                                          Data="{DynamicResource HeartIcon}"
                                           Fill="{DynamicResource ForeColor}"
                                           Stretch="Uniform" />
                                 </ws:Button>
@@ -950,24 +889,24 @@
                                               Height="42"
                                               Padding="13"
                                               IsChecked="{Binding IsShowDesktopLyric}"
-                                              ToolTip="Desktop Lyric Viewer"
+                                              Style="{StaticResource IconToggleButton}"
                                               Tag="{DynamicResource OpenDesktopLyric}"
-                                              Style="{StaticResource IconToggleButton}" />
+                                              ToolTip="Desktop Lyric Viewer" />
                                 <ws:Button Width="42"
                                            Height="42"
-                                           ToolTip="Play the last one"
                                            Command="{Binding PlayLastCommand}"
-                                           Style="{StaticResource SimpleIconButtonStyleForWs}">
-                                    <Path Data="{DynamicResource PlayIcon_Last}"
-                                          Height="18"
+                                           Style="{StaticResource SimpleIconButtonStyleForWs}"
+                                           ToolTip="Play the last one">
+                                    <Path Height="18"
+                                          Data="{DynamicResource PlayIcon_Last}"
                                           Fill="{DynamicResource ForeColor}"
                                           Stretch="Uniform" />
                                 </ws:Button>
                                 <ws:Button Width="58"
                                            Height="58"
-                                           ToolTip="Play or Pause"
                                            Command="{Binding PlayPauseCommand}"
-                                           Style="{StaticResource SimpleIconButtonStyleForWs}">
+                                           Style="{StaticResource SimpleIconButtonStyleForWs}"
+                                           ToolTip="Play or Pause">
                                     <ws:ConditionalControl Condition="{Binding IsPlaying}">
                                         <ws:ConditionalControl.ContentWhenFalse>
                                             <Path Data="{DynamicResource PlayIcon_Play}"
@@ -981,158 +920,153 @@
                                 </ws:Button>
                                 <ws:Button Width="42"
                                            Height="42"
-                                           ToolTip="Play the next one"
                                            Command="{Binding PlayNextCommand}"
-                                           Style="{StaticResource SimpleIconButtonStyleForWs}">
-                                    <Path Data="{DynamicResource PlayIcon_Next}"
-                                          Height="18"
+                                           Style="{StaticResource SimpleIconButtonStyleForWs}"
+                                           ToolTip="Play the next one">
+                                    <Path Height="18"
+                                          Data="{DynamicResource PlayIcon_Next}"
                                           Fill="{DynamicResource ForeColor}"
                                           Stretch="Uniform" />
                                 </ws:Button>
                                 <ws:Button Width="42"
                                            Height="42"
-                                           ToolTip="Playback Mode"
                                            Command="{Binding ChangeCircleModeCommand}"
-                                           Style="{StaticResource SimpleIconButtonStyleForWs}">
-                                    <Path Data="{Binding CircleMode, Converter={x:Static converters:CircleModeToPathDataConverter.Instance}}"
+                                           Style="{StaticResource SimpleIconButtonStyleForWs}"
+                                           ToolTip="Playback Mode">
+                                    <Path Height="18"
                                           d:Data="{DynamicResource CircleMode_Circle}"
-                                          Height="18"
+                                          Data="{Binding CircleMode, Converter={x:Static converters:CircleModeToPathDataConverter.Instance}}"
                                           Fill="{DynamicResource ForeColor}"
                                           Stretch="Uniform" />
                                 </ws:Button>
                                 <ws:Button x:Name="LyricPage_OpenPlayListBtn"
-                                           ToolTip="Playlist"
-                                           Height="42"
                                            Width="42"
-                                           Style="{StaticResource SimpleIconButtonStyleForWs}">
-                                    <Path Data="{DynamicResource OpenPlaylist}"
-                                          Height="16"
+                                           Height="42"
+                                           Style="{StaticResource SimpleIconButtonStyleForWs}"
+                                           ToolTip="Playlist">
+                                    <Path Height="16"
+                                          Data="{DynamicResource OpenPlaylist}"
                                           Fill="{DynamicResource ForeColor}"
                                           Stretch="Uniform" />
                                 </ws:Button>
                             </ws:FlexPanel>
-                            <Grid Margin="58 0"
-                                  MaxWidth="580">
-                                <Slider VerticalAlignment="Center"
-                                        Margin="32 0 0 0"
+                            <Grid MaxWidth="580" Margin="58,0">
+                                <Slider Margin="32,0,0,0"
+                                        VerticalAlignment="Center"
                                         IsMoveToPointEnabled="True"
-                                        Value="{Binding CurrentPlayingVolume}"
+                                        Maximum="1"
                                         Style="{StaticResource FluentSliderStyle}"
-                                        Maximum="1" />
-                                <Path Data="{DynamicResource AudioIcon}"
-                                      Fill="{DynamicResource ForeColor}"
-                                      Stretch="Uniform"
+                                        Value="{Binding CurrentPlayingVolume}" />
+                                <Path Width="16"
                                       Height="16"
-                                      Width="16"
-                                      HorizontalAlignment="Left" />
+                                      HorizontalAlignment="Left"
+                                      Data="{DynamicResource AudioIcon}"
+                                      Fill="{DynamicResource ForeColor}"
+                                      Stretch="Uniform" />
                             </Grid>
                         </ws:FlexPanel>
                     </Grid>
                     <Border x:Name="LyricViewHost"
                             Grid.Column="1"
-                            d:Background="White"
-                            Margin="10 80 120 80">
+                            Margin="10,80,120,80"
+                            d:Background="White">
                         <Border.OpacityMask>
-                            <LinearGradientBrush EndPoint="0.5,1"
-                                                 StartPoint="0.5,0">
+                            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
                                 <GradientStop Color="Transparent" />
-                                <GradientStop Color="Transparent"
-                                              Offset="1" />
-                                <GradientStop Color="Black"
-                                              Offset="0.2" />
-                                <GradientStop Color="Black"
-                                              Offset="0.8" />
+                                <GradientStop Offset="1" Color="Transparent" />
+                                <GradientStop Offset="0.2" Color="Black" />
+                                <GradientStop Offset="0.8" Color="Black" />
                             </LinearGradientBrush>
                         </Border.OpacityMask>
                     </Border>
-                    <ws:Button  x:Name="LyricPage_BackBtn"
-                                Width="64"
-                                Height="32"
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Top"
-                                Margin="0 18 0 0"
-                                WindowChrome.IsHitTestVisibleInChrome="True"
-                                Click="LyricPage_BackBtn_Click"
-                                Style="{StaticResource SimpleIconButtonStyleForWs}">
+                    <ws:Button x:Name="LyricPage_BackBtn"
+                               Width="64"
+                               Height="32"
+                               Margin="0,18,0,0"
+                               HorizontalAlignment="Stretch"
+                               VerticalAlignment="Top"
+                               Click="LyricPage_BackBtn_Click"
+                               Style="{StaticResource SimpleIconButtonStyleForWs}"
+                               WindowChrome.IsHitTestVisibleInChrome="True">
                         <Border Width="52"
                                 Height="6"
-                                CornerRadius="3"
                                 Background="{DynamicResource ForeColor}"
+                                CornerRadius="3"
                                 Opacity="0.6" />
                     </ws:Button>
                 </Grid>
             </Grid>
-            <uc:AudioVisualizer  x:Name="visualizer"
-                                 VerticalAlignment="Bottom"
-                                 Height="214"
-                                 Opacity="0.8"
-                                 IsPlaying="{Binding IsPlaying,Mode=OneWay}"
-                                 Color="{DynamicResource HighlightThemeColor}"
-                                 Margin="8 0" />
+            <uc:AudioVisualizer x:Name="visualizer"
+                                Height="214"
+                                Margin="8,0"
+                                VerticalAlignment="Bottom"
+                                IsPlaying="{Binding IsPlaying, Mode=OneWay}"
+                                Opacity="0.8"
+                                Color="{DynamicResource HighlightThemeColor}" />
             <Border x:Name="MusicControl"
-                    BorderThickness="0 1 0 0"
                     Height="110"
                     VerticalAlignment="Bottom"
+                    Background="{DynamicResource TabMaskColor}"
                     BorderBrush="{DynamicResource BorderColor}"
-                    Background="{DynamicResource TabMaskColor}">
+                    BorderThickness="0,1,0,0">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="2*" />
                         <RowDefinition Height="5*" />
                     </Grid.RowDefinitions>
                     <base:FluentPopup x:Name="NotificationBox"
-                                      StaysOpen="True"
-                                      FollowWindowMoving="True"
-                                      ExtPopupAnimation="SlideUp"
-                                      Placement="Top"
                                       Background="{DynamicResource PopupWndBgColor}"
-                                      VerticalOffset="-12"
-                                      HorizontalOffset="12">
-                        <Border HorizontalAlignment="Center"
-                                MaxWidth="320"
-                                VerticalAlignment="Bottom"
+                                      ExtPopupAnimation="SlideUp"
+                                      FollowWindowMoving="True"
+                                      HorizontalOffset="12"
+                                      Placement="Top"
+                                      StaysOpen="True"
+                                      VerticalOffset="-12">
+                        <Border MaxWidth="320"
                                 Padding="12"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Bottom"
                                 d:Visibility="Visible">
                             <TextBlock x:Name="NotificationTb"
-                                       TextWrapping="Wrap"
-                                       d:Text="xxxxxxxxxxxxxxx" />
+                                       d:Text="xxxxxxxxxxxxxxx"
+                                       TextWrapping="Wrap" />
                         </Border>
                     </base:FluentPopup>
                     <Grid>
                         <TextBlock x:Name="PlayingTimeTb"
-                                   d:Text="00:00"
-                                   Text="{Binding CurrentPlayingPositionText}"
+                                   Margin="14,0,0,0"
                                    HorizontalAlignment="Left"
                                    VerticalAlignment="Center"
-                                   Margin="14 0 0 0" />
-                        <TextBlock x:Name="TotalTimeTb"
                                    d:Text="00:00"
-                                   Text="{Binding CurrentPlayingDurationText}"
+                                   Text="{Binding CurrentPlayingPositionText}" />
+                        <TextBlock x:Name="TotalTimeTb"
+                                   Margin="0,0,14,0"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Center"
-                                   Margin="0 0 14 0" />
-                        <Slider Style="{DynamicResource FluentSliderStyle}"
-                                x:Name="PlaySlider"
+                                   d:Text="00:00"
+                                   Text="{Binding CurrentPlayingDurationText}" />
+                        <Slider x:Name="PlaySlider"
+                                Margin="60,0"
+                                VerticalAlignment="Center"
+                                Maximum="{Binding CurrentPlayingDuration}"
                                 PreviewMouseDown="PlaySlider_PreviewMouseDown"
                                 PreviewMouseUp="PlaySlider_PreviewMouseUp"
-                                Maximum="{Binding CurrentPlayingDuration}"
-                                Margin="60 0"
-                                VerticalAlignment="Center"
-                                Value="{Binding CurrentPlayingPosition,Mode=OneWay,UpdateSourceTrigger=PropertyChanged}" />
+                                Style="{DynamicResource FluentSliderStyle}"
+                                Value="{Binding CurrentPlayingPosition, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
                         <ws:ProgressBar x:Name="CacheProg"
-                                        VerticalAlignment="Bottom"
+                                        Width="240"
                                         Height="2"
-                                        Maximum="1"
-                                        Opacity="0"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Bottom"
                                         d:Opacity="1"
                                         d:Value="0.5"
-                                        Value="{Binding CacheDownloadProgress}"
-                                        CornerRadius="1"
-                                        BorderThickness="0"
-                                        HorizontalAlignment="Center"
                                         Background="{DynamicResource FocusMaskColor}"
-                                        Width="240"
-                                        Foreground="{DynamicResource HighlightThemeColor}" />
+                                        BorderThickness="0"
+                                        CornerRadius="1"
+                                        Foreground="{DynamicResource HighlightThemeColor}"
+                                        Maximum="1"
+                                        Opacity="0"
+                                        Value="{Binding CacheDownloadProgress}" />
                     </Grid>
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
@@ -1140,59 +1074,58 @@
                             <ColumnDefinition Width="1*" />
                             <ColumnDefinition Width="1*" />
                         </Grid.ColumnDefinitions>
-                        <!--Left -->
+                        <!--  Left  -->
                         <ws:Button x:Name="MusicControl_Info"
-                                   Margin="6,4,0,4"
                                    Height="70"
-                                   Cursor="Hand"
-                                   ToolTip="Lyric Page"
+                                   Margin="6,4,0,4"
                                    HorizontalAlignment="Left"
                                    Background="Transparent"
+                                   BorderThickness="0"
+                                   Click="MusicControl_Info_Click"
+                                   CornerRadius="8"
+                                   Cursor="Hand"
                                    HoverBackground="{DynamicResource MaskColor}"
                                    PressedBackground="{DynamicResource MaskColor}"
-                                   BorderThickness="0"
-                                   CornerRadius="8"
-                                   Click="MusicControl_Info_Click">
+                                   ToolTip="Lyric Page">
                             <Grid>
                                 <Border x:Name="MusicControl_Img"
-                                        Margin="6 0 0 0"
-                                        HorizontalAlignment="Left"
                                         Width="60"
                                         Height="60"
-                                        RenderOptions.BitmapScalingMode="HighQuality"
+                                        Margin="6,0,0,0"
+                                        HorizontalAlignment="Left"
                                         d:Background="Pink"
-                                        Background="{Binding CurrentPlayingCover,TargetNullValue=Pink}"
-                                        CornerRadius="8" />
+                                        Background="{Binding CurrentPlayingCover, TargetNullValue=Pink}"
+                                        CornerRadius="8"
+                                        RenderOptions.BitmapScalingMode="HighQuality" />
                                 <TextBlock x:Name="MusicControl_Title"
-                                           Margin="78 0 10 0"
                                            MinWidth="150"
-                                           Foreground="{DynamicResource ForeColor}"
+                                           Margin="78,0,10,0"
+                                           HorizontalAlignment="Left"
                                            VerticalAlignment="Center"
-                                           LineHeight="24"
-                                           HorizontalAlignment="Left">
-                                    <Run Text="{Binding CurrentPlaying.MusicName, TargetNullValue='Welcome~'}"
-                                         d:Text="Dancing With Our Hands Tied"
+                                           Foreground="{DynamicResource ForeColor}"
+                                           LineHeight="24">
+                                    <Run d:Text="Dancing With Our Hands Tied"
+                                         FontSize="16"
                                          FontWeight="Bold"
-                                         FontSize="16" />
+                                         Text="{Binding CurrentPlaying.MusicName, TargetNullValue='Welcome~'}" />
                                     <LineBreak />
-                                    <Run Text="{Binding CurrentPlaying.SingerText ,TargetNullValue='Lemon App'}"
-                                         d:Text="Taylor Swift"
-                                         FontSize="12" />
-                                     · <Run Text="{Binding CurrentPlaying.Album.Name}"
-                                            d:Text="reputation"
-                                            FontSize="12" />
+                                    <Run d:Text="Taylor Swift"
+                                         FontSize="12"
+                                         Text="{Binding CurrentPlaying.SingerText, TargetNullValue='Lemon App'}" />
+                                    ·<Run d:Text="reputation"
+                                         FontSize="12"
+                                         Text="{Binding CurrentPlaying.Album.Name}" />
                                 </TextBlock>
                             </Grid>
                         </ws:Button>
-                        <!--Center-->
-                        <Grid Grid.Column="1"
-                              Width="250">
+                        <!--  Center  -->
+                        <Grid Grid.Column="1" Width="250">
                             <ws:Button x:Name="PlayBtn"
                                        Width="45"
                                        Height="45"
-                                       ToolTip="Play or Pause"
                                        Command="{Binding PlayPauseCommand}"
-                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
+                                       Style="{StaticResource SimpleIconButtonStyleForWs}"
+                                       ToolTip="Play or Pause">
                                 <ws:ConditionalControl Condition="{Binding IsPlaying}">
                                     <ws:ConditionalControl.ContentWhenFalse>
                                         <Path Data="{DynamicResource PlayIcon_Play}"
@@ -1209,117 +1142,121 @@
                             <ws:Button x:Name="PlayLastBtn"
                                        Width="32"
                                        Height="32"
-                                       Margin="48 0 0 0"
-                                       ToolTip="Play the last one"
-                                       Command="{Binding PlayLastCommand}"
+                                       Margin="48,0,0,0"
                                        HorizontalAlignment="Left"
-                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
-                                <Path Data="{DynamicResource PlayIcon_Last}"
-                                      Height="18"
+                                       Command="{Binding PlayLastCommand}"
+                                       Style="{StaticResource SimpleIconButtonStyleForWs}"
+                                       ToolTip="Play the last one">
+                                <Path Height="18"
+                                      Data="{DynamicResource PlayIcon_Last}"
                                       Fill="{DynamicResource ForeColor}"
                                       Stretch="Uniform" />
                             </ws:Button>
                             <ws:Button x:Name="PlayNextBtn"
                                        Width="32"
                                        Height="32"
-                                       Margin="0 0 48 0"
-                                       ToolTip="Play the next one"
-                                       Command="{Binding PlayNextCommand}"
+                                       Margin="0,0,48,0"
                                        HorizontalAlignment="Right"
-                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
-                                <Path Data="{DynamicResource PlayIcon_Next}"
-                                      Height="18"
+                                       Command="{Binding PlayNextCommand}"
+                                       Style="{StaticResource SimpleIconButtonStyleForWs}"
+                                       ToolTip="Play the next one">
+                                <Path Height="18"
+                                      Data="{DynamicResource PlayIcon_Next}"
                                       Fill="{DynamicResource ForeColor}"
                                       Stretch="Uniform" />
                             </ws:Button>
                             <ws:Button x:Name="CircleModeBtn"
                                        Width="32"
                                        Height="32"
-                                       ToolTip="Playback Mode"
-                                       Command="{Binding ChangeCircleModeCommand}"
                                        HorizontalAlignment="Right"
-                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
-                                <Path Data="{Binding CircleMode,Converter={x:Static converters:CircleModeToPathDataConverter.Instance}}"
+                                       Command="{Binding ChangeCircleModeCommand}"
+                                       Style="{StaticResource SimpleIconButtonStyleForWs}"
+                                       ToolTip="Playback Mode">
+                                <Path Height="18"
                                       d:Data="{DynamicResource CircleMode_Circle}"
-                                      Height="18"
+                                      Data="{Binding CircleMode, Converter={x:Static converters:CircleModeToPathDataConverter.Instance}}"
                                       Fill="{DynamicResource ForeColor}"
                                       Stretch="Uniform" />
                             </ws:Button>
                             <ToggleButton x:Name="OpenDesktopLyricBtn"
                                           Width="32"
                                           Height="32"
-                                          IsChecked="{Binding IsShowDesktopLyric}"
-                                          ToolTip="Desktop Lyric Viewer"
                                           HorizontalAlignment="Left"
+                                          IsChecked="{Binding IsShowDesktopLyric}"
+                                          Style="{StaticResource IconToggleButton}"
                                           Tag="{DynamicResource OpenDesktopLyric}"
-                                          Style="{StaticResource IconToggleButton}">
-                            </ToggleButton>
+                                          ToolTip="Desktop Lyric Viewer" />
                         </Grid>
                         <ws:WrapPanel Grid.Column="2"
+                                      Margin="0,0,32,0"
                                       HorizontalAlignment="Right"
                                       VerticalAlignment="Center"
-                                      Margin="0 0 32 0"
                                       HorizontalSpacing="24">
-                            <uc:MusicInfoLand  Quality="{Binding CurrentQuality}"
-                                               MvId="{Binding CurrentPlaying.Mvmid}"
-                                               QualityCommand="{Binding SetQualityCommand}" />
+                            <uc:MusicInfoLand MvId="{Binding CurrentPlaying.Mvmid}"
+                                              Quality="{Binding CurrentQuality}"
+                                              QualityCommand="{Binding SetQualityCommand}" />
                             <ws:Button x:Name="FavoriteBtn"
                                        Width="32"
                                        Height="32"
-                                       ToolTip="Add to my favorite"
-                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
-                                <Path Data="{DynamicResource HeartIcon}"
-                                      Height="16"
+                                       Style="{StaticResource SimpleIconButtonStyleForWs}"
+                                       ToolTip="Add to my favorite">
+                                <Path Height="16"
+                                      Data="{DynamicResource HeartIcon}"
                                       Fill="{DynamicResource ForeColor}"
                                       Stretch="Uniform" />
                             </ws:Button>
+                            <base:FluentPopup Background="{DynamicResource PopupWndBgColor}"
+                                              ExtPopupAnimation="SlideUp"
+                                              StaysOpen="False">
+                                <Grid />
+                            </base:FluentPopup>
                             <ws:Button x:Name="MoreMenuBtn"
                                        Width="32"
                                        Height="32"
-                                       ToolTip="More"
-                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
-                                <Path Data="{DynamicResource MoreMenu}"
-                                      Height="16"
+                                       Style="{StaticResource SimpleIconButtonStyleForWs}"
+                                       ToolTip="More">
+                                <Path Height="16"
+                                      Data="{DynamicResource MoreMenu}"
                                       Fill="{DynamicResource ForeColor}"
                                       Stretch="Uniform" />
                             </ws:Button>
                             <base:FluentPopup x:Name="AudioAdjustPopup"
-                                              ExtPopupAnimation="SlideUp"
-                                              Placement="Right"
-                                              VerticalOffset="-60"
-                                              HorizontalOffset="-200"
                                               Background="{DynamicResource PopupWndBgColor}"
-                                              StaysOpen="False">
-                                <Grid Height="36"
-                                      Width="280"
+                                              ExtPopupAnimation="SlideUp"
+                                              HorizontalOffset="-200"
+                                              Placement="Right"
+                                              StaysOpen="False"
+                                              VerticalOffset="-60">
+                                <Grid Width="280"
+                                      Height="36"
                                       Margin="12">
                                     <Slider x:Name="AudioAdjustSlider"
+                                            Margin="16,0"
                                             VerticalAlignment="Center"
-                                            Margin="16 0"
                                             IsMoveToPointEnabled="True"
-                                            Value="{Binding CurrentPlayingVolume}"
+                                            Maximum="1"
                                             Style="{StaticResource FluentSliderStyle}"
-                                            Maximum="1" />
+                                            Value="{Binding CurrentPlayingVolume}" />
                                 </Grid>
                             </base:FluentPopup>
                             <ws:Button x:Name="AudioBtn"
                                        Width="32"
                                        Height="32"
-                                       ToolTip="Volume"
                                        Click="AudioBtn_Click"
-                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
-                                <Path Data="{DynamicResource AudioIcon}"
-                                      Height="16"
+                                       Style="{StaticResource SimpleIconButtonStyleForWs}"
+                                       ToolTip="Volume">
+                                <Path Height="16"
+                                      Data="{DynamicResource AudioIcon}"
                                       Fill="{DynamicResource ForeColor}"
                                       Stretch="Uniform" />
                             </ws:Button>
                             <ws:Button x:Name="OpenPlayListBtn"
                                        Width="32"
                                        Height="32"
-                                       ToolTip="Playlist"
-                                       Style="{StaticResource SimpleIconButtonStyleForWs}">
-                                <Path Data="{DynamicResource OpenPlaylist}"
-                                      Height="14"
+                                       Style="{StaticResource SimpleIconButtonStyleForWs}"
+                                       ToolTip="Playlist">
+                                <Path Height="14"
+                                      Data="{DynamicResource OpenPlaylist}"
                                       Fill="{DynamicResource ForeColor}"
                                       Stretch="Uniform" />
                             </ws:Button>
@@ -1328,37 +1265,32 @@
                 </Grid>
             </Border>
         </Grid>
-        <Grid x:Name="PlayListPage"
-              Visibility="Collapsed">
-            <Border x:Name="PlayListPageMask"
-                    Background="#7F000000" />
+        <Grid x:Name="PlayListPage" Visibility="Collapsed">
+            <Border x:Name="PlayListPageMask" Background="#7F000000" />
             <Grid x:Name="PlayListBar"
                   Width="320"
                   HorizontalAlignment="Right"
                   Background="{DynamicResource BackgroundColor}">
-                <TextBlock Margin="18 18 18 0"
-                           VerticalAlignment="Top">
-                    <Run Text="Playlist"
-                         FontSize="22" />
+                <TextBlock Margin="18,18,18,0" VerticalAlignment="Top">
+                    <Run FontSize="22" Text="Playlist" />
                     <LineBreak />
-                    <Run Text="{Binding Playlist.Count,Mode=OneWay}"
-                         d:Text="0" /> Songs
-                </TextBlock>
+                    <Run d:Text="0" Text="{Binding Playlist.Count, Mode=OneWay}" />
+                    Songs</TextBlock>
                 <ws:TextBox x:Name="PlaylistSearchBox"
                             Height="30"
-                            Margin="12 72 12 0"
-                            Padding="8 6"
-                            Placeholder="Search"
+                            Margin="12,72,12,0"
+                            Padding="8,6"
                             VerticalAlignment="Top"
+                            Placeholder="Search"
                             PreviewKeyDown="PlaylistSearchBox_PreviewKeyDown"
                             Style="{StaticResource SimpleTextBoxStyleForWs}" />
                 <ws:ListBox x:Name="PlaylistLb"
-                            Margin="0 108 0 0"
-                            Style="{StaticResource SimpleListBoxStyle}"
-                            ItemsSource="{Binding Playlist,Mode=OneWay}"
-                            SelectedItem="{Binding PlaylistChoosen}"
+                            Margin="0,108,0,0"
+                            d:ItemsSource="{d:SampleData ItemCount=5}"
                             ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}"
-                            d:ItemsSource="{d:SampleData ItemCount=5}">
+                            ItemsSource="{Binding Playlist, Mode=OneWay}"
+                            SelectedItem="{Binding PlaylistChoosen}"
+                            Style="{StaticResource SimpleListBoxStyle}">
                     <ws:ListBox.ItemTemplate>
                         <DataTemplate>
                             <Grid Height="60"
@@ -1366,14 +1298,13 @@
                                   Background="Transparent">
                                 <Border x:Name="FocusedIcon"
                                         Width="3"
+                                        Height="24"
                                         HorizontalAlignment="Left"
+                                        d:Visibility="Visible"
                                         Background="{DynamicResource HighlightThemeColor}"
                                         CornerRadius="1.5"
-                                        Height="24"
-                                        Visibility="Hidden"
-                                        d:Visibility="Visible" />
-                                <TextBlock  VerticalAlignment="Center"
-                                            Margin="12 0 0 0">
+                                        Visibility="Hidden" />
+                                <TextBlock Margin="12,0,0,0" VerticalAlignment="Center">
                                     <Run Text="{Binding MusicName}" />
                                     <LineBreak />
                                     <Run Text="{Binding SingerText}" />
@@ -1382,8 +1313,7 @@
                                 </TextBlock>
                             </Grid>
                             <DataTemplate.Triggers>
-                                <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}, Mode=FindAncestor}}"
-                                             Value="True">
+                                <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}, Mode=FindAncestor}}" Value="True">
                                     <DataTrigger.EnterActions>
                                         <BeginStoryboard>
                                             <Storyboard>
@@ -1399,33 +1329,28 @@
                                             </Storyboard>
                                         </BeginStoryboard>
                                     </DataTrigger.EnterActions>
-                                    <Setter TargetName="FocusedIcon"
-                                            Property="Visibility"
-                                            Value="Visible" />
+                                    <Setter TargetName="FocusedIcon" Property="Visibility" Value="Visible" />
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}, Mode=FindAncestor}}"
-                                             Value="False">
-                                    <Setter TargetName="FocusedIcon"
-                                            Property="Visibility"
-                                            Value="Hidden" />
+                                <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}, Mode=FindAncestor}}" Value="False">
+                                    <Setter TargetName="FocusedIcon" Property="Visibility" Value="Hidden" />
                                 </DataTrigger>
                             </DataTemplate.Triggers>
                         </DataTemplate>
                     </ws:ListBox.ItemTemplate>
                 </ws:ListBox>
                 <ws:Button x:Name="GotoPlayingBtn"
-                           HorizontalAlignment="Right"
-                           VerticalAlignment="Bottom"
-                           Margin="32"
                            Width="36"
                            Height="36"
+                           Margin="32"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Bottom"
+                           Click="GotoPlayingBtn_Click"
                            CornerRadius="18"
-                           Style="{StaticResource AccentButtonStyleForWs}"
-                           Click="GotoPlayingBtn_Click">
-                    <Path Fill="{DynamicResource BackgroundColor}"
-                          Stretch="Uniform"
+                           Style="{StaticResource AccentButtonStyleForWs}">
+                    <Path Width="16"
                           Data="{StaticResource Icon_Position}"
-                          Width="16" />
+                          Fill="{DynamicResource BackgroundColor}"
+                          Stretch="Uniform" />
                 </ws:Button>
             </Grid>
         </Grid>

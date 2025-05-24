@@ -15,18 +15,25 @@ public class WordRandomSpiltConverter : IValueConverter
         {
             if(!str.Contains(' '))
             {
-                int a = rnd.Next(str.Length - 1);
-                int b = rnd.Next(str.Length - 1);
-                return a > b?str[b..a] :str[a..b];
+                if (str.Length <= 3) return str[^2..];
+                int sub = rnd.Next(2,4);
+                return str[^sub..];
             }
             var spilt = str.Split(' ');
-            if (rnd.Next(0, 2) == 0)
+            int choose = rnd.Next(0, 2);
+            if (choose == 0)
             {
                 return spilt.MaxBy(word => word.Length) ?? spilt[rnd.Next(spilt.Length-1)];
             }
+            else if(choose ==1)
+            {
+                if (spilt.Length > 2)
+                    return string.Join(' ',spilt[^2..]);
+                else return spilt.Last();
+            }
             else
             {
-                return spilt.Last();
+                return spilt[rnd.Next(spilt.Length - 1)];
             }
         }
         return Binding.DoNothing;

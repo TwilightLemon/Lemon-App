@@ -1,22 +1,25 @@
 ﻿<UserControl x:Class="LemonApp.Views.UserControls.DownloadMenuDecorator"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:LemonApp.Views.UserControls"
-             mc:Ignorable="d"  Height="40" d:Width="200"
-             Foreground="{DynamicResource ForeColor}">
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             Height="40"
+             d:Width="200"
+             Foreground="{DynamicResource ForeColor}"
+             mc:Ignorable="d">
     <Grid>
-        <Border HorizontalAlignment="Right"
-                Margin="8"
+        <Border Width="18"
                 Height="18"
-                Width="18"
+                Margin="8"
+                HorizontalAlignment="Right"
                 Background="{DynamicResource HighlightThemeColor}"
                 CornerRadius="9">
-            <TextBlock x:Name="TaskCountTb" HorizontalAlignment="Center"
-                       VerticalAlignment="Center" 
+            <TextBlock x:Name="TaskCountTb"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
                        FontSize="10"
-                       Text="12"/>
+                       Text="12" />
         </Border>
     </Grid>
 </UserControl>

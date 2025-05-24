@@ -156,10 +156,13 @@ public static class ImageHelper
     {
         RgbToHsl(color.R/255f,color.G/255f, color.B/255f,out float h, out float s, out float l);
         if (isDarkMode)
-            l = Math.Max(0.1f, l - 0.1f);
+            l = Math.Max(0.05f, l - 0.1f);
         else
-            l = Math.Min(0.9f, l + 0.1f);
+            l = Math.Min(0.95f, l + 0.1f);
+
         HslToRgb(h, s, l, out float r, out float g, out float b);
+        static void adjust(ref float a) => a = (a > 1) ? 1 : a;
+        adjust(ref r);adjust(ref g);adjust(ref b);
         return System.Windows.Media.Color.FromRgb((byte)(r * 255), (byte)(g * 255), (byte)(b * 255));
     }
 
@@ -188,7 +191,7 @@ public static class ImageHelper
 
     public static void AddMask(this Bitmap bitmap,bool darkmode)
     {
-        var color1 = darkmode ? Color.FromArgb(190, 0, 0, 0) : Color.FromArgb(210, 255, 255, 255);
+        var color1 = darkmode ? Color.FromArgb(150, 0, 0, 0) : Color.FromArgb(160, 255, 255, 255);
         var color2 = darkmode ? Color.FromArgb(180, 0, 0, 0) : Color.FromArgb(200, 255, 255, 255);
         using Graphics g = Graphics.FromImage(bitmap);
         using LinearGradientBrush brush = new(

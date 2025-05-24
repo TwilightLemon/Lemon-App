@@ -98,6 +98,7 @@ namespace LemonApp.Views.Windows
                         Id=qq,
                         G_tk=g_tk
                     });
+                    Close();
                 }
             }
         }

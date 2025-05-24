@@ -42,6 +42,7 @@ public class ImageCacheService
         => Instance.GetImage(url);
     public async Task<BitmapImage?> GetImage(string url)
     {
+        if (string.IsNullOrEmpty(url)) return null;
         var img = GetFromMem(url);
         if (img is { })
         {

@@ -1,43 +1,47 @@
 ﻿<UserControl x:Class="LemonApp.Views.UserControls.MusicInfoLand"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:ws="https://schemas.elecho.dev/wpfsuite"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:LemonApp.Views.UserControls"
-             mc:Ignorable="d" Height="20">
-    <ws:WrapPanel ItemHeight="20"
-                  HorizontalSpacing="6"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ws="https://schemas.elecho.dev/wpfsuite"
+             Height="20"
+             mc:Ignorable="d">
+    <ws:WrapPanel Margin="4,0"
                   VerticalAlignment="Center"
-                  Margin="4 0"
+                  HorizontalSpacing="6"
+                  ItemHeight="20"
                   Orientation="Vertical">
-        <ws:Button Style="{StaticResource SimpleIconButtonStyleForWs}"
-                   x:Name="QualityIcon"
+        <ws:Button x:Name="QualityIcon"
                    Width="34"
+                   Padding="0"
+                   VerticalContentAlignment="Center"
+                   BorderBrush="#FFF6B322"
                    BorderThickness="1.5"
                    CornerRadius="6"
-                   IsEnabled="False"
-                   VerticalContentAlignment="Center"
-                   Padding="0"
                    DisabledBackground="Transparent"
                    DisabledBorderBrush="#FFF6B322"
-                   BorderBrush="#FFF6B322">
-            <TextBlock x:Name="QualityText"  Text="SQ"
+                   IsEnabled="False"
+                   Style="{StaticResource SimpleIconButtonStyleForWs}">
+            <TextBlock x:Name="QualityText"
                        VerticalAlignment="Center"
-                        FontSize="12" FontWeight="Bold"
-                       Foreground="#FFF6B322" />
+                       FontSize="12"
+                       FontWeight="Bold"
+                       Foreground="#FFF6B322"
+                       Text="SQ" />
         </ws:Button>
-        <ws:Button Style="{StaticResource SimpleIconButtonStyleForWs}" Width="34"
+        <ws:Button x:Name="MVBtn"
+                   Width="34"
                    Padding="0"
-                   x:Name="MVBtn"
-                   CornerRadius="6"
                    VerticalContentAlignment="Center"
                    BorderBrush="{DynamicResource ForeColor}"
-                   BorderThickness="1.5">
-            <TextBlock Text="MV"
-                        VerticalAlignment="Center"
-                        FontSize="12"
-                        FontWeight="Bold"/>
+                   BorderThickness="1.5"
+                   CornerRadius="6"
+                   Style="{StaticResource SimpleIconButtonStyleForWs}">
+            <TextBlock VerticalAlignment="Center"
+                       FontSize="12"
+                       FontWeight="Bold"
+                       Text="MV" />
         </ws:Button>
     </ws:WrapPanel>
 </UserControl>

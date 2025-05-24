@@ -400,6 +400,7 @@ namespace LemonApp.Views.UserControls
                 item.LrcTb.FontWeight = NormalTextFontWeight;
                 item.LrcTb.Effect = NomalTextEffect;
                 item.LrcMain.Background=null;
+                if(item.Box.Children.Count>1)
                 item.Box.Children.RemoveAt(0);
 
                 item.LrcTb.BeginAnimation(FontSizeProperty, null);

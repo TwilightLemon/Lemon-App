@@ -42,20 +42,37 @@ namespace LemonApp.Services
                 e.Handled = true;
             }));
 
+            //override default style for Pages
+            FrameworkElement.StyleProperty.OverrideMetadata(typeof(System.Windows.Controls.Page), new FrameworkPropertyMetadata
+            {
+                DefaultValue = App.Current.FindResource(typeof(System.Windows.Controls.Page))
+            });
+
             var startup = async() =>{
                 await CacheManager.LoadPath();
                 await serviceProvider.GetRequiredService<MediaPlayerService>().Init();
 
-                //show main window
+                //load main window
                 var mainWindow = serviceProvider.GetRequiredService<MainWindow>();
                 App.Current.MainWindow = mainWindow;
-                mainWindow.Show();
 
                 //apply theme config
                 uiResourceService.UpdateColorMode();
                 uiResourceService.UpdateAccentColor();
-                SystemThemeAPI.RegesterOnThemeChanged(mainWindow, OnThemeChanged, OnSystemColorChanged);
                 uiResourceService.UpdateThemeConfig();
+
+                //show main window
+                if(uiResourceService.SettingsMgr.Data.WindowSize is { Width: > 0, Height: > 0 } size)
+                {
+                    mainWindow.Width = size.Width;
+                    mainWindow.Height = size.Height;
+                }
+                appSettingsService.OnExiting += delegate {
+                    //save window size
+                    uiResourceService.SettingsMgr.Data.WindowSize = new Size(mainWindow.ActualWidth, mainWindow.ActualHeight);
+                };
+                mainWindow.Show();
+                SystemThemeAPI.RegesterOnThemeChanged(mainWindow, OnThemeChanged, OnSystemColorChanged);
 
                 //init window basic components
                 serviceProvider.GetRequiredService<WindowBasicComponent>().Init();

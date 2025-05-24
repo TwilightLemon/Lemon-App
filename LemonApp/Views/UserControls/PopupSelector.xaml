@@ -1,36 +1,37 @@
 ﻿<UserControl x:Class="LemonApp.Views.UserControls.PopupSelector"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:LemonApp.Views.UserControls"
              xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:LemonApp.Views.UserControls"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:ws="https://schemas.elecho.dev/wpfsuite"
              d:DataContext="{d:DesignInstance Type=local:PopupSelector}"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <!--公共弹窗菜单，由MainWindow单例拥有-->
+             d:DesignHeight="450"
+             d:DesignWidth="800"
+             mc:Ignorable="d">
+    <!--  公共弹窗菜单，由MainWindow单例拥有  -->
     <Grid>
-        <!--添加到歌单弹窗-->
-        <base:FluentPopup IsOpen="{Binding IsShowDissSelector}"
-                          StaysOpen="False"
+        <!--  添加到歌单弹窗  -->
+        <base:FluentPopup Background="{DynamicResource PopupWndBgColor}"
                           ExtPopupAnimation="SlideDown"
-                          Background="{DynamicResource PopupWndBgColor}"
-                          Placement="Mouse">
+                          IsOpen="{Binding IsShowDissSelector}"
+                          Placement="Mouse"
+                          StaysOpen="False">
             <Grid MaxHeight="500">
-                <ws:ListBox ItemsSource="{Binding MyDissList}"
-                            SelectedItem="{Binding SelectedDiss}"
-                            Background="Transparent"
+                <ws:ListBox Background="Transparent"
                             BorderThickness="0"
-                            Style="{StaticResource SimpleListBoxStyle}"
-                            ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}">
+                            ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}"
+                            ItemsSource="{Binding MyDissList}"
+                            SelectedItem="{Binding SelectedDiss}"
+                            Style="{StaticResource SimpleListBoxStyle}">
                     <ws:ListBox.ItemTemplate>
                         <DataTemplate>
                             <Grid Height="40"
-                                  Margin="8 0"
+                                  Margin="8,0"
                                   Background="Transparent">
-                                <TextBlock VerticalAlignment="Center"
-                                           HorizontalAlignment="Center"
+                                <TextBlock HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
                                            Text="{Binding Name}" />
                             </Grid>
                         </DataTemplate>
@@ -38,26 +39,26 @@
                 </ws:ListBox>
             </Grid>
         </base:FluentPopup>
-        
-        <!--选择歌手弹窗-->
-        <base:FluentPopup IsOpen="{Binding ShowCheckArtistsPopup}"
-                          StaysOpen="False"
+
+        <!--  选择歌手弹窗  -->
+        <base:FluentPopup Background="{DynamicResource PopupWndBgColor}"
                           ExtPopupAnimation="SlideDown"
-                          Background="{DynamicResource PopupWndBgColor}"
-                          Placement="Mouse">
+                          IsOpen="{Binding ShowCheckArtistsPopup}"
+                          Placement="Mouse"
+                          StaysOpen="False">
             <Grid>
-                <ws:ListBox ItemsSource="{Binding ToChoosenArtists}"
-                            SelectedItem="{Binding ChoosenArtist}"
-                            Background="Transparent"
+                <ws:ListBox Background="Transparent"
                             BorderThickness="0"
-                            ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}">
+                            ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}"
+                            ItemsSource="{Binding ToChoosenArtists}"
+                            SelectedItem="{Binding ChoosenArtist}">
                     <ws:ListBox.ItemTemplate>
                         <DataTemplate>
                             <Grid Height="40"
-                                  Margin="8 0"
+                                  Margin="8,0"
                                   Background="Transparent">
-                                <TextBlock VerticalAlignment="Center"
-                                           HorizontalAlignment="Center"
+                                <TextBlock HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
                                            Text="{Binding Name}" />
                             </Grid>
                         </DataTemplate>

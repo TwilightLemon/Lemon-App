@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using System.Windows;
 using System.Windows.Media;
 using LemonApp.Common.WinAPI;
 using LemonApp.Native;
@@ -48,4 +49,9 @@ public class Appearance{
     /// 图片背景路径
     /// </summary>
     public string? BackgroundPath { get; set; }
+
+    /// <summary>
+    /// 窗口大小
+    /// </summary>
+    public Size WindowSize { get; set; } = new(0,0);
 }
