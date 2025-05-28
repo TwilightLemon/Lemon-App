@@ -690,44 +690,9 @@
     </Style>
     <!--  滑块Thumb  -->
     <ControlTemplate x:Key="SliderThumbHorizontalDefault" TargetType="{x:Type Thumb}">
-        <Border Width="20"
-                Height="20"
-                BorderBrush="{DynamicResource BorderColor}"
-                BorderThickness="1"
-                CornerRadius="10"
-                SnapsToDevicePixels="True">
-            <Border x:Name="border"
-                    Background="{DynamicResource HighlightThemeColor}"
-                    BorderBrush="{DynamicResource ButtonPureColor}"
-                    BorderThickness="4"
-                    CornerRadius="10"
-                    SnapsToDevicePixels="True" />
-        </Border>
-        <ControlTemplate.Triggers>
-            <Trigger Property="IsDragging" Value="true">
-                <Trigger.EnterActions>
-                    <BeginStoryboard>
-                        <Storyboard>
-                            <ThicknessAnimation Storyboard.TargetName="border"
-                                                Storyboard.TargetProperty="BorderThickness"
-                                                To="6"
-                                                Duration="0:0:0.2" />
-                        </Storyboard>
-                    </BeginStoryboard>
-                </Trigger.EnterActions>
-                <Trigger.ExitActions>
-                    <BeginStoryboard>
-                        <Storyboard>
-                            <ThicknessAnimation Storyboard.TargetName="border"
-                                                Storyboard.TargetProperty="BorderThickness"
-                                                To="4"
-                                                Duration="0:0:0.2" />
-                        </Storyboard>
-                    </BeginStoryboard>
-                </Trigger.ExitActions>
-            </Trigger>
-            <Trigger Property="IsEnabled" Value="false" />
-        </ControlTemplate.Triggers>
+        <Ellipse x:Name="ellipse"
+                 Fill="{DynamicResource FocusAccentColor}"
+                 SnapsToDevicePixels="True" />
     </ControlTemplate>
     <!--  Slider左侧高亮  -->
     <Style x:Key="SliderLeftStyle" TargetType="{x:Type RepeatButton}">
@@ -741,7 +706,7 @@
                     <Border Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
                         <Border Height="4"
                                 Background="{TemplateBinding Background}"
-                                CornerRadius="2 0 0 2" />
+                                CornerRadius="2" />
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -759,31 +724,15 @@
                     <RowDefinition Height="Auto" MinHeight="{TemplateBinding MinHeight}" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <TickBar x:Name="TopTick"
-                         Grid.Row="0"
-                         Height="4"
-                         Margin="0,0,0,2"
-                         Fill="{TemplateBinding Foreground}"
-                         Placement="Top"
-                         Visibility="Collapsed" />
-                <TickBar x:Name="BottomTick"
-                         Grid.Row="2"
-                         Height="4"
-                         Margin="0,2,0,0"
-                         Fill="{TemplateBinding Foreground}"
-                         Placement="Bottom"
-                         Visibility="Collapsed" />
                 <Border x:Name="TrackBackground"
                         Grid.Row="1"
-                        Height="4.0"
-                        Margin="5,0"
+                        Height="4"
                         VerticalAlignment="center"
                         Background="{DynamicResource FocusMaskColor}"
                         CornerRadius="2" />
                 <Track x:Name="PART_Track" Grid.Row="1">
                     <Track.DecreaseRepeatButton>
-                        <RepeatButton Margin="0,0,-2,0"
-                                      Background="{DynamicResource HighlightThemeColor}"
+                        <RepeatButton Background="{DynamicResource HighlightThemeColor}"
                                       Command="{x:Static Slider.DecreaseLarge}"
                                       Style="{StaticResource SliderLeftStyle}" />
                     </Track.DecreaseRepeatButton>
@@ -792,10 +741,12 @@
                     </Track.IncreaseRepeatButton>
                     <Track.Thumb>
                         <Thumb x:Name="Thumb"
-                               Width="20"
-                               Height="20"
+                               Width="16"
+                               Height="16"
+                               Margin="-8,0,-8,0"
                                VerticalAlignment="Center"
                                Focusable="False"
+                               Opacity="0"
                                OverridesDefaultStyle="True"
                                Template="{StaticResource SliderThumbHorizontalDefault}" />
                     </Track.Thumb>
@@ -803,21 +754,27 @@
             </Grid>
         </Border>
         <ControlTemplate.Triggers>
-            <Trigger Property="TickPlacement" Value="TopLeft">
-                <Setter TargetName="TopTick" Property="Visibility" Value="Visible" />
-                <Setter TargetName="TrackBackground" Property="Margin" Value="5,2,5,0" />
-            </Trigger>
-            <Trigger Property="TickPlacement" Value="BottomRight">
-                <Setter TargetName="BottomTick" Property="Visibility" Value="Visible" />
-                <Setter TargetName="TrackBackground" Property="Margin" Value="5,0,5,2" />
-            </Trigger>
-            <Trigger Property="TickPlacement" Value="Both">
-                <Setter TargetName="TopTick" Property="Visibility" Value="Visible" />
-                <Setter TargetName="BottomTick" Property="Visibility" Value="Visible" />
-            </Trigger>
-            <Trigger Property="IsSelectionRangeEnabled" Value="true" />
-            <Trigger Property="IsKeyboardFocused" Value="true">
-                <Setter TargetName="Thumb" Property="Foreground" Value="Blue" />
+            <Trigger Property="IsMouseOver" Value="True">
+                <Trigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetName="Thumb"
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="1"
+                                             Duration="0:0:0.2" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetName="Thumb"
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="0"
+                                             Duration="0:0:0.2" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.ExitActions>
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>

@@ -80,77 +80,241 @@ public static class ImageHelper
         }
     }
     #endregion
+
     public static System.Windows.Media.Color GetMajorColor(this Bitmap bitmap)
     {
-        int threshold = 36;
-        //色调的总和
-        var sum_hue = 0d;
-        //色差的阈值
-        //计算色调总和
-        for (int h = 0; h < bitmap.Height; h++)
+        int samplingRate = Math.Max(1, Math.Min(bitmap.Width, bitmap.Height) / 100);
+
+        Dictionary<int, ColorInfo> colorMap = [];
+        int pixelCount = 0;
+
+        for (int h = 0; h < bitmap.Height; h += samplingRate)
         {
-            for (int w = 0; w < bitmap.Width; w++)
+            for (int w = 0; w < bitmap.Width; w += samplingRate)
             {
-                var hue = bitmap.GetPixel(w, h).GetHue();
-                sum_hue += hue;
+                Color pixel = bitmap.GetPixel(w, h);
+
+                // 量化颜色 (减少相似颜色的数量)
+                int quantizedR = pixel.R / 16 * 16;
+                int quantizedG = pixel.G / 16 * 16;
+                int quantizedB = pixel.B / 16 * 16;
+
+                // 排除极端黑白色
+                int averange = (pixel.R + pixel.G + pixel.B) / 3;
+                if (averange < 24) continue;
+                if (averange > 230) continue;
+
+                int colorKey = (quantizedR << 16) | (quantizedG << 8) | quantizedB;
+
+                if (colorMap.TryGetValue(colorKey, out ColorInfo info))
+                {
+                    info.Count++;
+                    info.SumR += pixel.R;
+                    info.SumG += pixel.G;
+                    info.SumB += pixel.B;
+                }
+                else
+                {
+                    colorMap[colorKey] = new ColorInfo
+                    {
+                        Count = 1,
+                        SumR = pixel.R,
+                        SumG = pixel.G,
+                        SumB = pixel.B
+                    };
+                }
+                pixelCount++;
             }
         }
-        var avg_hue = sum_hue / (bitmap.Width * bitmap.Height);
-        if (avg_hue < 190) threshold = 5;
-        //色差大于阈值的颜色值
-        var rgbs = new List<Color>();
-        for (int h = 0; h < bitmap.Height; h++)
+
+        if (pixelCount == 0 || colorMap.Count == 0)
+            return System.Windows.Media.Colors.Gray;
+
+        var weightedColors = colorMap.Values.Select(info =>
         {
-            for (int w = 0; w < bitmap.Width; w++)
+            float r = info.SumR / (float)info.Count / 255f;
+            float g = info.SumG / (float)info.Count / 255f;
+            float b = info.SumB / (float)info.Count / 255f;
+
+            // 转换为HSL来检查饱和度和亮度
+            RgbToHsl(r, g, b, out float h, out float s, out float l);
+
+            // 颜色越饱和越有可能是主色调，过亮或过暗的颜色权重降低
+            float weight = info.Count * s * (1 - Math.Abs(l - 0.6f) * 1.8f);
+
+            return new
             {
-                var color = bitmap.GetPixel(w, h);
-                var hue = color.GetHue();
-                //如果色差大于阈值，则加入列表
-                if (Math.Abs(hue - avg_hue) > threshold)
+                R = info.SumR / info.Count,
+                G = info.SumG / info.Count,
+                B = info.SumB / info.Count,
+                Weight = weight
+            };
+        })
+        .OrderByDescending(c => c.Weight)
+        .ToList();
+
+        if (weightedColors.Count > 0)
+        {
+            // 取权重最高的颜色
+            var dominantColor = weightedColors[0];
+            return System.Windows.Media.Color.FromRgb(
+                (byte)dominantColor.R,
+                (byte)dominantColor.G,
+                (byte)dominantColor.B);
+        }
+
+        return System.Windows.Media.Colors.Gray;
+    }
+
+    private class ColorInfo
+    {
+        public int Count { get; set; }
+        public int SumR { get; set; }
+        public int SumG { get; set; }
+        public int SumB { get; set; }
+    }
+
+    public static System.Windows.Media.Color AdjustColor(this System.Windows.Media.Color col, bool isDarkMode)
+    {
+        // 转换为HSL色彩空间，便于调整亮度和饱和度
+        RgbToHsl(col.R / 255f, col.G / 255f, col.B / 255f, out float h, out float s, out float l);
+
+        bool isNearGrayscale = s < 0.15f; // 判断是否接近灰度
+
+        // 1. 基于UI模式进行初步亮度调整
+        if (isDarkMode)
+        {
+            // 在暗色模式下，避免颜色过暗，提高整体亮度
+            if (l < 0.5f)
+            {
+                // 提亮暗色，但保持渐变
+                l = 0.3f + l * 0.5f;
+            }
+
+            // 灰度图像在暗色模式下需要更高亮度和一定饱和度
+            if (isNearGrayscale)
+            {
+                l = Math.Max(l, 0.4f); // 确保灰度在暗色模式下足够明亮
+            }
+        }
+        else // 亮色模式
+        {
+            // 在亮色模式下，避免颜色过亮，降低整体亮度
+            if (l > 0.5f)
+            {
+                // 降低亮色，但保持渐变
+                l = 0.3f + l * 0.4f;
+            }
+
+            // 灰度图像在亮色模式下需要更低亮度和更高饱和度
+            if (isNearGrayscale)
+            {
+                l = Math.Min(l, 0.6f); // 确保灰度在亮色模式下不过亮
+            }
+        }
+
+        // 2. 调整饱和度 - 根据UI模式和原始饱和度
+        if (!isNearGrayscale)
+        {
+            if (s > 0.7f)
+            {
+                // 高饱和度降低，但在暗色模式下降低得更少，因为暗色模式需要更鲜明的颜色
+                s = isDarkMode ? 0.7f - (s - 0.7f) * 0.2f : 0.65f - (s - 0.7f) * 0.4f;
+            }
+            else if (s > 0.4f)
+            {
+                // 中等饱和度微调
+                s = isDarkMode ? s * 0.85f : s * 0.75f;
+            }
+            else if (s > 0.1f) // 低饱和度但不是接近灰度
+            {
+                // 低饱和度增强，尤其在暗色模式下
+                s = isDarkMode ? Math.Min(0.5f, s * 1.5f) : Math.Min(0.4f, s * 1.3f);
+            }
+        }
+
+        // 3. 特殊色相区域的处理 (根据色相值h和UI模式调整)
+        if (!isNearGrayscale) // 仅处理有明显色相的颜色
+        {
+            // 红色区域 (0-30° 或 330-360°)
+            if ((h <= 0.08f) || (h >= 0.92f))
+            {
+                if (isDarkMode)
                 {
-                    rgbs.Add(color);
+                    // 暗色模式下红色需要更高饱和度和亮度
+                    s = Math.Min(0.7f, s * 1.1f);
+                    l = Math.Min(0.8f, l * 1.15f);
+                }
+                else
+                {
+                    // 亮色模式下红色降低饱和度，避免刺眼
+                    s *= 0.8f;
+                    l = Math.Max(0.4f, l * 0.9f);
+                }
+            }
+            // 绿色区域 (90-150°)
+            else if (h >= 0.25f && h <= 0.42f)
+            {
+                if (isDarkMode)
+                {
+                    // 暗色模式下绿色提高亮度，降低饱和度，避免荧光感
+                    s *= 0.85f;
+                    l = Math.Min(0.7f, l * 1.2f);
+                }
+                else
+                {
+                    // 亮色模式下绿色降低饱和度更多
+                    s *= 0.75f;
+                }
+            }
+            // 蓝色区域 (210-270°)
+            else if (h >= 0.58f && h <= 0.75f)
+            {
+                if (isDarkMode)
+                {
+                    // 暗色模式下蓝色提高亮度和饱和度
+                    s = Math.Min(0.85f, s * 1.2f);
+                    l = Math.Min(0.7f, l * 1.25f);
+                }
+                else
+                {
+                    // 亮色模式下蓝色保持中等饱和度
+                    s = Math.Min(0.7f, Math.Max(0.4f, s));
+                }
+            }
+            // 黄色区域 (30-90°)
+            else if (h > 0.08f && h < 0.25f)
+            {
+                if (isDarkMode)
+                {
+                    // 暗色模式下黄色需要降低饱和度，提高亮度
+                    s *= 0.8f;
+                    l = Math.Min(0.75f, l * 1.2f);
+                }
+                else
+                {
+                    // 亮色模式下黄色大幅降低饱和度
+                    s *= 0.7f;
+                    l = Math.Max(0.5f, l * 0.9f);
                 }
             }
         }
-        if (rgbs.Count == 0)
-            return System.Windows.Media.Colors.Black;
-        //计算列表中的颜色均值，结果即为该图片的主色调
-        int sum_r = 0, sum_g = 0, sum_b = 0;
-        foreach (var rgb in rgbs)
-        {
-            sum_r += rgb.R;
-            sum_g += rgb.G;
-            sum_b += rgb.B;
-        }
-        return System.Windows.Media.Color.FromRgb((byte)(sum_r / rgbs.Count),
-            (byte)(sum_g / rgbs.Count),
-            (byte)(sum_b / rgbs.Count));
-    }
-    public static System.Windows.Media.Color AdjustColor(this System.Windows.Media.Color col)
-    {
-        int high = 230;
-        int dark = 120;
-        if (col.R >= high && col.G >= high && col.B >= high)
-        {
-            col.R = (byte)(col.R * 0.6);
-            col.G = (byte)(col.G * 0.6);
-            col.B = (byte)(col.B * 0.6);
-        }
-        else if ((col.R + col.G + col.B) / 3 < dark)
-        {
-            col.R = (byte)(col.R * 1.8);
-            col.G = (byte)(col.G * 1.8);
-            col.B = (byte)(col.B * 1.8);
-        }
-        if (col.R >= high && col.G >= high && col.B >= high)
-        {
-            col.R -= 90; col.G -= 90; col.B -= 90;
-        }
-        else if ((col.R + col.G + col.B) / 3 < dark)
-        {
-            col.R += 80; col.G += 80; col.B += 80;
-        }
-        return col;
+
+
+
+        // 5. 最终亮度修正 - 确保在各种UI模式下都有足够的对比度
+        if (isDarkMode && l < 0.3f) l = 0.3f; // 暗色模式下确保最小亮度
+        if (!isDarkMode && l > 0.7f) l = 0.7f; // 亮色模式下确保最大亮度
+
+        // 转换回RGB
+        HslToRgb(h, s, l, out float r, out float g, out float b);
+
+        // 确保RGB值在有效范围内
+        byte R = (byte)Math.Max(0, Math.Min(255, r * 255));
+        byte G = (byte)Math.Max(0, Math.Min(255, g * 255));
+        byte B = (byte)Math.Max(0, Math.Min(255, b * 255));
+
+        return System.Windows.Media.Color.FromRgb(R, G, B);
     }
     public static System.Windows.Media.Color ApplyColorMode(this System.Windows.Media.Color color,bool isDarkMode)
     {
@@ -161,11 +325,89 @@ public static class ImageHelper
             l = Math.Min(0.95f, l + 0.1f);
 
         HslToRgb(h, s, l, out float r, out float g, out float b);
-        static void adjust(ref float a) => a = (a > 1) ? 1 : a;
-        adjust(ref r);adjust(ref g);adjust(ref b);
         return System.Windows.Media.Color.FromRgb((byte)(r * 255), (byte)(g * 255), (byte)(b * 255));
     }
 
+    private static void RgbToHsl(float r, float g, float b, out float h, out float s, out float l)
+    {
+        float max = Math.Max(r, Math.Max(g, b));
+        float min = Math.Min(r, Math.Min(g, b));
+
+        // 计算亮度
+        l = (max + min) / 2.0f;
+
+        // 默认值初始化
+        h = 0;
+        s = 0;
+
+        if (max == min)
+        {
+            // 无色调 (灰色)
+            return;
+        }
+
+        float d = max - min;
+
+        // 计算饱和度
+        s = l > 0.5f ? d / (2.0f - max - min) : d / (max + min);
+
+        // 计算色相
+        if (max == r)
+        {
+            h = (g - b) / d + (g < b ? 6.0f : 0.0f);
+        }
+        else if (max == g)
+        {
+            h = (b - r) / d + 2.0f;
+        }
+        else // max == b
+        {
+            h = (r - g) / d + 4.0f;
+        }
+
+        h /= 6.0f;
+
+        // 确保h在[0,1]范围内
+        h = Math.Max(0, Math.Min(1, h));
+    }
+
+    private static void HslToRgb(float h, float s, float l, out float r, out float g, out float b)
+    {
+        // 确保h在[0,1]范围内
+        h = ((h % 1.0f) + 1.0f) % 1.0f;
+
+        // 确保s和l在[0,1]范围内
+        s = Math.Max(0, Math.Min(1, s));
+        l = Math.Max(0, Math.Min(1, l));
+
+        if (s == 0.0f)
+        {
+            // 灰度颜色
+            r = g = b = l;
+            return;
+        }
+
+        float q = l < 0.5f ? l * (1.0f + s) : l + s - l * s;
+        float p = 2.0f * l - q;
+
+        r = HueToRgb(p, q, h + 1.0f / 3.0f);
+        g = HueToRgb(p, q, h);
+        b = HueToRgb(p, q, h - 1.0f / 3.0f);
+    }
+
+    private static float HueToRgb(float p, float q, float t)
+    {
+        // 确保t在[0,1]范围内
+        t = ((t % 1.0f) + 1.0f) % 1.0f;
+
+        if (t < 1.0f / 6.0f)
+            return p + (q - p) * 6.0f * t;
+        if (t < 0.5f)
+            return q;
+        if (t < 2.0f / 3.0f)
+            return p + (q - p) * (2.0f / 3.0f - t) * 6.0f;
+        return p;
+    }
     public static BitmapImage ToBitmapImage(this Bitmap Bmp)
     {
         BitmapImage BmpImage = new();
@@ -244,36 +486,6 @@ public static class ImageHelper
         bitmap.UnlockBits(data);
     }
 
-    private static void RgbToHsl(float r, float g, float b, out float h, out float s, out float l)
-    {
-        float max = Math.Max(r, Math.Max(g, b));
-        float min = Math.Min(r, Math.Min(g, b));
-        h = s = l = (max + min) / 2.0f;
-
-        if (max == min)
-        {
-            h = s = 0.0f; // achromatic
-        }
-        else
-        {
-            float d = max - min;
-            s = l > 0.5f ? d / (2.0f - max - min) : d / (max + min);
-            if (max == r)
-            {
-                h = (g - b) / d + (g < b ? 6.0f : 0.0f);
-            }
-            else if (max == g)
-            {
-                h = (b - r) / d + 2.0f;
-            }
-            else
-            {
-                h = (r - g) / d + 4.0f;
-            }
-            h /= 6.0f;
-        }
-    }
-
     public static void ScaleImage(this Bitmap bitmap, double scale)
     {
         // 计算新的尺寸
@@ -298,32 +510,6 @@ public static class ImageHelper
                 GraphicsUnit.Pixel);
         }
         bitmap = newBitmap;
-    }
-
-    private static void HslToRgb(float h, float s, float l, out float r, out float g, out float b)
-    {
-        if (s == 0.0f)
-        {
-            r = g = b = l; // achromatic
-        }
-        else
-        {
-            Func<float, float, float, float> hue2rgb = (p, q, t) =>
-            {
-                if (t < 0.0f) t += 1.0f;
-                if (t > 1.0f) t -= 1.0f;
-                if (t < 1.0f / 6.0f) return p + (q - p) * 6.0f * t;
-                if (t < 1.0f / 3.0f) return q;
-                if (t < 1.0f / 2.0f) return p + (q - p) * (2.0f / 3.0f - t) * 6.0f;
-                return p;
-            };
-
-            float q = l < 0.5f ? l * (1.0f + s) : l + s - l * s;
-            float p = 2.0f * l - q;
-            r = hue2rgb(p, q, h + 1.0f / 3.0f);
-            g = hue2rgb(p, q, h);
-            b = hue2rgb(p, q, h - 1.0f / 3.0f);
-        }
     }
 
     public static void ApplyMicaEffect(this Bitmap bitmap,bool isDarkmode)

@@ -577,8 +577,8 @@ public partial class MainWindowViewModel : ObservableObject
         var hc=_serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
         view.Title = "Albums";
         view.DataProvider = () => SingerAPI.GetAlbumOfSingerAsync(hc, mid, auth);
-        view.NextPage = async (vm, index) => {
-           await vm.AppendMore(await SingerAPI.GetAlbumOfSingerAsync(hc, mid, auth, index));
+        view.NextPage =  async(vm, index) => {
+           vm.AppendMore(await SingerAPI.GetAlbumOfSingerAsync(hc, mid, auth, index));
         };
         RequestNavigateToPage.Invoke(view);
 
@@ -795,7 +795,7 @@ public partial class MainWindowViewModel : ObservableObject
             bool isDarkMode = _uiResourceService.GetIsDarkMode();
             if (_uiResourceService.UsingMusicTheme)
             {
-                var color = bitmap.GetMajorColor().AdjustColor();
+                var color = bitmap.GetMajorColor().AdjustColor(isDarkMode);
                 _uiResourceService.SettingsMgr.Data.AccentColor =color;
                 _uiResourceService.UpdateAccentColor();
             }

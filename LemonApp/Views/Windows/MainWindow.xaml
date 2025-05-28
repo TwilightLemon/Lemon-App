@@ -562,18 +562,18 @@
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Center">
                         <TextBlock x:Name="BlurLyricTb"
-                                   Margin="0,0,0,60"
+                                   Margin="0,0,0,80"
                                    VerticalAlignment="Center"
                                    DataContext="{Binding CurrentLyric, NotifyOnTargetUpdated=True}"
                                    FontFamily="{StaticResource LyricFont}"
                                    Foreground="{DynamicResource FocusAccentColor}"
                                    TextAlignment="Center">
                             <Run d:Text="hands tied"
-                                 FontSize="150"
+                                 FontSize="160"
                                  FontWeight="Bold"
                                  Text="{Binding Lyric, Converter={x:Static converters:WordRandomSpiltConverter.Instance}}" />
                             <TextBlock.Effect>
-                                <BlurEffect Radius="6"/>
+                                <BlurEffect Radius="6" />
                             </TextBlock.Effect>
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="TargetUpdated">
@@ -590,7 +590,7 @@
                                                                  Storyboard.TargetName="BlurLyricTb"
                                                                  Storyboard.TargetProperty="Opacity"
                                                                  From="0"
-                                                                 To="0.5"
+                                                                 To="0.4"
                                                                  Duration="0:0:0.3" />
                                             </Storyboard>
                                         </i:ControlStoryboardAction.Storyboard>

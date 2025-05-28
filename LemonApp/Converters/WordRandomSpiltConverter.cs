@@ -15,7 +15,7 @@ public class WordRandomSpiltConverter : IValueConverter
         {
             if(!str.Contains(' '))
             {
-                if (str.Length <= 3) return str[^2..];
+                if (str.Length == 3) return str[^2..];
                 int sub = rnd.Next(2,4);
                 return str[^sub..];
             }
@@ -35,6 +35,7 @@ public class WordRandomSpiltConverter : IValueConverter
             {
                 return spilt[rnd.Next(spilt.Length - 1)];
             }
+            return string.Empty;
         }
         return Binding.DoNothing;
     }

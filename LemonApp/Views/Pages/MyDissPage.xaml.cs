@@ -38,16 +38,16 @@ namespace LemonApp.Views.Pages
             await user.UpdateAuthAndNotify(user.GetAuth());
             //load my diss
             MyDissList.ViewModel ??= sp.GetRequiredService<PlaylistItemViewModel>();
-            _ = MyDissList.ViewModel.SetPlaylistItems(user.UserProfileGetter.MyPlaylists);
+            MyDissList.ViewModel.SetPlaylistItems(user.UserProfileGetter.MyPlaylists);
             //load my favorite
             MyFarvoriteDissList.ViewModel ??= sp.GetRequiredService<PlaylistItemViewModel>();
-            _ = MyFarvoriteDissList.ViewModel.SetPlaylistItems(user.UserProfileGetter.MyFavoritePlaylists);
+            MyFarvoriteDissList.ViewModel.SetPlaylistItems(user.UserProfileGetter.MyFavoritePlaylists);
             //load netease diss
             if(user.GetNeteaseAuth() is { } netease)
             {
                 NeteaseTb.Visibility = NeteaseDissList.Visibility = Visibility.Visible;
                 NeteaseDissList.ViewModel ??= sp.GetRequiredService<PlaylistItemViewModel>();
-                _ = NeteaseDissList.ViewModel.SetPlaylistItems(await NeteasePlaylistAPI.GetNeteaseUserPlaylistAsync(
+                NeteaseDissList.ViewModel.SetPlaylistItems(await NeteasePlaylistAPI.GetNeteaseUserPlaylistAsync(
                     new HttpClient(),netease));
             }
             nav.CancelLoadingAni();

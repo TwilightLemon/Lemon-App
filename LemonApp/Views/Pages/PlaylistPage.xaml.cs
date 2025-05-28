@@ -75,7 +75,7 @@ namespace LemonApp.Views.Pages
 
             if (e.VerticalChange > 0)
             {
-                if (e.VerticalOffset + e.ViewportHeight >= e.ExtentHeight-10)
+                if (e.VerticalOffset + e.ViewportHeight >= e.ExtentHeight)
                 {
                     ViewModel?.LoadMore();
                 }

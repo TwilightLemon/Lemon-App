@@ -39,7 +39,7 @@ namespace LemonApp.Views.Pages
                 if (data != null)
                 {
                     viewer.ViewModel ??= sp.GetRequiredService<AlbumItemViewModel>();
-                    _ = viewer.ViewModel.SetAlbumItems(data);
+                    viewer.ViewModel.SetAlbumItems(data);
                 }
             }
             nav.CancelLoadingAni();

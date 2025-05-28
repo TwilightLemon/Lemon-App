@@ -11,11 +11,6 @@ using LemonApp.MusicLib.Abstraction.Entities;
 
 namespace LemonApp.ViewModels;
 
-public class RanklistItem(RankListInfo item, BitmapImage? cover)
-{
-    public RankListInfo ListInfo { get; set; } = item;
-    public BitmapImage? Cover { get; set; } = cover;
-}
 public partial class RanklistPageViewModel(
     MainNavigationService mainNavigationService,
     IHttpClientFactory httpClientFactory) : ObservableObject
@@ -23,30 +18,21 @@ public partial class RanklistPageViewModel(
     private readonly HttpClient hc=httpClientFactory.CreateClient(App.PublicClientFlag);
 
     [ObservableProperty]
-    private RanklistItem? _choosenItem;
+    private DisplayEntity<RankListInfo>? _choosenItem;
 
-    partial void OnChoosenItemChanged(RanklistItem? value)
+    partial void OnChoosenItemChanged(DisplayEntity<RankListInfo>? value)
     {
         if (value != null)
         {
             mainNavigationService.RequstNavigation(PageType.RankPage, value.ListInfo);
         }
     }
-    public ObservableCollection<RanklistItem> Ranklists { get; set; } = [];
-    private async Task SetRanklistItems(IEnumerable<RankListInfo> list)
+    public ObservableCollection<DisplayEntity<RankListInfo>> Ranklists { get; set; } = [];
+    private async Task AddOne(RankListInfo item)
     {
-        Ranklists.Clear();
-        var temp = new List<RanklistItem>();
-        foreach (var item in list)
-        {
-            //TODO: 图片加载过慢
-            var cover = await ImageCacheService.FetchData(item.CoverUrl);
-            temp.Add(new(item, cover));
-        }
-        foreach (var item in temp)
-        {
-            Ranklists.Add(item);
-        }
+        var rankItem = new DisplayEntity<RankListInfo>(item);
+        Ranklists.Add(rankItem);
+        rankItem.Cover = await ImageCacheService.FetchData(item.CoverUrl);
     }
     public async Task LoadData()
     {
@@ -54,7 +40,11 @@ public partial class RanklistPageViewModel(
         var data = await RankListAPI.GetRankListIndexAsync(hc);
         if (data != null)
         {
-            await SetRanklistItems(data);
+            Ranklists.Clear();
+            foreach ( var item in data)
+            {
+                _ = AddOne(item);
+            }
         }
     }
 }

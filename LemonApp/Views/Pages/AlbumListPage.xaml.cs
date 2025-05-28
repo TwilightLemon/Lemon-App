@@ -33,7 +33,7 @@ namespace LemonApp.Views.Pages
             {
                 var data= await task;
                 viewer.ViewModel ??= App.Services.GetRequiredService<AlbumItemViewModel>();
-                _ = viewer.ViewModel.SetAlbumItems(data);
+                viewer.ViewModel.SetAlbumItems(data);
             }
             nav.CancelLoadingAni();
         }
@@ -42,7 +42,7 @@ namespace LemonApp.Views.Pages
         {
             if (e.VerticalChange > 0)
             {
-                if (e.VerticalOffset + e.ViewportHeight >= e.ExtentHeight - 10)
+                if (e.VerticalOffset + e.ViewportHeight >= e.ExtentHeight)
                 {
                     _pageIndex++;
                     nav.BeginLoadingAni();

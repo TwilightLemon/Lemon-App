@@ -105,4 +105,7 @@ public partial class DesktopLyricWindowViewModel:ObservableObject
     {
         _mediaPlayerService.PlayLast();
     }
+
+    [RelayCommand]
+    private void ShowMainWindow()=> App.Current.MainWindow.ShowWindow();
 }

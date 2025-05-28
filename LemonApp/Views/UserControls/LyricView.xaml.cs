@@ -55,7 +55,6 @@ namespace LemonApp.Views.UserControls
             AppSettingService appSettingsService)
         {
             InitializeComponent();
-            UpdateColorMode();
 
             _settings = appSettingsService.GetConfigMgr<LyricOption>();
             _settings.OnDataChanged += Settings_OnDataChanged;
@@ -80,6 +79,7 @@ namespace LemonApp.Views.UserControls
         private void LyricView_Loaded(object sender, RoutedEventArgs e)
         {
             ApplySettings();
+            UpdateColorMode();
         }
         private void ApplySettings()
         {

@@ -11,16 +11,18 @@ using System.Windows.Media.Imaging;
 
 namespace LemonApp.ViewModels;
 
-public class AlbumItem(AlbumInfo item,BitmapImage? cover)
+public partial class DisplayEntity<T>(T item) : ObservableObject where T :notnull 
 {
-    public AlbumInfo ListInfo { get; set; } = item;
-    public BitmapImage? Cover { get; set; } = cover;
+    public T ListInfo { get; set; } = item;
+    [ObservableProperty]
+    public BitmapImage? _cover;
 }
+
 public partial class AlbumItemViewModel(
     MainNavigationService mainNavigationService) :ObservableObject
 {
     [RelayCommand]
-    private void Select(AlbumItem? value)
+    private void Select(DisplayEntity<AlbumInfo>? value)
     {
         if (value!=null)
         {
@@ -28,8 +30,14 @@ public partial class AlbumItemViewModel(
         }
     }
 
-    public ObservableCollection<AlbumItem> Albums { get; set; } = [];
-    public async Task SetAlbumItems(IEnumerable<AlbumInfo> list)
+    public ObservableCollection<DisplayEntity<AlbumInfo>> Albums { get; set; } = [];
+    private async Task AddOne(AlbumInfo item)
+    {
+        var albumItem=new DisplayEntity<AlbumInfo>(item);
+        Albums.Add(albumItem);
+        albumItem.Cover =await ImageCacheService.FetchData(item.Photo);
+    }
+    public void SetAlbumItems(IEnumerable<AlbumInfo> list)
     {
         //compare
         if (Albums.Count>0)
@@ -41,17 +49,15 @@ public partial class AlbumItemViewModel(
         Albums.Clear();
         foreach (var item in list)
         {
-            var cover = await ImageCacheService.FetchData(item.Photo);
-            Albums.Add(new(item,cover));
+            _ = AddOne(item);
         }
     }
 
-    public async Task AppendMore(IEnumerable<AlbumInfo> list)
+    public void AppendMore(IEnumerable<AlbumInfo> list)
     {
         foreach (var item in list)
         {
-            var cover = await ImageCacheService.FetchData(item.Photo);
-            Albums.Add(new(item, cover));
+            _ = AddOne(item);
         }
     }
 }

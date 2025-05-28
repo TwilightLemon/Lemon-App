@@ -12,22 +12,26 @@ using System.Windows.Media.Imaging;
 
 namespace LemonApp.ViewModels;
 
-public record class SingerItem(Profile ListInfo,BitmapImage? Cover);
 public partial class SingerItemViewModel(MainNavigationService navigationService):ObservableObject
 {
-    public ObservableCollection<SingerItem> Singers { get; } = [];
+    public ObservableCollection<DisplayEntity<Profile>> Singers { get; } = [];
     [RelayCommand]
-    private void Select(SingerItem item)
+    private void Select(DisplayEntity<Profile> item)
     {
         navigationService.RequstNavigation(PageType.ArtistPage,item.ListInfo);
     }
-    public async Task SetList(IEnumerable<Profile> list)
+    private async Task AddOne(Profile item)
+    {
+        var singerItem = new DisplayEntity<Profile>(item);
+        Singers.Add(singerItem);
+        singerItem.Cover = await ImageCacheService.FetchData(item.Photo);
+    }
+    public void SetList(IEnumerable<Profile> list)
     {
         Singers.Clear();
         foreach (var item in list)
         {
-            var cover = await ImageCacheService.FetchData(item.Photo);
-            Singers.Add(new(item, cover));
+            _ = AddOne(item);
         }
     }
 }

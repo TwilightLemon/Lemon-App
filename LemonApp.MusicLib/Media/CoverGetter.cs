@@ -32,14 +32,18 @@ public static class CoverGetter
 
     public static async Task<string> GetCoverNetease(HttpClient hc, string id)
     {
-        var bytes = await hc.GetByteArrayAsync($"https://music.163.com/song?id={id}");       
-        var data=Encoding.UTF8.GetString(bytes);
-        Regex regex = new Regex(@"<meta\s+property=""og:image""\s+content=""([^""]+\.jpg)""\s*/>");
-        var match = regex.Match(data);
-        if (match.Success)
+        try
         {
-            return match.Groups[1].Value+ "?param=500y500";//分辨率参数
+            var bytes = await hc.SetForNetease(null).GetByteArrayAsync($"https://music.163.com/song?id={id}");
+            var data = Encoding.UTF8.GetString(bytes);
+            Regex regex = new Regex(@"<meta\s+property=""og:image""\s+content=""([^""]+\.jpg)""\s*/>");
+            var match = regex.Match(data);
+            if (match.Success)
+            {
+                return match.Groups[1].Value + "?param=500y500";//分辨率参数
+            }
         }
-        else return "https://y.gtimg.cn/mediastyle/global/img/album_300.png?max_age=31536000";
+        catch { }
+        return "https://y.gtimg.cn/mediastyle/global/img/album_300.png?max_age=31536000";
     }
 }
