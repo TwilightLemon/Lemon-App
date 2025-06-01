@@ -19,7 +19,7 @@ public class MyToolBarLyricClient(LyricView lyricView, WindowBasicComponent wbc)
     private readonly CancellationTokenSource cts = new();
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        lyricView.OnNextLrcReached += LyricView_OnNextLrcReached;
+        lyricView.LrcHost.OnNextLrcReached += LyricView_OnNextLrcReached;
         wbc.OnCopyDataReceived += Wbc_OnCopyDataReceived;
         return Task.CompletedTask;
     }
@@ -47,13 +47,13 @@ public class MyToolBarLyricClient(LyricView lyricView, WindowBasicComponent wbc)
         }
     }
 
-    private async void LyricView_OnNextLrcReached(LrcLine lrc,LrcLine? next)
+    private async void LyricView_OnNextLrcReached(LrcLine lrc)
     {
         if (client != null && client.Connected)
         {
             try
             {
-                var msg = lrc.Lyric + "\r\n";
+                var msg = lrc.Lrc.Text+ "\r\n";
                 var data = Encoding.UTF8.GetBytes(msg);
                 var stream = client.GetStream();
                 await stream.WriteAsync(data, cts.Token);
@@ -67,7 +67,7 @@ public class MyToolBarLyricClient(LyricView lyricView, WindowBasicComponent wbc)
     public Task StopAsync(CancellationToken cancellationToken)
     {
         cts.Cancel();
-        lyricView.OnNextLrcReached -= LyricView_OnNextLrcReached;
+        lyricView.LrcHost.OnNextLrcReached -= LyricView_OnNextLrcReached;
         wbc.OnCopyDataReceived -= Wbc_OnCopyDataReceived;
         client?.Dispose();
         return Task.CompletedTask;

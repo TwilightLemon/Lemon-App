@@ -16,10 +16,14 @@ public partial class LyricLineControl : UserControl
 {
     private static double InitialOpacity = 0.4, ActiveOpacity = 1;
     private readonly Dictionary<ISyllableInfo, TextBlock> mainSyllableLrcs = [], romajiSyllableLrcs = [];
+    private Effect? _normalLrcEffect = new BlurEffect() { Radius = 4 };
+    public SyllableLineInfo? RomajiSyllables { get; private set; }
+
     public LyricLineControl(List<ISyllableInfo> words)
     {
         InitializeComponent();
         Opacity = InitialOpacity;
+        Effect = _normalLrcEffect;
         foreach (var word in words)
         {
             var textBlock = new TextBlock
@@ -32,9 +36,10 @@ public partial class LyricLineControl : UserControl
         }
     }
 
-    public void LoadRomajiLrc(List<ISyllableInfo> words)
+    public void LoadRomajiLrc(SyllableLineInfo words)
     {
-        foreach (var word in words)
+        RomajiSyllables = words;
+        foreach (var word in words.Syllables)
         {
             var textBlock = new TextBlock
             {
@@ -75,7 +80,8 @@ public partial class LyricLineControl : UserControl
                     var brush = EnsureBrush(textBlock, syllable, 0.0);
                     var duration = TimeSpan.FromMilliseconds(syllable.Duration);
                     var anim = new DoubleAnimation(0.0, 1.0, new Duration(duration));
-                    brush.GradientStops[1].BeginAnimation(GradientStop.OffsetProperty, anim);
+                    var animDelay = new DoubleAnimation(0.0, 1.0, new Duration(duration*1.5));
+                    brush.GradientStops[1].BeginAnimation(GradientStop.OffsetProperty, animDelay);
                     brush.GradientStops[2].BeginAnimation(GradientStop.OffsetProperty, anim);
                     mainSyllableAnimated[syllable] = true;
 
@@ -192,6 +198,7 @@ public partial class LyricLineControl : UserControl
         {
             if ((bool)e.NewValue)
             {
+                control.Effect = null;
                 foreach(var lrc in control.mainSyllableLrcs)
                 {
                     control.EnsureBrush(lrc.Value, lrc.Key, 0);
@@ -206,6 +213,7 @@ public partial class LyricLineControl : UserControl
             }
             else
             {
+                control.Effect= control._normalLrcEffect;
                 control.BeginAnimation(OpacityProperty, new DoubleAnimation
                 {
                     To = InitialOpacity,

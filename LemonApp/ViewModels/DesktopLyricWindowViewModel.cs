@@ -4,6 +4,7 @@ using LemonApp.Common.Configs;
 using LemonApp.Common.Funcs;
 using LemonApp.MusicLib.Abstraction.Entities;
 using LemonApp.Services;
+using LemonApp.Views.UserControls;
 
 namespace LemonApp.ViewModels;
 /// <summary>
@@ -58,7 +59,7 @@ public partial class DesktopLyricWindowViewModel:ObservableObject
         if (value)
         {
             TransText = lrcLine?.Trans;
-            RomajiText = lrcLine?.Romaji;
+            RomajiText = lrcLine?.Romaji.Text;
         }
         else
         {
@@ -73,11 +74,11 @@ public partial class DesktopLyricWindowViewModel:ObservableObject
         lrcLine = lrc;
         if (!string.IsNullOrEmpty(lrc.Trans)&&ShowTranslation)
         {
-            LyricText = lrc.Lyric + "\r\n";
+            LyricText = lrc.Lrc.Text + "\r\n";
         }
         else
         {
-            LyricText = lrc.Lyric;
+            LyricText = lrc.Lrc.Text;
         }
         TransText = ShowTranslation ? lrc.Trans : null;
         RomajiText = ShowTranslation ? lrc.Romaji+"\r\n" : null;

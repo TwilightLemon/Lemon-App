@@ -9,6 +9,7 @@ using Lyricify.Lyrics.Helpers.Types;
 using Lyricify.Lyrics.Models;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
@@ -64,8 +65,6 @@ namespace LemonApp.Views.UserControls
         public double LyricFontSize = 24;
         public const double LyricFontSizeDelta = 6;
         #endregion
-
-        public event Action<LrcLine,LrcLine?>? OnNextLrcReached;
 
         [RelayCommand]
         public void FontSizeUp() => SetFontSize((int)LyricFontSize +2);

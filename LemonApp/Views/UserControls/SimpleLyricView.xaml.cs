@@ -9,6 +9,7 @@ using System;
 using System.Linq;
 
 namespace LemonApp.Views.UserControls;
+public record class LrcLine(SyllableLineInfo Lrc, string? Trans = null, SyllableLineInfo? Romaji = null);
 /// <summary>
 /// [Simplified]
 /// SimpleLyricView and LyricLineControl are used to display lyrics with syllables
@@ -23,6 +24,8 @@ public partial class SimpleLyricView : UserControl
 
     private readonly Dictionary<SyllableLineInfo, LyricLineControl> lrcs = [];
     private SyllableLineInfo? currentLrc;
+
+    public event Action<LrcLine> OnNextLrcReached;
 
     public void Reset()
     {
@@ -87,7 +90,7 @@ public partial class SimpleLyricView : UserControl
             {
                 var romajiLrc = romaji.Lines.FirstOrDefault(a => a.StartTime >= lrc.Key.StartTime - 10);
                 if (romajiLrc is SyllableLineInfo { } roma)
-                    lrc.Value.LoadRomajiLrc(roma.Syllables);
+                    lrc.Value.LoadRomajiLrc(roma);
             }
         }
     }
@@ -113,7 +116,10 @@ public partial class SimpleLyricView : UserControl
                     lrc.IsCurrent = false;
                 }
                 currentLrc = line;
-                lrcs[currentLrc].IsCurrent = true;
+                var currentControl = lrcs[currentLrc];
+                currentControl.IsCurrent = true;
+                //Notify the change in current line
+                OnNextLrcReached?.Invoke(new(line, currentControl.TranslationLrc.Text,currentControl.RomajiSyllables));
                 ScrollToCurrent();
             }
         }

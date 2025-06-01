@@ -91,7 +91,7 @@ public partial class MainWindowViewModel : ObservableObject
         _mediaPlayerService.FailedToLoadMusic += MediaPlayerService_FailedToLoadMusic;
 
         LyricView = lyricView;
-        LyricView.OnNextLrcReached += LyricView_OnNextLrcReached;
+        LyricView.LrcHost.OnNextLrcReached += LyricView_OnNextLrcReached;
 
         _lyricWindowViewModel = lyricWindowViewModel;
 
@@ -116,10 +116,9 @@ public partial class MainWindowViewModel : ObservableObject
         await UpdateCover();
     }
 
-    private void LyricView_OnNextLrcReached(LrcLine now,LrcLine? next)
+    private void LyricView_OnNextLrcReached(LrcLine now)
     {
         CurrentLyric = now;
-        NextLyric = next;
         _lyricWindowViewModel.Update(now);
     }
     #endregion
