@@ -76,14 +76,14 @@ public class DownloadService(AppSettingService appSettingsService,
 
     public MusicQuality DownloadQuality
     {
-        get => settingsMgr!.Data.PreferQuality;
-        set => settingsMgr!.Data.PreferQuality = value;
+        get => settingsMgr.Data.PreferQuality;
+        set => settingsMgr.Data.PreferQuality = value;
     }
 
     public string DownloadPath
     {
-        get => settingsMgr!.Data.DefaultPath!;
-        set => settingsMgr!.Data.DefaultPath = value;
+        get => settingsMgr.Data.DefaultPath!;
+        set => settingsMgr.Data.DefaultPath = value;
     }
 
     public ObservableCollection<DownloadItemTask> History { get; internal set; } = [];
@@ -133,7 +133,8 @@ public class DownloadService(AppSettingService appSettingsService,
     private DownloadItemTask? CreateTask(Music music)
     {
         //check if cache file exists
-        var quality = AudioGetter.QualityMatcher(DownloadQuality);
+        var finalQuality=AudioGetter.GetFinalQuality(music.Quality, DownloadQuality);
+        var quality = AudioGetter.QualityMatcher(finalQuality);
         var cacheFile = Path.Combine(CacheManager.GetCachePath(CacheManager.CacheType.Music), music.MusicID + quality[0]);
         var dlFile = Path.Combine(DownloadPath, SanitizeFileName($"{music.MusicName} - {music.SingerText}{quality[0]}"));
         if (File.Exists(cacheFile))

@@ -514,10 +514,10 @@ public static class ImageHelper
 
     public static void ApplyMicaEffect(this Bitmap bitmap,bool isDarkmode)
     {
-        var rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
         bitmap.AdjustContrast(isDarkmode?-1:-20);
         bitmap.AddMask(isDarkmode);
         bitmap.ScaleImage(2);
+        var rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
         bitmap.GaussianBlur(ref rect, 80f, false);
     }
 }

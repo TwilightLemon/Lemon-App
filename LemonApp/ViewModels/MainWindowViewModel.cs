@@ -290,6 +290,11 @@ public partial class MainWindowViewModel : ObservableObject
 
     private void MediaPlayerService_OnAddToPlayNext(Music obj)
     {
+        if (Playlist.Count == 0)
+        {
+            Playlist.Add(obj);
+            return;
+        }
         int index = 0;
         if (CurrentPlaying != null)
         {

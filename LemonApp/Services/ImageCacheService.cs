@@ -38,11 +38,12 @@ public class ImageCacheService
         _client.DefaultRequestHeaders.UserAgent.TryParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.110 Safari/537.36");
     }
     static readonly ImageCacheService Instance = App.Services.GetRequiredService<ImageCacheService>();
-    public static Task<BitmapImage?> FetchData(string url)
+    public static Task<BitmapImage?> FetchData(string? url)
         => Instance.GetImage(url);
-    public async Task<BitmapImage?> GetImage(string url)
+    public async Task<BitmapImage?> GetImage(string? url)
     {
         if (string.IsNullOrEmpty(url)) return null;
+
         var img = GetFromMem(url);
         if (img is { })
         {

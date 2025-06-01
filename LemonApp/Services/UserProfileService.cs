@@ -21,18 +21,15 @@ public class UserProfileService(
 
     public void UpdateNeteaseAuth(NeteaseUserAuth auth)
     {
-        if (_profileMgr == null) throw new Exception("Failed to load components");
-
         _profileMgr.Data.NeteaseUserAuth= auth;
     }
 
-    public NeteaseUserAuth? GetNeteaseAuth() => _profileMgr?.Data.NeteaseUserAuth;
+    public NeteaseUserAuth? GetNeteaseAuth() => _profileMgr.Data.NeteaseUserAuth;
 
     public async Task UpdateAuthAndNotify(TencUserAuth auth)
     {
         Debug.WriteLine("Login qq:" + auth.Id);
-        var client = httpClientFactory.CreateClient(App.PublicClientFlag);
-        if (_profileMgr == null||client==null) throw new Exception("Failed to load components");
+        var client = httpClientFactory.CreateClient(App.PublicClientFlag) ?? throw new Exception("Failed to load components");
 
         //获取nick pic
         bool success = await UserProfileGetter.Fetch(client, auth);
@@ -55,43 +52,16 @@ public class UserProfileService(
 
     public TencUserAuth GetAuth()
     {
-        if(_profileMgr is { })
-        {
-            return _profileMgr.Data.TencUserAuth!;
-        }
-        return new();
+        if (_profileMgr.Data.TencUserAuth is { } auth)
+            return auth;
+        return new() { Id = "0", Cookie = string.Empty, G_tk = "5381" };
     }
 
-    public string? GetSharedLaToken()
-    {
-        if(_profileMgr is { })
-        {
-            return _profileMgr.Data.SharedLaToken;
-        }
-        return null;
-    }
-    public void SetSharedLaToken(string token)
-    {
-        if (_profileMgr is { })
-        {
-            _profileMgr.Data.SharedLaToken = token;
-        }
-    }
+    public string? GetSharedLaToken() => _profileMgr.Data.SharedLaToken;
+    public void SetSharedLaToken(string token) => _profileMgr.Data.SharedLaToken = token;
 
 
-    public async  Task<BitmapImage?> GetAvatorImg()
-    {
-        if(_profileMgr is { } mgr && mgr.Data.AvatarUrl is { } url)
-            return await ImageCacheService.FetchData(url);
+    public Task<BitmapImage?> GetAvatorImg() => ImageCacheService.FetchData(_profileMgr.Data.AvatarUrl);
 
-        return null;
-    }
-
-    public string? GetNickname()
-    {
-        if (_profileMgr is { } mgr && mgr.Data.UserName is { } name)
-            return name;
-
-        return null;
-    }
+    public string? GetNickname() => _profileMgr.Data.UserName;
 }
