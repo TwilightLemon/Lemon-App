@@ -1,4 +1,5 @@
 ﻿using LemonApp.Common.Funcs;
+using System.Net;
 
 namespace LemonApp.MusicLib.Http;
 public static class ClientHeaderSetter
@@ -22,6 +23,15 @@ public static class ClientHeaderSetter
         hc.DefaultRequestHeaders.Add("sec-fetch-dest", "empty");
         hc.DefaultRequestHeaders.Add("sec-fetch-mode", "cors");
         hc.DefaultRequestHeaders.Add("sec-fetch-site", "same-site");
+        return hc;
+    }
+
+    public static HttpClient SetForPCQ(this HttpClient hc)
+    {
+        hc.DefaultRequestHeaders.Clear();
+        hc.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36");
+        hc.DefaultRequestHeaders.Add("Referer", "https://c.y.qq.com/");
+        hc.DefaultRequestHeaders.Add("Cookie", "os=pc;osver=Microsoft-Windows-10-Professional-build-16299.125-64bit;appver=2.0.3.131777;channel=netease;__remember_me=true");
         return hc;
     }
 

@@ -1,32 +1,114 @@
-﻿using LemonApp.MusicLib.Abstraction.UserAuth;
+﻿using LemonApp.MusicLib.Abstraction.Entities;
+using LemonApp.MusicLib.Abstraction.UserAuth;
 using LemonApp.MusicLib.Http;
+using Lyricify.Lyrics.Decrypter.Qrc;
+using Newtonsoft.Json;
 using System.Net;
 using System.Text;
 using System.Text.Json.Nodes;
-using LemonApp.MusicLib.Abstraction.Entities;
+using System.Xml;
 
 namespace LemonApp.MusicLib.Lyric;
-
-public static  class TencGetLyric
+public class QqLyricsResponse
 {
-    public static async Task<LyricData?> GetLyricDataAsync(
-        HttpClient hc,TencUserAuth auth,string mid)
-    {
-        string url = $"https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg?songmid={mid}&g_tk=5381&loginUin=0&hostUin=0&format=json&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq.json&needNewCode=0";
-        string data = await hc.SetForCYQ(auth.Cookie!, "https://y.qq.com/portal/player.html")
-            .GetStringAsync(url);
-        if(JsonNode.Parse(data) is { } json)
+    public string? Lyrics { get; set; }
+    public string? Trans { get; set; }
+    public string? Romaji { get; set; }
+}
+public static class TencGetLyric
+{
+    private static readonly Dictionary<string, string> VerbatimXmlMappingDict = new()
         {
-            LyricData ld = new() { Id = mid };
-            string lyric = WebUtility.HtmlDecode(Encoding.UTF8.GetString(Convert.FromBase64String(json["lyric"]!.ToString())));
-            ld.Lyric = lyric;
-            if (json["trans"]?.ToString() is { } transEnc)
+            { "content", "orig" }, // 原文
+            { "contentts", "ts" }, // 译文
+            { "contentroma", "roma" }, // 罗马音
+            { "Lyric_1", "lyric" }, // 解压后的内容
+        };
+    public static async Task<QqLyricsResponse?> GetLyricsAsync(HttpClient hc, string id)
+    {
+        var param = new Dictionary<string, string>
+                {
+                    { "version", "15" },
+                    { "miniversion", "82" },
+                    { "lrctype", "4" },
+                    { "musicid", id },
+                };
+        var content = new FormUrlEncodedContent(param);
+        var response = await hc.SetForPCQ().PostAsync("https://c.y.qq.com/qqmusic/fcgi-bin/lyric_download.fcg", content);
+        var resp = await response.Content.ReadAsStringAsync();
+
+        resp = resp.Replace("<!--", "").Replace("-->", "");
+
+        var dict = new Dictionary<string, XmlNode>();
+
+        XmlUtils.RecursionFindElement(XmlUtils.Create(resp), VerbatimXmlMappingDict, dict);
+
+        var result = new QqLyricsResponse
+        {
+            Lyrics = "",
+            Trans = "",
+            Romaji = ""
+        };
+
+        foreach (var pair in dict)
+        {
+            var text = pair.Value.InnerText;
+
+            if (string.IsNullOrWhiteSpace(text))
             {
-                string trans = WebUtility.HtmlDecode(Encoding.UTF8.GetString(Convert.FromBase64String(transEnc)));
-                ld.Trans= trans;
+                continue;
             }
-            return ld;
+
+            string decompressText;
+            try
+            {
+                decompressText = Decrypter.DecryptLyrics(text) ?? "";
+            }
+            catch
+            {
+                continue;
+            }
+
+            var s = "";
+            if (decompressText.Contains("<?xml"))
+            {
+                var doc = XmlUtils.Create(decompressText);
+
+                var subDict = new Dictionary<string, XmlNode>();
+
+                XmlUtils.RecursionFindElement(doc, VerbatimXmlMappingDict, subDict);
+
+                if (subDict.TryGetValue("lyric", out var d))
+                {
+                    s = d.Attributes?["LyricContent"]?.InnerText;
+                }
+            }
+            else
+            {
+                s = decompressText;
+            }
+
+            if (!string.IsNullOrWhiteSpace(s))
+            {
+                switch (pair.Key)
+                {
+                    case "orig":
+                        result.Lyrics = s;
+                        break;
+                    case "ts":
+                        result.Trans = s;
+                        break;
+                    case "roma":
+                        result.Romaji = s;
+                        break;
+                }
+            }
         }
-        return null;
+
+        if (result.Lyrics == "" && result.Trans == "")
+        {
+            return null;
+        }
+        return result;
     }
 }

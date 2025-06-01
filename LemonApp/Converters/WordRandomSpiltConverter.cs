@@ -11,33 +11,36 @@ public class WordRandomSpiltConverter : IValueConverter
     public readonly Random rnd = new();
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if(value is string { Length:> 0 } str)
+        try
         {
-            if(!str.Contains(' '))
+            if (value is string { Length: > 0 } str)
             {
-                if (str.Length == 3) return str[^2..];
-                int sub = rnd.Next(2,4);
-                return str[^sub..];
+                if (!str.Contains(' '))
+                {
+                    if (str.Length <= 3) return str;
+                    int sub = rnd.Next(2, 4);
+                    return str[^sub..];
+                }
+                var spilt = str.Split(' ');
+                int choose = rnd.Next(0, 2);
+                if (choose == 0)
+                {
+                    return spilt.MaxBy(word => word.Length) ?? spilt[rnd.Next(spilt.Length - 1)];
+                }
+                else if (choose == 1)
+                {
+                    if (spilt.Length > 2)
+                        return string.Join(' ', spilt[^2..]);
+                    else return spilt.Last();
+                }
+                else
+                {
+                    return spilt[rnd.Next(spilt.Length - 1)];
+                }
             }
-            var spilt = str.Split(' ');
-            int choose = rnd.Next(0, 2);
-            if (choose == 0)
-            {
-                return spilt.MaxBy(word => word.Length) ?? spilt[rnd.Next(spilt.Length-1)];
-            }
-            else if(choose ==1)
-            {
-                if (spilt.Length > 2)
-                    return string.Join(' ',spilt[^2..]);
-                else return spilt.Last();
-            }
-            else
-            {
-                return spilt[rnd.Next(spilt.Length - 1)];
-            }
-            return string.Empty;
         }
-        return Binding.DoNothing;
+        catch { }
+        return "";
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -14,10 +14,3 @@ public class LrcLine
     public string? Trans { get; set; }
     public string? Romaji { get; set; }
 }
-public class LocalLyricData
-{
-    public string Id { get; set; } = string.Empty;
-    public bool HasTrans { get; set; } = false;
-    public bool HasRomaji { get; set; } = false;
-    public List<LrcLine> LyricData { get; set; } = [];
-}

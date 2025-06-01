@@ -7,15 +7,5 @@
              d:DesignHeight="200"
              d:DesignWidth="100"
              mc:Ignorable="d">
-    <Grid>
-        <ScrollViewer x:Name="scrollviewer"
-                      FocusVisualStyle="{x:Null}"
-                      HorizontalScrollBarVisibility="Hidden"
-                      PreviewMouseWheel="scrollviewer_PreviewMouseWheel"
-                      VerticalScrollBarVisibility="Hidden">
-            <StackPanel Name="LyricPanel"
-                        Width="{Binding ElementName=scrollviewer, Path=ActualWidth}"
-                        Orientation="Vertical" />
-        </ScrollViewer>
-    </Grid>
+    <local:SimpleLyricView x:Name="LrcHost" />
 </UserControl>

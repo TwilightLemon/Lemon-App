@@ -103,7 +103,7 @@ public partial class MainWindowViewModel : ObservableObject
 
         _timer = new();
         _timer.Elapsed += Timer_Elapsed;
-        _timer.Interval = 300;
+        _timer.Interval = 100;
 
         LoadMainMenus();
         LoadComponent();
@@ -172,7 +172,7 @@ public partial class MainWindowViewModel : ObservableObject
         {
             LyricView.Dispatcher.Invoke(() =>
             {
-                LyricView.UpdateTime(pos.TotalMilliseconds);
+                LyricView.LrcHost.UpdateTime((int)pos.TotalMilliseconds);
             });
         }
         catch { }
