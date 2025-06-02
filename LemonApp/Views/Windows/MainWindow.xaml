@@ -571,7 +571,7 @@
                             <Run d:Text="hands tied"
                                  FontSize="160"
                                  FontWeight="Bold"
-                                 Text="{Binding Lrc.Text,Mode=OneWay, Converter={x:Static converters:WordRandomSpiltConverter.Instance}}" />
+                                 Text="{Binding Lrc.Text, Mode=OneWay, Converter={x:Static converters:WordRandomSpiltConverter.Instance}}" />
                             <TextBlock.Effect>
                                 <BlurEffect Radius="6" />
                             </TextBlock.Effect>
@@ -616,19 +616,19 @@
                             </TextBlock.RenderTransform>
                             <TextBlock FontSize="24"
                                        Opacity="0.7"
-                                       Text="{Binding Romaji.Text,Mode=OneWay}"
+                                       Text="{Binding Romaji.Text, Mode=OneWay}"
                                        Visibility="{Binding DataContext.LyricView.IsShowRomaji, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisibility}}" />
                             <LineBreak />
                             <TextBlock d:Text="Dancing with our hands tied"
                                        FontSize="64"
                                        Foreground="{DynamicResource HighlightThemeColor}"
                                        LineHeight="140"
-                                       Text="{Binding Lrc.Text,Mode=OneWay}"
+                                       Text="{Binding Lrc.Text, Mode=OneWay}"
                                        TextWrapping="Wrap" />
                             <LineBreak />
                             <TextBlock FontSize="24"
                                        Opacity="0.6"
-                                       Text="{Binding Trans,Mode=OneWay}"
+                                       Text="{Binding Trans, Mode=OneWay}"
                                        Visibility="{Binding DataContext.LyricView.IsShowTranslation, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisibility}}" />
                             <!--<TextBlock.Effect>
                                 <DropShadowEffect x:Name="Im_Effect"

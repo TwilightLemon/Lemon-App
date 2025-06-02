@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Effects;
@@ -19,18 +20,52 @@ public partial class LyricLineControl : UserControl
     private Effect? _normalLrcEffect = new BlurEffect() { Radius = 4 };
     public SyllableLineInfo? RomajiSyllables { get; private set; }
 
+    public LyricLineControl()
+    {
+        InitializeComponent();
+    }
+
     public LyricLineControl(List<ISyllableInfo> words)
     {
         InitializeComponent();
         Opacity = InitialOpacity;
         Effect = _normalLrcEffect;
+        LoadMainLrc(words);
+    }
+    public void LoadMainLrc(List<ISyllableInfo> words,double fontSize=22)
+    {
+        MainLrcContainer.Children.Clear();
+        mainSyllableLrcs.Clear();
+        ClearHighlighter();
         foreach (var word in words)
         {
             var textBlock = new TextBlock
             {
                 Text = word.Text,
-                FontSize = 22
+                TextTrimming=TextTrimming.None,
+                FontSize = fontSize
             };
+            //高亮抬起词
+            if (word.Duration >= 2000)
+            {
+                if (word.Text.Length > 1)
+                {
+                    textBlock.Text = null;
+                    //拆分每个字符
+                    foreach (char c in word.Text)
+                    {
+                        textBlock.Inlines.Add(new TextBlock()
+                        {
+                            Text = c.ToString(),
+                            RenderTransform = new TranslateTransform()
+                        });
+                    }
+                }
+                else
+                {
+                    textBlock.RenderTransform = new TranslateTransform();
+                }
+            }
             MainLrcContainer.Children.Add(textBlock);
             mainSyllableLrcs[word] = textBlock;
         }
@@ -38,12 +73,15 @@ public partial class LyricLineControl : UserControl
 
     public void LoadRomajiLrc(SyllableLineInfo words)
     {
+        RomajiLrcContainer.Children.Clear();
+        romajiSyllableLrcs.Clear();
         RomajiSyllables = words;
         foreach (var word in words.Syllables)
         {
             var textBlock = new TextBlock
             {
-                Text = word.Text
+                Text = word.Text,
+                TextTrimming = TextTrimming.None
             };
             RomajiLrcContainer.Children.Add(textBlock);
             romajiSyllableLrcs[word] = textBlock;
@@ -71,36 +109,124 @@ public partial class LyricLineControl : UserControl
                 // 还没到，保持未填充
                 EnsureBrush(textBlock, syllable, 0.0);
                 mainSyllableAnimated[syllable] = false;
+
+                //如果是高亮抬起分词，则可能需要先清除效果
+                if (syllable.Duration > 2000)
+                {
+                    var empty= CreateBrush(0.0);
+                    foreach (var line in textBlock.Inlines)
+                    {
+                        if(line is InlineUIContainer con &&con.Child is TextBlock block)
+                        {
+                            block.Foreground = empty;
+                        }
+                    }
+                }
             }
             else
             {
                 // 正在进行，判断是否需要启动动画
                 if (!mainSyllableAnimated.TryGetValue(syllable, out var animated) || !animated)
                 {
-                    var brush = EnsureBrush(textBlock, syllable, 0.0);
-                    var duration = TimeSpan.FromMilliseconds(syllable.Duration);
-                    var anim = new DoubleAnimation(0.0, 1.0, new Duration(duration));
-                    var animDelay = new DoubleAnimation(0.0, 1.0, new Duration(duration*1.5));
-                    brush.GradientStops[1].BeginAnimation(GradientStop.OffsetProperty, animDelay);
-                    brush.GradientStops[2].BeginAnimation(GradientStop.OffsetProperty, anim);
                     mainSyllableAnimated[syllable] = true;
 
+                    bool animate = true;
                     if (syllable.Duration > 2000)
                     {
-                        //向上抬起又落下的动画
-                        var easing = new CubicEase();
-                        var position = new Thickness(0, -6, 0, 6);
-                        var upAni = new ThicknessAnimationUsingKeyFrames()
+                        //highlight
+                       var lighter = new DropShadowEffect() { BlurRadius = 20,Color = Colors.White, Direction = 0, ShadowDepth = 0 };
+                        textBlock.Effect = lighter;
+                        lighter.BeginAnimation(DropShadowEffect.OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(syllable.Duration*0.8)));
+
+                       var easing = new CubicEase();
+                        var up = -6;
+                        //向上抬起又落下的动画(整体)
+                        if (textBlock.Inlines.Count <=1)
                         {
-                            KeyFrames = [new EasingThicknessKeyFrame(position, TimeSpan.FromMilliseconds(1500)){
-                                EasingFunction=easing
-                            },
-                              new EasingThicknessKeyFrame(position, TimeSpan.FromMilliseconds(syllable.Duration)),
-                                                   new EasingThicknessKeyFrame(default, TimeSpan.FromMilliseconds(syllable.Duration+600)){
-                                                       EasingFunction=easing
-                                                   }],
-                        };
-                        textBlock.BeginAnimation(MarginProperty, upAni);
+                            var upAni = new DoubleAnimationUsingKeyFrames()
+                            {
+                                KeyFrames = [
+                                    new EasingDoubleKeyFrame(up, TimeSpan.FromMilliseconds(1500)){
+                                        EasingFunction=easing
+                                    },
+                                    new EasingDoubleKeyFrame(up, TimeSpan.FromMilliseconds(syllable.Duration)),
+                                    new EasingDoubleKeyFrame(default, TimeSpan.FromMilliseconds(syllable.Duration+400)){
+                                        EasingFunction=easing
+                                    }],
+                            };
+                            upAni.Completed += delegate {
+                                var da = new DoubleAnimation(0, TimeSpan.FromMilliseconds(syllable.Duration * 0.8));
+                                da.Completed += delegate { textBlock.Effect = null; };
+                                lighter.BeginAnimation(DropShadowEffect.OpacityProperty, da);
+                            };
+                            textBlock.RenderTransform.BeginAnimation(TranslateTransform.YProperty, upAni);
+                        }
+                        else
+                        {
+                            //单独设置动画
+                            animate = false;
+                            int index = 0;
+                            foreach (InlineUIContainer line in textBlock.Inlines)
+                            {
+                                if (line.Child.RenderTransform is TranslateTransform ts)
+                                {
+                                    double begin = 100 * index;
+                                    var upAni = new DoubleAnimationUsingKeyFrames()
+                                    {
+                                        KeyFrames = [
+                                            new EasingDoubleKeyFrame(default, TimeSpan.FromMilliseconds(begin)),
+                                            new EasingDoubleKeyFrame(up, TimeSpan.FromMilliseconds(syllable.Duration*(index+1)/textBlock.Inlines.Count)){
+                                                EasingFunction=easing
+                                            },
+                                            new EasingDoubleKeyFrame(up, TimeSpan.FromMilliseconds(syllable.Duration)),
+                                            new EasingDoubleKeyFrame(default, TimeSpan.FromMilliseconds(syllable.Duration+400)){
+                                                EasingFunction=easing
+                                            }],
+                                    };
+                                    upAni.Completed += delegate {
+                                        var da = new DoubleAnimation(0, TimeSpan.FromMilliseconds(syllable.Duration * 0.8));
+                                        da.Completed += delegate { textBlock.Effect = null; };
+                                        lighter.BeginAnimation(DropShadowEffect.OpacityProperty, da);
+                                    };
+                                    ts.BeginAnimation(TranslateTransform.YProperty, upAni);
+                                }
+                                if(line.Child is TextBlock block)
+                                {
+                                    var single = CreateBrush(0);
+                                    block.Foreground = single;
+                                    double begin = syllable.Duration/ textBlock.Inlines.Count * index;
+                                    var ani = new DoubleAnimationUsingKeyFrames
+                                    {
+                                        KeyFrames =
+                                        [
+                                            new EasingDoubleKeyFrame(0, TimeSpan.FromMilliseconds(begin*0.8)),
+                                            new EasingDoubleKeyFrame(1, TimeSpan.FromMilliseconds(syllable.Duration*0.8 * (index + 1) / textBlock.Inlines.Count))
+                                        ]
+                                    };
+                                    var aniDelay = new DoubleAnimationUsingKeyFrames
+                                    {
+                                        KeyFrames =
+                                        [
+                                            new EasingDoubleKeyFrame(0, TimeSpan.FromMilliseconds(begin)),
+                                            new EasingDoubleKeyFrame(1, TimeSpan.FromMilliseconds(begin+ syllable.Duration/textBlock.Inlines.Count))
+                                        ]
+                                    };
+                                    single.GradientStops[1].BeginAnimation(GradientStop.OffsetProperty, aniDelay);
+                                    single.GradientStops[2].BeginAnimation(GradientStop.OffsetProperty, ani);
+                                }
+                                index++;
+                            }
+                        }
+                    }
+
+                    if (animate)
+                    {
+                        var brush = EnsureBrush(textBlock, syllable, 0.0);
+                        var duration = TimeSpan.FromMilliseconds(syllable.Duration);
+                        var anim = new DoubleAnimation(0.0, 1.0, new Duration(duration*0.8));
+                        var animDelay = new DoubleAnimation(0.0, 1.0, new Duration(duration));
+                        brush.GradientStops[1].BeginAnimation(GradientStop.OffsetProperty, animDelay);
+                        brush.GradientStops[2].BeginAnimation(GradientStop.OffsetProperty, anim);
                     }
                 }
             }
@@ -145,21 +271,7 @@ public partial class LyricLineControl : UserControl
     {
         if (!mainSyllableBrushes.TryGetValue(syllable, out var brush))
         {
-            var fontColor = ((SolidColorBrush)FindResource("ForeColor")).Color;
-            var highlightColor = fontColor;
-            var normalColor = new Color { R = fontColor.R, G = fontColor.G, B = fontColor.B, A = 72 };
-            brush = new LinearGradientBrush
-            {
-                StartPoint = new Point(0, 0.5),
-                EndPoint = new Point(1, 0.5),
-                GradientStops = new GradientStopCollection
-            {
-                new GradientStop(highlightColor, 0),
-                new GradientStop(highlightColor, progress),
-                new GradientStop(normalColor, progress),
-                new GradientStop(normalColor, 1)
-            }
-            };
+            brush = CreateBrush(progress);
             mainSyllableBrushes[syllable] = brush;
             textBlock.Foreground = brush;
         }
@@ -171,15 +283,29 @@ public partial class LyricLineControl : UserControl
         }
         return brush;
     }
+    private LinearGradientBrush CreateBrush(double progress)
+    {
+        var fontColor = ((SolidColorBrush)FindResource("ForeColor")).Color;
+        var highlightColor = fontColor;
+        var normalColor = new Color { R = fontColor.R, G = fontColor.G, B = fontColor.B, A = 72 };
+        return new LinearGradientBrush
+        {
+            StartPoint = new Point(0, 0.5),
+            EndPoint = new Point(1, 0.5),
+            GradientStops =
+            [
+                    new GradientStop(highlightColor, 0),
+                    new GradientStop(highlightColor, progress),
+                    new GradientStop(normalColor, progress),
+                    new GradientStop(normalColor, 1)
+            ]
+        };
+    }
 
     public void ClearHighlighter()
     {
         mainSyllableBrushes.Clear();
         mainSyllableAnimated.Clear();
-        foreach(var lrc in mainSyllableLrcs)
-        {
-            lrc.Value.SetResourceReference(ForegroundProperty, "ForeColor");
-        }
     }
 
     public bool IsCurrent

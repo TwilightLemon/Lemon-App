@@ -17,7 +17,7 @@
         Background="{DynamicResource PopupWndBgColor}"
         FontFamily="{StaticResource DefaultFontFamily}"
         Foreground="{DynamicResource ForeColor}"
-        ResizeMode="NoResize"
+        ResizeMode="CanResize"
         ShowInTaskbar="False"
         Topmost="True"
         WindowStyle="None"
@@ -41,43 +41,11 @@
         <behavior:WindowDragMoveBehavior />
     </i:Interaction.Behaviors>
     <ws:BoxPanel>
-        <Grid x:Name="LrcPanel" Margin="20,0">
-            <Border VerticalAlignment="Center">
-                <Border.Background>
-                    <VisualBrush Stretch="none" Visual="{Binding ElementName=LrcTb}" />
-                </Border.Background>
-                <Border.Effect>
-                    <DropShadowEffect BlurRadius="20"
-                                      Opacity="0.6"
-                                      ShadowDepth="0"
-                                      Color="White" />
-                </Border.Effect>
-            </Border>
-            <TextBlock x:Name="LrcTb"
-                       VerticalAlignment="Center"
-                       Background="Transparent"
-                       TextAlignment="Center"
-                       TextWrapping="Wrap">
-                <Run x:Name="RomajiTb"
-                     FontSize="16"
-                     Text="{Binding RomajiText}" />
-                <Run x:Name="LyricTb"
-                     d:Text="Dancing with our hands tied"
-                     FontSize="32"
-                     FontWeight="Bold"
-                     Text="{Binding LyricText, NotifyOnTargetUpdated=True}">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="TargetUpdated">
-                            <i:ControlStoryboardAction Storyboard="{StaticResource LyricAnimation}" />
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </Run>
-                <TextBlock x:Name="TransTb"
-                           Margin="0,4,0,0"
-                           FontSize="16"
-                           Opacity="0.8"
-                           Text="{Binding TransText}" />
-            </TextBlock>
+        <Grid x:Name="LrcPanel" Margin="20,20">
+            <ContentControl x:Name="LrcHost"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Content="{Binding LyricControl, NotifyOnTargetUpdated=True}" />
         </Grid>
         <!--  功能区 鼠标进入后显示  -->
         <Grid x:Name="FuncPanel"

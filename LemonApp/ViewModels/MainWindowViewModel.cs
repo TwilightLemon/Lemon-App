@@ -105,6 +105,8 @@ public partial class MainWindowViewModel : ObservableObject
         _timer.Elapsed += Timer_Elapsed;
         _timer.Interval = 100;
 
+        lyricWindowViewModel.SetTimerTick(_timer);
+
         LoadMainMenus();
         LoadComponent();
         _playlistDataWrapper = playlistDataWrapper;
