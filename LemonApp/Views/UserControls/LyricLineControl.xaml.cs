@@ -16,6 +16,7 @@ namespace LemonApp.Views.UserControls;
 public partial class LyricLineControl : UserControl
 {
     private static double InitialOpacity = 0.4, ActiveOpacity = 1;
+    private const int EmphasisThreshold = 1800;
     private readonly Dictionary<ISyllableInfo, TextBlock> mainSyllableLrcs = [], romajiSyllableLrcs = [];
     private Effect? _normalLrcEffect = new BlurEffect() { Radius = 4 };
     public SyllableLineInfo? RomajiSyllables { get; private set; }
@@ -46,7 +47,7 @@ public partial class LyricLineControl : UserControl
                 FontSize = fontSize
             };
             //高亮抬起词
-            if (word.Duration >= 2000)
+            if (word.Duration >= EmphasisThreshold)
             {
                 if (word.Text.Length > 1)
                 {
@@ -111,7 +112,7 @@ public partial class LyricLineControl : UserControl
                 mainSyllableAnimated[syllable] = false;
 
                 //如果是高亮抬起分词，则可能需要先清除效果
-                if (syllable.Duration > 2000)
+                if (syllable.Duration >= EmphasisThreshold&& textBlock.Inlines.Count>1)
                 {
                     var empty= CreateBrush(0.0);
                     foreach (var line in textBlock.Inlines)
@@ -131,7 +132,7 @@ public partial class LyricLineControl : UserControl
                     mainSyllableAnimated[syllable] = true;
 
                     bool animate = true;
-                    if (syllable.Duration > 2000)
+                    if (syllable.Duration >= EmphasisThreshold)
                     {
                         //highlight
                        var lighter = new DropShadowEffect() { BlurRadius = 20,Color = Colors.White, Direction = 0, ShadowDepth = 0 };
@@ -155,7 +156,7 @@ public partial class LyricLineControl : UserControl
                                     }],
                             };
                             upAni.Completed += delegate {
-                                var da = new DoubleAnimation(0, TimeSpan.FromMilliseconds(syllable.Duration * 0.8));
+                                var da = new DoubleAnimation(0, TimeSpan.FromMilliseconds(300));
                                 da.Completed += delegate { textBlock.Effect = null; };
                                 lighter.BeginAnimation(DropShadowEffect.OpacityProperty, da);
                             };
@@ -175,7 +176,7 @@ public partial class LyricLineControl : UserControl
                                     {
                                         KeyFrames = [
                                             new EasingDoubleKeyFrame(default, TimeSpan.FromMilliseconds(begin)),
-                                            new EasingDoubleKeyFrame(up, TimeSpan.FromMilliseconds(syllable.Duration*(index+1)/textBlock.Inlines.Count)){
+                                            new EasingDoubleKeyFrame(up, TimeSpan.FromMilliseconds((double)syllable.Duration*(double)(index+1)/(double)textBlock.Inlines.Count)){
                                                 EasingFunction=easing
                                             },
                                             new EasingDoubleKeyFrame(up, TimeSpan.FromMilliseconds(syllable.Duration)),
@@ -184,7 +185,7 @@ public partial class LyricLineControl : UserControl
                                             }],
                                     };
                                     upAni.Completed += delegate {
-                                        var da = new DoubleAnimation(0, TimeSpan.FromMilliseconds(syllable.Duration * 0.8));
+                                        var da = new DoubleAnimation(0, TimeSpan.FromMilliseconds(300));
                                         da.Completed += delegate { textBlock.Effect = null; };
                                         lighter.BeginAnimation(DropShadowEffect.OpacityProperty, da);
                                     };
@@ -306,6 +307,21 @@ public partial class LyricLineControl : UserControl
     {
         mainSyllableBrushes.Clear();
         mainSyllableAnimated.Clear();
+        foreach (var lrc in mainSyllableLrcs)
+        {
+            lrc.Value.SetResourceReference(ForegroundProperty, "ForeColor");
+            if (lrc.Value.Inlines.Count > 1)
+            {
+                foreach(var line in lrc.Value.Inlines)
+                {
+                    if(line is InlineUIContainer con&&con.Child is TextBlock block)
+                    {
+                        block.Foreground = null;
+                        block.SetResourceReference(ForegroundProperty, "ForeColor");
+                    }
+                }
+            }
+        }
     }
 
     public bool IsCurrent
@@ -328,6 +344,17 @@ public partial class LyricLineControl : UserControl
                 foreach(var lrc in control.mainSyllableLrcs)
                 {
                     control.EnsureBrush(lrc.Value, lrc.Key, 0);
+                    if (lrc.Key.Duration >= EmphasisThreshold&& lrc.Value.Inlines.Count>1)
+                    {
+                        var empty = control.CreateBrush(0.0);
+                        foreach (var line in lrc.Value.Inlines)
+                        {
+                            if (line is InlineUIContainer con && con.Child is TextBlock block)
+                            {
+                                block.Foreground = empty;
+                            }
+                        }
+                    }
                 }
                 control.BeginAnimation(OpacityProperty, new DoubleAnimation
                 {

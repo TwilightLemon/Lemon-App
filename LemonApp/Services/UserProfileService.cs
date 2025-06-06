@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
-using Windows.Media.Protection.PlayReady;
 
 namespace LemonApp.Services;
 public class UserProfileService(
@@ -22,6 +21,7 @@ public class UserProfileService(
     public void UpdateNeteaseAuth(NeteaseUserAuth auth)
     {
         _profileMgr.Data.NeteaseUserAuth= auth;
+        _= _profileMgr.SaveAsync();
     }
 
     public NeteaseUserAuth? GetNeteaseAuth() => _profileMgr.Data.NeteaseUserAuth;

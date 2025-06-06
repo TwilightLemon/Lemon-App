@@ -4,15 +4,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:ws="https://schemas.elecho.dev/wpfsuite"
-             FontWeight="Bold"
              d:DesignHeight="450"
              d:DesignWidth="800"
+             FontWeight="Bold"
              mc:Ignorable="d">
     <ScrollViewer x:Name="scrollviewer"
                   FocusVisualStyle="{x:Null}"
                   HorizontalScrollBarVisibility="Hidden"
                   PreviewMouseWheel="scrollviewer_PreviewMouseWheel"
                   VerticalScrollBarVisibility="Hidden">
-        <ws:StackPanel x:Name="LrcContainer" Spacing="20" Width="{Binding ActualWidth, ElementName=scrollviewer}" />
+        <VirtualizingStackPanel x:Name="LrcContainer" Width="{Binding ActualWidth, ElementName=scrollviewer}" />
     </ScrollViewer>
 </UserControl>

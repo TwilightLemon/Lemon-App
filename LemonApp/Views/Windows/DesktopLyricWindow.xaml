@@ -11,7 +11,7 @@
         x:Name="window"
         Title="DesktopLyricWindow"
         Width="720"
-        Height="128"
+        Height="158"
         d:DataContext="{d:DesignInstance Type=vm:DesktopLyricWindowViewModel}"
         ws:WindowOption.Corner="Round"
         Background="{DynamicResource PopupWndBgColor}"

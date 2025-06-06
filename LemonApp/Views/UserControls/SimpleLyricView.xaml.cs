@@ -34,11 +34,11 @@ public partial class SimpleLyricView : UserControl
         LrcContainer.Children.Clear();
         scrollviewer.BeginAnimation(ScrollViewerUtils.VerticalOffsetProperty, null);
     }
-    public void ApplyFontSize(double size,double delta)
+    public void ApplyFontSize(double size, double scale)
     {
         foreach(var control in lrcs.Values)
         {
-            control.FontSize = size - delta;
+            control.FontSize = size * scale;
             foreach( TextBlock tb in control.MainLrcContainer.Children)
             {
                 tb.FontSize = size;
@@ -60,6 +60,7 @@ public partial class SimpleLyricView : UserControl
         }
     }
 
+    private Thickness lyricSpacing= new(0, 0, 0, 20);
     public void Load(LyricsData lyricsData,LyricsData? trans=null,LyricsData? romaji=null)
     {
         LrcContainer.Children.Clear();
@@ -69,7 +70,7 @@ public partial class SimpleLyricView : UserControl
         {
             if(line is SyllableLineInfo{ } syllable)
             {
-                var lrc=new LyricLineControl(syllable.Syllables);
+                var lrc=new LyricLineControl(syllable.Syllables) {Margin= lyricSpacing };
                 LrcContainer.Children.Add(lrc);
                 lrcs[syllable] = lrc;
             }

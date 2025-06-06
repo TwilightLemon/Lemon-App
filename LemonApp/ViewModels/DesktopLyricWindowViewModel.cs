@@ -6,6 +6,8 @@ using LemonApp.MusicLib.Abstraction.Entities;
 using LemonApp.Services;
 using LemonApp.Views.UserControls;
 using Lyricify.Lyrics.Models;
+using System;
+using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
@@ -27,7 +29,10 @@ public partial class DesktopLyricWindowViewModel:ObservableObject
         _mediaPlayerService.OnPlay += _mediaPlayerService_OnPlay;
         _mediaPlayerService.OnPaused += _mediaPlayerService_OnPaused;
 
-        _lyricControl.FontSize = 16;
+        _lyricControl.FontSize = 18;
+        _lyricControl.TranslationLrc.TextAlignment = TextAlignment.Center;
+        _lyricControl.MainLrcContainer.HorizontalAlignment = HorizontalAlignment.Center;
+        _lyricControl.RomajiLrcContainer.HorizontalAlignment = HorizontalAlignment.Center;
     }
 
     private void _mediaPlayerService_OnPaused(Music obj)
@@ -73,11 +78,21 @@ public partial class DesktopLyricWindowViewModel:ObservableObject
         }
     }
 
-    public void Update(LrcLine lrc)
+    public Action? UpdateAnimation;
+    public async void Update(LrcLine lrc)
     {
-        LyricControl.LoadMainLrc(lrc.Lrc.Syllables,fontSize: 26);
+        UpdateAnimation?.Invoke();
+        await Task.Delay(200);
+        LyricControl.LoadMainLrc(lrc.Lrc.Syllables,fontSize: 32);
         LyricControl.LoadRomajiLrc(lrc.Romaji ?? new SyllableLineInfo([]));
         LyricControl.TranslationLrc.Text = lrc.Trans;
+        if (ShowTranslation)
+            LyricControl.TranslationLrc.Visibility = string.IsNullOrEmpty(lrc.Trans) ? Visibility.Collapsed : Visibility.Visible;
+        else 
+        {
+            LyricControl.TranslationLrc.Visibility = Visibility.Collapsed;
+            LyricControl.RomajiLrcContainer.Visibility = Visibility.Collapsed;
+        }
     }
 
     [RelayCommand]

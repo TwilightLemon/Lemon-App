@@ -47,14 +47,19 @@
         </CollectionViewSource>
 
         <Storyboard x:Key="OpenLyricPageAni">
-            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="LyricPage" Storyboard.TargetProperty="Margin">
-                <EasingThicknessKeyFrame KeyTime="00" Value="0 1390 0 -1390" />
-                <EasingThicknessKeyFrame KeyTime="00:00:00.3" Value="0">
-                    <EasingThicknessKeyFrame.EasingFunction>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="LyricPage" Storyboard.TargetProperty="(Grid.RenderTransform).(TranslateTransform.Y)">
+                <EasingDoubleKeyFrame KeyTime="00" Value="300" />
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
                         <CubicEase EasingMode="EaseOut" />
-                    </EasingThicknessKeyFrame.EasingFunction>
-                </EasingThicknessKeyFrame>
-            </ThicknessAnimationUsingKeyFrames>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimation Storyboard.TargetName="LyricPage"
+                             Storyboard.TargetProperty="Opacity"
+                             From="0"
+                             To="1"
+                             Duration="0:0:0.3" />
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="MainPage" Storyboard.TargetProperty="(UIElement.Visibility)">
                 <DiscreteObjectKeyFrame KeyTime="00:00:00.3" Value="{x:Static Visibility.Collapsed}" />
             </ObjectAnimationUsingKeyFrames>
@@ -64,19 +69,20 @@
             <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="MusicControl" Storyboard.TargetProperty="(FrameworkElement.Margin)">
                 <EasingThicknessKeyFrame KeyTime="00:00:00.3" Value="0,110,0,-110">
                     <EasingThicknessKeyFrame.EasingFunction>
-                        <CubicEase EasingMode="EaseOut" />
+                        <CubicEase EasingMode="EaseIn" />
                     </EasingThicknessKeyFrame.EasingFunction>
                 </EasingThicknessKeyFrame>
             </ThicknessAnimationUsingKeyFrames>
         </Storyboard>
         <Storyboard x:Key="CloseLyricPageAni">
-            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="LyricPage" Storyboard.TargetProperty="Margin">
-                <EasingThicknessKeyFrame KeyTime="00:00:00.3" Value="0 1390 0 -1390">
-                    <EasingThicknessKeyFrame.EasingFunction>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="LyricPage" Storyboard.TargetProperty="(Grid.RenderTransform).(TranslateTransform.Y)">
+                <EasingDoubleKeyFrame KeyTime="00" Value="0" />
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3" Value="500">
+                    <EasingDoubleKeyFrame.EasingFunction>
                         <CubicEase EasingMode="EaseIn" />
-                    </EasingThicknessKeyFrame.EasingFunction>
-                </EasingThicknessKeyFrame>
-            </ThicknessAnimationUsingKeyFrames>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
             <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="MusicControl" Storyboard.TargetProperty="(FrameworkElement.Margin)">
                 <EasingThicknessKeyFrame KeyTime="00:00:00.3" Value="0">
                     <EasingThicknessKeyFrame.EasingFunction>
@@ -84,7 +90,13 @@
                     </EasingThicknessKeyFrame.EasingFunction>
                 </EasingThicknessKeyFrame>
             </ThicknessAnimationUsingKeyFrames>
+            <DoubleAnimation Storyboard.TargetName="LyricPage"
+                             Storyboard.TargetProperty="Opacity"
+                             From="1"
+                             To="0"
+                             Duration="0:0:0.3" />
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LyricPage" Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00.0" Value="{x:Static Visibility.Visible}" />
                 <DiscreteObjectKeyFrame KeyTime="00:00:00.3" Value="{x:Static Visibility.Collapsed}" />
             </ObjectAnimationUsingKeyFrames>
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="MainPage" Storyboard.TargetProperty="(UIElement.Visibility)">
@@ -368,6 +380,9 @@
                 </Grid>
             </Grid>
             <Grid x:Name="LyricPage" Visibility="Collapsed">
+                <Grid.RenderTransform>
+                    <TranslateTransform />
+                </Grid.RenderTransform>
                 <Border x:Name="LyricPage_Background" Grid.ColumnSpan="2">
                     <Border.Background>
                         <ImageBrush ImageSource="{Binding LyricPageBackgroundSource}"

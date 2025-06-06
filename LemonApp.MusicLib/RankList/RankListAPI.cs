@@ -45,6 +45,7 @@ public static class RankListAPI
             Music m = new();
             m.MusicName = sid["songname"].ToString();
             m.MusicName_Lyric = sid["albumdesc"].ToString();
+            m.Littleid = sid["songid"].ToString();
             List<string> singerText = [];
             List<Profile> singers = [];
             foreach(var singer in sid["singer"].AsArray())

@@ -21,14 +21,34 @@ namespace LemonApp.Views.Windows
         {
             InitializeComponent();
             DataContext = vm;
+            vm.UpdateAnimation = ShowLyricAnimation;
 
             var sc = SystemParameters.WorkArea;
             Top = sc.Bottom - Height;
             Left = (sc.Right - Width) / 2;
+            Closing += delegate { vm.UpdateAnimation = null; };
             Loaded += DesktopLyricWindow_Loaded;
             MouseEnter += DesktopLyricWindow_MouseEnter;
             MouseLeave += DesktopLyricWindow_MouseLeave;
             MouseDoubleClick += DesktopLyricWindow_MouseDoubleClick;
+        }
+
+        private void ShowLyricAnimation()
+        {
+            var blur=new BlurEffect() { Radius = 0 };
+            LrcHost.Effect = blur;
+            LrcHost.BeginAnimation(OpacityProperty, new DoubleAnimationUsingKeyFrames()
+            {
+                KeyFrames = [new LinearDoubleKeyFrame(0,TimeSpan.FromMilliseconds(200)),
+                                      new LinearDoubleKeyFrame(0,TimeSpan.FromMilliseconds(400)),
+                                      new LinearDoubleKeyFrame(1,TimeSpan.FromMilliseconds(600))]
+            });
+            blur.BeginAnimation(BlurEffect.RadiusProperty, new DoubleAnimationUsingKeyFrames()
+            {
+                KeyFrames = [new LinearDoubleKeyFrame(20,TimeSpan.FromMilliseconds(200)),
+                                      new LinearDoubleKeyFrame(20,TimeSpan.FromMilliseconds(400)),
+                                      new LinearDoubleKeyFrame(0,TimeSpan.FromMilliseconds(600))]
+            });
         }
 
         private void DesktopLyricWindow_MouseDoubleClick(object sender, MouseButtonEventArgs e)

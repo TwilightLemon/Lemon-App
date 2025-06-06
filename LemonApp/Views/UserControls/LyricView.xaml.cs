@@ -5,17 +5,14 @@ using LemonApp.MusicLib.Abstraction.Entities;
 using LemonApp.MusicLib.Lyric;
 using LemonApp.Services;
 using Lyricify.Lyrics.Helpers;
-using Lyricify.Lyrics.Helpers.Types;
 using Lyricify.Lyrics.Models;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Effects;
 
 //TODO: 提供效果选择
 namespace LemonApp.Views.UserControls
@@ -59,11 +56,18 @@ namespace LemonApp.Views.UserControls
             });
         }
 
+        private void RefreshHostSettings()
+        {
+            LrcHost.SetShowTranslation(_settings.Data.ShowTranslation&&IsTranslationAvailable);
+            LrcHost.SetShowRomaji(_settings.Data.ShowRomaji&&IsRomajiAvailable);
+            LrcHost.ApplyFontSize(_settings.Data.FontSize, LyricFontSizeScale);
+        }
+
         #endregion
 
         #region Apperance
         public double LyricFontSize = 24;
-        public const double LyricFontSizeDelta = 6;
+        public const double LyricFontSizeScale = 0.6;
         #endregion
 
         [RelayCommand]
@@ -74,7 +78,7 @@ namespace LemonApp.Views.UserControls
         {
             LyricFontSize = size;
             _settings.Data.FontSize = size;
-            LrcHost.ApplyFontSize(size,LyricFontSizeDelta);
+            LrcHost.ApplyFontSize(size,LyricFontSizeScale);
             LrcHost.ScrollToCurrent();
         }
 
@@ -198,7 +202,7 @@ namespace LemonApp.Views.UserControls
             if (lrc != null)
                 Dispatcher.Invoke(() => {
                     LrcHost.Load(lrc, trans, romaji);
-                    ApplySettings();
+                    RefreshHostSettings();
                 });
         }
     }

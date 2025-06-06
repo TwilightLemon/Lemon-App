@@ -97,7 +97,7 @@ public class AudioGetter(HttpClient hc,
     private async Task<string?> GetUrlFromGdStudio(string id)
     {
         string url = $"https://music-api.gdstudio.xyz/api.php?types=url&source=netease&id={id}&br=999";
-        string data = await _hc.GetStringAsync(url);
+        string data = await _hc.SetCookie("").GetStringAsync(url);
         if (JsonNode.Parse(data) is { } json)
         {
             if (json["url"]?.ToString() is { Length: > 0 } link)

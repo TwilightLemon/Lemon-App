@@ -32,9 +32,9 @@ public class WindowBasicComponent(IServiceProvider serviceProvider,
     /// </summary>
     public void Init()
     {
-#if !DEBUG
+//#if !DEBUG
         InitTaskBarThumb();
-#endif
+//#endif
         FixPopup();
         InitNotifyIcon();
         RegisterWakeup();

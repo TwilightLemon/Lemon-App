@@ -26,6 +26,7 @@ public static class TencGetLyric
         };
     public static async Task<QqLyricsResponse?> GetLyricsAsync(HttpClient hc, string id)
     {
+        if (string.IsNullOrEmpty(id)) return null;
         var param = new Dictionary<string, string>
                 {
                     { "version", "15" },

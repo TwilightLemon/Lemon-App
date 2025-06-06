@@ -38,12 +38,12 @@ public static class SingerAPI
         {
             foreach (var c in req1)
             {
-                Debug.Print(c.ToString());
                 var data = c["songInfo"];
                 Music m = new Music();
                 m.MusicName = data["name"].ToString();
                 m.MusicName_Lyric = data["subtitle"].ToString();
                 m.MusicID = data["mid"].ToString();
+                m.Littleid = data["id"].ToString();
                 List<Profile> lm = [];
                 foreach (var s in data["singer"].AsArray())
                 {
@@ -86,12 +86,12 @@ public static class SingerAPI
         {
             foreach (var c in req1)
             {
-                Debug.Print(c.ToString());
                 var data = c["songInfo"];
                 Music m = new Music();
                 m.MusicName = data["name"].ToString();
                 m.MusicName_Lyric = data["subtitle"].ToString();
                 m.MusicID = data["mid"].ToString();
+                m.Littleid = data["id"].ToString();
                 List<Profile> lm = [];
                 foreach (var s in data["singer"].AsArray())
                 {
