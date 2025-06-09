@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace LemonApp.ViewModels;
 /// <summary>
@@ -28,11 +29,20 @@ public partial class DesktopLyricWindowViewModel:ObservableObject
         ShowTranslation = _settingsMgr.Data.ShowTranslation;
         _mediaPlayerService.OnPlay += _mediaPlayerService_OnPlay;
         _mediaPlayerService.OnPaused += _mediaPlayerService_OnPaused;
+        CustomLyricControlStyle();
+    }
 
+    private void CustomLyricControlStyle()
+    {
+#pragma warning disable MVVMTK0034
         _lyricControl.FontSize = 18;
         _lyricControl.TranslationLrc.TextAlignment = TextAlignment.Center;
         _lyricControl.MainLrcContainer.HorizontalAlignment = HorizontalAlignment.Center;
         _lyricControl.RomajiLrcContainer.HorizontalAlignment = HorizontalAlignment.Center;
+
+        _lyricControl.CustomNormalColor = new SolidColorBrush(Color.FromRgb( 0xEF, 0xEF, 0xEF));
+        _lyricControl.SetResourceReference(LyricLineControl.CustomHighlighterColorProperty, "HighlightThemeColor");
+#pragma warning restore MVVMTK0034
     }
 
     private void _mediaPlayerService_OnPaused(Music obj)

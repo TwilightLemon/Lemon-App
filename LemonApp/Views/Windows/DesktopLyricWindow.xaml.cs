@@ -56,13 +56,13 @@ namespace LemonApp.Views.Windows
             var sc = SystemParameters.WorkArea;
             Left = (sc.Right - Width) / 2;
         }
-
+        private readonly DropShadowEffect shadowEffect = new() { BlurRadius = 5, Direction = 0, ShadowDepth = 0 };
         private void DesktopLyricWindow_MouseLeave(object sender, MouseEventArgs e)
         {
             cancelShowFunc?.Cancel();
             cancelShowFunc = null;
             preShowFunc = false;
-            LrcPanel.Effect = null;
+            LrcPanel.Effect = shadowEffect;
             LrcPanel.BeginAnimation(OpacityProperty, null);
             FuncPanel.Visibility = Visibility.Collapsed;
             FuncPanel.BeginAnimation(OpacityProperty, null);

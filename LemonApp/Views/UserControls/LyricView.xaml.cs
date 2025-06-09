@@ -34,12 +34,19 @@ namespace LemonApp.Views.UserControls
             _settings = appSettingsService.GetConfigMgr<LyricOption>();
             _settings.OnDataChanged += Settings_OnDataChanged;
             _hc = httpClientFactory.CreateClient(App.PublicClientFlag);
+            Loaded += LyricView_Loaded;
         }
+
 
         #region Self-adaption
         /// <summary>
         /// respond to LyricOption changed
         /// </summary>
+        private void LyricView_Loaded(object sender, RoutedEventArgs e)
+        {
+            ApplySettings();
+        }
+
         private async void Settings_OnDataChanged()
         {
             await _settings.LoadAsync();
@@ -178,6 +185,19 @@ namespace LemonApp.Views.UserControls
                 var dt = await TencGetLyric.GetLyricsAsync(hc, m.Littleid);
                 if (dt == null) return null;
                 return new() { Id = m.MusicID, Lyric = dt.Lyrics, Trans = dt.Trans, Romaji = dt.Romaji };
+            }else if (m.Source == Platform.wyy)
+            {
+                var api = new Lyricify.Lyrics.Providers.Web.Netease.Api();
+                var data = await api.GetLyricNew(m.MusicID);
+                if (data == null) return null;
+                return new LyricData
+                {
+                    Platform=Platform.wyy,
+                    Id = m.MusicID,
+                    Lyric = data.Yrc?.Lyric ?? data.Lrc.Lyric,
+                    Trans = data.Tlyric.Lyric,
+                    Romaji = data.Romalrc.Lyric
+                };
             }
             return null;
         }
@@ -185,7 +205,8 @@ namespace LemonApp.Views.UserControls
         private void LoadLrc(LyricData dt)
         {
             if (dt.Lyric == null) return;
-            var lrc = ParseHelper.ParseLyrics(dt.Lyric, LyricsRawTypes.Qrc);
+            var rawType = dt.Platform == Platform.qq ? LyricsRawTypes.Qrc : LyricsRawTypes.Yrc;
+            var lrc = ParseHelper.ParseLyrics(dt.Lyric,rawType);
             LyricsData? trans = null, romaji = null;
             if (!string.IsNullOrEmpty(dt.Trans))
             {
@@ -195,7 +216,7 @@ namespace LemonApp.Views.UserControls
 
             if (!string.IsNullOrEmpty(dt.Romaji))
             {
-                romaji = ParseHelper.ParseLyrics(dt.Romaji, LyricsRawTypes.Qrc);
+                romaji = ParseHelper.ParseLyrics(dt.Romaji, rawType);
                 IsRomajiAvailable = true;
             }else IsRomajiAvailable = false;
 

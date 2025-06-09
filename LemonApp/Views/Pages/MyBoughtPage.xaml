@@ -17,6 +17,7 @@
             <TextBlock Text="My Bought Album"
                        Margin="24 12"
                        FontSize="24"
+                       Foreground="{DynamicResource ForeColor}"
                        VerticalAlignment="Top"
                        FontWeight="Bold" />
             <uc:AlbumItemView x:Name="viewer" />

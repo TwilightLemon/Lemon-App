@@ -31,12 +31,16 @@ internal class EntryPoint
     [STAThread]
     static void Main(string[] args)
     {
-        if (IsAppRunning())
+        try
         {
-            CallExistingInstance();
-            return;
+            if (IsAppRunning())
+            {
+                CallExistingInstance();
+                return;
+            }
+            App app = new();
+            app.Run();
         }
-        App app = new();
-        app.Run();
+        catch { }
     }
 }

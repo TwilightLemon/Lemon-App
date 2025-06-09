@@ -13,45 +13,35 @@
         Width="720"
         Height="158"
         d:DataContext="{d:DesignInstance Type=vm:DesktopLyricWindowViewModel}"
-        ws:WindowOption.Corner="Round"
-        Background="{DynamicResource PopupWndBgColor}"
+        Background="#01000000"
         FontFamily="{StaticResource DefaultFontFamily}"
         Foreground="{DynamicResource ForeColor}"
         ResizeMode="CanResize"
         ShowInTaskbar="False"
         Topmost="True"
         WindowStyle="None"
+        AllowsTransparency="True"
         mc:Ignorable="d">
-    <Window.Resources>
-        <WindowChrome x:Key="chrome"
-                      CaptionHeight="0"
-                      ResizeBorderThickness="8" />
-        <Storyboard x:Key="LyricAnimation">
-            <DoubleAnimation Storyboard.TargetName="LrcPanel"
-                             Storyboard.TargetProperty="Opacity"
-                             From="0"
-                             To="1"
-                             Duration="0:0:0.3" />
-        </Storyboard>
-    </Window.Resources>
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0"
+                      ResizeBorderThickness="12" />
+    </WindowChrome.WindowChrome>
     <i:Interaction.Behaviors>
-        <behavior:BlurWindowBehavior IsToolWindow="True"
-                                     Mode="Acrylic"
-                                     WindowChromeEx="{StaticResource chrome}" />
         <behavior:WindowDragMoveBehavior />
     </i:Interaction.Behaviors>
     <ws:BoxPanel>
-        <Grid x:Name="LrcPanel" Margin="20,20">
+        <Grid x:Name="LrcPanel">
             <ContentControl x:Name="LrcHost"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
-                            Content="{Binding LyricControl, NotifyOnTargetUpdated=True}" />
+                            Content="{Binding LyricControl, NotifyOnTargetUpdated=True}">
+            </ContentControl>
         </Grid>
         <!--  功能区 鼠标进入后显示  -->
         <Grid x:Name="FuncPanel"
               d:Visibility="Visible"
-              Background="{DynamicResource TabMaskColor}"
               Visibility="Collapsed">
+            <Border Background="{DynamicResource WindowBackgroundColor}" CornerRadius="12" />
             <ws:WrapPanel HorizontalAlignment="Center"
                           VerticalAlignment="Center"
                           HorizontalSpacing="24">

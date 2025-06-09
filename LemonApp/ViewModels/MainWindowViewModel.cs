@@ -674,8 +674,11 @@ public partial class MainWindowViewModel : ObservableObject
         {
             view.Title = "My Bought Album";
             var auth = _userProfileService.GetAuth();
-            var hc=_serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
-            view.DataProvider = () => TencMyDissAPI.GetMyBoughtAlbumList(auth, hc);
+            if (auth.IsValid)
+            {
+                var hc = _serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
+                view.DataProvider = () => TencMyDissAPI.GetMyBoughtAlbumList(auth, hc);
+            }
         }
         return Task.CompletedTask;
     }

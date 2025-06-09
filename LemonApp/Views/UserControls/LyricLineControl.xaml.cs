@@ -16,7 +16,7 @@ namespace LemonApp.Views.UserControls;
 public partial class LyricLineControl : UserControl
 {
     private static double InitialOpacity = 0.4, ActiveOpacity = 1;
-    private const int EmphasisThreshold = 1800;
+    private const int EmphasisThreshold = 1800;//TODO: [优化] 使用句中词的平均时长来计算
     private readonly Dictionary<ISyllableInfo, TextBlock> mainSyllableLrcs = [], romajiSyllableLrcs = [];
     private Effect? _normalLrcEffect = new BlurEffect() { Radius = 4 };
     public SyllableLineInfo? RomajiSyllables { get; private set; }
@@ -33,6 +33,7 @@ public partial class LyricLineControl : UserControl
         Effect = _normalLrcEffect;
         LoadMainLrc(words);
     }
+
     public void LoadMainLrc(List<ISyllableInfo> words,double fontSize=22)
     {
         MainLrcContainer.Children.Clear();
@@ -284,11 +285,39 @@ public partial class LyricLineControl : UserControl
         }
         return brush;
     }
+
+
+    public SolidColorBrush CustomHighlighterColor
+    {
+        get { return (SolidColorBrush)GetValue(CustomHighlighterColorProperty); }
+        set { SetValue(CustomHighlighterColorProperty, value); }
+    }
+
+    public static readonly DependencyProperty CustomHighlighterColorProperty =
+        DependencyProperty.Register("CustomHighlighterColor", 
+            typeof(SolidColorBrush), typeof(LyricLineControl), 
+            new PropertyMetadata(null));
+
+
+
+    public SolidColorBrush CustomNormalColor
+    {
+        get { return (SolidColorBrush)GetValue(CustomNormalColorProperty); }
+        set { SetValue(CustomNormalColorProperty, value); }
+    }
+
+    public static readonly DependencyProperty CustomNormalColorProperty =
+        DependencyProperty.Register("CustomNormalColor",
+            typeof(SolidColorBrush), typeof(LyricLineControl),
+            new PropertyMetadata(null));
+
+
+
     private LinearGradientBrush CreateBrush(double progress)
     {
         var fontColor = ((SolidColorBrush)FindResource("ForeColor")).Color;
-        var highlightColor = fontColor;
-        var normalColor = new Color { R = fontColor.R, G = fontColor.G, B = fontColor.B, A = 72 };
+        var highlightColor =CustomHighlighterColor?.Color ?? fontColor;
+        var normalColor = CustomNormalColor?.Color ?? new Color { R = fontColor.R, G = fontColor.G, B = fontColor.B, A = 72 };
         return new LinearGradientBrush
         {
             StartPoint = new Point(0, 0.5),

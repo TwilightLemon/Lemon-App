@@ -1281,11 +1281,18 @@
             </Border>
         </Grid>
         <Grid x:Name="PlayListPage" Visibility="Collapsed">
-            <Border x:Name="PlayListPageMask" Background="#7F000000" />
+            <Border x:Name="PlayListPageMask" Background="Transparent" />
             <Grid x:Name="PlayListBar"
                   Width="320"
-                  HorizontalAlignment="Right"
-                  Background="{DynamicResource BackgroundColor}">
+                  HorizontalAlignment="Right">
+                <!--Acrylic Background Presenter-->
+                <base:BackgroundPresenter Visibility="{Binding ElementName=PlayListPage,Path=Visibility}">
+                    <base:BackgroundPresenter.Effect>
+                        <BlurEffect Radius="40"/>
+                    </base:BackgroundPresenter.Effect>
+                </base:BackgroundPresenter>
+                <Border Background="{DynamicResource TabMaskColor}"/>
+                
                 <TextBlock Margin="18,18,18,0" VerticalAlignment="Top">
                     <Run FontSize="22" Text="Playlist" />
                     <LineBreak />

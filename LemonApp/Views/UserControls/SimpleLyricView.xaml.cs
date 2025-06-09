@@ -1,17 +1,16 @@
-﻿using Lyricify.Lyrics.Models;
+﻿using EleCho.WpfSuite;
+using Lyricify.Lyrics.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using EleCho.WpfSuite;
 using System.Windows.Media.Animation;
-using System.Collections.Generic;
-using System;
-using System.Linq;
 
 namespace LemonApp.Views.UserControls;
 public record class LrcLine(SyllableLineInfo Lrc, string? Trans = null, SyllableLineInfo? Romaji = null);
 /// <summary>
-/// [Simplified]
 /// SimpleLyricView and LyricLineControl are used to display lyrics with syllables
 /// </summary>
 public partial class SimpleLyricView : UserControl
@@ -103,26 +102,34 @@ public partial class SimpleLyricView : UserControl
                 lrc.UpdateTime(ms);
         }
 
-        //find the line that matches the current time
-        foreach (var kvp in lrcs)
+        //从上一条结束到本条结束都是当前歌词时间，目的是本条歌词结束就跳转到下一个
+        KeyValuePair<SyllableLineInfo, LyricLineControl>? lastItem=null,target = null;
+        foreach (var cur in lrcs)
         {
-            var line = kvp.Key;
-            var control = kvp.Value;
-            if (line.StartTime <= ms && line.EndTime >= ms)
+            if((lastItem?.Key.EndTime ?? cur.Key.StartTime) <= ms && cur.Key.EndTime >= ms)
             {
-                if (line == currentLrc) return;
-
-                if (currentLrc != null && lrcs.TryGetValue(currentLrc, out var lrc))
-                {
-                    lrc.IsCurrent = false;
-                }
-                currentLrc = line;
-                var currentControl = lrcs[currentLrc];
-                currentControl.IsCurrent = true;
-                //Notify the change in current line
-                OnNextLrcReached?.Invoke(new(line, currentControl.TranslationLrc.Text,currentControl.RomajiSyllables));
-                ScrollToCurrent();
+                target = cur;
+                break;
             }
+            lastItem = cur;
+        }
+
+        if (target != null&&target.HasValue)
+        {
+            var line = target.Value.Key;
+            var control = target.Value.Value;
+
+            if (target.Value.Key == currentLrc) return;//skip if already being the current lrc.
+            if (currentLrc != null && lrcs.TryGetValue(currentLrc, out var lrc))
+            {
+                lrc.IsCurrent = false;// set last-played lrc inactive.
+            }
+            currentLrc = line;
+            var currentControl = control;
+            currentControl.IsCurrent = true;
+            //Notify the change in current line
+            OnNextLrcReached?.Invoke(new(line, currentControl.TranslationLrc.Text, currentControl.RomajiSyllables));
+            ScrollToCurrent();
         }
     }
 
