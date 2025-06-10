@@ -40,14 +40,14 @@ namespace LemonApp.Views.Windows
             LrcHost.BeginAnimation(OpacityProperty, new DoubleAnimationUsingKeyFrames()
             {
                 KeyFrames = [new LinearDoubleKeyFrame(0,TimeSpan.FromMilliseconds(200)),
-                                      new LinearDoubleKeyFrame(0,TimeSpan.FromMilliseconds(400)),
-                                      new LinearDoubleKeyFrame(1,TimeSpan.FromMilliseconds(600))]
+                                      new LinearDoubleKeyFrame(0,TimeSpan.FromMilliseconds(300)),
+                                      new LinearDoubleKeyFrame(1,TimeSpan.FromMilliseconds(500))]
             });
             blur.BeginAnimation(BlurEffect.RadiusProperty, new DoubleAnimationUsingKeyFrames()
             {
                 KeyFrames = [new LinearDoubleKeyFrame(20,TimeSpan.FromMilliseconds(200)),
-                                      new LinearDoubleKeyFrame(20,TimeSpan.FromMilliseconds(400)),
-                                      new LinearDoubleKeyFrame(0,TimeSpan.FromMilliseconds(600))]
+                                      new LinearDoubleKeyFrame(20,TimeSpan.FromMilliseconds(300)),
+                                      new LinearDoubleKeyFrame(0,TimeSpan.FromMilliseconds(500))]
             });
         }
 

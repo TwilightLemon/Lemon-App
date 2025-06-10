@@ -8,6 +8,7 @@
       xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
+      Foreground="{DynamicResource ForeColor}"
       Title="AlbumListPage">
 
     <base:ScrollViewer Style="{StaticResource SimpleVerticalScrollViewerStyle}"

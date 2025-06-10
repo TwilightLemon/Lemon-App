@@ -313,6 +313,13 @@ public partial class LyricLineControl : UserControl
 
 
 
+    public double TranslationLrcOpacity
+    {
+        get => TranslationLrc.Opacity;
+        set => TranslationLrc.Opacity = value;
+    }
+
+
     private LinearGradientBrush CreateBrush(double progress)
     {
         var fontColor = ((SolidColorBrush)FindResource("ForeColor")).Color;

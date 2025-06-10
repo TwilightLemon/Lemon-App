@@ -110,7 +110,9 @@ namespace LemonApp.Services
         private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             logger.LogError(new EventId(-1), e.Exception, e.Exception.Message);
+#if !DEBUG
             e.Handled = true;
+#endif
         }
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)

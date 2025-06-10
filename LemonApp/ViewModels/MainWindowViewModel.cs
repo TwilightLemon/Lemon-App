@@ -24,6 +24,7 @@ using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Navigation;
 using Task = System.Threading.Tasks.Task;
 
 //TODO: 将功能再细分为Component 简化ViewModel
@@ -557,9 +558,20 @@ public partial class MainWindowViewModel : ObservableObject
                 if(arg is string { } str)
                 RequestNotify?.Invoke(str);
                 break;
+            case PageType.CommentPage:
+                if(arg is Music music)
+                {
+                    NavigateToCommentPage(music);
+                }
+                break;
             default:
                 break;
         }
+    }
+    private void NavigateToCommentPage(Music m)
+    {
+        var view=_serviceProvider.GetRequiredService<CommentPage>();
+        RequestNavigateToPage.Invoke(view);
     }
     private async void NavigateToSingerPage(string mid)
     {
@@ -837,6 +849,28 @@ public partial class MainWindowViewModel : ObservableObject
     {
         CurrentPlayingPosition = value;
         _mediaPlayerService.Position = TimeSpan.FromMilliseconds(value);
+    }
+
+    //Commands for Current Playing in right part of Music Control
+
+    [RelayCommand]
+    private void GotoAlbumPage(string albumId)
+    {
+        MainNavigationService_OnNavigatingRequsted(PageType.AlbumPage, albumId);
+    }
+    [RelayCommand]
+    private void DownloadMusic()
+    {
+        if (CurrentPlaying != null)
+        {
+            App.Services.GetRequiredService<DownloadService>().PushTask(CurrentPlaying);
+            MainNavigationService_OnNavigatingRequsted(PageType.Notification, $"Music {CurrentPlaying.MusicName} has been added to the download queue.");
+        }
+    }
+    [RelayCommand]
+    private void GoToCommentPage()
+    {
+        MainNavigationService_OnNavigatingRequsted(PageType.CommentPage, CurrentPlaying);
     }
     #endregion
 }

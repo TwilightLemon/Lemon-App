@@ -42,6 +42,7 @@ public partial class DesktopLyricWindowViewModel:ObservableObject
 
         _lyricControl.CustomNormalColor = new SolidColorBrush(Color.FromRgb( 0xEF, 0xEF, 0xEF));
         _lyricControl.SetResourceReference(LyricLineControl.CustomHighlighterColorProperty, "HighlightThemeColor");
+        _lyricControl.TranslationLrcOpacity = 0.9;
 #pragma warning restore MVVMTK0034
     }
 

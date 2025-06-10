@@ -130,13 +130,6 @@ public class WindowBasicComponent(IServiceProvider serviceProvider,
             Visible = true
         };
         NotifyIcon.MouseClick += NotifyIcon_MouseClick;
-        NotifyIcon.MouseDoubleClick += NotifyIcon_MouseDoubleClick;
-    }
-
-    private void NotifyIcon_MouseDoubleClick(object? sender, System.Windows.Forms.MouseEventArgs e)
-    {
-        var _window = App.Current.MainWindow;
-        _window.ShowWindow();
     }
     private void NotifyIcon_MouseClick(object? sender, System.Windows.Forms.MouseEventArgs e)
     {
@@ -153,6 +146,11 @@ public class WindowBasicComponent(IServiceProvider serviceProvider,
                 menu.Show();
                 menu.Activate();
             }
+        }
+        else if (e.Button == System.Windows.Forms.MouseButtons.Left)
+        {
+            var _window = App.Current.MainWindow;
+            _window.ShowWindow();
         }
     }
     #endregion

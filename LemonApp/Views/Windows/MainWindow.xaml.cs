@@ -162,11 +162,24 @@ namespace LemonApp.Views.Windows
 
         private Storyboard? _showGoBackBtnAni = null;
         private bool _isGoBackBtnShow = false;
-        private Thickness Distance { get; set; } = new Thickness(0, 80, 0, -80);
-        private Thickness ReverseDistance { get; set; } = new Thickness(0, -80, 0, 80);
-        private CircleEase EasingFunction = new();
-        private void MainContentFrame_Navigated(object sender, NavigationEventArgs e)
+        private async void MainContentFrame_Navigated(object sender, NavigationEventArgs e)
         {
+            if(MainContentFrame.Content is Page content)
+            {
+                await Task.Yield();
+                var trans = new TranslateTransform() { Y = MainContentFrame.CanGoForward ? -120 : 120 };
+                content.RenderTransform = trans;
+                //Transition Animation
+                var ani = new DoubleAnimation()
+                {
+                    To = 0,
+                    Duration = TimeSpan.FromMilliseconds(300),
+                    EasingFunction = new ExponentialEase() { Exponent=4}
+                };
+                ani.Completed += delegate { content.RenderTransform = null; };
+                trans.BeginAnimation(TranslateTransform.YProperty, ani);
+            }
+
             //GoBackBtn Animation
             _showGoBackBtnAni ??= (Storyboard)Resources["ShowGoBackBtnAni"];
             if (MainContentFrame.CanGoBack)
@@ -191,25 +204,6 @@ namespace LemonApp.Views.Windows
                 _vm.SelectedMenu = selected;
             }
 
-            ThicknessAnimation translateAnimation = new()
-            {
-                EasingFunction = EasingFunction,
-                Duration = TimeSpan.FromMilliseconds(300),
-                From = MainContentFrame.CanGoForward?ReverseDistance:Distance,
-                To = default,
-            };
-
-            Storyboard.SetTarget(translateAnimation, (Page)MainContentFrame.Content);
-            Storyboard.SetTargetProperty(translateAnimation, new PropertyPath(nameof(FrameworkElement.Margin)));
-
-            var sb = new Storyboard()
-            {
-                Children =
-                {
-                    translateAnimation
-                }
-            };
-            sb.Begin();
         }
         #endregion
 
@@ -410,6 +404,12 @@ namespace LemonApp.Views.Windows
         private void LyricPage_Img_Drop(object sender, DragEventArgs e)
         {
             _vm.ReplacePlayFile(((Array)e.Data.GetData(DataFormats.FileDrop)).GetValue(0).ToString());
+        }
+
+        private async void MoreMenuBtn_Click(object sender, RoutedEventArgs e)
+        {
+            await Task.Yield();
+            MoreOptionPopup.IsOpen = true;
         }
 
         private async void SearchBox_TextChanged(object sender, TextChangedEventArgs e)

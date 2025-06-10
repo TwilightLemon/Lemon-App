@@ -2,6 +2,7 @@
                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                        xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
+                       xmlns:components="clr-namespace:LemonApp.Components"
                        xmlns:converters="clr-namespace:LemonApp.Converters"
                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
@@ -1220,14 +1221,58 @@
                                       Fill="{DynamicResource ForeColor}"
                                       Stretch="Uniform" />
                             </ws:Button>
-                            <base:FluentPopup Background="{DynamicResource PopupWndBgColor}"
+                            <base:FluentPopup x:Name="MoreOptionPopup"
+                                              Background="{DynamicResource PopupWndBgColor}"
                                               ExtPopupAnimation="SlideUp"
-                                              StaysOpen="False">
-                                <Grid />
+                                              HorizontalOffset="-180"
+                                              Placement="Right"
+                                              StaysOpen="False"
+                                              VerticalOffset="-180">
+                                <!--  写得有点阴间了孩子..  -->
+                                <ws:StackPanel Spacing="2">
+                                    <ws:Button Padding="12,8"
+                                               Background="Transparent"
+                                               BorderThickness="0"
+                                               Command="{x:Static components:PublicPopupMenuHolder.GotoArtistCommand}"
+                                               CommandParameter="{Binding CurrentPlaying}"
+                                               Style="{StaticResource SimpleButtonStyleForWs}">
+                                        View Singers
+                                    </ws:Button>
+                                    <ws:Button Padding="12,8"
+                                               Background="Transparent"
+                                               BorderThickness="0"
+                                               Command="{Binding GotoAlbumPageCommand}"
+                                               CommandParameter="{Binding CurrentPlaying.Album.Id}"
+                                               Style="{StaticResource SimpleButtonStyleForWs}">
+                                        View Album
+                                    </ws:Button>
+                                    <ws:Button Padding="12,8"
+                                               Background="Transparent"
+                                               BorderThickness="0"
+                                               Command="{Binding GoToCommentPageCommand}"
+                                               Style="{StaticResource SimpleButtonStyleForWs}">
+                                        View Comments
+                                    </ws:Button>
+                                    <ws:Button Padding="12,8"
+                                               Background="Transparent"
+                                               BorderThickness="0"
+                                               Command="{x:Static components:PublicPopupMenuHolder.AddToMyDissCommand}"
+                                               Style="{StaticResource SimpleButtonStyleForWs}">
+                                        Add to Playlist
+                                    </ws:Button>
+                                    <ws:Button Padding="12,8"
+                                               Background="Transparent"
+                                               BorderThickness="0"
+                                               Command="{Binding DownloadMusicCommand}"
+                                               Style="{StaticResource SimpleButtonStyleForWs}">
+                                        Download
+                                    </ws:Button>
+                                </ws:StackPanel>
                             </base:FluentPopup>
                             <ws:Button x:Name="MoreMenuBtn"
                                        Width="32"
                                        Height="32"
+                                       Click="MoreMenuBtn_Click"
                                        Style="{StaticResource SimpleIconButtonStyleForWs}"
                                        ToolTip="More">
                                 <Path Height="16"
@@ -1285,14 +1330,14 @@
             <Grid x:Name="PlayListBar"
                   Width="320"
                   HorizontalAlignment="Right">
-                <!--Acrylic Background Presenter-->
-                <base:BackgroundPresenter Visibility="{Binding ElementName=PlayListPage,Path=Visibility}">
+                <!--  Acrylic Background Presenter  -->
+                <base:BackgroundPresenter Visibility="{Binding ElementName=PlayListPage, Path=Visibility}">
                     <base:BackgroundPresenter.Effect>
-                        <BlurEffect Radius="40"/>
+                        <BlurEffect Radius="40" />
                     </base:BackgroundPresenter.Effect>
                 </base:BackgroundPresenter>
-                <Border Background="{DynamicResource TabMaskColor}"/>
-                
+                <Border Background="{DynamicResource TabMaskColor}" />
+
                 <TextBlock Margin="18,18,18,0" VerticalAlignment="Top">
                     <Run FontSize="22" Text="Playlist" />
                     <LineBreak />
