@@ -119,7 +119,8 @@ namespace LemonApp.Views.Windows
             LyricViewHost.Child = _vm.LyricView;
             _uiResourceService_OnColorModeChanged();
 
-            visualizer.Player = _serviceProvider.GetRequiredService<MediaPlayerService>().Player;
+            //disabled for performance issue
+           //visualizer.Player = _serviceProvider.GetRequiredService<MediaPlayerService>().Player;
             MainContentPage.Children.Add(_publicPopupMenuHolder.selector);
         }
 

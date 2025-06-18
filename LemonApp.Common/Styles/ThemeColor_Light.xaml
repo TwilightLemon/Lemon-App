@@ -18,4 +18,6 @@
     <!--  纯色背景  -->
     <SolidColorBrush x:Key="BackgroundColor" Color="#FFF0F0F0" />
     <SolidColorBrush x:Key="ButtonPureColor" Color="#FFF" />
+    <!--  LyricPage  -->
+    <SolidColorBrush x:Key="InActiveLrcForeground" Color="#5E000000" />
 </ResourceDictionary>

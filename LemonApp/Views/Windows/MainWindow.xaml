@@ -1012,13 +1012,14 @@
                     </ws:Button>
                 </Grid>
             </Grid>
-            <uc:AudioVisualizer x:Name="visualizer"
+            <!--  disabled for performance issue  -->
+            <!--<uc:AudioVisualizer x:Name="visualizer"
                                 Height="214"
                                 Margin="8,0"
                                 VerticalAlignment="Bottom"
                                 IsPlaying="{Binding IsPlaying, Mode=OneWay}"
                                 Opacity="0.8"
-                                Color="{DynamicResource HighlightThemeColor}" />
+                                Color="{DynamicResource HighlightThemeColor}" />-->
             <Border x:Name="MusicControl"
                     Height="110"
                     VerticalAlignment="Bottom"

@@ -22,7 +22,7 @@ public partial class SimpleLyricView : UserControl
     }
 
     private readonly Dictionary<SyllableLineInfo, LyricLineControl> lrcs = [];
-    private SyllableLineInfo? currentLrc;
+    private SyllableLineInfo? currentLrc,notifiedLrc;
 
     public event Action<LrcLine> OnNextLrcReached;
 
@@ -59,7 +59,7 @@ public partial class SimpleLyricView : UserControl
         }
     }
 
-    private Thickness lyricSpacing= new(0, 0, 0, 20);
+    private Thickness lyricSpacing= new(0, 0, 0, 40);
     public void Load(LyricsData lyricsData,LyricsData? trans=null,LyricsData? romaji=null)
     {
         LrcContainer.Children.Clear();
@@ -114,12 +114,22 @@ public partial class SimpleLyricView : UserControl
             lastItem = cur;
         }
 
+        //next found. 对于LyricPage希望准确使用当前时间来定位歌词，对于OnNextLrcReached事件则希望使用上一次结束时跳转
         if (target != null&&target.HasValue)
         {
             var line = target.Value.Key;
             var control = target.Value.Value;
 
-            if (target.Value.Key == currentLrc) return;//skip if already being the current lrc.
+            //Notify the change in current line
+            if (line != notifiedLrc)
+            {
+                OnNextLrcReached?.Invoke(new(line, control.TranslationLrc.Text, control.RomajiSyllables));
+                notifiedLrc = line;
+            }
+
+            if (line.StartTime > ms || line.EndTime < ms) return;//skip if not in range.
+
+            if (line == currentLrc) return;//skip if already being the current lrc.
             if (currentLrc != null && lrcs.TryGetValue(currentLrc, out var lrc))
             {
                 lrc.IsCurrent = false;// set last-played lrc inactive.
@@ -127,8 +137,6 @@ public partial class SimpleLyricView : UserControl
             currentLrc = line;
             var currentControl = control;
             currentControl.IsCurrent = true;
-            //Notify the change in current line
-            OnNextLrcReached?.Invoke(new(line, currentControl.TranslationLrc.Text, currentControl.RomajiSyllables));
             ScrollToCurrent();
         }
     }
