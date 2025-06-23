@@ -1,56 +1,46 @@
 ﻿<Page x:Class="LemonApp.Views.Pages.PlaylistPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:local="clr-namespace:LemonApp.Views.Pages"
       xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
-      xmlns:ws="https://schemas.elecho.dev/wpfsuite"
-      xmlns:converter="clr-namespace:LemonApp.Converters"
       xmlns:common="clr-namespace:LemonApp.Common;assembly=LemonApp.Common"
       xmlns:component="clr-namespace:LemonApp.Components"
+      xmlns:converter="clr-namespace:LemonApp.Converters"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:LemonApp.Views.Pages"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:uc="clr-namespace:LemonApp.Views.UserControls"
       xmlns:vm="clr-namespace:LemonApp.ViewModels"
-      mc:Ignorable="d"
+      xmlns:ws="https://schemas.elecho.dev/wpfsuite"
+      Title="PlaylistPage"
       d:DataContext="{d:DesignInstance Type=vm:PlaylistPageViewModel}"
       d:DesignHeight="450"
       d:DesignWidth="800"
       Foreground="{DynamicResource ForeColor}"
-      Title="PlaylistPage">
+      mc:Ignorable="d">
     <Page.Resources>
         <Storyboard x:Key="HideInfoViewAni">
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="CreatorView"
-                                           Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00"
-                                        Value="{x:Static Visibility.Collapsed}" />
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="CreatorView" Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Collapsed}" />
             </ObjectAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TitleTb"
-                                           Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00"
-                                        Value="{x:Static Visibility.Collapsed}" />
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TitleTb" Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Collapsed}" />
             </ObjectAnimationUsingKeyFrames>
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="InfoView"
-                                           Storyboard.TargetProperty="(FrameworkElement.Height)">
-                <EasingDoubleKeyFrame KeyTime="00:00:00.2000000"
-                                      Value="120">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="InfoView" Storyboard.TargetProperty="(FrameworkElement.Height)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.2000000" Value="120">
                     <EasingDoubleKeyFrame.EasingFunction>
                         <CircleEase EasingMode="EaseOut" />
                     </EasingDoubleKeyFrame.EasingFunction>
                 </EasingDoubleKeyFrame>
             </DoubleAnimationUsingKeyFrames>
-            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="FuncView"
-                                              Storyboard.TargetProperty="(FrameworkElement.Margin)">
-                <EasingThicknessKeyFrame KeyTime="00:00:00.2000000"
-                                         Value="100,0,0,25">
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="FuncView" Storyboard.TargetProperty="(FrameworkElement.Margin)">
+                <EasingThicknessKeyFrame KeyTime="00:00:00.2000000" Value="100,0,0,25">
                     <EasingThicknessKeyFrame.EasingFunction>
                         <CircleEase EasingMode="EaseOut" />
                     </EasingThicknessKeyFrame.EasingFunction>
                 </EasingThicknessKeyFrame>
             </ThicknessAnimationUsingKeyFrames>
-            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="ContentView"
-                                              Storyboard.TargetProperty="(FrameworkElement.Margin)">
-                <EasingThicknessKeyFrame KeyTime="00:00:00.2000000"
-                                         Value="0,128,0,0">
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="ContentView" Storyboard.TargetProperty="(FrameworkElement.Margin)">
+                <EasingThicknessKeyFrame KeyTime="00:00:00.2000000" Value="0,128,0,0">
                     <EasingThicknessKeyFrame.EasingFunction>
                         <CircleEase EasingMode="EaseOut" />
                     </EasingThicknessKeyFrame.EasingFunction>
@@ -58,38 +48,28 @@
             </ThicknessAnimationUsingKeyFrames>
         </Storyboard>
         <Storyboard x:Key="ShowInfoViewAni">
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="CreatorView"
-                                           Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00.0"
-                                        Value="{x:Static Visibility.Visible}" />
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="CreatorView" Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00.0" Value="{x:Static Visibility.Visible}" />
             </ObjectAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TitleTb"
-                                           Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00.0"
-                                        Value="{x:Static Visibility.Visible}" />
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TitleTb" Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00.0" Value="{x:Static Visibility.Visible}" />
             </ObjectAnimationUsingKeyFrames>
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="InfoView"
-                                           Storyboard.TargetProperty="(FrameworkElement.Height)">
-                <EasingDoubleKeyFrame KeyTime="00:00:00.2"
-                                      Value="200">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="InfoView" Storyboard.TargetProperty="(FrameworkElement.Height)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.2" Value="200">
                     <EasingDoubleKeyFrame.EasingFunction>
                         <CircleEase EasingMode="EaseOut" />
                     </EasingDoubleKeyFrame.EasingFunction>
                 </EasingDoubleKeyFrame>
             </DoubleAnimationUsingKeyFrames>
-            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="FuncView"
-                                              Storyboard.TargetProperty="(FrameworkElement.Margin)">
-                <EasingThicknessKeyFrame KeyTime="00:00:00.2000000"
-                                         Value="190,0,0,4">
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="FuncView" Storyboard.TargetProperty="(FrameworkElement.Margin)">
+                <EasingThicknessKeyFrame KeyTime="00:00:00.2000000" Value="190,0,0,4">
                     <EasingThicknessKeyFrame.EasingFunction>
                         <CircleEase EasingMode="EaseOut" />
                     </EasingThicknessKeyFrame.EasingFunction>
                 </EasingThicknessKeyFrame>
             </ThicknessAnimationUsingKeyFrames>
-            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="ContentView"
-                                              Storyboard.TargetProperty="(FrameworkElement.Margin)">
-                <EasingThicknessKeyFrame KeyTime="00:00:00.2000000"
-                                         Value="0,208,0,0">
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="ContentView" Storyboard.TargetProperty="(FrameworkElement.Margin)">
+                <EasingThicknessKeyFrame KeyTime="00:00:00.2000000" Value="0,208,0,0">
                     <EasingThicknessKeyFrame.EasingFunction>
                         <CircleEase EasingMode="EaseOut" />
                     </EasingThicknessKeyFrame.EasingFunction>
@@ -97,133 +77,117 @@
             </ThicknessAnimationUsingKeyFrames>
         </Storyboard>
         <Storyboard x:Key="CollapseInfoViewAction">
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="CoverImg"
-                                           Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00"
-                                        Value="{x:Static Visibility.Collapsed}" />
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="CoverImg" Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Collapsed}" />
             </ObjectAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TitleTb"
-                                           Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00"
-                                        Value="{x:Static Visibility.Collapsed}" />
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TitleTb" Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Collapsed}" />
             </ObjectAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="CreatorView"
-                                           Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00"
-                                        Value="{x:Static Visibility.Collapsed}" />
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="CreatorView" Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Collapsed}" />
             </ObjectAnimationUsingKeyFrames>
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="InfoView"
-                                           Storyboard.TargetProperty="(FrameworkElement.Height)">
-                <EasingDoubleKeyFrame KeyTime="00:00:00"
-                                      Value="64" />
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="InfoView" Storyboard.TargetProperty="(FrameworkElement.Height)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="64" />
             </DoubleAnimationUsingKeyFrames>
-            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="FuncView"
-                                              Storyboard.TargetProperty="(FrameworkElement.Margin)">
-                <EasingThicknessKeyFrame KeyTime="00:00:00"
-                                         Value="10,0,0,4" />
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="FuncView" Storyboard.TargetProperty="(FrameworkElement.Margin)">
+                <EasingThicknessKeyFrame KeyTime="00:00:00" Value="10,0,0,4" />
             </ThicknessAnimationUsingKeyFrames>
-            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="InfoView"
-                                              Storyboard.TargetProperty="(Border.Padding)">
-                <EasingThicknessKeyFrame KeyTime="00:00:00"
-                                         Value="8,8,8,8" />
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="InfoView" Storyboard.TargetProperty="(Border.Padding)">
+                <EasingThicknessKeyFrame KeyTime="00:00:00" Value="8,8,8,8" />
             </ThicknessAnimationUsingKeyFrames>
-            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="ContentView"
-                                              Storyboard.TargetProperty="(FrameworkElement.Margin)">
-                <EasingThicknessKeyFrame KeyTime="00:00:00"
-                                         Value="0,72,0,0" />
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="ContentView" Storyboard.TargetProperty="(FrameworkElement.Margin)">
+                <EasingThicknessKeyFrame KeyTime="00:00:00" Value="0,72,0,0" />
             </ThicknessAnimationUsingKeyFrames>
         </Storyboard>
     </Page.Resources>
     <Grid>
         <Border x:Name="InfoView"
-                BorderThickness="1"
-                BorderBrush="{DynamicResource BorderColor}"
-                CornerRadius="8"
+                Height="200"
                 Margin="8"
                 Padding="12"
+                VerticalAlignment="Top"
                 Background="{DynamicResource TabMaskColor}"
-                Height="200"
-                VerticalAlignment="Top">
+                BorderBrush="{DynamicResource BorderColor}"
+                BorderThickness="1"
+                CornerRadius="8">
             <Grid Visibility="Visible">
                 <Border x:Name="CoverImg"
-                        Margin="4"
                         Width="{Binding ElementName=CoverImg, Path=ActualHeight}"
-                        RenderOptions.BitmapScalingMode="HighQuality"
+                        Margin="4"
                         HorizontalAlignment="Left"
-                        CornerRadius="8"
                         d:Background="Pink"
-                        Background="{Binding Cover}" />
-                <Grid x:Name="TitleTb"
-                      Margin="190,0,0,86">
-                    <TextBlock  d:Text="Twlm's Music World"
-                                TextWrapping="NoWrap"
-                                Text="{Binding ListName}"
-                                ToolTip="{Binding ListName}"
-                                FontSize="32"
-                                FontWeight="Bold"
-                                VerticalAlignment="Top" />
-                    <TextBlock d:Text="Desc"
-                               Text="{Binding Description}"
-                               Margin="0 50 0 0"
-                               FontSize="12">
+                        Background="{Binding Cover}"
+                        CornerRadius="8"
+                        RenderOptions.BitmapScalingMode="HighQuality" />
+                <Grid x:Name="TitleTb" Margin="190,0,0,86">
+                    <TextBlock VerticalAlignment="Top"
+                               d:Text="Twlm's Music World"
+                               FontSize="32"
+                               FontWeight="Bold"
+                               Text="{Binding ListName}"
+                               TextWrapping="NoWrap"
+                               ToolTip="{Binding ListName}" />
+                    <TextBlock Margin="0,50,0,0"
+                               d:Text="Desc"
+                               FontSize="12"
+                               Text="{Binding Description}">
                         <TextBlock.ToolTip>
                             <ToolTip MaxWidth="420">
-                                <TextBlock Margin="8" Text="{Binding Description}" TextWrapping="Wrap"/>
+                                <TextBlock Margin="8"
+                                           Text="{Binding Description}"
+                                           TextWrapping="Wrap" />
                             </ToolTip>
                         </TextBlock.ToolTip>
                     </TextBlock>
                 </Grid>
                 <Grid x:Name="CreatorView"
+                      Margin="190,83,0,0"
                       HorizontalAlignment="Stretch"
-                      VerticalAlignment="Top"
-                      Margin="190,83,0,0">
-                    <Border HorizontalAlignment="Left"
-                            VerticalAlignment="Center"
+                      VerticalAlignment="Top">
+                    <Border Width="32"
                             Height="32"
-                            Width="32"
-                            CornerRadius="16"
-                            RenderOptions.BitmapScalingMode="HighQuality"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            d:Background="Pink"
                             Background="{Binding CreatorAvatar}"
-                            d:Background="Pink" />
-                    <TextBlock HorizontalAlignment="Left"
+                            CornerRadius="16"
+                            RenderOptions.BitmapScalingMode="HighQuality" />
+                    <TextBlock Margin="40,0,0,0"
+                               HorizontalAlignment="Left"
                                VerticalAlignment="Center"
                                d:Text="Creator"
-                               Text="{Binding CreatorName}"
-                               Margin="40,0,0,0" />
+                               Text="{Binding CreatorName}" />
                 </Grid>
                 <ws:WrapPanel x:Name="FuncView"
+                              Height="36"
+                              Margin="190,0,0,4"
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Bottom"
-                              Height="36"
                               HorizontalSpacing="16"
-                              ItemHeight="36"
-                              Margin="190,0,0,4">
-                    <ws:Button Style="{StaticResource AccentButtonStyleForWs}"
+                              ItemHeight="36">
+                    <ws:Button Padding="16,0"
                                Command="{Binding PlayAllCommand}"
-                               Padding="16 0">
+                               Style="{StaticResource AccentButtonStyleForWs}">
                         Play All
                     </ws:Button>
-                    <ws:Button Style="{StaticResource SimpleButtonStyleForWs}"
-                               Padding="16 0">
+                    <ws:Button Padding="16,0" Style="{StaticResource SimpleButtonStyleForWs}">
                         Add to Favorite
                     </ws:Button>
-                    <ws:Button Style="{StaticResource SimpleButtonStyleForWs}"
-                               Padding="16 0">
+                    <ws:Button Padding="16,0" Style="{StaticResource SimpleButtonStyleForWs}">
                         Share
                     </ws:Button>
                 </ws:WrapPanel>
             </Grid>
         </Border>
 
-        <Grid x:Name="ContentView"
-              Margin="0 208 0 0">
-            <Border BorderThickness="1"
-                    BorderBrush="{DynamicResource BorderColor}"
-                    Background="{DynamicResource TabMaskColor}"
-                    CornerRadius="8"
-                    Margin="8 4 8 8"
+        <Grid x:Name="ContentView" Margin="0,208,0,0">
+            <Border Height="42"
+                    Margin="8,4,8,8"
                     VerticalAlignment="Top"
-                    Height="42">
+                    Background="{DynamicResource TabMaskColor}"
+                    BorderBrush="{DynamicResource BorderColor}"
+                    BorderThickness="1"
+                    CornerRadius="8">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="2*" />
@@ -232,66 +196,67 @@
                     <ws:TextBox x:Name="ListSearchBox"
                                 Grid.Column="1"
                                 Height="30"
-                                Margin="8 2"
-                                Padding="8 6"
+                                Margin="8,2"
+                                Padding="8,6"
                                 Placeholder="Search"
-                                TextChanged="ListSearchBox_TextChanged"
-                                Style="{StaticResource SimpleTextBoxStyleForWs}" />
-                    <ws:WrapPanel HorizontalSpacing="12"
-                                  ItemHeight="30"
-                                  Margin="20 0"
-                                  VerticalAlignment="Center">
-                        <ToggleButton x:Name="SelectAllBtn" Style="{StaticResource AccentToggleButtonStyle}" 
-                                      Padding="6 0"
-                                      Click="SelectAllBtn_Click">
-                            <TextBlock  VerticalAlignment="Center">
-                            <Run Text="{Binding Musics.Count,Mode=OneWay}"
-                                 d:Text="520" />
-                            <Run Text=" Songs" />
+                                Style="{StaticResource SimpleTextBoxStyleForWs}"
+                                TextChanged="ListSearchBox_TextChanged" />
+                    <ws:WrapPanel Margin="20,0"
+                                  VerticalAlignment="Center"
+                                  HorizontalSpacing="12"
+                                  ItemHeight="30">
+                        <ToggleButton x:Name="SelectAllBtn"
+                                      Padding="6,0"
+                                      Click="SelectAllBtn_Click"
+                                      Style="{StaticResource AccentToggleButtonStyle}">
+                            <TextBlock VerticalAlignment="Center">
+                                <Run d:Text="520" Text="{Binding Musics.Count, Mode=OneWay}" />
+                                <Run Text=" Songs" />
                             </TextBlock>
                         </ToggleButton>
                         <ToggleButton x:Name="SelectModeTB"
-                                      Style="{StaticResource AccentToggleButtonStyle}"
-                                      Padding="16 0"
-                                      IsChecked="{Binding ElementName=listBox,Path=SelectionMode,Converter={x:Static ws:EqualConverter.Instance},ConverterParameter={x:Static SelectionMode.Multiple},Mode=OneWay}"
-                                      Click="SelectModeTB_Click">
+                                      Padding="16,0"
+                                      Click="SelectModeTB_Click"
+                                      IsChecked="{Binding ElementName=listBox, Path=SelectionMode, Converter={x:Static ws:EqualConverter.Instance}, ConverterParameter={x:Static SelectionMode.Multiple}, Mode=OneWay}"
+                                      Style="{StaticResource AccentToggleButtonStyle}">
                             Select
                         </ToggleButton>
                         <ws:Button x:Name="AddToBtn"
-                                   Style="{StaticResource SimpleButtonStyleForWs}"
-                                   Padding="16 0"
-                                   Click="AddToBtn_Click">
+                                   Padding="16,0"
+                                   Click="AddToBtn_Click"
+                                   Style="{StaticResource SimpleButtonStyleForWs}">
                             Add to
                         </ws:Button>
                         <ws:Button x:Name="DeleteBtn"
-                                   Visibility="{Binding IsOwned,Converter={x:Static ws:BooleanToVisibilityConverter.Instance}}"
+                                   Padding="16,0"
+                                   Click="DeleteBtn_Click"
                                    Style="{StaticResource SimpleButtonStyleForWs}"
-                                   Padding="16 0"
-                                   Click="DeleteBtn_Click">
+                                   Visibility="{Binding IsOwned, Converter={x:Static ws:BooleanToVisibilityConverter.Instance}}">
                             Delete
                         </ws:Button>
-                        <ws:Button x:Name="DownloadBtn" Style="{StaticResource SimpleButtonStyleForWs}"
-                                   Padding="16 0"
-                                   Click="DownloadBtn_Click">
+                        <ws:Button x:Name="DownloadBtn"
+                                   Padding="16,0"
+                                   Click="DownloadBtn_Click"
+                                   Style="{StaticResource SimpleButtonStyleForWs}">
                             Download
                         </ws:Button>
                     </ws:WrapPanel>
                 </Grid>
             </Border>
             <ws:ListBox x:Name="listBox"
-                        Margin="0 46 0 0"
-                        ItemsSource="{Binding Musics}"
-                        ScrollViewer.ScrollChanged="listBox_ScrollChanged"
-                        MouseDoubleClick="listBox_MouseDoubleClick"
+                        Margin="0,46,0,0"
                         d:ItemsSource="{d:SampleData ItemCount=5}"
-                        Style="{DynamicResource SimpleListBoxStyle}"
-                        ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}">
+                        ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}"
+                        ItemsSource="{Binding Musics}"
+                        MouseDoubleClick="listBox_MouseDoubleClick"
+                        ScrollViewer.ScrollChanged="listBox_ScrollChanged"
+                        Style="{DynamicResource SimpleListBoxStyle}">
                 <ws:ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Border MinHeight="48"
-                                x:Name="_border"
-                                CornerRadius="8"
-                                Background="Transparent">
+                        <Border x:Name="_border"
+                                MinHeight="48"
+                                Background="Transparent"
+                                CornerRadius="8">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="3*" />
@@ -299,60 +264,57 @@
                                     <ColumnDefinition Width="2*" />
                                 </Grid.ColumnDefinitions>
                                 <ws:ConditionalControl x:Name="Highlighter"
-                                                       d:Condition="True"
                                                        Width="4"
                                                        Height="22"
-                                                       HorizontalAlignment="Left">
+                                                       HorizontalAlignment="Left"
+                                                       d:Condition="True">
                                     <ws:ConditionalControl.ContentWhenTrue>
-                                        <Border Background="{DynamicResource HighlightThemeColor}"
-                                                CornerRadius="2" />
+                                        <Border Background="{DynamicResource HighlightThemeColor}" CornerRadius="2" />
                                     </ws:ConditionalControl.ContentWhenTrue>
                                 </ws:ConditionalControl>
-                                <TextBlock HorizontalAlignment="Left"
+                                <TextBlock Margin="10,0,0,0"
+                                           HorizontalAlignment="Left"
                                            VerticalAlignment="Center"
-                                           Opacity="0.6"
                                            FontSize="12"
-                                           Margin="10 0 0 0">
+                                           Opacity="0.6">
                                     <TextBlock.Text>
                                         <MultiBinding Converter="{x:Static converter:IndexOfConverter.Instance}">
                                             <Binding />
-                                            <Binding ElementName="listBox"
-                                                     Path="ItemsSource" />
+                                            <Binding ElementName="listBox" Path="ItemsSource" />
                                         </MultiBinding>
                                     </TextBlock.Text>
                                 </TextBlock>
-                                <ws:WrapPanel VerticalAlignment="Center"
-                                              Margin="38 0"
+                                <ws:WrapPanel Margin="38,0"
+                                              HorizontalAlignment="Stretch"
+                                              VerticalAlignment="Center"
                                               HorizontalSpacing="4"
-                                              VerticalSpacing="2"
-                                              HorizontalAlignment="Stretch">
-                                    <TextBlock Text="{Binding MusicName}"
-                                               VerticalAlignment="Center" />
-                                    <TextBlock Text="{Binding MusicName_Lyric}"
-                                               VerticalAlignment="Center"
+                                              VerticalSpacing="2">
+                                    <TextBlock VerticalAlignment="Center" Text="{Binding MusicName}" />
+                                    <TextBlock VerticalAlignment="Center"
                                                FontSize="10"
                                                FontWeight="Normal"
-                                               Opacity="0.6" />
+                                               Opacity="0.6"
+                                               Text="{Binding MusicName_Lyric}" />
                                     <uc:MusicInfoLand x:Name="InfoLand"
                                                       HorizontalAlignment="Right"
                                                       VerticalAlignment="Center"
-                                                      Quality="{Binding Quality}"
-                                                      MvId="{Binding Mvmid}" />
+                                                      MvId="{Binding Mvmid}"
+                                                      Quality="{Binding Quality}" />
                                 </ws:WrapPanel>
-                                <ws:Button Margin="4"
+                                <ws:Button Grid.Column="1"
+                                           Margin="4"
+                                           Padding="8,4"
                                            HorizontalAlignment="Left"
-                                           Padding="8 4"
-                                           Grid.Column="1"
                                            Command="{x:Static component:PublicPopupMenuHolder.GotoArtistCommand}"
                                            CommandParameter="{Binding}"
                                            Style="{StaticResource SimpleIconButtonStyleForWs}">
                                     <TextBlock Text="{Binding SingerText}" />
                                 </ws:Button>
-                                <ws:Button Margin="4"
+                                <ws:Button Grid.Column="2"
+                                           Margin="4"
+                                           Padding="8,4"
                                            HorizontalAlignment="Left"
-                                           Padding="8 4"
-                                           Grid.Column="2"
-                                           Command="{Binding DataContext.GotoAlbumPageCommand ,RelativeSource={RelativeSource AncestorType=ws:ListBox}}"
+                                           Command="{Binding DataContext.GotoAlbumPageCommand, RelativeSource={RelativeSource AncestorType=ws:ListBox}}"
                                            CommandParameter="{Binding Album.Id}"
                                            Style="{StaticResource SimpleIconButtonStyleForWs}">
                                     <TextBlock Text="{Binding Album.Name}" />
@@ -364,17 +326,12 @@
                                 <DataTrigger.Binding>
                                     <MultiBinding Converter="{x:Static converter:MusicEqualConverter.Instance}">
                                         <Binding />
-                                        <Binding Path="DataContext.Playing"
-                                                 RelativeSource="{RelativeSource AncestorType=ws:ListBox}" />
+                                        <Binding Path="DataContext.Playing" RelativeSource="{RelativeSource AncestorType=ws:ListBox}" />
                                     </MultiBinding>
                                 </DataTrigger.Binding>
-                                <Setter Property="TextElement.Foreground"
-                                        Value="{DynamicResource HighlightThemeColor}" />
-                                <Setter Property="TextElement.FontWeight"
-                                        Value="Bold" />
-                                <Setter TargetName="Highlighter"
-                                        Property="Condition"
-                                        Value="True" />
+                                <Setter Property="TextElement.Foreground" Value="{DynamicResource HighlightThemeColor}" />
+                                <Setter Property="TextElement.FontWeight" Value="Bold" />
+                                <Setter TargetName="Highlighter" Property="Condition" Value="True" />
                                 <!--<Setter TargetName="_border"
                                         Property="Background"
                                         Value="{DynamicResource MaskColor}" />-->
@@ -385,41 +342,41 @@
             </ws:ListBox>
         </Grid>
         <base:FluentPopup x:Name="AddtoMenu"
-                          StaysOpen="False"
-                          ExtPopupAnimation="SlideDown"
                           Background="{DynamicResource PopupWndBgColor}"
-                          Placement="Mouse">
+                          ExtPopupAnimation="SlideDown"
+                          Placement="Mouse"
+                          StaysOpen="False">
             <ws:StackPanel>
-                <ws:Button Style="{StaticResource SimpleButtonStyleForWs}"
-                           Padding="16 8"
-                           CornerRadius="0"
+                <ws:Button Padding="16,8"
                            Background="Transparent"
-                           Click="AddToDissBtn_Click">
+                           Click="AddToDissBtn_Click"
+                           CornerRadius="0"
+                           Style="{StaticResource SimpleButtonStyleForWs}">
                     My Diss
                 </ws:Button>
-                <ws:Button Style="{StaticResource SimpleButtonStyleForWs}"
-                           Padding="16 8"
-                           CornerRadius="0"
+                <ws:Button Padding="16,8"
                            Background="Transparent"
-                           Click="AddToNextBtn_Click">
+                           Click="AddToNextBtn_Click"
+                           CornerRadius="0"
+                           Style="{StaticResource SimpleButtonStyleForWs}">
                     Next To Play
                 </ws:Button>
             </ws:StackPanel>
         </base:FluentPopup>
         <ws:Button x:Name="GotoPlayingBtn"
-                   HorizontalAlignment="Right"
-                   VerticalAlignment="Bottom"
-                   Visibility="{Binding ShowGotoPlaying}"
-                   Margin="32"
                    Width="36"
                    Height="36"
+                   Margin="32"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Bottom"
+                   Click="GotoPlayingBtn_Click"
                    CornerRadius="18"
                    Style="{StaticResource AccentButtonStyleForWs}"
-                   Click="GotoPlayingBtn_Click">
-            <Path Fill="{DynamicResource BackgroundColor}"
-                  Stretch="Uniform"
+                   Visibility="{Binding ShowGotoPlaying}">
+            <Path Width="16"
                   Data="{StaticResource Icon_Position}"
-                  Width="16"/>
+                  Fill="{DynamicResource BackgroundColor}"
+                  Stretch="Uniform" />
         </ws:Button>
     </Grid>
 </Page>

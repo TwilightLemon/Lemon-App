@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using LemonApp.Common.Configs;
 using LemonApp.Common.Funcs;
+using LemonApp.Common.UIBases;
 using LemonApp.Components;
 using LemonApp.MusicLib.Abstraction.Entities;
 using LemonApp.MusicLib.Abstraction.UserAuth;
@@ -411,19 +412,21 @@ public partial class MainWindowViewModel : ObservableObject
             UserMenuViewModel.Menu_LoginQQ();
         }
     }
-
+    [ObservableProperty]
+    private Brush? avator;
+    [ObservableProperty]
+    private string userNameHint = string.Empty;
     private async void UserProfileService_OnAuth(TencUserAuth auth)
     {
         //update user profile viewmodel
         if (await _userProfileService.GetAvatorImg() is { } img)
         {
             Avator = new ImageBrush(img);
+            UserNameHint = _userProfileService.GetNickname()!;
         }
     }
     #endregion
     #region main menu definition
-    [ObservableProperty]
-    private Brush? avator;
     public enum MenuType { MusicPool,Mine}
     public class MainMenu(string name, Geometry icon, Type pageType, MenuType type =0,Func<object,Task>? process=null)
     {

@@ -233,6 +233,11 @@
                                           Placement="Bottom"
                                           StaysOpen="False" />
                     </Border>
+                    <TextBlock Margin="0,0,200,0"
+                               HorizontalAlignment="Right"
+                               VerticalAlignment="Center"
+                               Foreground="{DynamicResource HintForeColor}"
+                               Text="{Binding UserNameHint, FallbackValue='Login First'}" />
                     <ws:Button x:Name="UserProfileBtn"
                                Width="32"
                                Height="32"
@@ -275,7 +280,7 @@
                                     <EventSetter Event="MouseLeave" Handler="MainPageMenuItem_MouseLeave" />
                                     <EventSetter Event="MouseLeftButtonUp" Handler="MainPageMenuItem_MouseLeftButtonUp" />
                                     <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                                    <Setter Property="Margin" Value="5,2" />
+                                    <Setter Property="Margin" Value="8,4" />
                                     <Setter Property="CornerRadius" Value="8" />
                                     <Setter Property="BorderThickness" Value="0" />
                                     <Setter Property="Foreground" Value="{DynamicResource ForeColor}" />
@@ -288,11 +293,9 @@
                                 <GroupStyle>
                                     <GroupStyle.HeaderTemplate>
                                         <DataTemplate>
-                                            <TextBlock Margin="12,8,8,2"
-                                                       FontSize="14"
-                                                       FontWeight="Bold"
-                                                       Foreground="{DynamicResource ForeColor}"
-                                                       Opacity="0.8"
+                                            <TextBlock Margin="16,12,8,0"
+                                                       FontSize="12"
+                                                       Foreground="{DynamicResource HintForeColor}"
                                                        Text="{Binding Name}" />
                                         </DataTemplate>
                                     </GroupStyle.HeaderTemplate>
@@ -303,26 +306,30 @@
                                     <ws:BoxPanel Height="40"
                                                  d:Background="#3C000000"
                                                  Background="Transparent">
+                                        <Border x:Name="FocusedIcon"
+                                                Width="3"
+                                                Height="16"
+                                                HorizontalAlignment="Left"
+                                                d:Visibility="Visible"
+                                                Background="{DynamicResource HighlightThemeColor}"
+                                                CornerRadius="1.5"
+                                                Visibility="Hidden" />
                                         <ContentControl Content="{Binding Decorator}" />
-                                        <ws:StackPanel Margin="10,0"
-                                                       VerticalAlignment="Center"
+                                        <ws:StackPanel Width="120"
+                                                       Margin="18,0"
+                                                       HorizontalAlignment="Center"
                                                        Orientation="Horizontal"
                                                        Spacing="12">
-                                            <Border x:Name="FocusedIcon"
-                                                    Width="3"
-                                                    Height="16"
-                                                    Margin="-18,0,0,0"
-                                                    d:Visibility="Visible"
-                                                    Background="{DynamicResource HighlightThemeColor}"
-                                                    CornerRadius="1.5"
-                                                    Visibility="Hidden" />
                                             <Path Width="14"
                                                   Height="14"
                                                   VerticalAlignment="Center"
                                                   Data="{Binding Icon}"
                                                   Fill="{DynamicResource ForeColor}"
                                                   Stretch="Uniform" />
-                                            <TextBlock VerticalAlignment="Center" Text="{Binding Name}" />
+                                            <TextBlock VerticalAlignment="Center"
+                                                       FontSize="12"
+                                                       Opacity="0.8"
+                                                       Text="{Binding Name}" />
                                         </ws:StackPanel>
                                     </ws:BoxPanel>
                                     <DataTemplate.Triggers>
@@ -365,6 +372,7 @@
                             CornerRadius="8">
                         <Frame Name="MainContentFrame"
                                Navigated="MainContentFrame_Navigated"
+                               Navigating="MainContentFrame_Navigating"
                                NavigationUIVisibility="Hidden" />
                     </Border>
                     <ws:ConditionalControl Grid.Column="1"
@@ -868,9 +876,9 @@
                                 <Run d:Text="Taylor Swift"
                                      FontSize="14"
                                      Text="{Binding CurrentPlaying.SingerText, TargetNullValue='Lemon App'}" />
-                                ·<Run d:Text="reputation"
-                                     FontSize="12"
-                                     Text="{Binding CurrentPlaying.Album.Name}" />
+                                <Run d:Text="reputation"
+                                     FontSize="14"
+                                     Text="{Binding CurrentPlaying.Album.Name, StringFormat=' · {0}'}" />
                             </TextBlock>
                             <Grid MaxWidth="580" Margin="58,0">
                                 <TextBlock HorizontalAlignment="Left"
@@ -1055,12 +1063,14 @@
                                    HorizontalAlignment="Left"
                                    VerticalAlignment="Center"
                                    d:Text="00:00"
+                                   Foreground="{DynamicResource HintForeColor}"
                                    Text="{Binding CurrentPlayingPositionText}" />
                         <TextBlock x:Name="TotalTimeTb"
                                    Margin="0,0,14,0"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Center"
                                    d:Text="00:00"
+                                   Foreground="{DynamicResource HintForeColor}"
                                    Text="{Binding CurrentPlayingDurationText}" />
                         <Slider x:Name="PlaySlider"
                                 Margin="60,0"
@@ -1128,10 +1138,12 @@
                                     <LineBreak />
                                     <Run d:Text="Taylor Swift"
                                          FontSize="12"
+                                         Foreground="{DynamicResource HintForeColor}"
                                          Text="{Binding CurrentPlaying.SingerText, TargetNullValue='Lemon App'}" />
-                                    ·<Run d:Text="reputation"
+                                    <Run d:Text="reputation"
                                          FontSize="12"
-                                         Text="{Binding CurrentPlaying.Album.Name}" />
+                                         Foreground="{DynamicResource HintForeColor}"
+                                         Text="{Binding CurrentPlaying.Album.Name, StringFormat=' · {0}'}" />
                                 </TextBlock>
                             </Grid>
                         </ws:Button>
@@ -1342,8 +1354,10 @@
                 <TextBlock Margin="18,18,18,0" VerticalAlignment="Top">
                     <Run FontSize="22" Text="Playlist" />
                     <LineBreak />
-                    <Run d:Text="0" Text="{Binding Playlist.Count, Mode=OneWay}" />
-                    Songs</TextBlock>
+                    <Run d:Text="0"
+                         Foreground="{DynamicResource HintForeColor}"
+                         Text="{Binding Playlist.Count, Mode=OneWay, StringFormat='\{0} Songs'}" />
+                </TextBlock>
                 <ws:TextBox x:Name="PlaylistSearchBox"
                             Height="30"
                             Margin="12,72,12,0"

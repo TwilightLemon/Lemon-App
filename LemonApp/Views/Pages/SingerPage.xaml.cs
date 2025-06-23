@@ -4,6 +4,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace LemonApp.Views.Pages
 {
@@ -52,6 +53,7 @@ namespace LemonApp.Views.Pages
                     SingerNamePanel.Margin = new(30,160 ,0,0);
                     CoverImg.Visibility = Visibility.Collapsed;
                     BigBackground.Height = 350;
+                    TextBlock.SetForeground(SingerNamePanel, Brushes.WhiteSmoke);
                 }
             }
         }

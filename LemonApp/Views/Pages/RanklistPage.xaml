@@ -80,6 +80,7 @@
                                        FontWeight="Bold"
                                        Text="{Binding ListInfo.Name}"/>
                             <ItemsControl Margin="162 52 10 20"
+                                          Foreground="{DynamicResource HintForeColor}"
                                           ItemsSource="{Binding ListInfo.Content}"
                                           AlternationCount="{Binding ListInfo.Content.Count}"
                                           d:AlternationCount="4">

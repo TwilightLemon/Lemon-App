@@ -8,6 +8,9 @@
     <SolidColorBrush x:Key="TabMaskColor" Color="#6CFFFFFF" />
     <!--  前景色  -->
     <SolidColorBrush x:Key="ForeColor" Color="#1F1F1F" />
+    <!--  提示前景色  -->
+    <SolidColorBrush x:Key="HintForeColor"
+                     Color="#6F6F6F" />
     <!--  蒙罩背景色  -->
     <SolidColorBrush x:Key="MaskColor" Color="#0C000000" />
     <!--  焦点蒙罩背景色  -->

@@ -161,25 +161,28 @@ namespace LemonApp.Views.Windows
             MainContentFrame.GoBack();
         }
 
-        private Storyboard? _showGoBackBtnAni = null;
-        private bool _isGoBackBtnShow = false;
-        private async void MainContentFrame_Navigated(object sender, NavigationEventArgs e)
+        private void MainContentFrame_Navigating(object sender, NavigatingCancelEventArgs e)
         {
-            if(MainContentFrame.Content is Page content)
+            if (e.Content is Page content)
             {
-                await Task.Yield();
-                var trans = new TranslateTransform() { Y = MainContentFrame.CanGoForward ? -120 : 120 };
+                var trans = new TranslateTransform() { Y = e.NavigationMode==NavigationMode.Back ? -140 : 140 };
                 content.RenderTransform = trans;
                 //Transition Animation
                 var ani = new DoubleAnimation()
                 {
                     To = 0,
                     Duration = TimeSpan.FromMilliseconds(300),
-                    EasingFunction = new ExponentialEase() { Exponent=4}
+                    EasingFunction = new CubicEase()
                 };
                 ani.Completed += delegate { content.RenderTransform = null; };
                 trans.BeginAnimation(TranslateTransform.YProperty, ani);
             }
+        }
+
+        private Storyboard? _showGoBackBtnAni = null;
+        private bool _isGoBackBtnShow = false;
+        private async void MainContentFrame_Navigated(object sender, NavigationEventArgs e)
+        {
 
             //GoBackBtn Animation
             _showGoBackBtnAni ??= (Storyboard)Resources["ShowGoBackBtnAni"];

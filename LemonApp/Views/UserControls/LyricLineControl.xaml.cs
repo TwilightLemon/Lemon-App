@@ -155,7 +155,7 @@ public partial class LyricLineControl : UserControl
                     mainSyllableAnimated[syllable] = true;
 
                     var liftupAni = new DoubleAnimation(0, ActiveLrcLiftupHeight,
-                                TimeSpan.FromMilliseconds(AverageWordDuration))
+                                TimeSpan.FromMilliseconds(AverageWordDuration*1.5))
                     {
                         EasingFunction = new ExponentialEase()
                     };
@@ -194,10 +194,9 @@ public partial class LyricLineControl : UserControl
                                             new EasingDoubleKeyFrame(up, TimeSpan.FromMilliseconds((double)syllable.Duration*(double)(index+1)/(double)textBlock.Inlines.Count)){
                                                 EasingFunction=easing
                                             },
-                                            new EasingDoubleKeyFrame(up, TimeSpan.FromMilliseconds(syllable.Duration)),
-                                            new EasingDoubleKeyFrame(default, TimeSpan.FromMilliseconds(syllable.Duration+400)){
-                                                EasingFunction=easing
-                                            }],
+                                            new EasingDoubleKeyFrame(up, TimeSpan.FromMilliseconds(syllable.Duration))
+                                            //此处移除了下落动画，统一在该句结束后调整
+                                            ]
                                     };
                                     upAni.Completed += (_, _) => hideLighter();
                                     ts.BeginAnimation(TranslateTransform.YProperty, upAni);
@@ -398,6 +397,17 @@ public partial class LyricLineControl : UserControl
                 trans.BeginAnimation(TranslateTransform.YProperty, null);
                 trans.Y = 0;
             }
+            //reset 高亮分词抬起动画
+            if (lrc.Value.Inlines.Count > 1)
+            {
+                foreach (InlineUIContainer line in lrc.Value.Inlines)
+                {
+                    if (line.Child.RenderTransform is TranslateTransform ts)
+                    {
+                        ts.BeginAnimation(TranslateTransform.YProperty, null);
+                    }
+                }
+             }
         }
     }
 

@@ -58,9 +58,8 @@
                 <GroupStyle.HeaderTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Name}"
-                                   Foreground="{DynamicResource ForeColor}"
                                    FontSize="14"
-                                   Opacity="0.8"
+                                   Foreground="{DynamicResource HintForeColor}"
                                    FontWeight="Bold"
                                    Margin="4 8" />
                     </DataTemplate>
