@@ -190,14 +190,20 @@ namespace LemonApp.Views.UserControls
                 var api = new Lyricify.Lyrics.Providers.Web.Netease.Api();
                 var data = await api.GetLyricNew(m.MusicID);
                 if (data == null) return null;
-                return new LyricData
+                var result= new LyricData
                 {
-                    Platform=Platform.wyy,
+                    Type=LyricType.Wyy,
                     Id = m.MusicID,
                     Lyric = data.Yrc?.Lyric ?? data.Lrc.Lyric,
                     Trans = data.Tlyric.Lyric,
                     Romaji = data.Romalrc.Lyric
                 };
+                if(data.Yrc?.Lyric == null && data.Lrc.Lyric != null)
+                {
+                    //没有单句分词
+                    result.Type = LyricType.PureWyy;
+                }
+                return result;
             }
             return null;
         }
@@ -205,7 +211,13 @@ namespace LemonApp.Views.UserControls
         private void LoadLrc(LyricData dt)
         {
             if (dt.Lyric == null) return;
-            var rawType = dt.Platform == Platform.qq ? LyricsRawTypes.Qrc : LyricsRawTypes.Yrc;
+            var rawType =dt.Type switch
+            {
+                LyricType.Wyy => LyricsRawTypes.Yrc,
+                LyricType.PureWyy => LyricsRawTypes.Lrc,
+               LyricType.QQ => LyricsRawTypes.Qrc,
+                _ => LyricsRawTypes.Lrc
+            };
             var lrc = ParseHelper.ParseLyrics(dt.Lyric,rawType);
             LyricsData? trans = null, romaji = null;
             if (!string.IsNullOrEmpty(dt.Trans))
@@ -222,7 +234,7 @@ namespace LemonApp.Views.UserControls
 
             if (lrc != null)
                 Dispatcher.Invoke(() => {
-                    LrcHost.Load(lrc, trans, romaji);
+                    LrcHost.Load(lrc, trans, romaji,dt.Type==LyricType.PureWyy);
                     RefreshHostSettings();
                 });
         }

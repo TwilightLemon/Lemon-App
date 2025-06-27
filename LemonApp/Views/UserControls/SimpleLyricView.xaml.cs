@@ -9,7 +9,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 
 namespace LemonApp.Views.UserControls;
-public record class LrcLine(SyllableLineInfo Lrc, string? Trans = null, SyllableLineInfo? Romaji = null);
+public record class LrcLine(ILineInfo Lrc, string? Trans = null, ILineInfo? Romaji = null);
 /// <summary>
 /// SimpleLyricView and LyricLineControl are used to display lyrics with syllables
 /// </summary>
@@ -21,8 +21,9 @@ public partial class SimpleLyricView : UserControl
         SizeChanged += SimpleLyricView_SizeChanged;
     }
 
-    private readonly Dictionary<SyllableLineInfo, LyricLineControl> lrcs = [];
-    private SyllableLineInfo? currentLrc,notifiedLrc;
+    private readonly Dictionary<ILineInfo, LyricLineControl> lrcs = [];
+    private ILineInfo? currentLrc,notifiedLrc;
+    private bool _isPureLrc = false;
 
     public event Action<LrcLine> OnNextLrcReached;
 
@@ -60,8 +61,9 @@ public partial class SimpleLyricView : UserControl
     }
 
     private Thickness lyricSpacing= new(0, 0, 0, 40);
-    public void Load(LyricsData lyricsData,LyricsData? trans=null,LyricsData? romaji=null)
+    public void Load(LyricsData lyricsData,LyricsData? trans=null,LyricsData? romaji=null,bool isPureLrc=false)
     {
+        _isPureLrc= isPureLrc;
         LrcContainer.Children.Clear();
         lrcs.Clear();
         LrcContainer.Children.Add(new TextBlock() { Height = 300 ,Background=Brushes.Transparent});
@@ -72,6 +74,11 @@ public partial class SimpleLyricView : UserControl
                 var lrc=new LyricLineControl(syllable.Syllables) {Margin= lyricSpacing };
                 LrcContainer.Children.Add(lrc);
                 lrcs[syllable] = lrc;
+            }else if(line is LineInfo { } pure)
+            {
+                var lrc = new LyricLineControl(pure.Text) { Margin = lyricSpacing };
+                LrcContainer.Children.Add(lrc);
+                lrcs[pure] = lrc;
             }
         }
         LrcContainer.Children.Add(new TextBlock() { Height = 300, Background = Brushes.Transparent });
@@ -91,6 +98,8 @@ public partial class SimpleLyricView : UserControl
                 var romajiLrc = romaji.Lines.FirstOrDefault(a => a.StartTime >= lrc.Key.StartTime - 10);
                 if (romajiLrc is SyllableLineInfo { } roma)
                     lrc.Value.LoadRomajiLrc(roma);
+                else if (romajiLrc is LineInfo { } pure)
+                    lrc.Value.LoadPlainRomaji(pure.Text);
             }
         }
     }
@@ -103,22 +112,30 @@ public partial class SimpleLyricView : UserControl
         }
 
         //从上一条结束到本条结束都是当前歌词时间，目的是本条歌词结束就跳转到下一个
-        KeyValuePair<SyllableLineInfo, LyricLineControl>? lastItem=null,target = null;
-        foreach (var cur in lrcs)
+        KeyValuePair<ILineInfo, LyricLineControl>? lastItem=null,target = null;
+        if (!_isPureLrc)
         {
-            if((lastItem?.Key.EndTime ?? cur.Key.StartTime) <= ms && cur.Key.EndTime >= ms)
+            foreach (var cur in lrcs)
             {
-                target = cur;
-                break;
+                if ((lastItem?.Key.EndTime ?? cur.Key.StartTime) <= ms && cur.Key.EndTime >= ms)
+                {
+                    target = cur;
+                    break;
+                }
+                lastItem = cur;
             }
-            lastItem = cur;
+        }
+        else
+        {
+            target = lrcs.LastOrDefault(a => a.Key.StartTime <= ms);
         }
 
         //next found. 对于LyricPage希望准确使用当前时间来定位歌词，对于OnNextLrcReached事件则希望使用上一次结束时跳转
-        if (target != null&&target.HasValue)
+        if (target != null && target.HasValue)
         {
             var line = target.Value.Key;
             var control = target.Value.Value;
+            if (line == null || control == null) return;
 
             //Notify the change in current line
             if (line != notifiedLrc)
@@ -127,7 +144,7 @@ public partial class SimpleLyricView : UserControl
                 notifiedLrc = line;
             }
 
-            if (line.StartTime > ms || line.EndTime < ms) return;//skip if not in range.
+            if (line.StartTime > ms || (line.EndTime??int.MaxValue) < ms) return;//skip if not in range.
 
             if (line == currentLrc) return;//skip if already being the current lrc.
             if (currentLrc != null && lrcs.TryGetValue(currentLrc, out var lrc))

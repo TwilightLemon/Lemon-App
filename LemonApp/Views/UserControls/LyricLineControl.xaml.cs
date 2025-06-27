@@ -23,9 +23,13 @@ public partial class LyricLineControl : UserControl
     private double AverageWordDuration = 0.0;
     public SyllableLineInfo? RomajiSyllables { get; private set; }
 
+    private bool _isPlainLrc = false;
+
+    //reserved for desktop lyric view
     public LyricLineControl()
     {
         InitializeComponent();
+        //no blur effect
     }
 
     public LyricLineControl(List<ISyllableInfo> words)
@@ -33,6 +37,38 @@ public partial class LyricLineControl : UserControl
         InitializeComponent();
         Effect = new BlurEffect() { Radius = InActiveLrcBlurRadius };
         LoadMainLrc(words);
+    }
+
+    public LyricLineControl(string plainLrc)
+    {
+        InitializeComponent();
+        Effect = new BlurEffect() { Radius = InActiveLrcBlurRadius };
+        _isPlainLrc = true;
+        LoadPlainLrc(plainLrc);
+    }
+    public void LoadPlainLrc(string lrc, double fontSize = 22)
+    {
+        MainLrcContainer.Children.Clear();
+        var tb = new TextBlock()
+        {
+            Text = lrc,
+            TextWrapping = TextWrapping.Wrap,
+            FontSize = fontSize
+        };
+        if (CustomNormalColor != null)
+            tb.Foreground = CustomNormalColor;
+        MainLrcContainer.Children.Add(tb);
+    }
+
+    public void LoadPlainRomaji(string? romaji)
+    {
+        if (romaji == null) return;
+        RomajiLrcContainer.Children.Clear();
+        RomajiLrcContainer.Children.Add(new TextBlock()
+        {
+            Text = romaji,
+            TextWrapping = TextWrapping.Wrap
+        });
     }
 
     public void LoadMainLrc(List<ISyllableInfo> words,double fontSize=22)
@@ -106,184 +142,192 @@ public partial class LyricLineControl : UserControl
 
     public void UpdateTime(int ms)
     {
-        foreach (var kvp in mainSyllableLrcs)
+        if (_isPlainLrc) 
         {
-            var syllable = kvp.Key;
-            var textBlock = kvp.Value;
-
-            if (syllable.EndTime < ms)
+        //do noting in inner lrc
+        }
+        else
+        {
+            foreach (var kvp in mainSyllableLrcs)
             {
-                // 已经过了，直接填满
-                EnsureBrush(textBlock, syllable, 1.0);
-                mainSyllableAnimated[syllable] = true;
-                //lift-up
-                if(textBlock.RenderTransform is TranslateTransform trans)
-                {
-                    trans.Y = ActiveLrcLiftupHeight;
-                }
-            }
-            else if (syllable.StartTime > ms)
-            {
-                // 还没到，保持未填充
-                EnsureBrush(textBlock, syllable, 0.0);
-                mainSyllableAnimated[syllable] = false;
+                var syllable = kvp.Key;
+                var textBlock = kvp.Value;
 
-                //如果是高亮抬起分词，则可能需要先清除效果
-                if (syllable.Duration >= EmphasisThreshold&& textBlock.Inlines.Count>1)
+                if (syllable.EndTime < ms)
                 {
-                    var empty= CreateBrush(0.0);
-                    foreach (var line in textBlock.Inlines)
+                    // 已经过了，直接填满
+                    EnsureBrush(textBlock, syllable, 1.0);
+                    mainSyllableAnimated[syllable] = true;
+                    //lift-up
+                    if (textBlock.RenderTransform is TranslateTransform trans)
                     {
-                        if(line is InlineUIContainer con &&con.Child is TextBlock block)
-                        {
-                            block.Foreground = empty;
-                        }
+                        trans.Y = ActiveLrcLiftupHeight;
                     }
                 }
-                //clear lift-up
-                if (textBlock.RenderTransform is TranslateTransform trans)
+                else if (syllable.StartTime > ms)
                 {
-                    trans.BeginAnimation(TranslateTransform.YProperty, null);
-                    trans.Y = 0;
-                }
-            }
-            else
-            {
-                // 正在进行，判断是否需要启动动画
-                if (!mainSyllableAnimated.TryGetValue(syllable, out var animated) || !animated)
-                {
-                    mainSyllableAnimated[syllable] = true;
+                    // 还没到，保持未填充
+                    EnsureBrush(textBlock, syllable, 0.0);
+                    mainSyllableAnimated[syllable] = false;
 
-                    var liftupAni = new DoubleAnimation(0, ActiveLrcLiftupHeight,
-                                TimeSpan.FromMilliseconds(AverageWordDuration*1.5))
+                    //如果是高亮抬起分词，则可能需要先清除效果
+                    if (syllable.Duration >= EmphasisThreshold && textBlock.Inlines.Count > 1)
                     {
-                        EasingFunction = new ExponentialEase()
-                    };
-                    bool animate = true,liftup=true;
-                    if (syllable.Duration >= EmphasisThreshold)
-                    {
-                        //highlight
-                        var fontColor = CustomHighlighterColor?.Color ?? ((SolidColorBrush)FindResource("ForeColor")).Color;
-                       var lighter = new DropShadowEffect() { BlurRadius = 20,Color =fontColor, Direction = 0, ShadowDepth = 0 };
-                        textBlock.Effect = lighter;
-                        lighter.BeginAnimation(DropShadowEffect.OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(syllable.Duration*0.8)));
-                        Action hideLighter = delegate {
-                            var da = new DoubleAnimation(0, TimeSpan.FromMilliseconds(300));
-                            da.Completed += delegate { textBlock.Effect = null; };
-                            lighter.BeginAnimation(DropShadowEffect.OpacityProperty, da);
-                        };
-
-                        var easing = new CubicEase();
-                        var up = -6;
-                        //高亮分词逐字抬起动画
-                        if (textBlock.Inlines.Count >1)
+                        var empty = CreateBrush(0.0);
+                        foreach (var line in textBlock.Inlines)
                         {
-                            //单独设置动画
-                            liftup = false;
-                            animate = false;
-                            int index = 0;
-                            foreach (InlineUIContainer line in textBlock.Inlines)
+                            if (line is InlineUIContainer con && con.Child is TextBlock block)
                             {
-                                if (line.Child.RenderTransform is TranslateTransform ts)
+                                block.Foreground = empty;
+                            }
+                        }
+                    }
+                    //clear lift-up
+                    if (textBlock.RenderTransform is TranslateTransform trans)
+                    {
+                        trans.BeginAnimation(TranslateTransform.YProperty, null);
+                        trans.Y = 0;
+                    }
+                }
+                else
+                {
+                    // 正在进行，判断是否需要启动动画
+                    if (!mainSyllableAnimated.TryGetValue(syllable, out var animated) || !animated)
+                    {
+                        mainSyllableAnimated[syllable] = true;
+
+                        var liftupAni = new DoubleAnimation(0, ActiveLrcLiftupHeight,
+                                    TimeSpan.FromMilliseconds(AverageWordDuration * 1.5))
+                        {
+                            EasingFunction = new ExponentialEase()
+                        };
+                        bool animate = true, liftup = true;
+                        if (syllable.Duration >= EmphasisThreshold)
+                        {
+                            //highlight
+                            var fontColor = CustomHighlighterColor?.Color ?? ((SolidColorBrush)FindResource("ForeColor")).Color;
+                            var lighter = new DropShadowEffect() { BlurRadius = 20, Color = fontColor, Direction = 0, ShadowDepth = 0 };
+                            textBlock.Effect = lighter;
+                            lighter.BeginAnimation(DropShadowEffect.OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(syllable.Duration * 0.8)));
+                            Action hideLighter = delegate
+                            {
+                                var da = new DoubleAnimation(0, TimeSpan.FromMilliseconds(300));
+                                da.Completed += delegate { textBlock.Effect = null; };
+                                lighter.BeginAnimation(DropShadowEffect.OpacityProperty, da);
+                            };
+
+                            var easing = new CubicEase();
+                            var up = -6;
+                            //高亮分词逐字抬起动画
+                            if (textBlock.Inlines.Count > 1)
+                            {
+                                //单独设置动画
+                                liftup = false;
+                                animate = false;
+                                int index = 0;
+                                foreach (InlineUIContainer line in textBlock.Inlines)
                                 {
-                                    double begin = 100 * index;
-                                    var upAni = new DoubleAnimationUsingKeyFrames()
+                                    if (line.Child.RenderTransform is TranslateTransform ts)
                                     {
-                                        KeyFrames = [
-                                            new EasingDoubleKeyFrame(default, TimeSpan.FromMilliseconds(begin)),
+                                        double begin = 100 * index;
+                                        var upAni = new DoubleAnimationUsingKeyFrames()
+                                        {
+                                            KeyFrames = [
+                                                new EasingDoubleKeyFrame(default, TimeSpan.FromMilliseconds(begin)),
                                             new EasingDoubleKeyFrame(up, TimeSpan.FromMilliseconds((double)syllable.Duration*(double)(index+1)/(double)textBlock.Inlines.Count)){
                                                 EasingFunction=easing
                                             },
                                             new EasingDoubleKeyFrame(up, TimeSpan.FromMilliseconds(syllable.Duration))
-                                            //此处移除了下落动画，统一在该句结束后调整
-                                            ]
-                                    };
-                                    upAni.Completed += (_, _) => hideLighter();
-                                    ts.BeginAnimation(TranslateTransform.YProperty, upAni);
-                                }
-                                if(line.Child is TextBlock block)
-                                {
-                                    var single = CreateBrush(0);
-                                    block.Foreground = single;
-                                    double begin = syllable.Duration/ textBlock.Inlines.Count * index;
-                                    var ani = new DoubleAnimationUsingKeyFrames
+                                                //此处移除了下落动画，统一在该句结束后调整
+                                                ]
+                                        };
+                                        upAni.Completed += (_, _) => hideLighter();
+                                        ts.BeginAnimation(TranslateTransform.YProperty, upAni);
+                                    }
+                                    if (line.Child is TextBlock block)
                                     {
-                                        KeyFrames =
-                                        [
-                                            new EasingDoubleKeyFrame(0, TimeSpan.FromMilliseconds(begin)),
+                                        var single = CreateBrush(0);
+                                        block.Foreground = single;
+                                        double begin = syllable.Duration / textBlock.Inlines.Count * index;
+                                        var ani = new DoubleAnimationUsingKeyFrames
+                                        {
+                                            KeyFrames =
+                                            [
+                                                new EasingDoubleKeyFrame(0, TimeSpan.FromMilliseconds(begin)),
                                             new EasingDoubleKeyFrame(1, TimeSpan.FromMilliseconds(syllable.Duration * (index + 1) / textBlock.Inlines.Count))
-                                        ]
-                                    };
-                                    var aniDelay = new DoubleAnimationUsingKeyFrames
-                                    {
-                                        KeyFrames =
-                                        [
-                                            new EasingDoubleKeyFrame(0, TimeSpan.FromMilliseconds(begin*1.2)),
+                                            ]
+                                        };
+                                        var aniDelay = new DoubleAnimationUsingKeyFrames
+                                        {
+                                            KeyFrames =
+                                            [
+                                                new EasingDoubleKeyFrame(0, TimeSpan.FromMilliseconds(begin*1.2)),
                                             new EasingDoubleKeyFrame(1, TimeSpan.FromMilliseconds(begin*1.2+ syllable.Duration/textBlock.Inlines.Count))
-                                        ]
-                                    };
-                                    single.GradientStops[1].BeginAnimation(GradientStop.OffsetProperty, aniDelay);
-                                    single.GradientStops[2].BeginAnimation(GradientStop.OffsetProperty, ani);
+                                            ]
+                                        };
+                                        single.GradientStops[1].BeginAnimation(GradientStop.OffsetProperty, aniDelay);
+                                        single.GradientStops[2].BeginAnimation(GradientStop.OffsetProperty, ani);
+                                    }
+                                    index++;
                                 }
-                                index++;
+                            }
+                            else if (syllable.Duration > EmphasisThreshold)//高亮分词，但是只有单个字符
+                            {
+                                liftupAni.Duration = TimeSpan.FromMilliseconds(syllable.Duration);
+                                liftupAni.Completed += (_, _) => hideLighter();
                             }
                         }
-                        else if (syllable.Duration > EmphasisThreshold)//高亮分词，但是只有单个字符
-                        {
-                            liftupAni.Duration = TimeSpan.FromMilliseconds(syllable.Duration);
-                            liftupAni.Completed += (_, _) => hideLighter();
-                        }
-                    }
 
-                    if (animate)
-                    {
-                        var brush = EnsureBrush(textBlock, syllable, 0.0);
-                        var duration = TimeSpan.FromMilliseconds(syllable.Duration);
-                        var anim = new DoubleAnimation(0.0, 1.0, new Duration(duration*0.8));
-                        var animDelay = new DoubleAnimation(0.0, 1.0, new Duration(duration));
-                        brush.GradientStops[1].BeginAnimation(GradientStop.OffsetProperty, animDelay);
-                        brush.GradientStops[2].BeginAnimation(GradientStop.OffsetProperty, anim);
-
-                        //lift-up animation
-                        if (liftup&&textBlock.RenderTransform is TranslateTransform trans)
+                        if (animate)
                         {
-                            trans.BeginAnimation(TranslateTransform.YProperty, liftupAni);
+                            var brush = EnsureBrush(textBlock, syllable, 0.0);
+                            var duration = TimeSpan.FromMilliseconds(syllable.Duration);
+                            var anim = new DoubleAnimation(0.0, 1.0, new Duration(duration * 0.8));
+                            var animDelay = new DoubleAnimation(0.0, 1.0, new Duration(duration));
+                            brush.GradientStops[1].BeginAnimation(GradientStop.OffsetProperty, animDelay);
+                            brush.GradientStops[2].BeginAnimation(GradientStop.OffsetProperty, anim);
+
+                            //lift-up animation
+                            if (liftup && textBlock.RenderTransform is TranslateTransform trans)
+                            {
+                                trans.BeginAnimation(TranslateTransform.YProperty, liftupAni);
+                            }
                         }
                     }
                 }
             }
-        }
 
-        // Romaji歌词 颜色渐变动画
-        foreach (var kvp in romajiSyllableLrcs)
-        {
-            var syllable = kvp.Key;
-            var textBlock = kvp.Value;
-            if (syllable.StartTime <= ms && syllable.EndTime >= ms)
+            // Romaji歌词 颜色渐变动画
+            foreach (var kvp in romajiSyllableLrcs)
             {
-                //textBlock.SetResourceReference(ForegroundProperty, "HighlightThemeColor");
-                if(textBlock.Tag is not true)
+                var syllable = kvp.Key;
+                var textBlock = kvp.Value;
+                if (syllable.StartTime <= ms && syllable.EndTime >= ms)
                 {
-                    var fontColor = ((SolidColorBrush)FindResource("InActiveLrcForeground")).Color;
-                    var highlightColor = ((SolidColorBrush)FindResource("HighlightThemeColor")).Color;
-                    var brush = new SolidColorBrush();
-                    textBlock.Foreground = brush;
-                    var ani=new ColorAnimationUsingKeyFrames
+                    //textBlock.SetResourceReference(ForegroundProperty, "HighlightThemeColor");
+                    if (textBlock.Tag is not true)
                     {
-                        KeyFrames =
-                        [
-                            new EasingColorKeyFrame(fontColor, KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(0))),
+                        var fontColor = ((SolidColorBrush)FindResource("InActiveLrcForeground")).Color;
+                        var highlightColor = ((SolidColorBrush)FindResource("HighlightThemeColor")).Color;
+                        var brush = new SolidColorBrush();
+                        textBlock.Foreground = brush;
+                        var ani = new ColorAnimationUsingKeyFrames
+                        {
+                            KeyFrames =
+                            [
+                                new EasingColorKeyFrame(fontColor, KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(0))),
                             new EasingColorKeyFrame(highlightColor, KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(syllable.Duration/2))),
                             new EasingColorKeyFrame(fontColor, KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(syllable.Duration+2000)))
-                        ]
-                    };
-                    brush.BeginAnimation(SolidColorBrush.ColorProperty,ani);
-                    textBlock.Tag = true;
+                            ]
+                        };
+                        brush.BeginAnimation(SolidColorBrush.ColorProperty, ani);
+                        textBlock.Tag = true;
+                    }
                 }
-            }
-            else
-            {
-                textBlock.Tag = false;
+                else
+                {
+                    textBlock.Tag = false;
+                }
             }
         }
     }
@@ -426,21 +470,34 @@ public partial class LyricLineControl : UserControl
         if (d is LyricLineControl control)
         {
             if ((bool)e.NewValue)
-            {
+            {   //Active
                 var blur = new BlurEffect() { Radius = InActiveLrcBlurRadius };
                 control.Effect = blur;
                 blur.BeginAnimation(BlurEffect.RadiusProperty, new DoubleAnimation(InActiveLrcBlurRadius, 0, TimeSpan.FromMilliseconds(300)));
-                foreach (var lrc in control.mainSyllableLrcs)
+
+                if (control._isPlainLrc)
                 {
-                    control.EnsureBrush(lrc.Value, lrc.Key, 0);
-                    if (lrc.Key.Duration >= control.EmphasisThreshold&& lrc.Value.Inlines.Count>1)
+                    var fontColor = (SolidColorBrush)control.FindResource("ForeColor");
+                    var highlightColor = control.CustomHighlighterColor ?? fontColor;
+                    if (control.MainLrcContainer.Children[0] is TextBlock tb)
                     {
-                        var empty = control.CreateBrush(0.0);
-                        foreach (var line in lrc.Value.Inlines)
+                        tb.Foreground = highlightColor;
+                    }
+                }
+                else
+                {
+                    foreach (var lrc in control.mainSyllableLrcs)
+                    {
+                        control.EnsureBrush(lrc.Value, lrc.Key, 0);
+                        if (lrc.Key.Duration >= control.EmphasisThreshold && lrc.Value.Inlines.Count > 1)
                         {
-                            if (line is InlineUIContainer con && con.Child is TextBlock block)
+                            var empty = control.CreateBrush(0.0);
+                            foreach (var line in lrc.Value.Inlines)
                             {
-                                block.Foreground = empty;
+                                if (line is InlineUIContainer con && con.Child is TextBlock block)
+                                {
+                                    block.Foreground = empty;
+                                }
                             }
                         }
                     }
@@ -451,7 +508,14 @@ public partial class LyricLineControl : UserControl
                 var blur = new BlurEffect() { Radius = 0 };
                 control.Effect = blur;
                 blur.BeginAnimation(BlurEffect.RadiusProperty, new DoubleAnimation(0, InActiveLrcBlurRadius, TimeSpan.FromMilliseconds(300)));
-                control.ClearHighlighter(true);
+                if (control._isPlainLrc)
+                {
+                    if (control.MainLrcContainer.Children[0] is TextBlock tb)
+                    {
+                        tb.SetResourceReference(ForegroundProperty, "InActiveLrcForeground");
+                    }
+                }
+                else  control.ClearHighlighter(true);
             }
         }
 

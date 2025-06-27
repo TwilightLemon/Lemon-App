@@ -18,6 +18,7 @@
                        Background="{DynamicResource WindowBackgroundColor}"
                        ExitOnCloseBtnClicked="False"
                        Foreground="{DynamicResource ForeColor}"
+                       Icon="/Resources/icon.ico"
                        Mode="Acrylic"
                        RenderOptions.BitmapScalingMode="HighQuality"
                        RenderOptions.ClearTypeHint="Enabled"

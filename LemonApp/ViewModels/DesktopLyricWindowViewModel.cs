@@ -94,8 +94,16 @@ public partial class DesktopLyricWindowViewModel:ObservableObject
     {
         UpdateAnimation?.Invoke();
         await Task.Delay(200);
-        LyricControl.LoadMainLrc(lrc.Lrc.Syllables,fontSize: 32);
-        LyricControl.LoadRomajiLrc(lrc.Romaji ?? new SyllableLineInfo([]));
+        if (lrc.Lrc is LineInfo pure)
+            LyricControl.LoadPlainLrc(pure.Text, fontSize: 32);
+        else if (lrc.Lrc is SyllableLineInfo line)
+            LyricControl.LoadMainLrc(line.Syllables, fontSize: 32);
+
+        if (lrc.Romaji is LineInfo pureRomaji)
+            LyricControl.LoadPlainRomaji(pureRomaji.Text);
+        else if (lrc.Romaji is SyllableLineInfo romaji)
+            LyricControl.LoadRomajiLrc(romaji ?? new SyllableLineInfo([]));
+
         LyricControl.TranslationLrc.Text = lrc.Trans;
         if (ShowTranslation)
             LyricControl.TranslationLrc.Visibility = string.IsNullOrEmpty(lrc.Trans) ? Visibility.Collapsed : Visibility.Visible;

@@ -54,6 +54,9 @@ namespace LemonApp.Views.Windows
             }
             else
             {
+                //login with netease
+                Height = 580;
+                Width = 860;
                 wb.CoreWebView2.FrameNavigationCompleted += CoreWebView2_FrameNavigationCompleted;
                 wb.CoreWebView2.Navigate("https://music.163.com/#/my/");
             }
