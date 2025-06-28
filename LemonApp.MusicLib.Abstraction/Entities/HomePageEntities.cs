@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LemonApp.MusicLib.Abstraction.Entities;
-
-public class HomePageEntities
-{
-
-}
+﻿namespace LemonApp.MusicLib.Abstraction.Entities;
+public record class HomePageEntities(List<Music> NewMusics,
+                                     List<Playlist> Recommend,
+                                     List<Playlist> Explore);

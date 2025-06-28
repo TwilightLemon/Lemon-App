@@ -5,7 +5,7 @@
     <!--  弹窗背景色 全为Acrylic材质  -->
     <SolidColorBrush x:Key="PopupWndBgColor" Color="#9F000000" />
     <!--  标签页背景色  -->
-    <SolidColorBrush x:Key="TabMaskColor" Color="#9C000000" />
+    <SolidColorBrush x:Key="TabMaskColor" Color="#7C000000" />
     <!--  前景色  -->
     <SolidColorBrush x:Key="ForeColor" Color="#FCFCFC" />
     <!--  提示前景色  -->

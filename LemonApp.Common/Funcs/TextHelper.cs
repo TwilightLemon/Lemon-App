@@ -8,12 +8,13 @@ namespace LemonApp.Common.Funcs;
 public static class TextHelper
 {
     /// <summary>
-    /// 将数字转换为 "xx.x万"
+    /// 将数字转换为 "xx.x万",输入为0时返回null
     /// </summary>
     /// <param name="num"></param>
     /// <returns></returns>
-    public static string IntToWn(this int num)
+    public static string? IntToWn(this int num)
     {
+        if (num == 0) return null;
         if (num < 10000)
             return num.ToString();
         else

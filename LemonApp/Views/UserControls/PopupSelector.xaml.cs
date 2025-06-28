@@ -31,6 +31,12 @@ namespace LemonApp.Views.UserControls
         private readonly MainNavigationService navigationService;
 
         [RelayCommand]
+        private void GoToAlbumPage(string id)
+        {
+            navigationService.RequstNavigation(PageType.AlbumPage, id);
+        }
+
+        [RelayCommand]
         private async Task AddToMyDiss(IList<Music> musics)
         {
             var data = await userDataManager.GetUserPlaylists();

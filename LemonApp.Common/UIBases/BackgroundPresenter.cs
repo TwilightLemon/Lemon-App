@@ -10,7 +10,6 @@ namespace LemonApp.Common.UIBases;
 public class BackgroundPresenter : FrameworkElement
 {
 
-
     public double CornerRadius
     {
         get { return (double)GetValue(CornerRadiusProperty); }

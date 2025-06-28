@@ -1,6 +1,11 @@
-﻿using LemonApp.Services;
+﻿using LemonApp.MusicLib.Abstraction.Entities;
+using LemonApp.MusicLib.Home;
+using LemonApp.Services;
+using LemonApp.ViewModels;
 using LemonApp.Views.Windows;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -11,17 +16,42 @@ namespace LemonApp.Views.Pages
     /// </summary>
     public partial class HomePage : Page
     {
-        public HomePage(MainNavigationService mainNavigationService)
+        private readonly MainNavigationService nav;
+        private readonly UserProfileService user;
+        private readonly IHttpClientFactory hcf; 
+        public HomePage(MainNavigationService mainNavigationService,
+                        UserProfileService userProfileService,
+                        IHttpClientFactory httpClientFactory)
         {
             InitializeComponent();
-            _mainNavigationService = mainNavigationService;
+            nav = mainNavigationService;
+            user = userProfileService;
+            hcf = httpClientFactory;
+            Loaded += HomePage_Loaded;
         }
-        private readonly MainNavigationService _mainNavigationService;
 
-        private void Grid_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private async void HomePage_Loaded(object sender, RoutedEventArgs e)
         {
-            _mainNavigationService.RequstNavigation(PageType.Notification,"Powered by TwlmGatito. Meowwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww!");
-            App.Services.GetRequiredService<TerminalStyleWindow>().Show();
+            if (RecommendPlaylist.ViewModel != null) return;
+            nav.BeginLoadingAni();
+            var data = await HomeDataAPI.GetHomePageDataAsync(hcf.CreateClient(App.PublicClientFlag), user.GetAuth());
+            if (data != null)
+            {
+                RecommendPlaylist.ViewModel= App.Services.GetRequiredService<PlaylistItemViewModel>();
+                RecommendPlaylist.ViewModel.SetPlaylistItems(data.Recommend);
+
+                ExplorePlaylist.ViewModel = App.Services.GetRequiredService<PlaylistItemViewModel>();
+                ExplorePlaylist.ViewModel.SetPlaylistItems(data.Explore);
+
+                NewMusicList.ItemsSource = data.NewMusics[0..30];
+            }
+            nav.CancelLoadingAni();
+        }
+
+        private void NewMusicList_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (NewMusicList.SelectedItem is Music{ } m)
+                _ = App.Services.GetRequiredService<MediaPlayerService>().LoadThenPlay(m);
         }
     }
 }

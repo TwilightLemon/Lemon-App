@@ -1,18 +1,98 @@
 ﻿<Page x:Class="LemonApp.Views.Pages.HomePage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
+      xmlns:component="clr-namespace:LemonApp.Components"
+      xmlns:converter="clr-namespace:LemonApp.Converters"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:LemonApp.Views.Pages"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:uc="clr-namespace:LemonApp.Views.UserControls"
+      xmlns:ws="https://schemas.elecho.dev/wpfsuite"
       Title="HomePage"
       d:DesignHeight="450"
       d:DesignWidth="800"
       Foreground="{DynamicResource ForeColor}"
       mc:Ignorable="d">
-
-    <Grid MouseDown="Grid_MouseDown">
-        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">
-            Home Page
-        </TextBlock>
-    </Grid>
+    <Page.Resources>
+        <Style x:Key="TitleTbStyle" TargetType="TextBlock">
+            <Setter Property="Margin" Value="24,12" />
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
+    </Page.Resources>
+    <base:ScrollViewer Style="{StaticResource SimpleVerticalScrollViewerStyle}">
+        <DockPanel>
+            <Grid Height="230" DockPanel.Dock="Top">
+                <TextBlock Margin="28,20,0,0"
+                           FontSize="64"
+                           Foreground="{DynamicResource HintForeColor}">
+                    Good Night
+                </TextBlock>
+                <!--  Here is going to be a infomation panel  -->
+            </Grid>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition MaxWidth="320" />
+                </Grid.ColumnDefinitions>
+                <ws:StackPanel>
+                    <TextBlock Style="{StaticResource TitleTbStyle}" Text="Recommend" />
+                    <uc:PlaylistItemView x:Name="RecommendPlaylist" />
+                    <TextBlock Style="{StaticResource TitleTbStyle}" Text="Explore" />
+                    <uc:PlaylistItemView x:Name="ExplorePlaylist" />
+                </ws:StackPanel>
+                <ws:StackPanel Grid.Column="1">
+                    <TextBlock Style="{StaticResource TitleTbStyle}" Text="New Songs" />
+                    <ws:ListBox x:Name="NewMusicList"
+                                d:ItemsSource="{d:SampleData ItemCount=5}"
+                                ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}"
+                                MouseDoubleClick="NewMusicList_MouseDoubleClick"
+                                Style="{StaticResource DisplayListBoxStyle}">
+                        <ws:ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid MinHeight="48">
+                                    <TextBlock Margin="32,4"
+                                               VerticalAlignment="Top"
+                                               Text="{Binding MusicName}" />
+                                    <TextBlock Margin="8,0,0,0"
+                                               HorizontalAlignment="Left"
+                                               VerticalAlignment="Center"
+                                               d:Text="1"
+                                               FontSize="12"
+                                               Opacity="0.6">
+                                        <TextBlock.Text>
+                                            <MultiBinding Converter="{x:Static converter:IndexOfConverter.Instance}">
+                                                <Binding />
+                                                <Binding ElementName="NewMusicList" Path="ItemsSource" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                    <ws:WrapPanel Margin="32,20,0,0">
+                                        <ws:Button Padding="2,4"
+                                                   HorizontalAlignment="Left"
+                                                   Command="{x:Static component:PublicPopupMenuHolder.GotoArtistCommand}"
+                                                   CommandParameter="{Binding}"
+                                                   Foreground="{DynamicResource HintForeColor}"
+                                                   Style="{StaticResource SimpleIconButtonStyleForWs}">
+                                            <TextBlock Text="{Binding SingerText}" />
+                                        </ws:Button>
+                                        <ws:Button Padding="2,4"
+                                                   HorizontalAlignment="Left"
+                                                   Command="{x:Static component:PublicPopupMenuHolder.GoToAlbumCommand}"
+                                                   CommandParameter="{Binding Album.Id}"
+                                                   Foreground="{DynamicResource HintForeColor}"
+                                                   Style="{StaticResource SimpleIconButtonStyleForWs}">
+                                            <TextBlock Text="{Binding Album.Name}" />
+                                        </ws:Button>
+                                    </ws:WrapPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ws:ListBox.ItemTemplate>
+                    </ws:ListBox>
+                </ws:StackPanel>
+            </Grid>
+        </DockPanel>
+    </base:ScrollViewer>
 </Page>

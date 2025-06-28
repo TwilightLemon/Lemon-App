@@ -14,6 +14,8 @@
                        Title="Lemon App"
                        Width="1180"
                        Height="760"
+                       MinWidth="1160"
+                       MinHeight="600"
                        d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
                        Background="{DynamicResource WindowBackgroundColor}"
                        ExitOnCloseBtnClicked="False"
@@ -85,8 +87,10 @@
                     </EasingDoubleKeyFrame.EasingFunction>
                 </EasingDoubleKeyFrame>
             </DoubleAnimationUsingKeyFrames>
-            <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="MusicControl" Storyboard.TargetProperty="(FrameworkElement.Margin)">
-                <EasingThicknessKeyFrame KeyTime="00:00:00.5" Value="0">
+            <ThicknessAnimationUsingKeyFrames BeginTime="00:00:00.3"
+                                              Storyboard.TargetName="MusicControl"
+                                              Storyboard.TargetProperty="(FrameworkElement.Margin)">
+                <EasingThicknessKeyFrame KeyTime="00:00:00.4" Value="0">
                     <EasingThicknessKeyFrame.EasingFunction>
                         <BackEase Amplitude="0.35" EasingMode="EaseOut" />
                     </EasingThicknessKeyFrame.EasingFunction>
@@ -1042,7 +1046,9 @@
                 </Grid.ColumnDefinitions>
                 <Grid Grid.Column="1" Margin="8">
                     <!--  Acrylic Background Presenter  -->
-                    <base:BackgroundPresenter Name="MusicControlBgPresenter" CornerRadius="8">
+                    <base:BackgroundPresenter Name="MusicControlBgPresenter"
+                                              CornerRadius="8"
+                                              Visibility="Collapsed">
                         <base:BackgroundPresenter.Effect>
                             <BlurEffect Radius="40" />
                         </base:BackgroundPresenter.Effect>
@@ -1070,16 +1076,16 @@
                                        TextWrapping="Wrap" />
                         </Border>
                     </base:FluentPopup>
-                    <Grid Height="28" VerticalAlignment="Top">
+                    <Grid Height="32" VerticalAlignment="Top">
                         <TextBlock x:Name="PlayingTimeTb"
-                                   Margin="16,0,0,0"
+                                   Margin="20,0,0,0"
                                    HorizontalAlignment="Left"
                                    VerticalAlignment="Center"
                                    d:Text="00:00"
                                    Foreground="{DynamicResource HintForeColor}"
                                    Text="{Binding CurrentPlayingPositionText}" />
                         <TextBlock x:Name="TotalTimeTb"
-                                   Margin="0,0,16,0"
+                                   Margin="0,0,20,0"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Center"
                                    d:Text="00:00"
@@ -1096,6 +1102,7 @@
                         <ws:ProgressBar x:Name="CacheProg"
                                         Width="240"
                                         Height="2"
+                                        Margin="0,0,0,4"
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Bottom"
                                         d:Opacity="1"
@@ -1108,7 +1115,7 @@
                                         Opacity="0"
                                         Value="{Binding CacheDownloadProgress}" />
                     </Grid>
-                    <Grid Margin="0,20,0,0">
+                    <Grid Margin="0,18,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*" />
                             <ColumnDefinition Width="1*" />
