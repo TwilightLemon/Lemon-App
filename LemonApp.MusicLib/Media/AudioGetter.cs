@@ -9,13 +9,13 @@ namespace LemonApp.MusicLib.Media;
 public class AudioGetter(HttpClient hc,
     Func<TencUserAuth> tencAuth,
     Func<NeteaseUserAuth?>? neteAuth=null,
-    SharedLaClient? sharedLaClient=null,
+    //SharedLaClient? sharedLaClient=null,
     Func<string?>? sharedLaToken=null)
 {
     private TencUserAuth _tencAuth => tencAuth();
     private NeteaseUserAuth? _neteaseAuth => neteAuth?.Invoke();
     private string ? _sharedLaToken => sharedLaToken?.Invoke();
-    private readonly SharedLaClient? _laClient = sharedLaClient;
+    //private readonly SharedLaClient? _laClient = sharedLaClient;
     private readonly HttpClient _hc = hc!;
 
     /// <summary>
@@ -44,10 +44,10 @@ public class AudioGetter(HttpClient hc,
         {
             //尝试通过SharedLaClient获取  TODO:完善异常情况处理(token过期...)
             //一般来说，共享的token都不会受音质限制，所以不遍历所有音质
-            if (_laClient != null && _sharedLaToken is {Length:>0} token)
+            if ( _sharedLaToken is {Length:>0} token)
             {
                 string quality = QualityMatcher(final)[1];
-                if (await _laClient.GetSharedLa(token, m.MusicID,quality) is { } url){
+                if (SharedLaClient.GetSharedLa(token, m.MusicID,quality) is { } url){
                     string redirect = await HttpHelper.GetRedirectUrl(url);
                     if (!string.IsNullOrEmpty(redirect)&&await HttpHelper.GetHTTPFileSize(_hc, redirect) > 0)
                     {

@@ -105,6 +105,8 @@ public class UIResourceService(
                     mw.Mode = Common.WinAPI.MaterialType.None;
                     mw.Background = new ImageBrush(new BitmapImage(new Uri(mgr.Data.BackgroundPath))) { Stretch = Stretch.UniformToFill };
                     mw.Container.SetResourceReference(Control.BackgroundProperty, "WindowBackgroundColor");
+                    mw.MusicControlBgPresenter.UpdateBackground();
+                    mw.MusicControlBgPresenter.Visibility = Visibility.Visible;
                 }
                 break;
             case Appearance.BackgroundType.Color:
@@ -117,6 +119,10 @@ public class UIResourceService(
                 BindingOperations.SetBinding(brush, ImageBrush.ImageSourceProperty, new Binding("LyricPageBackgroundSource"));
                 mw.Background = brush;
                 break;
+        }
+        if(mgr.Data.BackgroundMode != Appearance.BackgroundType.Image)
+        {
+            mw.MusicControlBgPresenter.Visibility = Visibility.Collapsed;
         }
     }
 }

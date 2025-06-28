@@ -1,42 +1,35 @@
 ﻿<Page x:Class="LemonApp.Views.Pages.MyDissPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:LemonApp.Views.Pages"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:uc="clr-namespace:LemonApp.Views.UserControls"
-      xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
       xmlns:ws="https://schemas.elecho.dev/wpfsuite"
-      mc:Ignorable="d"
+      Title="MyDissPage"
       d:DesignHeight="450"
-      Foreground="{DynamicResource ForeColor}"
       d:DesignWidth="800"
-      Title="MyDissPage">
+      Foreground="{DynamicResource ForeColor}"
+      mc:Ignorable="d">
     <Page.Resources>
         <Style x:Key="TitleTbStyle" TargetType="TextBlock">
-            <Setter Property="Margin"
-                    Value="24 12" />
-            <Setter Property="FontSize"
-                    Value="24" />
-            <Setter Property="VerticalAlignment"
-                    Value="Top" />
-            <Setter Property="FontWeight"
-                    Value="Bold" />
+            <Setter Property="Margin" Value="24,12" />
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="FontWeight" Value="Bold" />
         </Style>
     </Page.Resources>
     <base:ScrollViewer x:Name="sv" Style="{StaticResource SimpleVerticalScrollViewerStyle}">
         <ws:StackPanel>
-            <TextBlock Text="My Diss"
-                       Style="{StaticResource TitleTbStyle}"/>
-            <uc:PlaylistItemView x:Name="MyDissList"/>
-            <TextBlock Text="From Netease"
-                       x:Name="NeteaseTb"
-                       Visibility="Collapsed"
-                       Style="{StaticResource TitleTbStyle}" />
-            <uc:PlaylistItemView x:Name="NeteaseDissList"
-                                 Visibility="Collapsed" />
-            <TextBlock Text="My Favorite"
-                       Style="{StaticResource TitleTbStyle}"/>
+            <TextBlock Style="{StaticResource TitleTbStyle}" Text="My Diss" />
+            <uc:PlaylistItemView x:Name="MyDissList" />
+            <TextBlock x:Name="NeteaseTb"
+                       Style="{StaticResource TitleTbStyle}"
+                       Text="From Netease"
+                       Visibility="Collapsed" />
+            <uc:PlaylistItemView x:Name="NeteaseDissList" Visibility="Collapsed" />
+            <TextBlock Style="{StaticResource TitleTbStyle}" Text="My Favorite" />
             <uc:PlaylistItemView x:Name="MyFarvoriteDissList" />
         </ws:StackPanel>
     </base:ScrollViewer>

@@ -9,8 +9,7 @@ public class SharedLaClient(HttpClient httpClient)
             _clientInstance = await _validator.VerifyServerAndLogin();
         return _clientInstance;
     }
-    public async Task<string?> GetSharedLa(string shaid,string mid,string quality="SQ") {
-        _clientInstance ??= await _validator.VerifyServerAndLogin();
-        return _clientInstance?.ShareLa(shaid, mid,quality);
+    public static string GetSharedLa(string sharedId,string mid,string quality="SQ") {
+        return $"https://api.twlmgatito.cn/la/shared/{mid}/?sharedId={sharedId}&quality={quality}";
     }
 }

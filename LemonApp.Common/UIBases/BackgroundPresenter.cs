@@ -9,6 +9,17 @@ namespace LemonApp.Common.UIBases;
 //marked form https://slimenull.com/posts/20250608020400/
 public class BackgroundPresenter : FrameworkElement
 {
+
+
+    public double CornerRadius
+    {
+        get { return (double)GetValue(CornerRadiusProperty); }
+        set { SetValue(CornerRadiusProperty, value); }
+    }
+
+    public static readonly DependencyProperty CornerRadiusProperty =
+        DependencyProperty.Register("CornerRadius", typeof(double), typeof(BackgroundPresenter), new PropertyMetadata(0.0));
+
     private static readonly FieldInfo _drawingContentOfUIElement = typeof(UIElement)
         .GetField("_drawingContent", BindingFlags.Instance | BindingFlags.NonPublic)!;
 
@@ -33,6 +44,15 @@ public class BackgroundPresenter : FrameworkElement
     private delegate void GetContentBoundsDelegate(VisualBrush visualBrush, out Rect bounds);
     private readonly Stack<UIElement> _parentStack = new();
 
+    public void UpdateBackground()
+    {
+        // cannot use 'InvalidateVisual' here, because it will cause infinite loop
+        if (Visibility != Visibility.Visible) return;
+        ForceRender(this);
+
+        Debug.WriteLine("Parent layout updated, forcing render of BackgroundPresenter.");
+    }
+
     private static void ForceRender(UIElement target)
     {
         using DrawingContext drawingContext = _renderOpenMethod(target);
@@ -55,29 +75,25 @@ public class BackgroundPresenter : FrameworkElement
 
     protected override Geometry GetLayoutClip(Size layoutSlotSize)
     {
-        return new RectangleGeometry(new Rect(0, 0, ActualWidth, ActualHeight));
+        return new RectangleGeometry(new Rect(0, 0, ActualWidth, ActualHeight), CornerRadius, CornerRadius);
     }
 
     protected override void OnVisualParentChanged(DependencyObject oldParentObject)
     {
-        if (oldParentObject is UIElement oldParent)
+        if (oldParentObject is FrameworkElement oldParent)
         {
-            oldParent.LayoutUpdated -= ParentLayoutUpdated;
+            oldParent.SizeChanged -= ParentLayoutUpdated;
         }
 
-        if (Parent is UIElement newParent)
+        if (Parent is FrameworkElement newParent)
         {
-            newParent.LayoutUpdated += ParentLayoutUpdated;
+            newParent.SizeChanged += ParentLayoutUpdated;
         }
     }
 
     private void ParentLayoutUpdated(object? sender, EventArgs e)
     {
-        // cannot use 'InvalidateVisual' here, because it will cause infinite loop
-        if (Visibility != Visibility.Visible) return;
-        ForceRender(this);
-
-        Debug.WriteLine("Parent layout updated, forcing render of BackgroundPresenter.");
+        UpdateBackground();
     }
 
     private static void DrawBackground(

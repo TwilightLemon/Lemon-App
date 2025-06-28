@@ -1,21 +1,21 @@
 ﻿<Page x:Class="LemonApp.Views.Pages.SettingsPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:sys="clr-namespace:System;assembly=netstandard"
-      xmlns:local="clr-namespace:LemonApp.Views.Pages"
-      xmlns:ws="https://schemas.elecho.dev/wpfsuite"
-      xmlns:music="clr-namespace:LemonApp.MusicLib.Abstraction.Entities;assembly=LemonApp.MusicLib.Abstraction"
-      xmlns:vm="clr-namespace:LemonApp.ViewModels"
       xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
-      mc:Ignorable="d"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:LemonApp.Views.Pages"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:music="clr-namespace:LemonApp.MusicLib.Abstraction.Entities;assembly=LemonApp.MusicLib.Abstraction"
+      xmlns:sys="clr-namespace:System;assembly=netstandard"
+      xmlns:vm="clr-namespace:LemonApp.ViewModels"
+      xmlns:ws="https://schemas.elecho.dev/wpfsuite"
+      Title="SettingsPage"
+      d:DataContext="{d:DesignInstance Type=vm:SettingsPageViewModel}"
       d:DesignHeight="900"
       d:DesignWidth="800"
-      d:DataContext="{d:DesignInstance Type=vm:SettingsPageViewModel}"
-      Title="SettingsPage"
+      Foreground="{DynamicResource ForeColor}"
       Loaded="Page_Loaded"
-      Foreground="{DynamicResource ForeColor}">
+      mc:Ignorable="d">
     <Page.Resources>
         <ObjectDataProvider x:Key="QualityEnumData"
                             MethodName="GetValues"
@@ -26,107 +26,108 @@
         </ObjectDataProvider>
     </Page.Resources>
     <base:ScrollViewer Style="{StaticResource SimpleVerticalScrollViewerStyle}">
-        <ws:StackPanel x:Name="ContentPanel" Spacing="8" Margin="8 0">
-            <TextBlock VerticalAlignment="Top"
+        <ws:StackPanel x:Name="ContentPanel"
+                       Margin="8,0"
+                       Spacing="8">
+            <TextBlock Margin="16,12"
                        HorizontalAlignment="Left"
-                       Margin="16 12"
+                       VerticalAlignment="Top"
                        FontSize="24"
                        FontWeight="Bold">
-                       Settings
+                Settings
             </TextBlock>
-            <Border Background="{DynamicResource MaskColor}"
-                    CornerRadius="12"
-                    Height="48">
+            <Border Height="48"
+                    Background="{DynamicResource MaskColor}"
+                    CornerRadius="12">
                 <Grid>
-                    <TextBlock VerticalAlignment="Center"
-                               Margin="12"
-                               Text="Quality Preference"
-                               HorizontalAlignment="Left" />
+                    <TextBlock Margin="12"
+                               HorizontalAlignment="Left"
+                               VerticalAlignment="Center"
+                               Text="Quality Preference" />
                     <ws:ComboBox Height="24"
+                                 Margin="0,0,48,0"
                                  HorizontalAlignment="Right"
-                                 Margin="0 0 48 0"
-                                 Style="{StaticResource SimpleComboBoxStyleForWs}"
                                  ItemsSource="{Binding Source={StaticResource QualityEnumData}}"
-                                 SelectedItem="{Binding PreferQuality}">
-                    </ws:ComboBox>
+                                 SelectedItem="{Binding PreferQuality}"
+                                 Style="{StaticResource SimpleComboBoxStyleForWs}" />
                 </Grid>
             </Border>
-            <Border Background="{DynamicResource MaskColor}"
-                    CornerRadius="12"
-                    Height="48">
+            <Border Height="48"
+                    Background="{DynamicResource MaskColor}"
+                    CornerRadius="12">
                 <Grid>
-                    <TextBlock VerticalAlignment="Center"
-                               Margin="12"
-                               Text="Quality Preference for Download"
-                               HorizontalAlignment="Left" />
+                    <TextBlock Margin="12"
+                               HorizontalAlignment="Left"
+                               VerticalAlignment="Center"
+                               Text="Quality Preference for Download" />
                     <ws:ComboBox Height="24"
+                                 Margin="0,0,48,0"
                                  HorizontalAlignment="Right"
-                                 Margin="0 0 48 0"
-                                 Style="{StaticResource SimpleComboBoxStyleForWs}"
                                  ItemsSource="{Binding Source={StaticResource QualityEnumData}}"
-                                 SelectedItem="{Binding DlQuality}">
-                    </ws:ComboBox>
+                                 SelectedItem="{Binding DlQuality}"
+                                 Style="{StaticResource SimpleComboBoxStyleForWs}" />
                 </Grid>
             </Border>
-            <Border Background="{DynamicResource MaskColor}"
-                    CornerRadius="12"
-                    Height="56">
+            <Border Height="56"
+                    Background="{DynamicResource MaskColor}"
+                    CornerRadius="12">
                 <Grid>
-                    <TextBlock VerticalAlignment="Center"
-                               Margin="12 0"
-                               HorizontalAlignment="Left">
+                    <TextBlock Margin="12,0"
+                               HorizontalAlignment="Left"
+                               VerticalAlignment="Center">
                         <Run Text="Download Path" />
                         <LineBreak />
-                        <Run Text="{Binding DownloadPath}" d:Text="xxxxx"/>
+                        <Run d:Text="xxxxx" Text="{Binding DownloadPath}" />
                     </TextBlock>
-                    <ws:Button HorizontalAlignment="Right"
-                               Margin="0 0 48 0"
-                               Height="32"
-                               Padding="12 0"
+                    <ws:Button Height="32"
+                               Margin="0,0,48,0"
+                               Padding="12,0"
+                               HorizontalAlignment="Right"
+                               Command="{Binding SelectDownloadPathCommand}"
                                Style="{StaticResource SimpleButtonStyleForWs}">
                         Select
                     </ws:Button>
                 </Grid>
             </Border>
 
-            <Border Background="{DynamicResource MaskColor}"
-                    Height="80"
+            <Border Height="80"
+                    Background="{DynamicResource MaskColor}"
                     CornerRadius="8">
                 <Grid>
-                    <Image Height="32"
-                           Width="32"
+                    <Image Width="32"
+                           Height="32"
+                           Margin="20"
                            HorizontalAlignment="Left"
                            RenderOptions.BitmapScalingMode="HighQuality"
-                           Margin="20"
                            Source="/Resources/icon.ico" />
-                    <TextBlock HorizontalAlignment="Left"
-                               VerticalAlignment="Center"
-                               Margin="80 0 0 0">
+                    <TextBlock Margin="80,0,0,0"
+                               HorizontalAlignment="Left"
+                               VerticalAlignment="Center">
                         <Run d:Text="Lemon App"
-                             Text="{Binding AssemblyName}"
+                             FontSize="14"
                              FontWeight="Bold"
-                             FontSize="14" />
+                             Text="{Binding AssemblyName}" />
                         <LineBreak />
-                        <Run d:Text="Published by Twi...."
-                             Text="{Binding PublisherMsg}"/>
+                        <Run d:Text="Published by Twi...." Text="{Binding PublisherMsg}" />
                     </TextBlock>
-                    <TextBlock HorizontalAlignment="Right"
-                               Opacity="0.8"
+                    <TextBlock Margin="0,0,64,0"
+                               HorizontalAlignment="Right"
                                VerticalAlignment="Center"
-                               Margin="0 0 64 0">
-                        Version: <Run d:Text="1.0.0.0"
-                                      Text="{Binding AssemblyVersion}"/>
+                               Opacity="0.8">
+                        Version:<Run d:Text="1.0.0.0" Text="{Binding AssemblyVersion}" />
                     </TextBlock>
-                    <ws:Button HorizontalAlignment="Right"
-                               VerticalAlignment="Center"
-                               Margin="0 0 20 0"
-                               Style="{StaticResource SimpleIconButtonStyleForWs}"
+                    <ws:Button Width="24"
                                Height="24"
+                               Margin="0,0,20,0"
+                               HorizontalAlignment="Right"
+                               VerticalAlignment="Center"
                                Click="AboutMoreBt_Click"
-                               Width="24">
-                        <Path Height="12"  Data="{StaticResource Icon_Back}" Fill="{DynamicResource ForeColor}" 
-                               Stretch="Uniform"
-                              RenderTransformOrigin="0.5,0.5">
+                               Style="{StaticResource SimpleIconButtonStyleForWs}">
+                        <Path Height="12"
+                              Data="{StaticResource Icon_Back}"
+                              Fill="{DynamicResource ForeColor}"
+                              RenderTransformOrigin="0.5,0.5"
+                              Stretch="Uniform">
                             <Path.RenderTransform>
                                 <TransformGroup>
                                     <ScaleTransform />
@@ -139,7 +140,7 @@
                     </ws:Button>
                 </Grid>
             </Border>
-            <!--Dynamic Content-->
+            <!--  Dynamic Content  -->
         </ws:StackPanel>
     </base:ScrollViewer>
 </Page>

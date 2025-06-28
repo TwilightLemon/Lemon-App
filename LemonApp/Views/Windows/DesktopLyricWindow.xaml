@@ -41,7 +41,8 @@
         <Grid x:Name="FuncPanel"
               d:Visibility="Visible"
               Visibility="Collapsed">
-            <Border Background="{DynamicResource WindowBackgroundColor}" CornerRadius="12" />
+            <Border Background="{DynamicResource WindowBackgroundColor}" CornerRadius="12" 
+                    BorderThickness="1" BorderBrush="{DynamicResource BorderColor}"/>
             <ws:WrapPanel HorizontalAlignment="Center"
                           VerticalAlignment="Center"
                           HorizontalSpacing="24">

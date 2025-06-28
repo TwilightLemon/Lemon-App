@@ -30,45 +30,49 @@ public static class PublicPlaylistAPI
             var list = diss["songlist"].AsArray();
             foreach (var item in list)
             {
-                string songtype = item["songtype"].ToString();
-
-                var singers = new List<Profile>();
-                var singerlist = item["singer"].AsArray();
-                var sl = new List<string>();
-                foreach (var singer in singerlist)
+                try
                 {
-                    string name = singer["name"].ToString();
-                    singers.Add(new Profile()
+                    string songtype = item["songtype"].ToString();
+
+                    var singers = new List<Profile>();
+                    var singerlist = item["singer"].AsArray();
+                    var sl = new List<string>();
+                    foreach (var singer in singerlist)
                     {
-                        Name = name,
-                        Mid = singer["mid"].ToString()
-                    });
-                    sl.Add(name);
-                }
-                var singerText = string.Join("/", sl);
-
-                var m = new Music();
-                m.MusicName = item["songname"].ToString();
-                m.SingerText = singerText;
-                m.Singer = singers;
-                m.Littleid = item["songid"].ToString();
-                if (songtype == "0")
-                {
-                    m.MusicName_Lyric = item["albumdesc"].ToString();
-                    m.MusicID = item["songmid"].ToString();
-                    var amid = item["albummid"].ToString();
-                    if (amid != "")
-                        m.Album = new AlbumInfo()
+                        string name = singer["name"].ToString();
+                        singers.Add(new Profile()
                         {
-                            Id = amid,
-                            Photo = $"https://y.gtimg.cn/music/photo_new/T002R500x500M000{amid}.jpg?max_age=2592000",
-                            Name = item["albumname"].ToString()
-                        };
-                    m.Mvmid = item["vid"].ToString();
-                    m.Quality = item["sizeflac"].ToString() != "0" ? MusicQuality.SQ : (item["size320"].ToString() != "0" ? MusicQuality.HQ : MusicQuality.Std);
-                }
+                            Name = name,
+                            Mid = singer["mid"].ToString()
+                        });
+                        sl.Add(name);
+                    }
+                    var singerText = string.Join("/", sl);
 
-                pl.Musics.Add(m);
+                    var m = new Music();
+                    m.MusicName = item["songname"].ToString();
+                    m.SingerText = singerText;
+                    m.Singer = singers;
+                    m.Littleid = item["songid"].ToString();
+                    if (songtype == "0")
+                    {
+                        m.MusicName_Lyric = item["albumdesc"].ToString();
+                        m.MusicID = item["songmid"].ToString();
+                        var amid = item["albummid"].ToString();
+                        if (amid != "")
+                            m.Album = new AlbumInfo()
+                            {
+                                Id = amid,
+                                Photo = $"https://y.gtimg.cn/music/photo_new/T002R500x500M000{amid}.jpg?max_age=2592000",
+                                Name = item["albumname"].ToString()
+                            };
+                        m.Mvmid = item["vid"].ToString();
+                        m.Quality = item["sizeflac"].ToString() != "0" ? MusicQuality.SQ : (item["size320"].ToString() != "0" ? MusicQuality.HQ : MusicQuality.Std);
+                    }
+
+                    pl.Musics.Add(m);
+                }
+                catch { continue; }
             }
             return pl;
         }
