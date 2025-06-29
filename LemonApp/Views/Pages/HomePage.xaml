@@ -5,9 +5,11 @@
       xmlns:component="clr-namespace:LemonApp.Components"
       xmlns:converter="clr-namespace:LemonApp.Converters"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:entity="clr-namespace:LemonApp.MusicLib.Abstraction.Entities;assembly=LemonApp.MusicLib.Abstraction"
       xmlns:local="clr-namespace:LemonApp.Views.Pages"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:uc="clr-namespace:LemonApp.Views.UserControls"
+      xmlns:vm="clr-namespace:LemonApp.ViewModels"
       xmlns:ws="https://schemas.elecho.dev/wpfsuite"
       Title="HomePage"
       d:DesignHeight="450"
@@ -16,7 +18,13 @@
       mc:Ignorable="d">
     <Page.Resources>
         <Style x:Key="TitleTbStyle" TargetType="TextBlock">
-            <Setter Property="Margin" Value="24,12" />
+            <Setter Property="Margin" Value="24,12,24,0" />
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
+        <Style x:Key="PersonalityViewTitleTbStyle" TargetType="TextBlock">
+            <Setter Property="Margin" Value="6,0" />
             <Setter Property="FontSize" Value="24" />
             <Setter Property="VerticalAlignment" Value="Top" />
             <Setter Property="FontWeight" Value="Bold" />
@@ -24,14 +32,132 @@
     </Page.Resources>
     <base:ScrollViewer Style="{StaticResource SimpleVerticalScrollViewerStyle}">
         <DockPanel>
-            <Grid Height="230" DockPanel.Dock="Top">
-                <TextBlock Margin="28,20,0,0"
-                           FontSize="64"
+            <ws:StackPanel Name="PersonalityView"
+                           Margin="28,0"
+                           d:DataContext="{d:DesignInstance entity:PersonalityInfo}"
+                           DockPanel.Dock="Top"
+                           Spacing="12">
+                <TextBlock x:Name="GreetingTb"
+                           Margin="0,20,0,0"
+                           FontSize="36"
                            Foreground="{DynamicResource HintForeColor}">
                     Good Night
                 </TextBlock>
-                <!--  Here is going to be a infomation panel  -->
-            </Grid>
+                <TextBlock Margin="0,0,200,0"
+                           Foreground="{DynamicResource HintForeColor}"
+                           Text="{Binding MainDescription}"
+                           TextWrapping="Wrap" />
+                <ws:WrapPanel HorizontalSpacing="12" VerticalSpacing="12">
+                    <Border Padding="12"
+                            Background="{DynamicResource MaskColor}"
+                            CornerRadius="12">
+                        <ws:StackPanel Spacing="12">
+                            <TextBlock Style="{StaticResource PersonalityViewTitleTbStyle}" Text="My Emotion" />
+                            <ItemsControl x:Name="EmotionView" ItemsSource="{Binding Emotions}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <ws:WrapPanel HorizontalSpacing="12" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Width="84"
+                                                Height="90"
+                                                Background="{DynamicResource MaskColor}"
+                                                CornerRadius="12">
+                                            <ws:StackPanel Spacing="4">
+                                                <Image Width="40"
+                                                       Height="40"
+                                                       Margin="0,4,0,0"
+                                                       Source="{Binding Pic}" />
+                                                <TextBlock TextAlignment="Center">
+                                                    <Run FontSize="14" Text="{Binding Name}" />
+                                                    <LineBreak />
+                                                    <Run Foreground="{DynamicResource HintForeColor}" Text="{Binding Num, StringFormat=' {0}%'}" />
+                                                </TextBlock>
+                                            </ws:StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ws:StackPanel>
+                    </Border>
+                    <Border Padding="12"
+                            Background="{DynamicResource MaskColor}"
+                            CornerRadius="12">
+                        <ws:StackPanel Spacing="12">
+                            <TextBlock Style="{StaticResource PersonalityViewTitleTbStyle}" Text="My Type" />
+                            <ItemsControl x:Name="PreferenceView" ItemsSource="{Binding Preferences}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <ws:WrapPanel HorizontalSpacing="12" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Width="160"
+                                                Height="90"
+                                                Background="{DynamicResource MaskColor}"
+                                                CornerRadius="12">
+                                            <TextBlock VerticalAlignment="Center" TextAlignment="Center">
+                                                <Run FontSize="26" Text="{Binding Type}" />
+                                                <LineBreak />
+                                                <Run Foreground="{DynamicResource HintForeColor}" Text="{Binding Slogan}" />
+                                            </TextBlock>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ws:StackPanel>
+                    </Border>
+                    <Border Padding="12"
+                            Background="{DynamicResource MaskColor}"
+                            CornerRadius="12">
+                        <ws:StackPanel Spacing="12">
+                            <TextBlock Style="{StaticResource PersonalityViewTitleTbStyle}" Text="Favorite Singer" />
+                            <ItemsControl x:Name="PersonalitySingerView"
+                                          d:DataContext="{d:DesignInstance Type=vm:SingerItemViewModel}"
+                                          ItemsSource="{Binding Singers}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <ws:WrapPanel HorizontalSpacing="8" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <ws:Button HorizontalContentAlignment="Stretch"
+                                                   VerticalContentAlignment="Stretch"
+                                                   Command="{Binding DataContext.SelectCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                   CommandParameter="{Binding}"
+                                                   CornerRadius="12"
+                                                   Style="{StaticResource SimpleIconButtonStyleForWs}">
+                                            <StackPanel>
+                                                <Border x:Name="CoverImg"
+                                                        Width="80"
+                                                        Height="80"
+                                                        Margin="6,0"
+                                                        BorderBrush="{DynamicResource BorderColor}"
+                                                        BorderThickness="4"
+                                                        CornerRadius="40"
+                                                        RenderOptions.BitmapScalingMode="HighQuality">
+                                                    <Border.Background>
+                                                        <ImageBrush ImageSource="{Binding Cover, IsAsync=True, Mode=OneWay}" />
+                                                    </Border.Background>
+                                                </Border>
+                                                <TextBlock Margin="5"
+                                                           HorizontalAlignment="Center"
+                                                           FontSize="20"
+                                                           Text="{Binding ListInfo.Name}"
+                                                           TextWrapping="Wrap" />
+                                            </StackPanel>
+                                        </ws:Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ws:StackPanel>
+                    </Border>
+                </ws:WrapPanel>
+            </ws:StackPanel>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />

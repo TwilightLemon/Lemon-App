@@ -4,6 +4,7 @@ using LemonApp.Services;
 using LemonApp.ViewModels;
 using LemonApp.Views.Windows;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
@@ -45,7 +46,36 @@ namespace LemonApp.Views.Pages
 
                 NewMusicList.ItemsSource = data.NewMusics[0..30];
             }
-            nav.CancelLoadingAni();
+
+            if(user.GetAuth() is { IsValid: true } auth)
+            {
+                GreetingTb.Text = GetGreeting(user.GetNickname()!);
+
+                var personality=await PersonalityAPI.GetPersonality(hcf.CreateClient(App.PublicClientFlag), auth);
+                PersonalityView.DataContext = personality;
+
+                var singerVm = App.Services.GetRequiredService<SingerItemViewModel>();
+                singerVm.SetList(personality.Singers);
+                PersonalitySingerView.DataContext = singerVm;
+            }
+            else
+            {
+                PersonalityView.Visibility = Visibility.Collapsed;
+            }
+                nav.CancelLoadingAni();
+        }
+
+        private static string GetGreeting(string username)
+        {
+            int hour = DateTime.Now.Hour;
+
+            return hour switch
+            {
+                >= 5 and < 12 => $"Good morning, {username}",
+                >= 12 and < 17 => $"Good afternoon, {username}",
+                >= 17 and < 22 => $"Good evening, {username}",
+                _ => $"Good night, {username}" // 默认情况（晚上10点~凌晨4点）
+            };
         }
 
         private void NewMusicList_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
