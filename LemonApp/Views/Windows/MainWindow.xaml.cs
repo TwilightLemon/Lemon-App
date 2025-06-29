@@ -178,7 +178,7 @@ namespace LemonApp.Views.Windows
 
         private Storyboard? _showGoBackBtnAni = null;
         private bool _isGoBackBtnShow = false;
-        private async void MainContentFrame_Navigated(object sender, NavigationEventArgs e)
+        private void MainContentFrame_Navigated(object sender, NavigationEventArgs e)
         {
 
             //GoBackBtn Animation

@@ -81,6 +81,7 @@ public partial class UserMenuViewModel:ObservableObject
         new ActionMenu("Log in by QQ Music",(Geometry)App.Current.FindResource("QQMusicIcon"),Menu_LoginQQ),
         new ActionMenu("Settings",(Geometry)App.Current.FindResource("Icon_Settings"),Menu_GotoSettingsPage),
         new ActionMenu("View Theme Config",(Geometry)App.Current.FindResource("Menu_Theme"),Menu_Theme),
+        new ActionMenu("Show Desktop Window",null,Menu_OpenDesktopWindow),
         new ActionMenu("Exit",null,Menu_Exit)
     ];
     public static void Menu_LoginQQ()
@@ -113,6 +114,18 @@ public partial class UserMenuViewModel:ObservableObject
     {
         var navigator = App.Services.GetRequiredService<MainNavigationService>();
         navigator.RequstNavigation(PageType.SettingsPage);
+    }
+
+    static EmbeddedWindow? _desktopWindow = null;
+    static void Menu_OpenDesktopWindow()
+    {
+        if (_desktopWindow == null)
+        {
+            _desktopWindow = App.Services.GetRequiredService<EmbeddedWindow>();
+            _desktopWindow.Closing += (s, e) => _desktopWindow = null;
+            _desktopWindow.Show();
+        }
+        else _desktopWindow.Close();
     }
     static void Menu_Exit()
     {

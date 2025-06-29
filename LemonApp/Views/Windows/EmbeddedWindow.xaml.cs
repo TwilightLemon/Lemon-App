@@ -1,0 +1,96 @@
+﻿using LemonApp.Common.UIBases;
+using LemonApp.Common.WinAPI;
+using LemonApp.MusicLib.Lyric;
+using LemonApp.Services;
+using LemonApp.ViewModels;
+using LemonApp.Views.UserControls;
+using Lyricify.Lyrics.Helpers;
+using Lyricify.Lyrics.Helpers.Optimization;
+using Lyricify.Lyrics.Helpers.Types;
+using Lyricify.Lyrics.Models;
+using Microsoft.Extensions.DependencyInjection;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Timers;
+using System.Windows;
+
+namespace LemonApp.Views.Windows
+{
+    /// <summary>
+    /// TerminalStyleWindow.xaml 的交互逻辑
+    /// </summary>
+    public partial class EmbeddedWindow : Window
+    {
+        private readonly MediaPlayerService _mediaPlayerService;
+        private readonly Timer _timer = new(100);
+        public EmbeddedWindow(MainWindowViewModel mv,MediaPlayerService mediaPlayer)
+        {
+            InitializeComponent();
+            DataContext = mv;
+            visualizer.Player = mediaPlayer.Player;
+            _mediaPlayerService = mediaPlayer;
+            _mediaPlayerService.OnLoaded += MediaPlayerService_OnLoaded;
+            _mediaPlayerService.OnPlay += (m) => _timer.Start();
+            _mediaPlayerService.OnPaused += (m) => _timer.Stop();
+            _timer.Elapsed += Timer_Elapsed;
+            Closing += delegate {
+                _mediaPlayerService.OnLoaded -= MediaPlayerService_OnLoaded;
+                _timer.Elapsed -= Timer_Elapsed;
+                _timer.Stop();
+                _timer.Dispose();
+            };
+            Loaded += TerminalStyleWindow_Loaded;
+        }
+
+        private void TerminalStyleWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            DesktopWindowHelper.EmbedWindowToDesktop(this);
+            //将窗口居中靠下
+            var sc = SystemParameters.WorkArea;
+            Width = sc.Width *2/3;
+            Left = (sc.Right - Width) / 2;
+            Top = sc.Height - Height - 100;
+
+            if (_mediaPlayerService.CurrentMusic is { } m)
+                _ = LoadFromMusic(m);
+            if (_mediaPlayerService.IsPlaying && !_timer.Enabled)
+                _timer.Start();
+        }
+
+        private void Timer_Elapsed(object? sender, ElapsedEventArgs e)
+        {
+            if (_mediaPlayerService.IsPlaying && _mediaPlayerService.CurrentMusic!=null)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    lv.UpdateTime((int)_mediaPlayerService.Player.Position.TotalMilliseconds);
+                });
+            }
+        }
+
+        private  void MediaPlayerService_OnLoaded(MusicLib.Abstraction.Entities.Music m)
+        {
+            _ = LoadFromMusic(m);
+        }
+
+        public async Task LoadFromMusic(MusicLib.Abstraction.Entities.Music m)
+        {
+            Dispatcher.Invoke(lv.Reset);
+            if (await LyricView.LoadLyricForMusic(m) is { } dt )
+            {
+                var model = LyricView.LoadLrc(dt);
+                if (model.lrc == null) return;
+                Dispatcher.Invoke(() =>
+                {
+                    lv.Load(model.lrc, model.trans, model.romaji, model.isPureLrc);
+                    lv.ApplyFontSize(56, 0.6);
+                });
+            }
+        }
+
+        private void CloseBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+    }
+}

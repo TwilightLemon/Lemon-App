@@ -23,17 +23,14 @@ namespace LemonApp.Views.UserControls
     /// </summary>
     public partial class LyricView : UserControl
     {
-        private readonly HttpClient? _hc;
         private readonly SettingsMgr<LyricOption> _settings;
 
-        public LyricView(IHttpClientFactory httpClientFactory,
-            AppSettingService appSettingsService)
+        public LyricView(AppSettingService appSettingsService)
         {
             InitializeComponent();
 
             _settings = appSettingsService.GetConfigMgr<LyricOption>();
             _settings.OnDataChanged += Settings_OnDataChanged;
-            _hc = httpClientFactory.CreateClient(App.PublicClientFlag);
             Loaded += LyricView_Loaded;
         }
 
@@ -153,31 +150,41 @@ namespace LemonApp.Views.UserControls
             _settings.Data.ShowRomaji = show;
             LrcHost.SetShowRomaji(show);
         }
-
         private string? _handlingMusic = null;
-        public async Task LoadFromMusic(Music m)
+        public  async Task LoadFromMusic(Music m)
         {
             LrcHost.Reset();
             _handlingMusic = m.MusicID;
+            if(await LoadLyricForMusic(m) is { } dt &&_handlingMusic == m.MusicID)
+            {
+               var model= LoadLrc(dt);
+                if(model.lrc == null) return;
+                Dispatcher.Invoke(() => { 
+                LrcHost.Load(model.lrc,model.trans, model.romaji, model.isPureLrc);
+                    ApplySettings();
+                });
+            }
+        }
+        public static async Task<LyricData?> LoadLyricForMusic(Music m)
+        {
             var path = CacheManager.GetCachePath(CacheManager.CacheType.Lyric);
             path = System.IO.Path.Combine(path, m.MusicID + ".lmrc");
             if (await Settings.LoadFromJsonAsync<LyricData>(path, false) is { } local)
             {
-                LoadLrc(local);
+                return local;
             }
             else
             {
-                if (_hc == null) return;
                 if(await GetLyricAsync(m) is { } ly)
                 {
                     await Settings.SaveAsJsonAsync(ly, path, false);
-                    if (_handlingMusic == m.MusicID)//防止异步加载时已经切换歌曲
-                        LoadLrc(ly);
+                    return ly;
                 }
             }
+            return null;
         }
 
-        public static async Task<LyricData?> GetLyricAsync(Music m)
+        private static async Task<LyricData?> GetLyricAsync(Music m)
         {
             if (m.Source == Platform.qq)
             {
@@ -208,9 +215,9 @@ namespace LemonApp.Views.UserControls
             return null;
         }
 
-        private void LoadLrc(LyricData dt)
+        public static (LyricsData? lrc, LyricsData? trans, LyricsData? romaji, bool isPureLrc) LoadLrc(LyricData dt)
         {
-            if (dt.Lyric == null) return;
+            if (dt.Lyric == null) return (null,null,null,false);
             var rawType =dt.Type switch
             {
                 LyricType.Wyy => LyricsRawTypes.Yrc,
@@ -221,22 +228,14 @@ namespace LemonApp.Views.UserControls
             var lrc = ParseHelper.ParseLyrics(dt.Lyric,rawType);
             LyricsData? trans = null, romaji = null;
             if (!string.IsNullOrEmpty(dt.Trans))
-            {
                 trans = ParseHelper.ParseLyrics(dt.Trans, LyricsRawTypes.Lrc);
-                IsTranslationAvailable = true;
-            }else IsTranslationAvailable = false;
 
             if (!string.IsNullOrEmpty(dt.Romaji))
-            {
                 romaji = ParseHelper.ParseLyrics(dt.Romaji, rawType);
-                IsRomajiAvailable = true;
-            }else IsRomajiAvailable = false;
 
             if (lrc != null)
-                Dispatcher.Invoke(() => {
-                    LrcHost.Load(lrc, trans, romaji,dt.Type==LyricType.PureWyy);
-                    RefreshHostSettings();
-                });
+                return (lrc, trans, romaji, dt.Type == LyricType.PureWyy);
+            return (null, null, null, false);
         }
     }
 }
