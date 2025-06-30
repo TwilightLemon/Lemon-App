@@ -12,12 +12,13 @@
         xmlns:ws="https://schemas.elecho.dev/wpfsuite"
         Title="Lemon App Embedded Window"
         Width="1314"
-        Height="620"
+        Height="720"
         d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
         AllowsTransparency="True"
         Background="Transparent"
         FontSize="14"
         Foreground="{DynamicResource ForeColor}"
+        Topmost="true"
         WindowStyle="None"
         mc:Ignorable="d">
     <Window.Resources>
@@ -42,7 +43,7 @@
                 <ColumnDefinition Width="3*" />
                 <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
-            <uc:SimpleLyricView x:Name="lv" Grid.Column="0">
+            <uc:SimpleLyricView x:Name="lv" Grid.Column="0" >
                 <uc:SimpleLyricView.OpacityMask>
                     <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
                         <GradientStop Color="Transparent" />
@@ -144,9 +145,29 @@
                 <Run Foreground="{StaticResource HighlighterColor2}" Text="[Album]" />
                 <Run d:Text="reputation" Text="{Binding Album.Name}" />
             </TextBlock>
-            <Grid Grid.Column="1"
-                  Width="250"
-                  HorizontalAlignment="Center">
+            <ws:FlexPanel Grid.Column="1"
+                          HorizontalAlignment="Stretch"
+                          Background="#01000000"
+                          MainAlignment="SpaceEvenly">
+                <ws:Button x:Name="CloseBtn"
+                           Width="32"
+                           Height="32"
+                           Click="CloseBtn_Click"
+                           Content="&#xE8BB;"
+                           FontFamily="{StaticResource SegoeFluentIcon}"
+                           Style="{StaticResource SimpleIconButtonStyleForWs}"
+                           ToolTip="Exit Desktop Mode" />
+                <ws:Button x:Name="PlayLastBtn"
+                           Width="32"
+                           Height="32"
+                           Command="{Binding PlayLastCommand}"
+                           Style="{StaticResource SimpleIconButtonStyleForWs}"
+                           ToolTip="Play the last one">
+                    <Path Height="18"
+                          Data="{DynamicResource PlayIcon_Last}"
+                          Fill="{DynamicResource ForeColor}"
+                          Stretch="Uniform" />
+                </ws:Button>
                 <ws:Button x:Name="PlayBtn"
                            Width="45"
                            Height="45"
@@ -166,24 +187,9 @@
                         </ws:ConditionalControl.ContentWhenTrue>
                     </ws:ConditionalControl>
                 </ws:Button>
-                <ws:Button x:Name="PlayLastBtn"
-                           Width="32"
-                           Height="32"
-                           Margin="48,0,0,0"
-                           HorizontalAlignment="Left"
-                           Command="{Binding PlayLastCommand}"
-                           Style="{StaticResource SimpleIconButtonStyleForWs}"
-                           ToolTip="Play the last one">
-                    <Path Height="18"
-                          Data="{DynamicResource PlayIcon_Last}"
-                          Fill="{DynamicResource ForeColor}"
-                          Stretch="Uniform" />
-                </ws:Button>
                 <ws:Button x:Name="PlayNextBtn"
                            Width="32"
                            Height="32"
-                           Margin="0,0,48,0"
-                           HorizontalAlignment="Right"
                            Command="{Binding PlayNextCommand}"
                            Style="{StaticResource SimpleIconButtonStyleForWs}"
                            ToolTip="Play the next one">
@@ -195,7 +201,6 @@
                 <ws:Button x:Name="CircleModeBtn"
                            Width="32"
                            Height="32"
-                           HorizontalAlignment="Right"
                            Command="{Binding ChangeCircleModeCommand}"
                            Style="{StaticResource SimpleIconButtonStyleForWs}"
                            ToolTip="Playback Mode">
@@ -205,16 +210,15 @@
                           Fill="{DynamicResource ForeColor}"
                           Stretch="Uniform" />
                 </ws:Button>
-                <ws:Button x:Name="CloseBtn"
-                           Width="32"
-                           Height="32"
-                           HorizontalAlignment="Left"
-                           Click="CloseBtn_Click"
-                           Content="&#xE8BB;"
-                           FontFamily="{StaticResource SegoeFluentIcon}"
-                           Style="{StaticResource SimpleIconButtonStyleForWs}"
-                           ToolTip="Exit Desktop Mode" />
-            </Grid>
+                <ToggleButton x:Name="ShowPlaylistBtn"
+                              Width="42"
+                              Height="42"
+                              Padding="13"
+                              Click="ShowPlaylistBtn_Click"
+                              IsChecked="True"
+                              Style="{StaticResource IconToggleButton}"
+                              Tag="{DynamicResource OpenPlaylist}" />
+            </ws:FlexPanel>
             <uc:AudioVisualizer x:Name="visualizer"
                                 Grid.ColumnSpan="2"
                                 Height="180"

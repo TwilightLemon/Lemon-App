@@ -30,16 +30,28 @@ namespace LemonApp.Views.Windows
             visualizer.Player = mediaPlayer.Player;
             _mediaPlayerService = mediaPlayer;
             _mediaPlayerService.OnLoaded += MediaPlayerService_OnLoaded;
-            _mediaPlayerService.OnPlay += (m) => _timer.Start();
-            _mediaPlayerService.OnPaused += (m) => _timer.Stop();
+            _mediaPlayerService.OnPlay += MediaPlayerService_OnPlay;
+            _mediaPlayerService.OnPaused += MediaPlayerService_OnPaused;
             _timer.Elapsed += Timer_Elapsed;
             Closing += delegate {
                 _mediaPlayerService.OnLoaded -= MediaPlayerService_OnLoaded;
+                _mediaPlayerService.OnPlay -= MediaPlayerService_OnPlay;
+                _mediaPlayerService.OnPaused -= MediaPlayerService_OnPaused;
                 _timer.Elapsed -= Timer_Elapsed;
                 _timer.Stop();
                 _timer.Dispose();
             };
             Loaded += TerminalStyleWindow_Loaded;
+        }
+
+        private void MediaPlayerService_OnPaused(MusicLib.Abstraction.Entities.Music obj)
+        {
+            _timer.Stop();
+        }
+
+        private void MediaPlayerService_OnPlay(MusicLib.Abstraction.Entities.Music obj)
+        {
+            _timer.Start();
         }
 
         private void TerminalStyleWindow_Loaded(object sender, RoutedEventArgs e)
@@ -49,7 +61,7 @@ namespace LemonApp.Views.Windows
             var sc = SystemParameters.WorkArea;
             Width = sc.Width *2/3;
             Left = (sc.Right - Width) / 2;
-            Top = sc.Height - Height - 100;
+            Top = sc.Height - Height - 80;
 
             if (_mediaPlayerService.CurrentMusic is { } m)
                 _ = LoadFromMusic(m);
@@ -91,6 +103,11 @@ namespace LemonApp.Views.Windows
         private void CloseBtn_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void ShowPlaylistBtn_Click(object sender, RoutedEventArgs e)
+        {
+            PlaylistLB.Visibility = ShowPlaylistBtn.IsChecked is true ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 }

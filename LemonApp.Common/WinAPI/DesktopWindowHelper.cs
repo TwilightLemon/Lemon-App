@@ -42,13 +42,13 @@ public static class DesktopWindowHelper
         if(workerW != IntPtr.Zero&&shellView!=IntPtr.Zero)
         {
             IntPtr hwnd = new WindowInteropHelper(window).Handle;
-            IntPtr we = FindWindowEx(workerW, IntPtr.Zero, "WPEVideoWallpaper", null);
-            if(we==IntPtr.Zero)we=FindWindowEx(workerW, IntPtr.Zero, "WPELiveWallpaper", null);
-            if (we != IntPtr.Zero)
+            //IntPtr we = FindWindowEx(workerW, IntPtr.Zero, "WPEVideoWallpaper", null);
+            //if(we==IntPtr.Zero)we=FindWindowEx(workerW, IntPtr.Zero, "WPEDesktopDX11Window", null);
+            /*if (we != IntPtr.Zero)
             {
                 SetParent(hwnd, we);
-            }
-            else SetParent(hwnd, shellView);
+            }*/
+            SetParent(hwnd, shellView);
         }
 
         return _desktopHandle;

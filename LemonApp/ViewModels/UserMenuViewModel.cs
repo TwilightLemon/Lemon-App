@@ -119,7 +119,7 @@ public partial class UserMenuViewModel:ObservableObject
     static EmbeddedWindow? _desktopWindow = null;
     static void Menu_OpenDesktopWindow()
     {
-        if (_desktopWindow == null)
+        if (_desktopWindow == null||!_desktopWindow.IsLoaded)
         {
             _desktopWindow = App.Services.GetRequiredService<EmbeddedWindow>();
             _desktopWindow.Closing += (s, e) => _desktopWindow = null;
