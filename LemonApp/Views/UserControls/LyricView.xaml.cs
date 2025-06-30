@@ -150,6 +150,8 @@ namespace LemonApp.Views.UserControls
             _settings.Data.ShowRomaji = show;
             LrcHost.SetShowRomaji(show);
         }
+        public event Action<(LyricsData? lrc, LyricsData? trans, LyricsData? romaji, bool isPureLrc)> OnLyricLoaded;
+
         private string? _handlingMusic = null;
         public  async Task LoadFromMusic(Music m)
         {
@@ -159,9 +161,12 @@ namespace LemonApp.Views.UserControls
             {
                var model= LoadLrc(dt);
                 if(model.lrc == null) return;
-                Dispatcher.Invoke(() => { 
-                LrcHost.Load(model.lrc,model.trans, model.romaji, model.isPureLrc);
+                Dispatcher.Invoke(() => {
+                    IsTranslationAvailable = model.trans != null;
+                    IsRomajiAvailable = model.romaji != null;
+                    LrcHost.Load(model.lrc, model.trans, model.romaji, model.isPureLrc);
                     ApplySettings();
+                    OnLyricLoaded?.Invoke(model);
                 });
             }
         }

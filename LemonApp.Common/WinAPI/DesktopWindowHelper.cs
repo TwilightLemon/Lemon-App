@@ -1,56 +1,31 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using System.Text;
+﻿using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 namespace LemonApp.Common.WinAPI;
 public static class DesktopWindowHelper
 {
-    private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
-
+    // 设置窗口位置、Z顺序、大小、显示状态
     [DllImport("user32.dll", SetLastError = true)]
-    private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+    public static extern bool SetWindowPos(
+        IntPtr hWnd,
+        IntPtr hWndInsertAfter,
+        int X,
+        int Y,
+        int cx,
+        int cy,
+        uint uFlags
+    );
 
-    [DllImport("user32.dll", SetLastError = true)]
-    private static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
+    public static readonly IntPtr HWND_BOTTOM = new(1);
+    public const uint SWP_NOACTIVATE = 0x0010; // 不激活窗口（避免抢焦点）
+    public const uint SWP_SHOWWINDOW = 0x0040; // 显示窗口（如果尚未可见）
 
-    [DllImport("user32.dll", SetLastError = true)]
-    private static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
-
-    [DllImport("user32.dll", SetLastError = true)]
-    private static extern IntPtr SendMessageTimeout(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam,
-        uint fuFlags, uint uTimeout, out IntPtr lpdwResult);
-    [DllImport("user32.dll", SetLastError = true)]
-    private static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
-    [DllImport("user32.dll")]
-    static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
-    private const uint WM_SPAWN_WORKERW = 0x052C;
-    private const uint SMTO_NORMAL = 0x0000;
-
-    private static IntPtr _desktopHandle = IntPtr.Zero;
-
-    public static IntPtr EmbedWindowToDesktop(Window window)
+    public static bool EmbedWindowToDesktop(Window window)
     {
-        IntPtr progman = FindWindow("Progman", null);
-        SendMessageTimeout(progman, WM_SPAWN_WORKERW, IntPtr.Zero, IntPtr.Zero, SMTO_NORMAL, 1000, out _);
-
-        //查找Progman下面的WorkerW窗口
-        IntPtr workerW = FindWindowEx(progman, IntPtr.Zero, "WorkerW", null);
-        //查找SHELLDLL_DefView窗口
-        IntPtr shellView = FindWindowEx(progman, IntPtr.Zero, "SHELLDLL_DefView", null);
-        if(workerW != IntPtr.Zero&&shellView!=IntPtr.Zero)
-        {
-            IntPtr hwnd = new WindowInteropHelper(window).Handle;
-            //IntPtr we = FindWindowEx(workerW, IntPtr.Zero, "WPEVideoWallpaper", null);
-            //if(we==IntPtr.Zero)we=FindWindowEx(workerW, IntPtr.Zero, "WPEDesktopDX11Window", null);
-            /*if (we != IntPtr.Zero)
-            {
-                SetParent(hwnd, we);
-            }*/
-            SetParent(hwnd, shellView);
-        }
-
-        return _desktopHandle;
+        IntPtr hwnd = new WindowInteropHelper(window).Handle;
+        WindowLongAPI.SetToolWindow(window);
+        SetWindowPos(hwnd, HWND_BOTTOM, 0, 0, (int)window.ActualWidth, (int)window.ActualHeight,
+            SWP_NOACTIVATE | SWP_SHOWWINDOW);
+        return true;
     }
 }

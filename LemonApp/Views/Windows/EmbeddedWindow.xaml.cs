@@ -1,15 +1,8 @@
-﻿using LemonApp.Common.UIBases;
-using LemonApp.Common.WinAPI;
-using LemonApp.MusicLib.Lyric;
+﻿using LemonApp.Common.WinAPI;
 using LemonApp.Services;
 using LemonApp.ViewModels;
 using LemonApp.Views.UserControls;
-using Lyricify.Lyrics.Helpers;
-using Lyricify.Lyrics.Helpers.Optimization;
-using Lyricify.Lyrics.Helpers.Types;
 using Lyricify.Lyrics.Models;
-using Microsoft.Extensions.DependencyInjection;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
@@ -29,12 +22,12 @@ namespace LemonApp.Views.Windows
             DataContext = mv;
             visualizer.Player = mediaPlayer.Player;
             _mediaPlayerService = mediaPlayer;
-            _mediaPlayerService.OnLoaded += MediaPlayerService_OnLoaded;
+            mv.LyricView.OnLyricLoaded += LyricView_OnLyricLoaded;
             _mediaPlayerService.OnPlay += MediaPlayerService_OnPlay;
             _mediaPlayerService.OnPaused += MediaPlayerService_OnPaused;
             _timer.Elapsed += Timer_Elapsed;
             Closing += delegate {
-                _mediaPlayerService.OnLoaded -= MediaPlayerService_OnLoaded;
+                mv.LyricView.OnLyricLoaded -= LyricView_OnLyricLoaded;
                 _mediaPlayerService.OnPlay -= MediaPlayerService_OnPlay;
                 _mediaPlayerService.OnPaused -= MediaPlayerService_OnPaused;
                 _timer.Elapsed -= Timer_Elapsed;
@@ -42,6 +35,16 @@ namespace LemonApp.Views.Windows
                 _timer.Dispose();
             };
             Loaded += TerminalStyleWindow_Loaded;
+        }
+
+        private void LyricView_OnLyricLoaded((LyricsData? lrc, LyricsData? trans, LyricsData? romaji, bool isPureLrc) model)
+        {
+            if(model.lrc == null) return;
+            Dispatcher.Invoke(() =>
+            {
+                lv.Load(model.lrc, model.trans, model.romaji, model.isPureLrc);
+                lv.ApplyFontSize(56, 0.6);
+            });
         }
 
         private void MediaPlayerService_OnPaused(MusicLib.Abstraction.Entities.Music obj)
@@ -78,11 +81,6 @@ namespace LemonApp.Views.Windows
                     lv.UpdateTime((int)_mediaPlayerService.Player.Position.TotalMilliseconds);
                 });
             }
-        }
-
-        private  void MediaPlayerService_OnLoaded(MusicLib.Abstraction.Entities.Music m)
-        {
-            _ = LoadFromMusic(m);
         }
 
         public async Task LoadFromMusic(MusicLib.Abstraction.Entities.Music m)

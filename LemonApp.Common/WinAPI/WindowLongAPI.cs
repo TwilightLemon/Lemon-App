@@ -9,8 +9,6 @@ using System.Windows;
 
 namespace LemonApp.Common.WinAPI;
 
-//TODO: 与ToolWindowAPI合并
-
 public static class WindowLongAPI
 {
     [Flags]
@@ -122,9 +120,6 @@ public static class WindowLongAPI
         exStyle |= (int)ExtendedWindowStyles.WS_EX_NOACTIVATE;
         SetWindowLong(hwnd, (int)GetWindowLongFields.GWL_EXSTYLE, (IntPtr)exStyle);
     }
-
-
-
 
     public static bool GetDwmAnimation(DependencyObject obj)
     {

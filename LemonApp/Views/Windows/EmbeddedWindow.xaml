@@ -18,6 +18,7 @@
         Background="Transparent"
         FontSize="14"
         Foreground="{DynamicResource ForeColor}"
+        ShowInTaskbar="False"
         Topmost="true"
         WindowStyle="None"
         mc:Ignorable="d">
@@ -43,7 +44,7 @@
                 <ColumnDefinition Width="3*" />
                 <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
-            <uc:SimpleLyricView x:Name="lv" Grid.Column="0" >
+            <uc:SimpleLyricView x:Name="lv" Grid.Column="0">
                 <uc:SimpleLyricView.OpacityMask>
                     <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
                         <GradientStop Color="Transparent" />
