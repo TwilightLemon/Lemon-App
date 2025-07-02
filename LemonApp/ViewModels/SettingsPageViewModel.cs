@@ -60,6 +60,21 @@ namespace LemonApp.ViewModels
                 DownloadPath = dialog.SelectedPath;
             }
         }
+
+        [ObservableProperty]
+        private string _cachePath = CacheManager.GetCacheRootPath();
+        [RelayCommand]
+        private void OpenCachePath()
+        {
+            if (System.IO.Directory.Exists(CachePath))
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = CachePath,
+                    UseShellExecute = true
+                });
+            }
+        }
         #endregion
         #region About
         private readonly Assembly _assembly = Assembly.GetExecutingAssembly();

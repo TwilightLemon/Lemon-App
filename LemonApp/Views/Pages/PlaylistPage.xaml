@@ -208,7 +208,8 @@
                         <ToggleButton x:Name="SelectAllBtn"
                                       Padding="6,0"
                                       Click="SelectAllBtn_Click"
-                                      Style="{StaticResource AccentToggleButtonStyle}">
+                                      Style="{StaticResource AccentToggleButtonStyle}"
+                                      ToolTip="Select All">
                             <TextBlock VerticalAlignment="Center">
                                 <Run d:Text="520" Text="{Binding Musics.Count, Mode=OneWay}" />
                                 <Run Text=" Songs" />
@@ -218,7 +219,8 @@
                                       Padding="16,0"
                                       Click="SelectModeTB_Click"
                                       IsChecked="{Binding ElementName=listBox, Path=SelectionMode, Converter={x:Static ws:EqualConverter.Instance}, ConverterParameter={x:Static SelectionMode.Multiple}, Mode=OneWay}"
-                                      Style="{StaticResource AccentToggleButtonStyle}">
+                                      Style="{StaticResource AccentToggleButtonStyle}"
+                                      ToolTip="Multiple Select">
                             Select
                         </ToggleButton>
                         <ws:Button x:Name="AddToBtn"

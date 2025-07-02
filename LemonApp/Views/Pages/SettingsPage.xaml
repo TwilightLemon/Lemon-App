@@ -90,6 +90,29 @@
                 </Grid>
             </Border>
 
+            <Border Height="56"
+                    Background="{DynamicResource MaskColor}"
+                    CornerRadius="12">
+                <Grid>
+                    <TextBlock Margin="12,0"
+                               HorizontalAlignment="Left"
+                               VerticalAlignment="Center">
+            <Run Text="Cache Path" />
+            <LineBreak />
+            <Run d:Text="xxxxx"
+                        Text="{Binding CachePath}" />
+                    </TextBlock>
+                    <ws:Button Height="32"
+                               Margin="0,0,48,0"
+                               Padding="12,0"
+                               HorizontalAlignment="Right"
+                               Command="{Binding OpenCachePathCommand}"
+                               Style="{StaticResource SimpleButtonStyleForWs}">
+                        Open
+                    </ws:Button>
+                </Grid>
+            </Border>
+
             <Border Height="80"
                     Background="{DynamicResource MaskColor}"
                     CornerRadius="8">

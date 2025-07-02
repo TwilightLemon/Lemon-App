@@ -49,6 +49,8 @@ public static class CacheManager
             }
         }
     }
+    public static string GetCacheRootPath() =>
+        _settingsMgr.Data?.CachePath ?? throw new InvalidOperationException("CacheManager didn't load yet.");
     public static string GetCachePath(CacheType type) =>
         Path.Combine(_settingsMgr.Data?.CachePath??throw new InvalidOperationException("CacheManager didn't load yet.")
             ,GetTypeName(type));

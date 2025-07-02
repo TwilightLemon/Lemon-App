@@ -110,12 +110,16 @@ namespace LemonApp.Views.Pages
         {
             if (listBox.SelectionMode == SelectionMode.Multiple)
             {
-                _vm.AddToPlayNextCommand.Execute(listBox.SelectedItems);
-                listBox.SelectedItems.Clear();
+                if (listBox.SelectedItems is { Count: > 0 })
+                {
+                    _vm.AddToPlayNextCommand.Execute(listBox.SelectedItems);
+                    listBox.SelectedItems.Clear();
+                }
             }
             else
             {
-                _vm.AddToPlayNextSingleCommand.Execute(listBox.SelectedItem);
+                if (listBox.SelectedItem != null)
+                    _vm.AddToPlayNextSingleCommand.Execute(listBox.SelectedItem);
             }
             AddtoMenu.IsOpen = false;
         }
@@ -132,8 +136,8 @@ namespace LemonApp.Views.Pages
 
         private void DeleteBtn_Click(object sender, RoutedEventArgs e)
         {
-            List<Music> selectedItems = SelectedMusic;
-            _vm.DeleteMusicFromDirid(selectedItems);
+            if (SelectedMusic.Count > 0)
+                _vm.DeleteMusicFromDirid(SelectedMusic);
         }
 
         private async void AddToBtn_Click(object sender, RoutedEventArgs e)
@@ -144,7 +148,8 @@ namespace LemonApp.Views.Pages
 
         private void DownloadBtn_Click(object sender, RoutedEventArgs e)
         {
-            _vm.DownloadMusic(SelectedMusic);
+            if (SelectedMusic.Count > 0)
+                _vm.DownloadMusic(SelectedMusic);
         }
 
         private void SelectAllBtn_Click(object sender, RoutedEventArgs e)

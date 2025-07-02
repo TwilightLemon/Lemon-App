@@ -19,7 +19,6 @@
         FontSize="14"
         Foreground="{DynamicResource ForeColor}"
         ShowInTaskbar="False"
-        Topmost="true"
         WindowStyle="None"
         mc:Ignorable="d">
     <Window.Resources>
@@ -54,51 +53,55 @@
                     </LinearGradientBrush>
                 </uc:SimpleLyricView.OpacityMask>
             </uc:SimpleLyricView>
-            <ws:ListBox x:Name="PlaylistLB"
-                        Grid.Column="1"
-                        Margin="10"
-                        HorizontalAlignment="Right"
-                        d:ItemsSource="{d:SampleData ItemCount=5}"
-                        Background="#01000000"
-                        ItemsSource="{Binding Playlist, Mode=OneWay}"
-                        SelectedItem="{Binding PlaylistChoosen}"
-                        Style="{StaticResource SimpleListBoxStyle}">
-                <ws:ListBox.ItemContainerStyle>
-                    <Style TargetType="{x:Type ws:ListBoxItem}">
-                        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                        <Setter Property="Margin" Value="5,2" />
-                        <Setter Property="BorderThickness" Value="0" />
-                        <Setter Property="Foreground" Value="{DynamicResource HighligherColor}" />
-                        <Setter Property="HoverForeground" Value="WhiteSmoke" />
-                        <Setter Property="SelectedActiveForeground" Value="{StaticResource HighlighterColor2}" />
-                        <Setter Property="SelectedForeground" Value="{StaticResource HighlighterColor2}" />
-                        <Setter Property="HoverBackground" Value="{DynamicResource HighligherColor}" />
-                        <Setter Property="SelectedBackground" Value="Transparent" />
-                        <Setter Property="SelectedActiveBackground" Value="Transparent" />
-                    </Style>
-                </ws:ListBox.ItemContainerStyle>
-                <ws:ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid MinHeight="30" Background="Transparent">
-                            <TextBlock Margin="12,0,0,0"
-                                       VerticalAlignment="Center"
-                                       TextWrapping="Wrap">
-                                <TextBlock d:Text="1" FontStyle="Italic">
-                                    <TextBlock.Text>
-                                        <MultiBinding Converter="{x:Static converter:IndexOfConverter.Instance}">
-                                            <Binding />
-                                            <Binding ElementName="PlaylistLB" Path="ItemsSource" />
-                                        </MultiBinding>
-                                    </TextBlock.Text>
+            <Border Grid.Column="1"
+                    Margin="10"
+                    Padding="0 6"
+                    HorizontalAlignment="Right"
+                    Background="{DynamicResource TabMaskColor}"
+                    CornerRadius="12">
+                <ws:ListBox x:Name="PlaylistLB"
+                            d:ItemsSource="{d:SampleData ItemCount=5}"
+                            ItemsSource="{Binding Playlist, Mode=OneWay}"
+                            SelectedItem="{Binding PlaylistChoosen}"
+                            Style="{StaticResource SimpleListBoxStyle}">
+                    <ws:ListBox.ItemContainerStyle>
+                        <Style TargetType="{x:Type ws:ListBoxItem}">
+                            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                            <Setter Property="Margin" Value="2" />
+                            <Setter Property="CornerRadius" Value="4" />
+                            <Setter Property="BorderThickness" Value="0" />
+                            <Setter Property="Foreground" Value="{DynamicResource HintForeColor}" />
+                            <Setter Property="HoverForeground" Value="WhiteSmoke" />
+                            <Setter Property="SelectedActiveForeground" Value="{StaticResource ForeColor}" />
+                            <Setter Property="SelectedForeground" Value="{DynamicResource HighlightThemeColor}" />
+                            <Setter Property="HoverBackground" Value="{DynamicResource HighlightThemeColor}" />
+                            <Setter Property="SelectedBackground" Value="Transparent" />
+                            <Setter Property="SelectedActiveBackground" Value="Transparent" />
+                        </Style>
+                    </ws:ListBox.ItemContainerStyle>
+                    <ws:ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid MinHeight="30" Background="Transparent">
+                                <TextBlock Margin="4,0,0,0"
+                                           VerticalAlignment="Center"
+                                           TextWrapping="Wrap">
+                                    <TextBlock d:Text="1" FontStyle="Italic" Margin="0 0 4 0">
+                                        <TextBlock.Text>
+                                            <MultiBinding Converter="{x:Static converter:IndexOfConverter.Instance}">
+                                                <Binding />
+                                                <Binding ElementName="PlaylistLB" Path="ItemsSource" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                    <Run Text="{Binding MusicName}" />
+                                    <Run Text="-" />
+                                    <Run Text="{Binding SingerText}" />
                                 </TextBlock>
-                                <Run Text="{Binding MusicName}" />
-                                <Run Text="-" />
-                                <Run Text="{Binding SingerText}" />
-                            </TextBlock>
-                        </Grid>
-                    </DataTemplate>
-                </ws:ListBox.ItemTemplate>
-            </ws:ListBox>
+                            </Grid>
+                        </DataTemplate>
+                    </ws:ListBox.ItemTemplate>
+                </ws:ListBox>
+            </Border>
         </Grid>
         <Grid Height="200" VerticalAlignment="Bottom">
             <Grid.ColumnDefinitions>

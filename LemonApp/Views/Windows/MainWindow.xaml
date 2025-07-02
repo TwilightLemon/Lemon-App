@@ -1260,9 +1260,17 @@
                                               HorizontalOffset="-180"
                                               Placement="Right"
                                               StaysOpen="False"
-                                              VerticalOffset="-180">
+                                              VerticalOffset="-210">
                                 <!--  写得有点阴间了孩子..  -->
                                 <ws:StackPanel Spacing="2">
+                                    <ws:Button Name="ViewMusicInfoBtn"
+                                               Padding="12,8"
+                                               Background="Transparent"
+                                               BorderThickness="0"
+                                               Click="ViewMusicInfoBtn_Click"
+                                               Style="{StaticResource SimpleButtonStyleForWs}">
+                                        View Music Info
+                                    </ws:Button>
                                     <ws:Button Padding="12,8"
                                                Background="Transparent"
                                                BorderThickness="0"
@@ -1450,5 +1458,32 @@
                 </ws:Button>
             </Grid>
         </Grid>
+        <base:FluentPopup x:Name="MusicInfoPopup"
+                          Background="{DynamicResource PopupWndBgColor}"
+                          ExtPopupAnimation="SlideUp"
+                          Placement="Center"
+                          StaysOpen="False">
+            <ws:StackPanel Width="280"
+                           Height="320"
+                           Margin="12"
+                           Spacing="12">
+                <ws:StackPanel.Resources>
+                    <Style TargetType="TextBox">
+                        <Setter Property="Foreground" Value="{DynamicResource HintForeColor}" />
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="BorderThickness" Value="0" />
+                        <Setter Property="IsReadOnly" Value="True" />
+                        <Setter Property="TextWrapping" Value="Wrap" />
+                        <Setter Property="FontSize" Value="14" />
+                    </Style>
+                </ws:StackPanel.Resources>
+                <TextBlock FontSize="24" Text="Music Info" />
+                <TextBox Text="{Binding CurrentPlaying.MusicName, Mode=OneWay, StringFormat='Title: {0}'}" />
+                <TextBox Text="{Binding CurrentPlaying.SingerText, Mode=OneWay, StringFormat='Artists: {0}'}" />
+                <TextBox Text="{Binding CurrentPlaying.Album.Name, Mode=OneWay, StringFormat='Album: {0}'}" />
+                <TextBox Text="{Binding CurrentPlaying.MusicID, Mode=OneWay, StringFormat='SongID: {0}'}" />
+                <TextBox Text="{Binding CurrentPlaying.Source, Mode=OneWay, StringFormat='Source: {0}'}" />
+            </ws:StackPanel>
+        </base:FluentPopup>
     </ws:BoxPanel>
 </base:FluentWindowBase>
