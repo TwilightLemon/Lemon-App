@@ -6,6 +6,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:LemonApp.ViewModels"
              xmlns:ws="https://schemas.elecho.dev/wpfsuite"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:behavior="clr-namespace:LemonApp.Common.Behaviors;assembly=LemonApp.Common"
              d:DataContext="{d:DesignInstance Type=vm:SingerItemViewModel}"
              d:DesignHeight="450"
              d:DesignWidth="800"
@@ -20,6 +22,9 @@
                            Command="{Binding DataContext.SelectCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                            CommandParameter="{Binding}"
                            Style="{StaticResource SimpleIconButtonStyleForWs}">
+                    <i:Interaction.Behaviors>
+                        <behavior:ButtonFloatBehavior />
+                    </i:Interaction.Behaviors>
                     <StackPanel>
                         <Border x:Name="CoverImg"
                                 Width="128"

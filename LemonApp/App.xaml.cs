@@ -56,6 +56,7 @@ namespace LemonApp
                     .AddConfig<PlayingPreference>()
                     .AddConfig<PlaylistCache>(Common.Funcs.Settings.sType.Cache)
                     .AddConfig<LocalPlaylist>(Common.Funcs.Settings.sType.Cache)
+                    .AddConfig<QuickAccessCollection>(Common.Funcs.Settings.sType.Cache)
                     .AddConfig<DownloadPreference>()
                     .AddConfig<DesktopLyricOption>()
                     .AddConfig<LyricOption>()

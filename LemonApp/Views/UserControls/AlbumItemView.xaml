@@ -1,7 +1,9 @@
 ﻿<UserControl x:Class="LemonApp.Views.UserControls.AlbumItemView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:behavior="clr-namespace:LemonApp.Common.Behaviors;assembly=LemonApp.Common"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:local="clr-namespace:LemonApp.Views.UserControls"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:LemonApp.ViewModels"
@@ -20,6 +22,9 @@
                            Command="{Binding DataContext.SelectCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                            CommandParameter="{Binding}"
                            Style="{StaticResource SimpleIconButtonStyleForWs}">
+                    <i:Interaction.Behaviors>
+                        <behavior:ButtonFloatBehavior />
+                    </i:Interaction.Behaviors>
                     <StackPanel>
                         <Border x:Name="CoverImg"
                                 Height="{Binding ElementName=CoverImg, Path=ActualWidth}"

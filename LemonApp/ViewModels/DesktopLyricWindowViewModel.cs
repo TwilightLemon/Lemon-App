@@ -29,7 +29,14 @@ public partial class DesktopLyricWindowViewModel:ObservableObject
         ShowTranslation = _settingsMgr.Data.ShowTranslation;
         _mediaPlayerService.OnPlay += _mediaPlayerService_OnPlay;
         _mediaPlayerService.OnPaused += _mediaPlayerService_OnPaused;
+        _mediaPlayerService.OnLoaded += _mediaPlayerService_OnLoaded;
         CustomLyricControlStyle();
+    }
+
+    private void _mediaPlayerService_OnLoaded(Music obj)
+    {
+        //有新的歌曲加载时，先清除当前歌词
+        LyricControl.ClearAll();
     }
 
     private void CustomLyricControlStyle()

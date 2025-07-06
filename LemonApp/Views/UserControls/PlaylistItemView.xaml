@@ -6,6 +6,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:LemonApp.ViewModels"
              xmlns:ws="https://schemas.elecho.dev/wpfsuite"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:behavior="clr-namespace:LemonApp.Common.Behaviors;assembly=LemonApp.Common"
+             xmlns:component="clr-namespace:LemonApp.Components"
              d:DataContext="{d:DesignInstance Type=vm:PlaylistItemViewModel}"
              d:DesignHeight="450"
              d:DesignWidth="800"
@@ -20,6 +23,16 @@
                            Command="{Binding DataContext.SelectCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                            CommandParameter="{Binding}"
                            Style="{StaticResource SimpleIconButtonStyleForWs}">
+                    <i:Interaction.Behaviors>
+                        <behavior:ButtonFloatBehavior />
+                    </i:Interaction.Behaviors>
+                    <ws:Button.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Add to Quick Goto"
+                                      Command="{x:Static component:PublicPopupMenuHolder.AddToQuickAccessCommand}"
+                                      CommandParameter="{Binding}" />
+                        </ContextMenu>
+                    </ws:Button.ContextMenu>
                     <StackPanel>
                         <Border x:Name="CoverImg"
                                 Height="{Binding ElementName=CoverImg, Path=ActualWidth}"

@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -25,6 +26,7 @@ using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using Task = System.Threading.Tasks.Task;
 
@@ -46,6 +48,7 @@ public partial class MainWindowViewModel : ObservableObject
     private readonly Timer _timer;
     private SettingsMgr<PlayingPreference> _currentPlayingMgr;
     private SettingsMgr<PlaylistCache> _playlistMgr;
+    private SettingsMgr<QuickAccessCollection> _quickAccessMgr;
 
     private DesktopLyricWindowViewModel _lyricWindowViewModel;
 
@@ -74,6 +77,7 @@ public partial class MainWindowViewModel : ObservableObject
 
         _currentPlayingMgr = _appSettingsService.GetConfigMgr<PlayingPreference>();
         _playlistMgr = _appSettingsService.GetConfigMgr<PlaylistCache>();
+        _quickAccessMgr = _appSettingsService.GetConfigMgr<QuickAccessCollection>();
 
         _uiResourceService.OnColorModeChanged += UIResourceService_OnColorModeChanged;
 
@@ -157,6 +161,21 @@ public partial class MainWindowViewModel : ObservableObject
                     MusicName = "Welcome~",
                     SingerText = "Lemon App"
                 };
+            }
+        }
+
+        //load quick access
+        if (_quickAccessMgr is { } qam && qam.Data.Items is { } items)
+        {
+            QuickAccesses.Clear();
+            foreach (var item in items)
+            {
+                _ = Task.Run(async () =>
+                {
+                    var qa = new DisplayEntity<QuickAccess>(item);
+                    QuickAccesses.Add(qa);
+                    qa.Cover = await ImageCacheService.FetchData(item.CoverUrl);
+                });
             }
         }
     }
@@ -274,6 +293,7 @@ public partial class MainWindowViewModel : ObservableObject
 
     private void AppSettingsService_OnExiting()
     {
+        //save playing and play list
         _currentPlayingMgr.Data ??= new();
         _currentPlayingMgr.Data.Music = CurrentPlaying;
         _currentPlayingMgr.Data.Volume = CurrentPlayingVolume;
@@ -288,7 +308,10 @@ public partial class MainWindowViewModel : ObservableObject
                 Id=item.Album.Id
             };
         }
-        _playlistMgr!.Data.Playlist = temp;
+        _playlistMgr.Data.Playlist = temp;
+        
+        //save quick access list
+        _quickAccessMgr.Data.Items=QuickAccesses.Select(i=>i.ListInfo).ToList();
     }
 
     private void MediaPlayerService_OnAddToPlayNext(Music obj)
@@ -874,6 +897,56 @@ public partial class MainWindowViewModel : ObservableObject
     private void GoToCommentPage()
     {
         MainNavigationService_OnNavigatingRequsted(PageType.CommentPage, CurrentPlaying);
+    }
+    #endregion
+    #region quick access
+    public ObservableCollection<DisplayEntity<QuickAccess>> QuickAccesses { get; set; } = [];
+    [RelayCommand]
+    private void AddToQuickAccess(object data)
+    {
+        var type = data.GetType();
+        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(DisplayEntity<>))
+        {
+            // 取出T
+            var entity = type.GetProperty("ListInfo")?.GetValue(data);
+            if (entity == null) return;
+            var quickAccess = entity switch
+            {
+                Playlist p => new QuickAccess(p),
+                AlbumInfo a => new QuickAccess(a),
+                Profile prof => new QuickAccess(prof),
+                RankListInfo r => new QuickAccess(r),
+                _ => null
+            };
+            if (quickAccess == null) return;
+            //取出Cover
+            if (type.GetProperty("Cover")?.GetValue(data) is BitmapImage cover)
+            {
+                QuickAccesses.Add(new DisplayEntity<QuickAccess>(quickAccess)
+                {
+                    Cover = cover
+                });
+            }
+        }
+    }
+    [RelayCommand]
+    private void GoToQuickAccess(QuickAccess data)
+    {
+        switch (data.Type)
+        {
+            case QuickAccessType.Playlist:
+                NavigateToPlaylistPage(new() { Id=data.Id,Photo=data.CoverUrl,Name=data.Title,Source=data.Platform });
+                break;
+            case QuickAccessType.Album:
+                NavigateToAlbumPage(data.Id);
+                break;
+            case QuickAccessType.Artist:
+                NavigateToSingerPage(data.Id);
+                break;
+                case QuickAccessType.RankList:
+                NavigateToRanklist(new(data.Title,data.CoverUrl,data.Id,"",null));
+                break;
+        }
     }
     #endregion
 }

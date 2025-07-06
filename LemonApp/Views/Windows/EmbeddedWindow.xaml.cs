@@ -23,11 +23,13 @@ namespace LemonApp.Views.Windows
             visualizer.Player = mediaPlayer.Player;
             _mediaPlayerService = mediaPlayer;
             mv.LyricView.OnLyricLoaded += LyricView_OnLyricLoaded;
+            _mediaPlayerService.OnLoaded += MediaPlayerService_OnLoaded;
             _mediaPlayerService.OnPlay += MediaPlayerService_OnPlay;
             _mediaPlayerService.OnPaused += MediaPlayerService_OnPaused;
             _timer.Elapsed += Timer_Elapsed;
             Closing += delegate {
                 mv.LyricView.OnLyricLoaded -= LyricView_OnLyricLoaded;
+                _mediaPlayerService.OnLoaded -= MediaPlayerService_OnLoaded;
                 _mediaPlayerService.OnPlay -= MediaPlayerService_OnPlay;
                 _mediaPlayerService.OnPaused -= MediaPlayerService_OnPaused;
                 _timer.Elapsed -= Timer_Elapsed;
@@ -35,6 +37,11 @@ namespace LemonApp.Views.Windows
                 _timer.Dispose();
             };
             Loaded += TerminalStyleWindow_Loaded;
+        }
+
+        private void MediaPlayerService_OnLoaded(MusicLib.Abstraction.Entities.Music obj)
+        {
+            lv.Reset();
         }
 
         private void LyricView_OnLyricLoaded((LyricsData? lrc, LyricsData? trans, LyricsData? romaji, bool isPureLrc) model)

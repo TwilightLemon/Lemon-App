@@ -16,7 +16,7 @@ namespace LemonApp.Views.UserControls;
 /// </summary>
 public partial class LyricLineControl : UserControl
 {
-    private int EmphasisThreshold { get; set; }= 1800; // 高亮抬起分词的阈值ms
+    private int EmphasisThreshold { get; set; } = 1800; // 高亮抬起分词的阈值ms
     private readonly Dictionary<ISyllableInfo, TextBlock> mainSyllableLrcs = [], romajiSyllableLrcs = [];
     private const int InActiveLrcBlurRadius = 6;
     private int ActiveLrcLiftupHeight = -4;
@@ -46,6 +46,20 @@ public partial class LyricLineControl : UserControl
         _isPlainLrc = true;
         LoadPlainLrc(plainLrc);
     }
+
+    public void ClearAll()
+    {
+        Dispatcher.Invoke(() =>
+        {
+            MainLrcContainer.Children.Clear();
+            RomajiLrcContainer.Children.Clear();
+            mainSyllableLrcs.Clear();
+            romajiSyllableLrcs.Clear();
+            mainSyllableBrushes.Clear();
+            mainSyllableAnimated.Clear();
+            TranslationLrc.Text = string.Empty;
+        });
+    }
     public void LoadPlainLrc(string lrc, double fontSize = 22)
     {
         MainLrcContainer.Children.Clear();
@@ -71,7 +85,7 @@ public partial class LyricLineControl : UserControl
         });
     }
 
-    public void LoadMainLrc(List<ISyllableInfo> words,double fontSize=22)
+    public void LoadMainLrc(List<ISyllableInfo> words, double fontSize = 22)
     {
         MainLrcContainer.Children.Clear();
         mainSyllableLrcs.Clear();
@@ -92,7 +106,7 @@ public partial class LyricLineControl : UserControl
             var textBlock = new TextBlock
             {
                 Text = word.Text,
-                TextTrimming=TextTrimming.None,
+                TextTrimming = TextTrimming.None,
                 FontSize = fontSize
             };
 
@@ -142,9 +156,9 @@ public partial class LyricLineControl : UserControl
 
     public void UpdateTime(int ms)
     {
-        if (_isPlainLrc) 
+        if (_isPlainLrc)
         {
-        //do noting in inner lrc
+            //do noting in inner lrc
         }
         else
         {
@@ -358,8 +372,8 @@ public partial class LyricLineControl : UserControl
     }
 
     public static readonly DependencyProperty CustomHighlighterColorProperty =
-        DependencyProperty.Register("CustomHighlighterColor", 
-            typeof(SolidColorBrush), typeof(LyricLineControl), 
+        DependencyProperty.Register("CustomHighlighterColor",
+            typeof(SolidColorBrush), typeof(LyricLineControl),
             new PropertyMetadata(null));
 
 
@@ -379,7 +393,7 @@ public partial class LyricLineControl : UserControl
     private LinearGradientBrush CreateBrush(double progress)
     {
         var fontColor = ((SolidColorBrush)FindResource("ForeColor")).Color;
-        var highlightColor =CustomHighlighterColor?.Color ?? fontColor;
+        var highlightColor = CustomHighlighterColor?.Color ?? fontColor;
         var normalColor = CustomNormalColor?.Color ?? ((SolidColorBrush)FindResource("InActiveLrcForeground")).Color;
         return new LinearGradientBrush
         {
@@ -395,41 +409,43 @@ public partial class LyricLineControl : UserControl
         };
     }
 
-    public void ClearHighlighter(bool animated=false)
+    public void ClearHighlighter(bool animated = false)
     {
         mainSyllableBrushes.Clear();
         mainSyllableAnimated.Clear();
-        var inactiveColor= CustomNormalColor?.Color ?? ((SolidColorBrush)FindResource("InActiveLrcForeground")).Color;
-        var foreColor= ((SolidColorBrush)FindResource("ForeColor")).Color;
+        var inactiveColor = CustomNormalColor?.Color ?? ((SolidColorBrush)FindResource("InActiveLrcForeground")).Color;
+        var foreColor = ((SolidColorBrush)FindResource("ForeColor")).Color;
         foreach (var lrc in mainSyllableLrcs)
         {
             if (animated)
             {
-                var fore=new SolidColorBrush(foreColor);
+                var fore = new SolidColorBrush(foreColor);
                 var ca = new ColorAnimation(inactiveColor, TimeSpan.FromMilliseconds(300));
-                ca.Completed += delegate {
+                ca.Completed += delegate
+                {
                     lrc.Value.SetResourceReference(ForegroundProperty, "InActiveLrcForeground");
                 };
-                fore.BeginAnimation(SolidColorBrush.ColorProperty,ca);
+                fore.BeginAnimation(SolidColorBrush.ColorProperty, ca);
                 lrc.Value.Foreground = fore;
             }
             else lrc.Value.SetResourceReference(ForegroundProperty, "InActiveLrcForeground");
             //clear highlight lrc effect
             if (lrc.Value.Inlines.Count > 1)
             {
-                foreach(var line in lrc.Value.Inlines)
+                foreach (var line in lrc.Value.Inlines)
                 {
-                    if(line is InlineUIContainer con&&con.Child is TextBlock block)
+                    if (line is InlineUIContainer con && con.Child is TextBlock block)
                     {
                         if (animated)
                         {
                             var fore = new SolidColorBrush(foreColor);
                             var ca = new ColorAnimation(inactiveColor, TimeSpan.FromMilliseconds(300));
-                            ca.Completed += delegate {
-                               block.SetResourceReference(ForegroundProperty, "InActiveLrcForeground");
+                            ca.Completed += delegate
+                            {
+                                block.SetResourceReference(ForegroundProperty, "InActiveLrcForeground");
                             };
                             fore.BeginAnimation(SolidColorBrush.ColorProperty, ca);
-                           block.Foreground = fore;
+                            block.Foreground = fore;
                         }
                         else block.SetResourceReference(ForegroundProperty, "InActiveLrcForeground");
                     }
@@ -451,7 +467,7 @@ public partial class LyricLineControl : UserControl
                         ts.BeginAnimation(TranslateTransform.YProperty, null);
                     }
                 }
-             }
+            }
         }
     }
 
@@ -515,7 +531,7 @@ public partial class LyricLineControl : UserControl
                         tb.SetResourceReference(ForegroundProperty, "InActiveLrcForeground");
                     }
                 }
-                else  control.ClearHighlighter(true);
+                else control.ClearHighlighter(true);
             }
         }
 
