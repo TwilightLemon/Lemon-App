@@ -73,6 +73,7 @@ public class UIResourceService(
         var focusColor= dt?.GetFocusAccentColor();
         if (accentColor.HasValue&&focusColor.HasValue){
             App.Current.Resources["HighlightThemeColor"]=new SolidColorBrush(accentColor.Value);
+            App.Current.Resources["AccentColorKey"] = accentColor.Value;
             App.Current.Resources["FocusAccentColor"]=new SolidColorBrush(focusColor.Value);
         }
     }

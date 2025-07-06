@@ -11,7 +11,6 @@
     <ws:StackPanel Margin="8,0" Spacing="8">
         <WrapPanel x:Name="RomajiLrcContainer" Opacity="0.8" />
         <WrapPanel x:Name="MainLrcContainer" />
-        <TextBlock x:Name="TranslationLrc"
-                   TextWrapping="Wrap" />
+        <TextBlock x:Name="TranslationLrc" TextWrapping="Wrap" />
     </ws:StackPanel>
 </UserControl>

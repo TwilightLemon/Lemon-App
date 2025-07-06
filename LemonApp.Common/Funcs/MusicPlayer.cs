@@ -140,18 +140,12 @@ public class MusicPlayer
         set => Bass.BASS_ChannelSetPosition(stream, value.TotalSeconds);
     }
     /// <summary>
-    /// 获取FFT数据   可以用来做频谱
+    /// FFT 1024
     /// </summary>
-    /// <returns></returns>
-    public float[] GetFFTData()
+    /// <param name="fft"></param>
+    public void GetFFTData(float[] fft)
     {
-        float[] fft = new float[128];
-        Bass.BASS_ChannelGetData(stream, fft, (int)BASSData.BASS_DATA_FFT256);
-        return fft;
-    }
-    public void GetFFTDataRef(ref float[] fft)
-    {
-        Bass.BASS_ChannelGetData(stream, fft, (int)BASSData.BASS_DATA_FFT1024);
+        Bass.BASS_ChannelGetData(stream, fft, (int)BASSData.BASS_DATA_FFT2048);
     }
     /// <summary>
     /// 更新设备

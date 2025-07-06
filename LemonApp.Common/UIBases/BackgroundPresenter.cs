@@ -61,15 +61,18 @@ public class BackgroundPresenter : FrameworkElement
 
     private static void DrawVisual(DrawingContext drawingContext, Visual visual, Point relatedXY, Size renderSize)
     {
-        var visualBrush = new VisualBrush(visual);
-        var visualOffset = (Vector)_offsetOfVisual.GetValue(visual)!;
+        try
+        {
+            var visualBrush = new VisualBrush(visual);
+            var visualOffset = (Vector)_offsetOfVisual.GetValue(visual)!;
 
-        _methodGetContentBounds.Invoke(visualBrush, out var contentBounds);
-        relatedXY -= visualOffset;
-
-        drawingContext.DrawRectangle(
-            visualBrush, null,
-            new Rect(relatedXY.X + contentBounds.X, relatedXY.Y + contentBounds.Y, contentBounds.Width, contentBounds.Height));
+            _methodGetContentBounds.Invoke(visualBrush, out var contentBounds);
+            relatedXY -= visualOffset;
+            drawingContext.DrawRectangle(
+                visualBrush, null,
+                new Rect(relatedXY.X + contentBounds.X, relatedXY.Y + contentBounds.Y, contentBounds.Width, contentBounds.Height));
+        }
+        catch { }
     }
 
     protected override Geometry GetLayoutClip(Size layoutSlotSize)

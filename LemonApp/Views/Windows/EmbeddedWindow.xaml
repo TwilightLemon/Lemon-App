@@ -225,12 +225,12 @@
             </ws:FlexPanel>
             <uc:AudioVisualizer x:Name="visualizer"
                                 Grid.ColumnSpan="2"
-                                Height="180"
                                 Margin="8,0"
-                                VerticalAlignment="Bottom"
+                                VerticalAlignment="Stretch"
                                 IsPlaying="{Binding IsPlaying, Mode=OneWay}"
                                 Opacity="0.8"
-                                Color="{DynamicResource HighlightThemeColor}" />
+                                StripCount="64"
+                                Fill="{DynamicResource HighlightThemeColor}" />
         </Grid>
     </Grid>
 </Window>

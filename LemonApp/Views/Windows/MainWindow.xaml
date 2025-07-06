@@ -1029,13 +1029,13 @@
                 </Grid>
             </Grid>
             <!--  disabled for performance issue  -->
-            <!--<uc:AudioVisualizer x:Name="visualizer"
-                                Height="214"
-                                Margin="8,0"
+            <uc:AudioVisualizer x:Name="visualizer"
+                                Height="300"
                                 VerticalAlignment="Bottom"
+                                Fill="{DynamicResource HighlightThemeColor}"
                                 IsPlaying="{Binding IsPlaying, Mode=OneWay}"
-                                Opacity="0.8"
-                                Color="{DynamicResource HighlightThemeColor}" />-->
+                                Opacity="0.6"
+                                StripCount="64" />
             <Grid x:Name="MusicControl"
                   Height="120"
                   VerticalAlignment="Bottom">

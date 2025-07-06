@@ -62,7 +62,8 @@ namespace LemonApp.Views.Windows
             DesktopWindowHelper.EmbedWindowToDesktop(this);
             //将窗口居中靠下
             var sc = SystemParameters.WorkArea;
-            Width = sc.Width *2/3;
+            Width = sc.Width * 2 / 3;
+            Height = sc.Height * 2 / 3;
             Left = (sc.Right - Width) / 2;
             Top = sc.Height - Height - 80;
 

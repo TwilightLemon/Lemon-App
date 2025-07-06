@@ -39,7 +39,7 @@ internal class EntryPoint
                 return;
             }
             App app = new();
-            app.Run();
+             app.Run();
         }
         catch { }
     }

@@ -4,7 +4,6 @@ using System.Buffers;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace LemonApp.Views.UserControls;
@@ -19,7 +18,6 @@ public class AudioVisualizer : FrameworkElement
     public AudioVisualizer()
     {
         this.IsVisibleChanged += AudioVisualizer_IsVisibleChanged;
-        this.SizeChanged += AudioVisualizer_SizeChanged;
         _children = new(this)
         {
             _visualHost
@@ -34,21 +32,11 @@ public class AudioVisualizer : FrameworkElement
         return _visualHost;
     }
 
-    private void AudioVisualizer_SizeChanged(object sender, SizeChangedEventArgs e)
-    {
-        CreatePen();
-    }
-
     private void AudioVisualizer_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
         if (e.NewValue is true&&IsPlaying)
-        {
             Start();
-        }
-        else
-        {
-            Stop();
-        }
+        else Stop();
     }
 
     internal void Start()
@@ -60,9 +48,7 @@ public class AudioVisualizer : FrameworkElement
         _isRunning = true;
         _spectrumData = _dataPool.Rent(1024);
 
-        //initialize pen and geometry objects
-        CreatePen();
-        InitializeGeometryObjects();
+        _displayValues = new float[StripCount];
 
         if (_renderLoop != null) return;
         _renderCancel = new CancellationTokenSource();
@@ -86,17 +72,7 @@ public class AudioVisualizer : FrameworkElement
     CancellationTokenSource? _renderCancel;
     Task? _renderLoop;
     private readonly ArrayPool<float> _dataPool = ArrayPool<float>.Shared;
-
-
-    public float StripSpacing
-    {
-        get { return (float)GetValue(StripSpacingProperty); }
-        set { SetValue(StripSpacingProperty, value); }
-    }
-
-    // Using a DependencyProperty as the backing store for StripSpacing.  This enables animation, styling, binding, etc...
-    public static readonly DependencyProperty StripSpacingProperty =
-        DependencyProperty.Register("StripSpacing", typeof(float), typeof(AudioVisualizer), new PropertyMetadata(0.2f));
+    private float[] _displayValues;
 
     public int StripCount
     {
@@ -109,14 +85,13 @@ public class AudioVisualizer : FrameworkElement
         DependencyProperty.Register("StripCount", 
             typeof(int), typeof(AudioVisualizer), new PropertyMetadata(128));
 
-    public Brush Color
+    public Brush Fill
     {
-        get { return (Brush)GetValue(ColorProperty); }
-        set { SetValue(ColorProperty, value); }
+        get { return (Brush)GetValue(FillProperty); }
+        set { SetValue(FillProperty, value); }
     }
-
-    public static readonly DependencyProperty ColorProperty =
-        DependencyProperty.Register("Color", typeof(Brush), typeof(AudioVisualizer), new PropertyMetadata(Brushes.White, OnColorChanged));
+    public static readonly DependencyProperty FillProperty =
+        DependencyProperty.Register("Fill", typeof(Brush), typeof(AudioVisualizer), new PropertyMetadata(Brushes.LightBlue));
 
     public bool IsPlaying
     {
@@ -127,11 +102,6 @@ public class AudioVisualizer : FrameworkElement
     public static readonly DependencyProperty IsPlayingProperty =
         DependencyProperty.Register("IsPlaying", typeof(bool), typeof(AudioVisualizer), new PropertyMetadata(false, OnIsPlayingChanged));
 
-    private static void OnColorChanged(DependencyObject o,DependencyPropertyChangedEventArgs e)
-    {
-        if (o is AudioVisualizer visualizer)
-            visualizer.CreatePen();
-    }
     private static void OnIsPlayingChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
     {
         if (o is AudioVisualizer visualizer)
@@ -155,58 +125,12 @@ public class AudioVisualizer : FrameworkElement
         {
             if (token.IsCancellationRequested)
                 break;
-            Player.GetFFTDataRef(ref _spectrumData); // FFT 1024 截取前StripCount
+            Player.GetFFTData(_spectrumData);
 
-            //InvalidateVisual();
             using DrawingContext dc = _visualHost.RenderOpen();
             DrawStrips(dc, _spectrumData);
 
-            await Task.Delay(16,token);//60Hz
-        }
-    }
-
-/*    protected override void OnRender(DrawingContext drawingContext)
-    {
-        base.OnRender(drawingContext);
-        if (Visibility != Visibility.Visible) return;
-        if (Player == null || _spectrumData == null) return;
-        DrawStrips(drawingContext, _spectrumData);
-    }*/
-
-    private PathFigure[] _pathFigures;
-    private LineSegment[] _lineSegments;
-    private PathGeometry _pathGeometry = new();
-    private PathFigureCollection _figuresToUse;
-    private Pen _pen;
-
-    internal void CreatePen()
-    {
-        double thickness = ActualWidth / StripCount * (1 - StripSpacing);
-        if (thickness < 0)
-            thickness = 1;
-        _pen = new Pen(Color, thickness);
-        if (_pen.CanFreeze)
-            _pen.Freeze();
-    }
-    internal void InitializeGeometryObjects()
-    {
-        // 仅在首次或条形数量改变时初始化
-        if (_pathFigures == null || _pathFigures.Length != StripCount)
-        {
-            _figuresToUse = new();
-            _pathFigures = new PathFigure[StripCount];
-            _lineSegments = new LineSegment[StripCount];
-
-            for (int i = 0; i < StripCount; i++)
-            {
-                _lineSegments[i] = new LineSegment();
-                _pathFigures[i] = new PathFigure
-                {
-                    Segments = { _lineSegments[i] }
-                };
-                _figuresToUse.Add(_pathFigures[i]);
-            }
-            _pathGeometry = new PathGeometry(_figuresToUse);
+            await Task.Delay(8, token);
         }
     }
 
@@ -214,19 +138,47 @@ public class AudioVisualizer : FrameworkElement
     {
         int stripCount = StripCount;
         int total = stripCount - 1;
-        int index = 0;
+        const float easing = 0.25f;
 
-        for (int i = stripCount - 1; i >= 0; i--, index++)
+        // 更新缓动值
+        for (int i = 0; i < stripCount; i++)
         {
-            double value = spectrumData[i];
-            double y = ActualHeight * (1 - value);
-            double x = ((double)index / total) * ActualWidth;
-
-            _pathFigures[index].StartPoint = new Point(x, ActualHeight);
-            _lineSegments[index].Point = new Point(x, y);
+            double target = spectrumData[i];
+            _displayValues[i] += (float)((target - _displayValues[i]) * easing);
         }
 
-        drawingContext.DrawGeometry(null, _pen, _pathGeometry);
+        // 构建点集
+        Point[] points = new Point[stripCount];
+        for (int i = 0; i < stripCount; i++)
+        {
+            double x = (1.0d -(double)i / total) * ActualWidth;
+            double y = ActualHeight * (1 - _displayValues[i]);
+            points[i] = new Point(x, y);
+        }
+
+        var geometry = new StreamGeometry();
+        using (var ctx = geometry.Open())
+        {
+            ctx.BeginFigure(points[0], true, true);
+
+            for (int i = 1; i < stripCount - 2; i++)
+            {
+                // 取中点做平滑
+                var mid = new Point(
+                    (points[i].X + points[i + 1].X) / 2,
+                    (points[i].Y + points[i + 1].Y) / 2
+                );
+                ctx.QuadraticBezierTo(points[i], mid, true, false);
+            }
+            // 最后两个点直接连接
+            ctx.LineTo(points[stripCount - 1], true, false);
+            // 闭合到底部
+            ctx.LineTo(new Point(points[stripCount - 1].X, ActualHeight), true, false);
+            ctx.LineTo(new Point(points[0].X, ActualHeight), true, false);
+            ctx.LineTo(points[0], true, false);
+        }
+        geometry.Freeze();
+        drawingContext.DrawGeometry(Fill, null, geometry);
     }
 
 }

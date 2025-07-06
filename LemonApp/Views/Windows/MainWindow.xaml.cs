@@ -117,7 +117,7 @@ namespace LemonApp.Views.Windows
             _uiResourceService_OnColorModeChanged();
 
             //disabled for performance issue
-           //visualizer.Player = _serviceProvider.GetRequiredService<MediaPlayerService>().Player;
+            visualizer.Player = _serviceProvider.GetRequiredService<MediaPlayerService>().Player;
             MainContentPage.Children.Add(_publicPopupMenuHolder.selector);
         }
 
