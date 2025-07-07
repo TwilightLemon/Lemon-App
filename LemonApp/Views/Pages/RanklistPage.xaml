@@ -15,79 +15,71 @@
       Foreground="{DynamicResource ForeColor}"
       mc:Ignorable="d">
 
-    <Grid>
-        <TextBlock Margin="24,12"
-                   FontSize="24"
-                   FontWeight="Bold"
-                   Text="Ranking" />
-        <ws:ListBox x:Name="RankList"
-                    Margin="0,56,0,0"
-                    d:ItemsSource="{d:SampleData ItemCount=5}"
-                    ItemsSource="{Binding Ranklists}"
-                    SelectedItem="{Binding ChoosenItem}"
-                    SelectionChanged="RankList_SelectionChanged"
-                    Style="{StaticResource SimpleListBoxStyle}"
-                    VirtualizingStackPanel.IsVirtualizing="True"
-                    VirtualizingStackPanel.VirtualizationMode="Recycling">
-            <ws:ListBox.ItemContainerStyle>
-                <Style TargetType="{x:Type ws:ListBoxItem}">
-                    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                    <Setter Property="Margin" Value="6,8" />
-                    <Setter Property="Padding" Value="0" />
-                    <Setter Property="CornerRadius" Value="8" />
-                    <Setter Property="BorderThickness" Value="0" />
-                    <Setter Property="Background" Value="{DynamicResource MaskColor}" />
-                    <Setter Property="Foreground" Value="{DynamicResource ForeColor}" />
-                    <Setter Property="HoverBackground" Value="{DynamicResource FocusMaskColor}" />
-                    <Setter Property="SelectedBackground" Value="{DynamicResource FocusMaskColor}" />
-                    <Setter Property="SelectedActiveBackground" Value="{DynamicResource FocusMaskColor}" />
-                </Style>
-            </ws:ListBox.ItemContainerStyle>
-            <ws:ListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <base:AutoUniformGrid Columns="2"
-                                          MaxItemWidth="420"
-                                          MinItemWidth="380" />
-                </ItemsPanelTemplate>
-            </ws:ListBox.ItemsPanel>
-            <ws:ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Border Height="138">
-                        <Grid>
-                            <Border x:Name="CoverImg"
-                                    Width="138"
-                                    Height="138"
-                                    HorizontalAlignment="Left"
-                                    d:Background="#69f"
-                                    CornerRadius="8 0 0 8"
-                                    RenderOptions.BitmapScalingMode="HighQuality">
-                                <Border.Background>
-                                    <ImageBrush ImageSource="{Binding Cover, IsAsync=True, Mode=OneWay}" />
-                                </Border.Background>
-                            </Border>
-                            <TextBlock Margin="162,18,10,0"
-                                       VerticalAlignment="Top"
-                                       FontSize="20"
-                                       FontWeight="Bold"
-                                       Text="{Binding ListInfo.Name}" />
-                            <ItemsControl Margin="162,52,10,20"
-                                          d:AlternationCount="4"
-                                          AlternationCount="{Binding ListInfo.Content.Count}"
-                                          Foreground="{DynamicResource HintForeColor}"
-                                          ItemsSource="{Binding ListInfo.Content}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding Path=(ItemsControl.AlternationIndex), RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay, Converter={x:Static converter:IndexConverter.Instance}}" />
-                                            <TextBlock Margin="5,0,0,0" Text="{Binding}" />
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </ws:ListBox.ItemTemplate>
-        </ws:ListBox>
-    </Grid>
+    <base:ScrollViewer Style="{StaticResource SimpleVerticalScrollViewerStyle}">
+        <Grid>
+            <TextBlock Margin="24,12"
+                       FontSize="24"
+                       FontWeight="Bold"
+                       Text="Ranking" />
+            <ItemsControl x:Name="RankList"
+                          Margin="0,56,0,0"
+                          d:ItemsSource="{d:SampleData ItemCount=5}"
+                          ItemsSource="{Binding Ranklists}"
+                          VirtualizingStackPanel.IsVirtualizing="True"
+                          VirtualizingStackPanel.VirtualizationMode="Recycling">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <base:AutoUniformGrid Columns="2"
+                                              MaxItemWidth="500"
+                                              MinItemWidth="400" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <ws:Button Height="138"
+                                   Margin="8 6"
+                                   HorizontalContentAlignment="Stretch"
+                                   VerticalContentAlignment="Stretch"
+                                   Command="{Binding DataContext.SelectCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                   CommandParameter="{Binding}"
+                                   ContextMenu="{StaticResource AddToQuickGotoMenu}"
+                                   Style="{StaticResource SimpleIconButtonStyleForWs}">
+                            <Grid>
+                                <Border x:Name="CoverImg"
+                                        Width="138"
+                                        Height="138"
+                                        HorizontalAlignment="Left"
+                                        d:Background="#69f"
+                                        CornerRadius="8 0 0 8"
+                                        RenderOptions.BitmapScalingMode="HighQuality">
+                                    <Border.Background>
+                                        <ImageBrush ImageSource="{Binding Cover, IsAsync=True, Mode=OneWay}" />
+                                    </Border.Background>
+                                </Border>
+                                <TextBlock Margin="162,18,10,0"
+                                           VerticalAlignment="Top"
+                                           FontSize="20"
+                                           FontWeight="Bold"
+                                           Text="{Binding ListInfo.Name}" />
+                                <ItemsControl Margin="162,52,10,20"
+                                              d:AlternationCount="4"
+                                              AlternationCount="{Binding ListInfo.Content.Count}"
+                                              Foreground="{DynamicResource HintForeColor}"
+                                              ItemsSource="{Binding ListInfo.Content}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Path=(ItemsControl.AlternationIndex), RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay, Converter={x:Static converter:IndexConverter.Instance}}" />
+                                                <TextBlock Margin="5,0,0,0" Text="{Binding}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Grid>
+                        </ws:Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Grid>
+    </base:ScrollViewer>
 </Page>

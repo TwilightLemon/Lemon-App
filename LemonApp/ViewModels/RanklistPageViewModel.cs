@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using LemonApp.MusicLib.Abstraction.Entities;
+using CommunityToolkit.Mvvm.Input;
 
 namespace LemonApp.ViewModels;
 
@@ -17,10 +18,8 @@ public partial class RanklistPageViewModel(
 {
     private readonly HttpClient hc=httpClientFactory.CreateClient(App.PublicClientFlag);
 
-    [ObservableProperty]
-    private DisplayEntity<RankListInfo>? _choosenItem;
-
-    partial void OnChoosenItemChanged(DisplayEntity<RankListInfo>? value)
+    [RelayCommand]
+    private void Select(DisplayEntity<RankListInfo>? value)
     {
         if (value != null)
         {

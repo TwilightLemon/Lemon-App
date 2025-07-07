@@ -35,22 +35,36 @@ public static class FluentTooltip
             {
                 if ((bool)e.NewValue)
                 {
-                    tip.Opened += Tip_Opened;
+                    tip.Opened += Popup_Opened;
                 }
                 else
                 {
-                    tip.Opened -= Tip_Opened;
+                    tip.Opened -= Popup_Opened;
+                }
+            }else if(obj is ContextMenu menu)
+            {
+                if ((bool)e.NewValue)
+                {
+                    menu.Opened += Popup_Opened;
+                }
+                else
+                {
+                    menu.Opened -= Popup_Opened;
                 }
             }
         }
     }
 
-    private static void Tip_Opened(object sender, RoutedEventArgs e)
+    private static void Popup_Opened(object sender, RoutedEventArgs e)
     {
         if(sender is ToolTip tip&& tip.Background is SolidColorBrush cb)
         {
             var hwnd = tip.GetNativeWindowHwnd();
             FluentPopupFunc.SetPopupWindowMaterial(hwnd, cb.Color,MaterialApis.WindowCorner.RoundSmall);
+        }else if (sender is ContextMenu menu && menu.Background is SolidColorBrush color)
+        {
+            var hwnd = menu.GetNativeWindowHwnd();
+            FluentPopupFunc.SetPopupWindowMaterial(hwnd, color.Color, MaterialApis.WindowCorner.RoundSmall);
         }
     }
 }
@@ -233,6 +247,18 @@ internal static class FluentPopupFunc
         if (field != null)
         {
             if(field.GetValue(tip) is Popup{ } popup)
+            {
+                return popup.GetNativeWindowHwnd();
+            }
+        }
+        return IntPtr.Zero;
+    }
+    public static IntPtr GetNativeWindowHwnd(this ContextMenu menu)
+    {
+        var field = menu.GetType().GetField("_parentPopup", privateInstanceFlag);
+        if (field != null)
+        {
+            if (field.GetValue(menu) is Popup { } popup)
             {
                 return popup.GetNativeWindowHwnd();
             }

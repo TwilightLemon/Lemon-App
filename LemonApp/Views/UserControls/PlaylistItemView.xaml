@@ -22,17 +22,11 @@
                            VerticalContentAlignment="Stretch"
                            Command="{Binding DataContext.SelectCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                            CommandParameter="{Binding}"
+                           ContextMenu="{StaticResource AddToQuickGotoMenu}"
                            Style="{StaticResource SimpleIconButtonStyleForWs}">
                     <i:Interaction.Behaviors>
                         <behavior:ButtonFloatBehavior />
                     </i:Interaction.Behaviors>
-                    <ws:Button.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="Add to Quick Goto"
-                                      Command="{x:Static component:PublicPopupMenuHolder.AddToQuickAccessCommand}"
-                                      CommandParameter="{Binding}" />
-                        </ContextMenu>
-                    </ws:Button.ContextMenu>
                     <StackPanel>
                         <Border x:Name="CoverImg"
                                 Height="{Binding ElementName=CoverImg, Path=ActualWidth}"

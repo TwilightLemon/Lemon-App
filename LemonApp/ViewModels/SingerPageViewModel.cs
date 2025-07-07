@@ -15,6 +15,7 @@ public partial class SingerPageViewModel(
     /// 在Page中保持不变，无需为Observable
     /// </summary>
     public SingerPageData? SingerPageData { get; set; }
+    public object? QuickAccessData { set; get; }
 
     [ObservableProperty]
     private Brush? _coverImg;

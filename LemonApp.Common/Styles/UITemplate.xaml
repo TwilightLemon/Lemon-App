@@ -140,6 +140,9 @@
         </Setter>
     </Style>
     <!--#endregion-->
+    <!--#region ContextMenu-->
+    
+    <!--#endregion-->
 
     <Style x:Key="IconToggleButton" TargetType="ToggleButton">
         <Setter Property="Cursor" Value="Hand" />
@@ -237,7 +240,6 @@
             </Setter.Value>
         </Setter>
     </Style>
-
     <Style x:Key="MenuRadioButton" TargetType="{x:Type RadioButton}">
         <Setter Property="Foreground" Value="{DynamicResource ForeColor}" />
         <Setter Property="Cursor" Value="Hand" />
@@ -674,6 +676,7 @@
         </Setter>
     </Style>
 
+    <!--#region Slider-->
     <!--  Slider右侧  -->
     <Style x:Key="RepeatButtonTransparent" TargetType="{x:Type RepeatButton}">
         <Setter Property="OverridesDefaultStyle" Value="true" />
@@ -786,4 +789,5 @@
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="Template" Value="{StaticResource SliderHorizontal}" />
     </Style>
+    <!--#endregion-->
 </ResourceDictionary>

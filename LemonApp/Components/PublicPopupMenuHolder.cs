@@ -12,7 +12,7 @@ public class PublicPopupMenuHolder
 {
     public static IRelayCommand? GotoArtistCommand,GoToAlbumCommand;
     public static IAsyncRelayCommand<IList<Music>>? AddToMyDissCommand;
-    public static IRelayCommand? AddToQuickAccessCommand;
+    public static IRelayCommand? AddToQuickAccessCommand,RemoveQuickAccessCommand;
     public readonly PopupSelector selector;
     public PublicPopupMenuHolder(PopupSelector selector,MainWindowViewModel mainWindowViewModel)
     {
@@ -21,5 +21,6 @@ public class PublicPopupMenuHolder
         GotoArtistCommand = selector.CheckIfGotoArtistsPopupCommand;
         GoToAlbumCommand = selector.GoToAlbumPageCommand;
         AddToQuickAccessCommand = mainWindowViewModel.AddToQuickAccessCommand;
+        RemoveQuickAccessCommand = mainWindowViewModel.RemoveQuickAccessCommand;
     }
 }

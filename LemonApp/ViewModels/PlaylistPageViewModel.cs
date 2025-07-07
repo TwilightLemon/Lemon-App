@@ -11,6 +11,8 @@ using LemonApp.MusicLib.Abstraction.Entities;
 using System.Collections.Generic;
 using LemonApp.Common.Funcs;
 using LemonApp.MusicLib.Playlist;
+using Microsoft.Extensions.DependencyInjection;
+using LemonApp.Common.Configs;
 
 namespace LemonApp.ViewModels;
 
@@ -38,6 +40,7 @@ public partial class PlaylistPageViewModel(
     [ObservableProperty]
     private bool _isOwned = false;
     public string? Dirid;
+    public object? QuickAccessData { get; set; }
 
     public void Dispose()
     {

@@ -53,23 +53,33 @@
                             <Run Text="Fans: " />
                             <Run d:Text="9999w" Text="{Binding SingerPageData.FansCount, StringFormat=N0}" />
                         </TextBlock>
-                        <ToggleButton x:Name="FollowBtn"
-                                      Height="32"
-                                      Margin="0,8,0,0"
-                                      Padding="8"
-                                      HorizontalAlignment="Left"
-                                      VerticalAlignment="Top"
-                                      IsChecked="{Binding SingerPageData.IsFollowed, Mode=OneWay}"
-                                      Template="{DynamicResource AccentToggleButtonTemplate}">
-                            <ws:ConditionalControl Condition="{Binding ElementName=FollowBtn, Path=IsChecked}">
-                                <ws:ConditionalControl.ContentWhenTrue>
-                                    <TextBlock Text="Followed" />
-                                </ws:ConditionalControl.ContentWhenTrue>
-                                <ws:ConditionalControl.ContentWhenFalse>
-                                    <TextBlock Text="Follow" />
-                                </ws:ConditionalControl.ContentWhenFalse>
-                            </ws:ConditionalControl>
-                        </ToggleButton>
+                        <ws:WrapPanel Margin="0,8,0,0" HorizontalSpacing="12">
+                            <ToggleButton x:Name="FollowBtn"
+                                          Height="32"
+                                          Padding="8"
+                                          HorizontalAlignment="Left"
+                                          VerticalAlignment="Top"
+                                          IsChecked="{Binding SingerPageData.IsFollowed, Mode=OneWay}"
+                                          Template="{DynamicResource AccentToggleButtonTemplate}">
+                                <ws:ConditionalControl Condition="{Binding ElementName=FollowBtn, Path=IsChecked}">
+                                    <ws:ConditionalControl.ContentWhenTrue>
+                                        <TextBlock Text="Followed" />
+                                    </ws:ConditionalControl.ContentWhenTrue>
+                                    <ws:ConditionalControl.ContentWhenFalse>
+                                        <TextBlock Text="Follow" />
+                                    </ws:ConditionalControl.ContentWhenFalse>
+                                </ws:ConditionalControl>
+                            </ToggleButton>
+                            <ws:Button Height="32"
+                                       Padding="8,0"
+                                       Command="{x:Static component:PublicPopupMenuHolder.AddToQuickAccessCommand}"
+                                       CommandParameter="{Binding QuickAccessData}"
+                                       FontFamily="{StaticResource SegoeFluentIcon}"
+                                       Style="{StaticResource SimpleButtonStyleForWs}"
+                                       ToolTip="Add to Quick Access">
+                                &#xe710;
+                            </ws:Button>
+                        </ws:WrapPanel>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -139,7 +149,7 @@
                                                TextWrapping="Wrap">
                                         <Run FontSize="22" Text="{Binding ListInfo.Name}" />
                                         <LineBreak />
-                                        <Run Text="{Binding ListInfo.PublishDate}" Foreground="{DynamicResource HintForeColor}" />
+                                        <Run Foreground="{DynamicResource HintForeColor}" Text="{Binding ListInfo.PublishDate}" />
                                     </TextBlock>
                                 </Grid>
                             </ws:Button>

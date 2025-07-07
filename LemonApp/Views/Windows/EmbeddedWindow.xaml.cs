@@ -41,7 +41,7 @@ namespace LemonApp.Views.Windows
 
         private void MediaPlayerService_OnLoaded(MusicLib.Abstraction.Entities.Music obj)
         {
-            lv.Reset();
+            Dispatcher.Invoke(lv.Reset);
         }
 
         private void LyricView_OnLyricLoaded((LyricsData? lrc, LyricsData? trans, LyricsData? romaji, bool isPureLrc) model)

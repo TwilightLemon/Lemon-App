@@ -26,10 +26,5 @@ namespace LemonApp.Views.Pages
             await vm.LoadData();
             _mainNavigationService.CancelLoadingAni();
         }
-
-        private void RankList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            RankList.SelectedItem = null;
-        }
     }
 }

@@ -170,12 +170,9 @@ public partial class MainWindowViewModel : ObservableObject
             QuickAccesses.Clear();
             foreach (var item in items)
             {
-                _ = Task.Run(async () =>
-                {
-                    var qa = new DisplayEntity<QuickAccess>(item);
-                    QuickAccesses.Add(qa);
-                    qa.Cover = await ImageCacheService.FetchData(item.CoverUrl);
-                });
+                var qa = new DisplayEntity<QuickAccess>(item);
+                QuickAccesses.Add(qa);
+                qa.Cover = await ImageCacheService.FetchData(item.CoverUrl);
             }
         }
     }
@@ -904,6 +901,7 @@ public partial class MainWindowViewModel : ObservableObject
     [RelayCommand]
     private void AddToQuickAccess(object data)
     {
+        if (data == null) return;
         var type = data.GetType();
         if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(DisplayEntity<>))
         {
@@ -929,6 +927,21 @@ public partial class MainWindowViewModel : ObservableObject
             }
         }
     }
+    
+    public async Task AddToQuickAccessNative(QuickAccess data,BitmapImage? Cover=null)
+    {
+        if (data == null) return;
+        var qa = new DisplayEntity<QuickAccess>(data);
+        if(Cover!= null)
+        {
+            qa.Cover = Cover;
+        }
+        else if (data.CoverUrl != null)
+        {
+            qa.Cover = await ImageCacheService.FetchData(data.CoverUrl);
+        }
+        QuickAccesses.Add(qa);
+    }
     [RelayCommand]
     private void GoToQuickAccess(QuickAccess data)
     {
@@ -946,6 +959,14 @@ public partial class MainWindowViewModel : ObservableObject
                 case QuickAccessType.RankList:
                 NavigateToRanklist(new(data.Title,data.CoverUrl,data.Id,"",null));
                 break;
+        }
+    }
+    [RelayCommand]
+    private void RemoveQuickAccess(DisplayEntity<QuickAccess> data)
+    {
+        if (data != null)
+        {
+            QuickAccesses.Remove(data);
         }
     }
     #endregion

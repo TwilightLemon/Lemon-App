@@ -207,29 +207,30 @@
                                    Text="Lemon App" />
                     </ws:WrapPanel>
                     <Grid Margin="220,8">
-                        <base:FluentPopup x:Name="SearchHintPopup"
-                                          ExtPopupAnimation="SlideDown"
-                                          Placement="Bottom"
-                                          SlideAnimationOffset="20"
-                                          StaysOpen="False" />
                         <ws:WrapPanel HorizontalAlignment="Center" HorizontalSpacing="16">
-                            <ws:TextBox x:Name="SearchBox"
-                                        Width="320"
-                                        Height="32"
-                                        Padding="6,7,0,0"
-                                        Background="{DynamicResource MaskColor}"
-                                        BorderBrush="{DynamicResource BorderColor}"
-                                        CaretBrush="{DynamicResource ForeColor}"
-                                        CornerRadius="6"
-                                        FocusedBackground="{DynamicResource FocusMaskColor}"
-                                        FocusedBorderBrush="{DynamicResource FocusMaskColor}"
-                                        Foreground="{DynamicResource ForeColor}"
-                                        HoverBackground="{DynamicResource FocusMaskColor}"
-                                        HoverBorderBrush="{DynamicResource FocusMaskColor}"
-                                        Placeholder="Search"
-                                        PreviewKeyDown="SearchBox_PreviewKeyDown"
-                                        SelectionBrush="{DynamicResource HighlightThemeColor}"
-                                        TextChanged="SearchBox_TextChanged" />
+                            <ws:BoxPanel Width="320" Height="32">
+                                <base:FluentPopup x:Name="SearchHintPopup"
+                                                  ExtPopupAnimation="SlideDown"
+                                                  Placement="Bottom"
+                                                  SlideAnimationOffset="20"
+                                                  StaysOpen="False" />
+                                <ws:TextBox x:Name="SearchBox"
+                                            Padding="6,7,0,0"
+                                            Background="{DynamicResource MaskColor}"
+                                            BorderBrush="{DynamicResource BorderColor}"
+                                            CaretBrush="{DynamicResource ForeColor}"
+                                            CornerRadius="6"
+                                            FocusedBackground="{DynamicResource FocusMaskColor}"
+                                            FocusedBorderBrush="{DynamicResource FocusMaskColor}"
+                                            Foreground="{DynamicResource ForeColor}"
+                                            HoverBackground="{DynamicResource FocusMaskColor}"
+                                            HoverBorderBrush="{DynamicResource FocusMaskColor}"
+                                            Placeholder="Search"
+                                            PreviewKeyDown="SearchBox_PreviewKeyDown"
+                                            SelectionBrush="{DynamicResource HighlightThemeColor}"
+                                            TextChanged="SearchBox_TextChanged" />
+                            </ws:BoxPanel>
+                            <!--  Quick Access Area  -->
                             <ItemsControl ItemsSource="{Binding QuickAccesses}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
@@ -238,8 +239,20 @@
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <ws:Button Width="32" Height="32" Command="{Binding DataContext.GoToQuickAccessCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Style="{StaticResource SimpleIconButtonStyleForWs}"
-                                                   CommandParameter="{Binding ListInfo}">
+                                        <ws:Button Width="32"
+                                                   Height="32"
+                                                   Command="{Binding DataContext.GoToQuickAccessCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                   CommandParameter="{Binding ListInfo}"
+                                                   Style="{StaticResource SimpleIconButtonStyleForWs}"
+                                                   ToolTip="{Binding ListInfo.Title}">
+                                            <ws:Button.ContextMenu>
+                                                <ContextMenu>
+                                                    <MenuItem Command="{x:Static components:PublicPopupMenuHolder.RemoveQuickAccessCommand}"
+                                                              CommandParameter="{Binding}"
+                                                              Header="Remove"
+                                                              Icon="{x:Null}" />
+                                                </ContextMenu>
+                                            </ws:Button.ContextMenu>
                                             <Border Width="28"
                                                     Height="28"
                                                     CornerRadius="16">

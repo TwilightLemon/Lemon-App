@@ -13,6 +13,7 @@
         Width="720"
         Height="158"
         d:DataContext="{d:DesignInstance Type=vm:DesktopLyricWindowViewModel}"
+        AllowsTransparency="True"
         Background="#01000000"
         FontFamily="{StaticResource DefaultFontFamily}"
         Foreground="{DynamicResource ForeColor}"
@@ -20,11 +21,9 @@
         ShowInTaskbar="False"
         Topmost="True"
         WindowStyle="None"
-        AllowsTransparency="True"
         mc:Ignorable="d">
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="0"
-                      ResizeBorderThickness="12" />
+        <WindowChrome CaptionHeight="0" ResizeBorderThickness="12" />
     </WindowChrome.WindowChrome>
     <i:Interaction.Behaviors>
         <behavior:WindowDragMoveBehavior />
@@ -34,15 +33,16 @@
             <ContentControl x:Name="LrcHost"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
-                            Content="{Binding LyricControl, NotifyOnTargetUpdated=True}">
-            </ContentControl>
+                            Content="{Binding LyricControl, NotifyOnTargetUpdated=True}" />
         </Grid>
         <!--  功能区 鼠标进入后显示  -->
         <Grid x:Name="FuncPanel"
               d:Visibility="Visible"
               Visibility="Collapsed">
-            <Border Background="{DynamicResource WindowBackgroundColor}" CornerRadius="12" 
-                    BorderThickness="1" BorderBrush="{DynamicResource BorderColor}"/>
+            <Border Background="{DynamicResource WindowBackgroundColor}"
+                    BorderBrush="{DynamicResource BorderColor}"
+                    BorderThickness="1"
+                    CornerRadius="12" />
             <ws:WrapPanel HorizontalAlignment="Center"
                           VerticalAlignment="Center"
                           HorizontalSpacing="24">

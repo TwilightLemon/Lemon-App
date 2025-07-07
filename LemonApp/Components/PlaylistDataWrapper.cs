@@ -30,17 +30,18 @@ public class PlaylistDataWrapper(IServiceProvider sp,
         if (data != null)
         {
             vm.SingerPageData = data;
-            vm.CoverImg= new ImageBrush(await ImageCacheService.FetchData(data.SingerProfile.Photo));
+            var cover = await ImageCacheService.FetchData(data.SingerProfile.Photo);
+            vm.CoverImg= new ImageBrush(cover);
             if (!string.IsNullOrEmpty(data.BigBackground))
             {
                 vm.BigBackground = new ImageBrush(await ImageCacheService.FetchData(data.BigBackground)) { Stretch = Stretch.UniformToFill };
             }
-
+            vm.QuickAccessData = new DisplayEntity<Profile>(data.SingerProfile) { Cover = cover };
             page.DataContext = vm;
         }
         return page;
     }
-    public async  Task<Page?> LoadRanklist(RankListInfo info)
+    public async Task<Page?> LoadRanklist(RankListInfo info)
     {
         var page = sp.GetRequiredService<PlaylistPage>();
         var vm = sp.GetRequiredService<PlaylistPageViewModel>();
@@ -50,7 +51,8 @@ public class PlaylistDataWrapper(IServiceProvider sp,
             var data = await RankListAPI.GetRankListData(info.Id, hc);
             if (data != null)
             {
-                vm.Cover = new ImageBrush(await ImageCacheService.FetchData(info.CoverUrl));
+                var cover = await ImageCacheService.FetchData(info.CoverUrl);
+                vm.Cover = new ImageBrush(cover);
                 vm.Description = info.Description;
                 vm.ListName = info.Name;
                 vm.PlaylistType = PlaylistType.Ranklist;
@@ -58,6 +60,7 @@ public class PlaylistDataWrapper(IServiceProvider sp,
                 vm.CreatorName = "QQ Music Official";
                 vm.CreatorAvatar = Brushes.SkyBlue;
                 vm.UpdateCurrentPlaying(ms.CurrentMusic?.MusicID);
+                vm.QuickAccessData = new DisplayEntity<RankListInfo>(info) { Cover=cover};
                 page.ViewModel = vm;
                 return page;
             }
@@ -74,16 +77,16 @@ public class PlaylistDataWrapper(IServiceProvider sp,
         if (page != null && hc != null && auth != null)
         {
             var data = await AlbumAPI.GetAlbumTracksByIdAync(hc, auth, AlbumId);
-            vm.Cover = new ImageBrush(await ImageCacheService.FetchData(data.Photo));
+            var cover = await ImageCacheService.FetchData(data.Photo);
+            vm.Cover = new ImageBrush(cover);
             vm.Description = data.Description ?? "";
             vm.ListName = data.Name;
             vm.InitMusicList(data.Musics!);
             vm.CreatorAvatar = new ImageBrush(await ImageCacheService.FetchData(data.Creator!.Photo));
             vm.CreatorName = data.Creator.Name;
             vm.PlaylistType = PlaylistType.Album;
-
             vm.UpdateCurrentPlaying(ms.CurrentMusic?.MusicID);
-
+            vm.QuickAccessData=new DisplayEntity<AlbumInfo>(data) { Cover =cover };
             page.ViewModel = vm;
             return page;
         }
@@ -106,7 +109,7 @@ public class PlaylistDataWrapper(IServiceProvider sp,
             vm.OnLoadMoreRequired = async (sender, index) => { 
             sender.AppendMusicList(await SingerAPI.GetSongsOfSingerAsync(hc,singerId,auth,index));
             };
-
+            vm.QuickAccessData = null;
             page.ViewModel = vm;
             return page;
         }
@@ -129,7 +132,7 @@ public class PlaylistDataWrapper(IServiceProvider sp,
             vm.OnLoadMoreRequired =async (sender, index) => {//index在内部自增
                 sender.AppendMusicList(await SearchAPI.SearchMusicAsync(hc, auth, keyword, index));
             };
-
+            vm.QuickAccessData = null;
             page.ViewModel = vm;
             return page;
         }
@@ -146,7 +149,8 @@ public class PlaylistDataWrapper(IServiceProvider sp,
                 :await NeteasePlaylistAPI.GetNeteasePlaylistByIdAsync(hc,user.GetNeteaseAuth(),info.Id);
             if (data != null)
             {
-                vm.Cover = new ImageBrush(await ImageCacheService.FetchData(data.Photo));
+                var cover = await ImageCacheService.FetchData(data.Photo);
+                vm.Cover = new ImageBrush(cover);
                 vm.Description = data.Description ?? "";
                 vm.ListName = data.Name;
                 vm.InitMusicList(data.Musics!);
@@ -155,7 +159,7 @@ public class PlaylistDataWrapper(IServiceProvider sp,
                 vm.PlaylistType = PlaylistType.Playlist;
                 vm.IsOwned = info.IsOwner;
                 vm.Dirid = info.DirId;
-
+                vm.QuickAccessData=new DisplayEntity<Playlist>(info) { Cover = cover };
                 vm.UpdateCurrentPlaying(ms.CurrentMusic?.MusicID);
             }
         }

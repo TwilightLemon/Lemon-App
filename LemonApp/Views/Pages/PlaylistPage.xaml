@@ -168,13 +168,29 @@
                     <ws:Button Padding="16,0"
                                Command="{Binding PlayAllCommand}"
                                Style="{StaticResource AccentButtonStyleForWs}">
-                        Play All
+                        <TextBlock>
+                            <Run BaselineAlignment="Center"
+                                 FontFamily="{StaticResource SegoeFluentIcon}"
+                                 FontSize="16"
+                                 Text="&#xe768;" />
+                            <Run Text=" Play All" />
+                        </TextBlock>
                     </ws:Button>
-                    <ws:Button Padding="16,0" Style="{StaticResource SimpleButtonStyleForWs}">
-                        Add to Favorite
+                    <ws:Button Width="36"
+                               Command="{x:Static component:PublicPopupMenuHolder.AddToQuickAccessCommand}"
+                               CommandParameter="{Binding QuickAccessData}"
+                               FontFamily="{StaticResource SegoeFluentIcon}"
+                               FontSize="14"
+                               Style="{StaticResource SimpleButtonStyleForWs}"
+                               ToolTip="Add to Quick Access">
+                        &#xe710;
                     </ws:Button>
-                    <ws:Button Padding="16,0" Style="{StaticResource SimpleButtonStyleForWs}">
-                        Share
+                    <ws:Button Width="36"
+                               FontFamily="{StaticResource SegoeFluentIcon}"
+                               FontSize="14"
+                               Style="{StaticResource SimpleButtonStyleForWs}"
+                               ToolTip="Share">
+                        &#xe72d;
                     </ws:Button>
                 </ws:WrapPanel>
             </Grid>
@@ -218,29 +234,40 @@
                         <ToggleButton x:Name="SelectModeTB"
                                       Padding="16,0"
                                       Click="SelectModeTB_Click"
+                                      FontFamily="{StaticResource SegoeFluentIcon}"
+                                      FontSize="12"
                                       IsChecked="{Binding ElementName=listBox, Path=SelectionMode, Converter={x:Static ws:EqualConverter.Instance}, ConverterParameter={x:Static SelectionMode.Multiple}, Mode=OneWay}"
                                       Style="{StaticResource AccentToggleButtonStyle}"
                                       ToolTip="Multiple Select">
-                            Select
+                            &#xe762;
                         </ToggleButton>
                         <ws:Button x:Name="AddToBtn"
                                    Padding="16,0"
                                    Click="AddToBtn_Click"
-                                   Style="{StaticResource SimpleButtonStyleForWs}">
-                            Add to
+                                   FontFamily="{StaticResource SegoeFluentIcon}"
+                                   FontSize="12"
+                                   Style="{StaticResource SimpleButtonStyleForWs}"
+                                   ToolTip="Add to playlist or diss">
+                            &#xe710;
                         </ws:Button>
                         <ws:Button x:Name="DeleteBtn"
                                    Padding="16,0"
                                    Click="DeleteBtn_Click"
+                                   FontFamily="{StaticResource SegoeFluentIcon}"
+                                   FontSize="12"
                                    Style="{StaticResource SimpleButtonStyleForWs}"
+                                   ToolTip="Delete"
                                    Visibility="{Binding IsOwned, Converter={x:Static ws:BooleanToVisibilityConverter.Instance}}">
-                            Delete
+                            &#xe74d;
                         </ws:Button>
                         <ws:Button x:Name="DownloadBtn"
                                    Padding="16,0"
                                    Click="DownloadBtn_Click"
-                                   Style="{StaticResource SimpleButtonStyleForWs}">
-                            Download
+                                   FontFamily="{StaticResource SegoeFluentIcon}"
+                                   FontSize="12"
+                                   Style="{StaticResource SimpleButtonStyleForWs}"
+                                   ToolTip="Download">
+                            &#xe896;
                         </ws:Button>
                     </ws:WrapPanel>
                 </Grid>

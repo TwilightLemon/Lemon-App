@@ -21,6 +21,7 @@
                            VerticalContentAlignment="Stretch"
                            Command="{Binding DataContext.SelectCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                            CommandParameter="{Binding}"
+                           ContextMenu="{StaticResource AddToQuickGotoMenu}"
                            Style="{StaticResource SimpleIconButtonStyleForWs}">
                     <i:Interaction.Behaviors>
                         <behavior:ButtonFloatBehavior />
