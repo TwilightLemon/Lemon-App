@@ -165,7 +165,7 @@ namespace LemonApp.Views.UserControls
                     IsTranslationAvailable = model.trans != null;
                     IsRomajiAvailable = model.romaji != null;
                     LrcHost.Load(model.lrc, model.trans, model.romaji, model.isPureLrc);
-                    ApplySettings();
+                    RefreshHostSettings();
                     OnLyricLoaded?.Invoke(model);
                 });
             }
