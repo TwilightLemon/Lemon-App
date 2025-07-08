@@ -343,8 +343,8 @@
                                            Margin="4"
                                            Padding="8,4"
                                            HorizontalAlignment="Left"
-                                           Command="{Binding DataContext.GotoAlbumPageCommand, RelativeSource={RelativeSource AncestorType=ws:ListBox}}"
-                                           CommandParameter="{Binding Album.Id}"
+                                           Command="{x:Static component:PublicPopupMenuHolder.GoToAlbumCommand}"
+                                           CommandParameter="{Binding Album}"
                                            Style="{StaticResource SimpleIconButtonStyleForWs}">
                                     <TextBlock Text="{Binding Album.Name}" />
                                 </ws:Button>

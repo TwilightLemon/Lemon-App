@@ -9,4 +9,5 @@ public class AlbumInfo
     public string? Description { set; get; }
     public string? PublishDate { get; set; }
     public List<Music>? Musics { get; set; } = null;
+    public Platform Platform { set; get; } = Platform.qq;
 }

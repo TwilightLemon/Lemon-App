@@ -207,7 +207,7 @@
                                         <ws:Button Padding="2,4"
                                                    HorizontalAlignment="Left"
                                                    Command="{x:Static component:PublicPopupMenuHolder.GoToAlbumCommand}"
-                                                   CommandParameter="{Binding Album.Id}"
+                                                   CommandParameter="{Binding Album}"
                                                    Foreground="{DynamicResource HintForeColor}"
                                                    Style="{StaticResource SimpleIconButtonStyleForWs}">
                                             <TextBlock Text="{Binding Album.Name}" />

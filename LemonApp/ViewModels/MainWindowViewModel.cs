@@ -875,12 +875,6 @@ public partial class MainWindowViewModel : ObservableObject
     }
 
     //Commands for Current Playing in right part of Music Control
-
-    [RelayCommand]
-    private void GotoAlbumPage(string albumId)
-    {
-        MainNavigationService_OnNavigatingRequsted(PageType.AlbumPage, albumId);
-    }
     [RelayCommand]
     private void DownloadMusic()
     {

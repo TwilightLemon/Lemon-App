@@ -122,11 +122,7 @@ public partial class PlaylistPageViewModel(
         }
     }
 
-    [RelayCommand]
-    private void GotoAlbumPage(string albumId)
-    {
-        navigationService.RequstNavigation(PageType.AlbumPage, albumId);
-    }
+    /*Go to album command has been replaced to global static call*/
 
     private bool _hasAddToPlaylist = false;
     [RelayCommand]

@@ -1319,8 +1319,8 @@
                                     <ws:Button Padding="12,8"
                                                Background="Transparent"
                                                BorderThickness="0"
-                                               Command="{Binding GotoAlbumPageCommand}"
-                                               CommandParameter="{Binding CurrentPlaying.Album.Id}"
+                                               Command="{x:Static components:PublicPopupMenuHolder.GoToAlbumCommand}"
+                                               CommandParameter="{Binding CurrentPlaying.Album}"
                                                Style="{StaticResource SimpleButtonStyleForWs}">
                                         View Album
                                     </ws:Button>

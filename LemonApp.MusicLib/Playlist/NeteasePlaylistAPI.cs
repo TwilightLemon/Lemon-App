@@ -72,7 +72,8 @@ public static class NeteasePlaylistAPI
                     singers.Add(new Profile()
                     {
                         Name = a["name"].ToString(),
-                        Mid = a["id"].ToString()
+                        Mid = a["id"].ToString(),
+                        Platform = Platform.wyy
                     });
                 }
                 dtsinger = dtsinger[..^1];
@@ -98,7 +99,8 @@ public static class NeteasePlaylistAPI
                     {
                         Id = pl_t_i["al"]["id"].ToString(),
                         Name = pl_t_i["al"]["name"].ToString(),
-                        Photo = pl_t_i["al"]["picUrl"].ToString()
+                        Photo = pl_t_i["al"]["picUrl"].ToString(),
+                        Platform= Platform.wyy
                     },
                     Mvmid = null,
                     MusicID = pl_t_i["id"].ToString()

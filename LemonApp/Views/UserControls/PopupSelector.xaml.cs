@@ -1,16 +1,15 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LemonApp.MusicLib.Abstraction.Entities;
-using LemonApp.MusicLib.Playlist;
+using LemonApp.MusicLib.Search;
 using LemonApp.Services;
-using LemonApp.Views.Windows;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Windows.Navigation;
 
 namespace LemonApp.Views.UserControls
 {
@@ -31,9 +30,26 @@ namespace LemonApp.Views.UserControls
         private readonly MainNavigationService navigationService;
 
         [RelayCommand]
-        private void GoToAlbumPage(string id)
+        private void GoToAlbumPage(AlbumInfo info)
         {
-            navigationService.RequstNavigation(PageType.AlbumPage, id);
+            if (info.Platform == Platform.wyy)
+            {
+                async Task search()
+                {
+                    var data = await SearchHintAPI.GetSearchHintAsync(info.Name, App.Services.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag));
+                    if (data?.Hints.FirstOrDefault(item => item.Type == SearchHint.HintType.Album) is { } hint)
+                    {
+                        navigationService.RequstNavigation(PageType.AlbumPage, hint.Id);
+                    }
+                    else
+                    {
+                        navigationService.RequstNavigation(PageType.Notification, "Failed to redirect this album");
+                    }
+                }
+                _ = search();
+            }
+            else if (info.Platform == Platform.qq)
+                navigationService.RequstNavigation(PageType.AlbumPage, info.Id);
         }
 
         [RelayCommand]
@@ -63,10 +79,31 @@ namespace LemonApp.Views.UserControls
             IsShowDissSelector = false;
         }
 
-
         private void GotoArtistPage(Profile artist)
         {
-            navigationService.RequstNavigation(PageType.ArtistPage, artist);
+            if (artist.Platform == Platform.wyy)
+            {
+                //search artist 
+                async Task search()
+                {
+                    var data = await SearchHintAPI.GetSearchHintAsync(artist.Name, App.Services.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag));
+                    if (data?.Hints.FirstOrDefault(item => item.Type == SearchHint.HintType.Singer) is { } hint)
+                    {
+                        navigationService.RequstNavigation(PageType.ArtistPage, new Profile()
+                        {
+                            Mid = hint.Id,
+                            Name = hint.Content
+                        });
+                    }
+                    else
+                    {
+                        navigationService.RequstNavigation(PageType.Notification, "Failed to redirect this album");
+                    }
+                }
+                _ = search();
+            }
+            else if (artist.Platform == Platform.qq)
+                navigationService.RequstNavigation(PageType.ArtistPage, artist);
         }
 
         [RelayCommand]

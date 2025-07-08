@@ -20,6 +20,7 @@ public class Profile
     public string Name { set; get; } = string.Empty;
     public string Photo { set; get; } = string.Empty;
     public string Mid { set; get; } = string.Empty;
+    public Platform Platform { set; get; } = Platform.qq; //by default, qq
 }
 public enum MusicQuality
 {

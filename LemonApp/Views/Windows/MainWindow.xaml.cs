@@ -102,7 +102,10 @@ namespace LemonApp.Views.Windows
         /// <param name="page"></param>
         private void Vm_RequireNavigateToPage(Page page)
         {
-            MainContentFrame.Navigate(page);
+            Dispatcher.Invoke(() =>
+            {
+                MainContentFrame.Navigate(page);
+            });
         }
         /// <summary>
         /// Loaded->Load First Page
