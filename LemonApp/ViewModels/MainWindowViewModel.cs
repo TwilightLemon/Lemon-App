@@ -2,7 +2,6 @@
 using CommunityToolkit.Mvvm.Input;
 using LemonApp.Common.Configs;
 using LemonApp.Common.Funcs;
-using LemonApp.Common.UIBases;
 using LemonApp.Components;
 using LemonApp.MusicLib.Abstraction.Entities;
 using LemonApp.MusicLib.Abstraction.UserAuth;
@@ -18,7 +17,6 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -27,8 +25,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using Task = System.Threading.Tasks.Task;
 
 //TODO: 将功能再细分为Component 简化ViewModel
 namespace LemonApp.ViewModels;
@@ -832,20 +828,24 @@ public partial class MainWindowViewModel : ObservableObject
         if (cover != null)
         {
             CurrentPlayingCover = new ImageBrush(cover);
-            var bitmap = cover.ToBitmap();
-            //Update TaskBar Info
-            _windowBasicComponent.UpdateThumbInfo(bitmap);
-
-            bool isDarkMode = _uiResourceService.GetIsDarkMode();
-            if (_uiResourceService.UsingMusicTheme)
+           var mica= await Task.Run(() =>
             {
-                var color = bitmap.GetMajorColor().AdjustColor(isDarkMode);
-                _uiResourceService.SettingsMgr.Data.AccentColor =color;
-                _uiResourceService.UpdateAccentColor();
-            }
-            //process img
-            bitmap.ApplyMicaEffect(isDarkMode);
-            LyricPageBackgroundSource = bitmap.ToBitmapImage();
+                var bitmap = cover.ToBitmap();
+                //Update TaskBar Info
+                _windowBasicComponent.UpdateThumbInfo(bitmap);
+
+                bool isDarkMode = _uiResourceService.GetIsDarkMode();
+                if (_uiResourceService.UsingMusicTheme)
+                {
+                    var color = bitmap.GetMajorColor().AdjustColor(isDarkMode);
+                    _uiResourceService.SettingsMgr.Data.AccentColor = color;
+                    _uiResourceService.UpdateAccentColor();
+                }
+                //process img
+                bitmap.ApplyMicaEffect(isDarkMode);
+                return bitmap.ToBitmapImage();
+            });
+            LyricPageBackgroundSource = mica;
         }
         else
         {

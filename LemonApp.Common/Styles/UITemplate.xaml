@@ -141,7 +141,7 @@
     </Style>
     <!--#endregion-->
     <!--#region ContextMenu-->
-    
+
     <!--#endregion-->
 
     <Style x:Key="IconToggleButton" TargetType="ToggleButton">

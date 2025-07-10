@@ -6,7 +6,6 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Runtime.Caching;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
@@ -18,13 +17,15 @@ namespace LemonApp.Services;
 public class ImageCacheService
 {
     private readonly MemoryCache _cache = new MemoryCache("ImageCache");
-    private CacheItemPolicy _cachePolicy = new CacheItemPolicy
+    private readonly CacheItemPolicy _cachePolicy = new CacheItemPolicy
     {
         SlidingExpiration = TimeSpan.FromMinutes(10),
+#if DEBUG
         RemovedCallback = new CacheEntryRemovedCallback((e) =>
         {
             Debug.WriteLine($"Cache item '{e.CacheItem.Key}' was removed because {e.RemovedReason}");
         })
+#endif
     };
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly HttpClient _client;
@@ -44,23 +45,30 @@ public class ImageCacheService
     {
         if (string.IsNullOrEmpty(url)) return null;
 
-        var img = GetFromMem(url);
-        if (img is { })
+        //memory cache
+        if (_cache.Get(url) is BitmapImage img) return img;
+
+        //file cache
+        var filePath = GetLocalFilePath(url);
+        if (File.Exists(filePath))
         {
-            return img;
+            var bitmap = LoadFromFile(filePath);
+            _cache.Set(url, bitmap, _cachePolicy);
+            return bitmap;
         }
-        img = await GetFromFile(url);
-        if (img != null)
+
+        //network fetch
+        try
         {
-            _cache.Add(url, img, _cachePolicy);
-            return img;
+            if (await _client.GetByteArrayAsync(url) is { Length: > 0 } bytes)
+            {
+                _ = File.WriteAllBytesAsync(filePath, bytes);
+                var bitmap = LoadFromBytes(bytes);
+                _cache.Set(url, bitmap, _cachePolicy);
+                return bitmap;
+            }
         }
-        img = await GetFromWeb(url);
-        if (img != null)
-        {
-            _cache.Add(url, img, _cachePolicy);
-            return img;
-        }
+        catch { }
         return null;
     }
     private static string GetLocalFilePath(string url)
@@ -68,42 +76,24 @@ public class ImageCacheService
         var fileName = TextHelper.MD5Hash(url) + ".jpg";
         return Path.Combine(CacheManager.GetCachePath(CacheManager.CacheType.Image), fileName);
     }
-    private BitmapImage? GetFromMem(string url)
+    private static BitmapImage LoadFromFile(string filePath)
     {
-        if (_cache.Get(url) is BitmapImage img)
-        {
-            Debug.WriteLine("img loaded from cache.");
-            return img;
-        }
-        return null;
+        using var fs = File.OpenRead(filePath);
+        return LoadFromStream(fs);
     }
-    private async Task<BitmapImage?> GetFromWeb(string url)
+    private static BitmapImage LoadFromBytes(byte[] bytes)
     {
-        var res = await _client.GetAsync(url);
-        res.EnsureSuccessStatusCode();
-        using var stream = await res.Content.ReadAsStreamAsync();
-
-        string file = GetLocalFilePath(url);
-        using var fs = File.Create(file);
-        await stream.CopyToAsync(fs);
-        await fs.DisposeAsync();
-        Debug.WriteLine("img loaded from web.");
-        return await GetFromFile(url);
+        using var ms=new MemoryStream(bytes);
+        return LoadFromStream(ms);
     }
-    private static Task<BitmapImage?> GetFromFile(string url)
+    private static BitmapImage LoadFromStream(Stream stream)
     {
-        return Task.Run(() =>
-        {
-            string file = GetLocalFilePath(url);
-            if (!Path.Exists(file)) return null;
-
-            var img = new BitmapImage();
-            img.BeginInit();
-            img.CacheOption = BitmapCacheOption.OnLoad;
-            img.UriSource = new Uri(file);
-            img.EndInit();
-            img.Freeze();
-            return img;
-        });
+        var img = new BitmapImage();
+        img.BeginInit();
+        img.CacheOption = BitmapCacheOption.OnLoad;
+        img.StreamSource = stream;
+        img.EndInit();
+        img.Freeze(); //cross-thread safety
+        return img;
     }
 }

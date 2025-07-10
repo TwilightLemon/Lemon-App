@@ -408,27 +408,27 @@ public static class ImageHelper
             return p + (q - p) * (2.0f / 3.0f - t) * 6.0f;
         return p;
     }
-    public static BitmapImage ToBitmapImage(this Bitmap Bmp)
+    public static BitmapImage ToBitmapImage(this Bitmap bitmap)
     {
-        BitmapImage BmpImage = new();
-        using (MemoryStream lmemStream = new())
-        {
-            Bmp.Save(lmemStream, ImageFormat.Png);
-            BmpImage.BeginInit();
-            BmpImage.StreamSource = new MemoryStream(lmemStream.ToArray());
-            BmpImage.EndInit();
-        }
-        return BmpImage;
+        using var memory = new MemoryStream();
+        bitmap.Save(memory, ImageFormat.Png);
+        memory.Position = 0;
+
+        var bitmapImage = new BitmapImage();
+        bitmapImage.BeginInit();
+        bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+        bitmapImage.StreamSource = memory;
+        bitmapImage.EndInit();
+        bitmapImage.Freeze();
+        return bitmapImage;
     }
 
     public static Bitmap ToBitmap(this BitmapImage img){
-        using (MemoryStream outStream = new())
-        {
-            BitmapEncoder enc = new PngBitmapEncoder();
-            enc.Frames.Add(BitmapFrame.Create(img));
-            enc.Save(outStream);
-            return new Bitmap(outStream);
-        }
+        using MemoryStream outStream = new();
+        BitmapEncoder enc = new PngBitmapEncoder();
+        enc.Frames.Add(BitmapFrame.Create(img));
+        enc.Save(outStream);
+        return new Bitmap(outStream);
     }
 
     public static void AddMask(this Bitmap bitmap,bool darkmode)
