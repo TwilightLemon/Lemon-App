@@ -394,11 +394,11 @@ public partial class MainWindowViewModel : ObservableObject
     public event Action<string>? SyncCurrentPlayingWithPlayListPage;
     private void MediaPlayerService_OnLoaded(Music m)
     {
-        App.Current.Dispatcher.Invoke(async () =>
+        App.Current.Dispatcher.Invoke(() =>
         {
             CurrentPlaying = m;
             SyncCurrentPlayingWithPlayListPage?.Invoke(m.MusicID);
-            await LyricView.LoadFromMusic(m);
+            _= LyricView.LoadFromMusic(m);
         });
     }
     private void MediaPlayerService_OnQualityChanged()

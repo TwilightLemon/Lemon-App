@@ -1,7 +1,5 @@
 ﻿using System.Runtime.InteropServices;
 using System.Windows;
-using System.Windows.Interop;
-using static LemonApp.Common.WinAPI.WindowLongAPI;
 namespace LemonApp.Common.WinAPI;
 public static class DesktopWindowHelper
 {
@@ -23,12 +21,7 @@ public static class DesktopWindowHelper
 
     public static bool EmbedWindowToDesktop(Window window)
     {
-        IntPtr hwnd = new WindowInteropHelper(window).Handle;
-       int exStyle= (int)WS.WS_POPUP|(int)WS.WS_VISIBLE;
-        SetWindowLong(hwnd, (int)GetWindowLongFields.GWL_STYLE, (IntPtr)exStyle);
         WindowLongAPI.SetToolWindow(window);
-        SetWindowPos(hwnd, HWND_BOTTOM, 0, 0, (int)window.ActualWidth, (int)window.ActualHeight,
-            SWP_NOACTIVATE | SWP_SHOWWINDOW);
         return true;
     }
 }

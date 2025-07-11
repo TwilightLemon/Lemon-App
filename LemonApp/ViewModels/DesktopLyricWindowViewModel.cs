@@ -71,9 +71,13 @@ public partial class DesktopLyricWindowViewModel:ObservableObject
 
     private void Timer_Elapsed(object? sender, ElapsedEventArgs e)
     {
-        LyricControl.Dispatcher.Invoke(() => {
-            LyricControl.UpdateTime((int)_mediaPlayerService.Player.Position.TotalMilliseconds);
-        });
+        if (LyricControl.IsVisible)
+        {
+            LyricControl.Dispatcher.Invoke(() =>
+            {
+                LyricControl.UpdateTime((int)_mediaPlayerService.Player.Position.TotalMilliseconds);
+            });
+        }
     }
 
     private Timer? _timer;

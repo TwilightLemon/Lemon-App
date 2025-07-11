@@ -80,7 +80,8 @@ public class FadeBorderBehavior:Behavior<Border>
         {
             From = 0,
             To=1,
-            Duration = Duration
+            Duration = Duration,
+            EasingFunction=new CubicEase()
         };
         ani.Completed += delegate {
             AssociatedObject.Child = null;
@@ -109,7 +110,8 @@ public class FadeBorderBehavior:Behavior<Border>
         {
             From = 1,
             To = 0,
-            Duration = Duration
+            Duration = Duration,
+            EasingFunction = new CubicEase()
         };
         ani.Completed += delegate {
             AssociatedObject.Child = null;

@@ -37,6 +37,7 @@ public class UIResourceService(
     public bool GetIsDarkMode() { 
         return SettingsMgr.Data?.GetIsDarkMode() == true;
     }
+    private bool _appCurrentDarkMode= false;
 
     private void SettingsMgr_OnDataChanged()
     {
@@ -50,8 +51,10 @@ public class UIResourceService(
     public void UpdateColorMode()
     {
         bool IsDarkMode = GetIsDarkMode();
-        BlurWindowBehavior.SetDarkMode(IsDarkMode);
+        if(IsDarkMode==_appCurrentDarkMode) return;
+        _appCurrentDarkMode = IsDarkMode;
 
+        BlurWindowBehavior.SetDarkMode(IsDarkMode);
         string uri = $"pack://application:,,,/LemonApp.Common;component/Styles/ThemeColor_{IsDarkMode switch
         {
             true => "Dark",

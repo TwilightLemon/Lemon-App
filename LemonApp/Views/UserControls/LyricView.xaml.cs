@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
+using System.Windows.Media.Effects;
 
 //TODO: 提供效果选择
 namespace LemonApp.Views.UserControls
@@ -155,19 +157,46 @@ namespace LemonApp.Views.UserControls
         private string? _handlingMusic = null;
         public  async Task LoadFromMusic(Music m)
         {
-            LrcHost.Reset();
-            _handlingMusic = m.MusicID;
-            if(await LoadLyricForMusic(m) is { } dt &&_handlingMusic == m.MusicID)
+            async Task beginInit()
             {
-               var model= LoadLrc(dt);
-                if(model.lrc == null) return;
-                Dispatcher.Invoke(() => {
-                    IsTranslationAvailable = model.trans != null;
-                    IsRomajiAvailable = model.romaji != null;
-                    LrcHost.Load(model.lrc, model.trans, model.romaji, model.isPureLrc);
-                    RefreshHostSettings();
-                    OnLyricLoaded?.Invoke(model);
-                });
+                Dispatcher.Invoke(LrcHost.Reset);
+                _handlingMusic = m.MusicID;
+                if (await LoadLyricForMusic(m) is { } dt && _handlingMusic == m.MusicID)
+                {
+                    var model = LoadLrc(dt);
+                    if (model.lrc == null) return;
+                    Dispatcher.Invoke(() =>
+                    {
+                        IsTranslationAvailable = model.trans != null;
+                        IsRomajiAvailable = model.romaji != null;
+                        LrcHost.Load(model.lrc, model.trans, model.romaji, model.isPureLrc);
+                        RefreshHostSettings();
+                        OnLyricLoaded?.Invoke(model);
+
+                        Dispatcher.Invoke(async () =>
+                        {
+                            await Task.Delay(100);
+                            //fade-out animation after loaded
+                            var blurEffect = new BlurEffect() { Radius = 20 };
+                            LrcHost.Effect = blurEffect;
+                            var aniBlur = new DoubleAnimation(20, 0, TimeSpan.FromMilliseconds(300));
+                            var aniOpac = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(300));
+                            blurEffect.BeginAnimation(BlurEffect.RadiusProperty, aniBlur);
+                            LrcHost.BeginAnimation(OpacityProperty, aniOpac);
+                        }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+                    });
+                }
+            }
+
+            {
+                //a fade-out animation before load lrc.
+                var blurEffect = new BlurEffect() { Radius = 0 };
+                LrcHost.Effect = blurEffect;
+                var aniBlur = new DoubleAnimation(0, 20, TimeSpan.FromMilliseconds(300));
+                var aniOpac = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(300));
+                aniOpac.Completed += delegate { _ = beginInit(); };
+                blurEffect.BeginAnimation(BlurEffect.RadiusProperty, aniBlur);
+                LrcHost.BeginAnimation(OpacityProperty, aniOpac);
             }
         }
         public static async Task<LyricData?> LoadLyricForMusic(Music m)

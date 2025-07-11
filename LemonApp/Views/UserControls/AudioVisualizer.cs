@@ -46,7 +46,7 @@ public class AudioVisualizer : FrameworkElement
         Stop();
 
         _isRunning = true;
-        _spectrumData = _dataPool.Rent(1024);
+        _spectrumData = _dataPool.Rent(1024);//BASS_FFT_2048 requires 1024 floats
 
         _displayValues = new float[StripCount];
 

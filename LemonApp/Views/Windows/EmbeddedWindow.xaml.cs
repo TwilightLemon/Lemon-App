@@ -37,6 +37,12 @@ namespace LemonApp.Views.Windows
                 _timer.Dispose();
             };
             Loaded += TerminalStyleWindow_Loaded;
+            SourceInitialized += EmbeddedWindow_SourceInitialized;
+        }
+
+        private void EmbeddedWindow_SourceInitialized(object? sender, System.EventArgs e)
+        {
+            DesktopWindowHelper.EmbedWindowToDesktop(this);
         }
 
         private void MediaPlayerService_OnLoaded(MusicLib.Abstraction.Entities.Music obj)
@@ -66,7 +72,6 @@ namespace LemonApp.Views.Windows
 
         private void TerminalStyleWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            DesktopWindowHelper.EmbedWindowToDesktop(this);
             //将窗口居中靠下
             var sc = SystemParameters.WorkArea;
             Width = sc.Width * 2 / 3;

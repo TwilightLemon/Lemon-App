@@ -426,7 +426,7 @@ public static class ImageHelper
     public static Bitmap ToBitmap(this BitmapImage img){
         using MemoryStream outStream = new();
         BitmapEncoder enc = new PngBitmapEncoder();
-        enc.Frames.Add(BitmapFrame.Create(img));
+        enc.Frames.Add(BitmapFrame.Create(img,null,null,null));
         enc.Save(outStream);
         return new Bitmap(outStream);
     }
