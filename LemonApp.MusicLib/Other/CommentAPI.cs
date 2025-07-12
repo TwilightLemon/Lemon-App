@@ -52,7 +52,7 @@ public static class CommentAPI
         var isLiked = a["IsPraised"].ToString() == "1";
         return new(a["Nick"].ToString(),
                    a["Avatar"].ToString(),
-                   TextHelper.Exem(a["Content"].ToString().Replace(@"\n", "\n")),
+                   TextHelper.Exem(a["Content"].ToString().Replace(@"\n", "\n").Replace("[图片]", "")),
                    a["PraiseNum"].ToString(),
                    time,
                    a["CmId"].ToString(),

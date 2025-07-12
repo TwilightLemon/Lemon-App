@@ -51,7 +51,8 @@
                                     Height="32"
                                     HorizontalAlignment="Right"
                                     VerticalAlignment="Bottom"
-                                    CornerRadius="16">
+                                    CornerRadius="16"
+                                    RenderOptions.BitmapScalingMode="HighQuality">
                                 <Border.Background>
                                     <!--  no cache  -->
                                     <ImageBrush ImageSource="{Binding UserAvatarUrl}" />
@@ -82,7 +83,8 @@
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Center"
                                 Background="{Binding SongCover}"
-                                CornerRadius="12" />
+                                CornerRadius="12"
+                                RenderOptions.BitmapScalingMode="HighQuality" />
                         <TextBlock Margin="128,0,0,0"
                                    HorizontalAlignment="Left"
                                    VerticalAlignment="Center"
@@ -135,7 +137,8 @@
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
                             Background="{Binding SongCover}"
-                            CornerRadius="12" />
+                            CornerRadius="12"
+                            RenderOptions.BitmapScalingMode="HighQuality" />
                     <TextBlock Margin="138,0,0,0"
                                HorizontalAlignment="Left"
                                VerticalAlignment="Center"

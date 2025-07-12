@@ -37,7 +37,7 @@ public class UIResourceService(
     public bool GetIsDarkMode() { 
         return SettingsMgr.Data?.GetIsDarkMode() == true;
     }
-    private bool _appCurrentDarkMode= false;
+    private bool _appCurrentDarkMode= true;
 
     private void SettingsMgr_OnDataChanged()
     {

@@ -89,7 +89,7 @@ namespace LemonApp.ViewModels
         {
             if(PublisherContent == null)
             {
-                string xaml = await _httpClient.GetStringAsync("https://gitee.com/TwilightLemon/LemonAppDynamics/raw/master/New_AboutPage.En-US.xaml");
+                string xaml = await _httpClient.GetStringAsync("https://gitee.com/TwilightLemon/lemon-app-updates/raw/master/AboutPage.xaml");
                 PublisherContent = (UIElement)XamlReader.Parse(xaml);
             }
         }
