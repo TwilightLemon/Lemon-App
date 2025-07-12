@@ -58,6 +58,16 @@ public class MainNavigationService
         OnNavigationRequested?.Invoke(type,null);
     }
 
-    public void BeginLoadingAni()=>App.Current.Dispatcher.Invoke(LoadingAniRequested);
-    public void CancelLoadingAni()=>App.Current.Dispatcher.Invoke(LoadingAniCancelled);
+    public class LoadingContext:IDisposable
+    {
+        public LoadingContext(MainNavigationService nav)
+        {
+            _nav = nav;
+            App.Current.Dispatcher.Invoke(nav.LoadingAniRequested);
+        }
+        private readonly MainNavigationService _nav;
+        public void Dispose() => App.Current.Dispatcher.Invoke(_nav.LoadingAniCancelled);
+    }
+    public LoadingContext BeginLoading() => new(this);
+
 }

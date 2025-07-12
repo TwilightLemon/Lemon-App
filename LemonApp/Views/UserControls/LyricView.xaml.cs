@@ -155,7 +155,7 @@ namespace LemonApp.Views.UserControls
         public event Action<(LyricsData? lrc, LyricsData? trans, LyricsData? romaji, bool isPureLrc)> OnLyricLoaded;
 
         private string? _handlingMusic = null;
-        public  async Task LoadFromMusic(Music m)
+        public void LoadFromMusic(Music m)
         {
             async Task beginInit()
             {

@@ -90,11 +90,10 @@ public partial class PlaylistPageViewModel(
     private int _pageIndex = 0;
     public async void LoadMore()
     {
-        navigationService.BeginLoadingAni();
+        using var _=navigationService.BeginLoading();
         _pageIndex++;
         if (OnLoadMoreRequired?.Invoke(this, _pageIndex) is Task { } task)
             await task;
-        navigationService.CancelLoadingAni();
     }
 
     public void DownloadMusic(IList<Music> music)

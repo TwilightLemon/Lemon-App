@@ -143,7 +143,13 @@
     <!--#region ContextMenu-->
 
     <!--#endregion-->
-
+    <Style x:Key="SelectiveOnlyTextBoxStyle" TargetType="TextBox">
+        <Setter Property="Foreground" Value="{DynamicResource ForeColor}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="IsReadOnly" Value="True" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
     <Style x:Key="IconToggleButton" TargetType="ToggleButton">
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Padding" Value="7" />

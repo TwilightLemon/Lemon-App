@@ -28,14 +28,13 @@ namespace LemonApp.Views.Pages
         public Func<AlbumItemViewModel,int,Task>? NextPage { get; set; }
         private async void AlbumListPage_Loaded(object sender, RoutedEventArgs e)
         {
-            nav.BeginLoadingAni();
+            using var _= nav.BeginLoading();
             if(DataProvider?.Invoke() is { } task)
             {
                 var data= await task;
                 viewer.ViewModel ??= App.Services.GetRequiredService<AlbumItemViewModel>();
                 viewer.ViewModel.SetAlbumItems(data);
             }
-            nav.CancelLoadingAni();
         }
         private int _pageIndex = 0;
         private async void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
@@ -45,12 +44,11 @@ namespace LemonApp.Views.Pages
                 if (e.VerticalOffset + e.ViewportHeight >= e.ExtentHeight)
                 {
                     _pageIndex++;
-                    nav.BeginLoadingAni();
-                    if(viewer.ViewModel is AlbumItemViewModel vm && NextPage?.Invoke(vm,_pageIndex) is { } task)
+                    using var _ = nav.BeginLoading();
+                    if (viewer.ViewModel is AlbumItemViewModel vm && NextPage?.Invoke(vm,_pageIndex) is { } task)
                     {
                         await task;
                     }
-                    nav.CancelLoadingAni();
                 }
             }
         }

@@ -22,9 +22,8 @@ namespace LemonApp.Views.Pages
 
         private async void RanklistPage_Loaded(object sender, RoutedEventArgs e)
         {
-            _mainNavigationService.BeginLoadingAni();
+           using var _= _mainNavigationService.BeginLoading();
             await vm.LoadData();
-            _mainNavigationService.CancelLoadingAni();
         }
     }
 }

@@ -398,7 +398,7 @@ public partial class MainWindowViewModel : ObservableObject
         {
             CurrentPlaying = m;
             SyncCurrentPlayingWithPlayListPage?.Invoke(m.MusicID);
-            _= LyricView.LoadFromMusic(m);
+            LyricView.LoadFromMusic(m);
         });
     }
     private void MediaPlayerService_OnQualityChanged()
@@ -590,6 +590,7 @@ public partial class MainWindowViewModel : ObservableObject
     private void NavigateToCommentPage(Music m)
     {
         var view=_serviceProvider.GetRequiredService<CommentPage>();
+        _ = view.LoadCommentAsync(m);
         RequestNavigateToPage.Invoke(view);
     }
     private async void NavigateToSingerPage(string mid)

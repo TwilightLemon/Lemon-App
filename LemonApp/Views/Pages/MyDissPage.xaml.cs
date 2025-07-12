@@ -34,7 +34,7 @@ namespace LemonApp.Views.Pages
 
         private async void MyDissPage_Loaded(object sender, RoutedEventArgs e)
         {
-            nav.BeginLoadingAni();
+            using var _ = nav.BeginLoading();
             await user.UpdateAuthAndNotify(user.GetAuth());
             //load my diss
             MyDissList.ViewModel ??= sp.GetRequiredService<PlaylistItemViewModel>();
@@ -50,7 +50,6 @@ namespace LemonApp.Views.Pages
                 NeteaseDissList.ViewModel.SetPlaylistItems(await NeteasePlaylistAPI.GetNeteaseUserPlaylistAsync(
                     new HttpClient(),netease));
             }
-            nav.CancelLoadingAni();
         }
     }
 }

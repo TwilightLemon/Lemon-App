@@ -6,3 +6,6 @@ public record class Comment(string UserName,
                             string Time,
                             string Id,
                             bool IsLiked);
+public record class CommentPageData(List<Comment> PresentComments,
+                            List<Comment> HotComments,
+                            List<Comment> NewComments);

@@ -1,18 +1,196 @@
 ﻿<Page x:Class="LemonApp.Views.Pages.CommentPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
+      xmlns:beh="clr-namespace:LemonApp.Common.Behaviors;assembly=LemonApp.Common"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
       xmlns:local="clr-namespace:LemonApp.Views.Pages"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:ws="https://schemas.elecho.dev/wpfsuite"
       Title="CommentPage"
       d:DesignHeight="450"
       d:DesignWidth="800"
       Foreground="{DynamicResource ForeColor}"
       mc:Ignorable="d">
+    <Page.Resources>
+        <Style TargetType="ItemsControl">
+            <Setter Property="Margin" Value="24,0" />
+        </Style>
+        <DataTemplate x:Key="CommentItemDataTemplate">
+            <ws:Button Padding="8"
+                       Click="Button_Click"
+                       CornerRadius="12"
+                       Style="{StaticResource SimpleButtonStyleForWs}">
+                <i:Interaction.Behaviors>
+                    <beh:ButtonFloatBehavior />
+                </i:Interaction.Behaviors>
+                <StackPanel>
+                    <TextBlock Margin="10,8"
+                               FontSize="16"
+                               Text="{Binding Content}"
+                               TextWrapping="Wrap" />
+                    <ws:FlexPanel MainAlignment="SpaceBetween" MainSpacing="12">
+                        <TextBlock Margin="10,0,0,0"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center"
+                                   Foreground="{DynamicResource HintForeColor}">
+                            <Run Text="{Binding Time}" />
+                            <Run Text="{Binding LikeCount, StringFormat='  {0}'}" />
+                            <Run BaselineAlignment="Center"
+                                 FontFamily="{StaticResource SegoeFluentIcon}"
+                                 FontSize="10"
+                                 Text="&#xEB52;" />
+                        </TextBlock>
+                        <ws:WrapPanel HorizontalSpacing="12">
+                            <TextBlock HorizontalAlignment="Right"
+                                       VerticalAlignment="Center"
+                                       Foreground="{DynamicResource HintForeColor}"
+                                       Text="{Binding UserName}" />
+                            <Border Width="32"
+                                    Height="32"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Bottom"
+                                    CornerRadius="16">
+                                <Border.Background>
+                                    <!--  no cache  -->
+                                    <ImageBrush ImageSource="{Binding UserAvatarUrl}" />
+                                </Border.Background>
+                            </Border>
+                        </ws:WrapPanel>
+                    </ws:FlexPanel>
+                </StackPanel>
+            </ws:Button>
+        </DataTemplate>
+        <ItemsPanelTemplate x:Key="CommentContainer">
+            <ws:WrapPanel HorizontalSpacing="12" VerticalSpacing="12" />
+        </ItemsPanelTemplate>
+    </Page.Resources>
 
-    <Grid>
-        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">
-            Comment Page
-        </TextBlock>
-    </Grid>
+    <ws:BoxPanel>
+        <base:ScrollViewer Style="{StaticResource SimpleVerticalScrollViewerStyle}">
+            <ws:StackPanel Spacing="12">
+                <Border Margin="10,10,10,0"
+                        Background="{DynamicResource TabMaskColor}"
+                        BorderBrush="{DynamicResource BorderColor}"
+                        BorderThickness="1"
+                        CornerRadius="12">
+                    <Grid>
+                        <Border Width="100"
+                                Height="100"
+                                Margin="10"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Background="{Binding SongCover}"
+                                CornerRadius="12" />
+                        <TextBlock Margin="128,0,0,0"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center"
+                                   FontSize="24"
+                                   FontWeight="Bold">
+                            <Run Text="Hot Comments" />
+                            <LineBreak />
+                            <Run Foreground="{DynamicResource HintForeColor}" Text="{Binding SongName}" />
+                        </TextBlock>
+
+                        <ws:Button Margin="0,0,24,0"
+                                   Padding="12,8"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center"
+                                   Command="{Binding SyncWithCurrentCommand}"
+                                   Style="{StaticResource SimpleButtonStyleForWs}"
+                                   ToolTip="Sync with current playing music">
+                            <TextBlock><Run BaselineAlignment="Center"
+                                     FontFamily="{StaticResource SegoeFluentIcon}"
+                                     Text="&#xE895;" /><Run Text=" " /><Run Text=" Sync" /></TextBlock>
+                        </ws:Button>
+                    </Grid>
+                </Border>
+                <ItemsControl ItemTemplate="{StaticResource CommentItemDataTemplate}"
+                              ItemsPanel="{StaticResource CommentContainer}"
+                              ItemsSource="{Binding Data.HotComments}" />
+                <ItemsControl ItemTemplate="{StaticResource CommentItemDataTemplate}"
+                              ItemsPanel="{StaticResource CommentContainer}"
+                              ItemsSource="{Binding Data.PresentComments}" />
+                <ItemsControl ItemTemplate="{StaticResource CommentItemDataTemplate}"
+                              ItemsPanel="{StaticResource CommentContainer}"
+                              ItemsSource="{Binding Data.NewComments}" />
+            </ws:StackPanel>
+        </base:ScrollViewer>
+        <base:FluentPopup Background="{DynamicResource PopupWndBgColor}"
+                          ExtPopupAnimation="SlideUp"
+                          IsOpen="{Binding IsCommentSelected}"
+                          Placement="Center"
+                          StaysOpen="False">
+            <Grid Width="580">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="130" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="60" />
+                </Grid.RowDefinitions>
+                <Grid VerticalAlignment="Center">
+                    <Border Width="90"
+                            Height="90"
+                            Margin="24,0,0,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Background="{Binding SongCover}"
+                            CornerRadius="12" />
+                    <TextBlock Margin="138,0,0,0"
+                               HorizontalAlignment="Left"
+                               VerticalAlignment="Center"
+                               FontSize="24"
+                               FontWeight="Bold">
+                        <Run Text="{Binding MusicEntity.MusicName}" />
+                        <LineBreak />
+                        <Run Foreground="{DynamicResource HintForeColor}" Text="{Binding MusicEntity.SingerText}" />
+                    </TextBlock>
+                </Grid>
+                <TextBox Grid.Row="1"
+                         Margin="20,10"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         DataContext="{Binding SelectedComment}"
+                         FontFamily="{StaticResource LyricFont}"
+                         FontSize="32"
+                         Style="{StaticResource SelectiveOnlyTextBoxStyle}"
+                         Text="{Binding Content, StringFormat='⌈ {0} ⌋'}"
+                         TextWrapping="Wrap" />
+                <ws:FlexPanel Grid.Row="2"
+                              Margin="20,0,20,20"
+                              VerticalAlignment="Bottom"
+                              DataContext="{Binding SelectedComment}"
+                              MainAlignment="SpaceBetween"
+                              MainSpacing="12">
+                    <TextBlock Margin="10,0,0,0"
+                               HorizontalAlignment="Left"
+                               VerticalAlignment="Center"
+                               Foreground="{DynamicResource HintForeColor}">
+                        <Run Text="{Binding Time}" />
+                        <Run Text="{Binding LikeCount, StringFormat='  {0}'}" />
+                        <Run BaselineAlignment="Center"
+                             FontFamily="{StaticResource SegoeFluentIcon}"
+                             FontSize="10"
+                             Text="&#xEB52;" />
+                    </TextBlock>
+                    <ws:WrapPanel HorizontalSpacing="12">
+                        <TextBlock HorizontalAlignment="Right"
+                                   VerticalAlignment="Center"
+                                   Foreground="{DynamicResource HintForeColor}"
+                                   Text="{Binding UserName}" />
+                        <Border Width="32"
+                                Height="32"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom"
+                                CornerRadius="16">
+                            <Border.Background>
+                                <!--  no cache  -->
+                                <ImageBrush ImageSource="{Binding UserAvatarUrl}" />
+                            </Border.Background>
+                        </Border>
+                    </ws:WrapPanel>
+                </ws:FlexPanel>
+            </Grid>
+        </base:FluentPopup>
+    </ws:BoxPanel>
 </Page>

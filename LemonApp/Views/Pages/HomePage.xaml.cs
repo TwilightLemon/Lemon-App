@@ -34,7 +34,7 @@ namespace LemonApp.Views.Pages
         private async void HomePage_Loaded(object sender, RoutedEventArgs e)
         {
             if (RecommendPlaylist.ViewModel != null) return;
-            nav.BeginLoadingAni();
+            using var _ = nav.BeginLoading();
             var data = await HomeDataAPI.GetHomePageDataAsync(hcf.CreateClient(App.PublicClientFlag), user.GetAuth());
             if (data != null)
             {
@@ -62,7 +62,6 @@ namespace LemonApp.Views.Pages
             {
                 PersonalityView.Visibility = Visibility.Collapsed;
             }
-                nav.CancelLoadingAni();
         }
 
         private static string GetGreeting(string username)
