@@ -185,7 +185,9 @@
                                 Style="{StaticResource DisplayListBoxStyle}">
                         <ws:ListBox.ItemTemplate>
                             <DataTemplate>
-                                <Grid MinHeight="38">
+                                <Grid MinHeight="38"
+                                      base:RightClickCommand.Command="{x:Static component:PublicPopupMenuHolder.ShowMusicOptionsCommand}"
+                                      base:RightClickCommand.CommandParameter="{Binding}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="1.5*" />
                                         <ColumnDefinition Width="1*" />

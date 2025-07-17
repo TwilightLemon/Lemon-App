@@ -1,8 +1,5 @@
 ﻿using LemonApp.Common.Funcs;
 using System;
-using System.Buffers;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 
@@ -34,7 +31,7 @@ public class AudioVisualizer : FrameworkElement
 
     private void AudioVisualizer_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
-        if (e.NewValue is true&&IsPlaying)
+        if (e.NewValue is true && IsPlaying)
             Start();
         else Stop();
     }
@@ -42,37 +39,23 @@ public class AudioVisualizer : FrameworkElement
     internal void Start()
     {
         if (_isRunning || Player == null) return;
-
-        Stop();
-
+        CompositionTarget.Rendering += CompositionTarget_Rendering;
         _isRunning = true;
-        _spectrumData = _dataPool.Rent(1024);//BASS_FFT_2048 requires 1024 floats
-
-        _displayValues = new float[StripCount];
-
-        if (_renderLoop != null) return;
-        _renderCancel = new CancellationTokenSource();
-        _renderLoop = RenderLoopAsync(_renderCancel.Token);
     }
+
     internal void Stop()
     {
-        if (!_isRunning || _renderCancel == null || _spectrumData == null) return;
+        if (!_isRunning) return;
+        CompositionTarget.Rendering -= CompositionTarget_Rendering;
         _isRunning = false;
-        _dataPool.Return(_spectrumData);
-        _spectrumData = null;
-        _renderCancel.Cancel();
-        _renderLoop = null;
     }
 
     #region Properties
     public MusicPlayer Player;
 
-    bool _isRunning = false;
-    float[]? _spectrumData;
-    CancellationTokenSource? _renderCancel;
-    Task? _renderLoop;
-    private readonly ArrayPool<float> _dataPool = ArrayPool<float>.Shared;
-    private float[] _displayValues;
+    private bool _isRunning = false;
+    private readonly float[] _spectrumData = new float[1024];
+    private readonly float[] _displayValues = new float[1024];
 
     public int StripCount
     {
@@ -80,9 +63,8 @@ public class AudioVisualizer : FrameworkElement
         set { SetValue(StripCountProperty, value); }
     }
 
-    // Using a DependencyProperty as the backing store for StripCount.  This enables animation, styling, binding, etc...
     public static readonly DependencyProperty StripCountProperty =
-        DependencyProperty.Register("StripCount", 
+        DependencyProperty.Register("StripCount",
             typeof(int), typeof(AudioVisualizer), new PropertyMetadata(128));
 
     public Brush Fill
@@ -106,7 +88,7 @@ public class AudioVisualizer : FrameworkElement
     {
         if (o is AudioVisualizer visualizer)
         {
-            if (e.NewValue is true&&visualizer.IsVisible)
+            if (e.NewValue is true && visualizer.IsVisible)
             {
                 visualizer.Start();
             }
@@ -119,19 +101,12 @@ public class AudioVisualizer : FrameworkElement
 
     #endregion
 
-    private async Task RenderLoopAsync(CancellationToken token)
+    private void CompositionTarget_Rendering(object? sender, EventArgs e)
     {
-        while (true)
-        {
-            if (token.IsCancellationRequested)
-                break;
-            Player.GetFFTData(_spectrumData);
+        Player.GetFFTData(_spectrumData);
 
-            using DrawingContext dc = _visualHost.RenderOpen();
-            DrawStrips(dc, _spectrumData);
-
-            await Task.Delay(8, token);
-        }
+        using DrawingContext dc = _visualHost.RenderOpen();
+        DrawStrips(dc, _spectrumData);
     }
 
     private void DrawStrips(DrawingContext drawingContext, float[] spectrumData)
@@ -151,7 +126,7 @@ public class AudioVisualizer : FrameworkElement
         Point[] points = new Point[stripCount];
         for (int i = 0; i < stripCount; i++)
         {
-            double x = (1.0d -(double)i / total) * ActualWidth;
+            double x = (1.0d - (double)i / total) * ActualWidth;
             double y = ActualHeight * (1 - _displayValues[i]);
             points[i] = new Point(x, y);
         }

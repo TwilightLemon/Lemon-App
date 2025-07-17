@@ -112,6 +112,26 @@ public class FluentPopup:Popup
         }
     }
 
+
+    public MaterialApis.WindowCorner WindowCorner
+    {
+        get { return (MaterialApis.WindowCorner)GetValue(WindowCornerProperty); }
+        set { SetValue(WindowCornerProperty, value); }
+    }
+
+    public static readonly DependencyProperty WindowCornerProperty =
+        DependencyProperty.Register("WindowCorner", 
+            typeof(MaterialApis.WindowCorner), typeof(FluentPopup),
+            new PropertyMetadata(MaterialApis.WindowCorner.Round));
+
+    public static void OnWindowCornerChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if(d is FluentPopup popup)
+        {
+            popup.ApplyWindowCorner();
+        }
+    }
+
     private void AttachedWindow_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         FollowMove();
@@ -233,7 +253,11 @@ public class FluentPopup:Popup
     }
     public void ApplyFluentHwnd()
     {
-        FluentPopupFunc.SetPopupWindowMaterial(_windowHandle, Background.Color);
+        FluentPopupFunc.SetPopupWindowMaterial(_windowHandle, Background.Color, WindowCorner);
+    }
+    public void ApplyWindowCorner()
+    {
+        MaterialApis.SetWindowCorner(_windowHandle, WindowCorner);
     }
     #endregion
 }

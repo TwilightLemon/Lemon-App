@@ -285,7 +285,9 @@
                         <Border x:Name="_border"
                                 MinHeight="48"
                                 Background="Transparent"
-                                CornerRadius="8">
+                                CornerRadius="8"
+                                base:RightClickCommand.Command="{x:Static component:PublicPopupMenuHolder.ShowMusicOptionsCommand}"
+                                base:RightClickCommand.CommandParameter="{Binding}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="3*" />

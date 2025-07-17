@@ -775,6 +775,9 @@ public partial class MainWindowViewModel : ObservableObject
 
     [ObservableProperty]
     private ImageSource? _lyricPageBackgroundSource = null;
+
+    [ObservableProperty]
+    private bool _isShowMusicInfoPopup= false;
     partial void OnIsShowDesktopLyricChanged(bool value)
     {
         if (value)
@@ -873,22 +876,6 @@ public partial class MainWindowViewModel : ObservableObject
     {
         CurrentPlayingPosition = value;
         _mediaPlayerService.Position = TimeSpan.FromMilliseconds(value);
-    }
-
-    //Commands for Current Playing in right part of Music Control
-    [RelayCommand]
-    private void DownloadMusic()
-    {
-        if (CurrentPlaying != null)
-        {
-            App.Services.GetRequiredService<DownloadService>().PushTask(CurrentPlaying);
-            MainNavigationService_OnNavigatingRequsted(PageType.Notification, $"Music {CurrentPlaying.MusicName} has been added to the download queue.");
-        }
-    }
-    [RelayCommand]
-    private void GoToCommentPage()
-    {
-        MainNavigationService_OnNavigatingRequsted(PageType.CommentPage, CurrentPlaying);
     }
     #endregion
     #region quick access

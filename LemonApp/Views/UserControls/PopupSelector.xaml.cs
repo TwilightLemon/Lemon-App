@@ -50,8 +50,12 @@ namespace LemonApp.Views.UserControls
             }
             else if (info.Platform == Platform.qq)
                 navigationService.RequstNavigation(PageType.AlbumPage, info.Id);
+            IsShowMusicOptionsPopup = false;
         }
 
+        [RelayCommand]
+        private Task AddSingleToMyDiss(Music music)
+            => AddToMyDiss([music]);
         [RelayCommand]
         private async Task AddToMyDiss(IList<Music> musics)
         {
@@ -77,6 +81,7 @@ namespace LemonApp.Views.UserControls
 
             await userDataManager.AddSongsToDirid(value.DirId, ToAddedMusics, value.Name);
             IsShowDissSelector = false;
+            IsShowMusicOptionsPopup = false;
         }
 
         private void GotoArtistPage(Profile artist)
@@ -112,6 +117,7 @@ namespace LemonApp.Views.UserControls
             if (m.Singer.Count == 1)
             {
                 GotoArtistPage(m.Singer[0]);
+                IsShowMusicOptionsPopup = false;
             }
             else
             {
@@ -133,8 +139,35 @@ namespace LemonApp.Views.UserControls
             {
                 GotoArtistPage(value);
                 ShowCheckArtistsPopup = false;
+                IsShowMusicOptionsPopup = false;
             }
         }
         public ObservableCollection<Profile> ToChoosenArtists { get; set; } = [];
+
+        [ObservableProperty]
+        private bool _isShowMusicOptionsPopup = false;
+        [ObservableProperty]
+        private Music? _selectedMusic;
+
+        [RelayCommand]
+        private void ShowMusicOptionsPopup(Music m)
+        {
+            SelectedMusic = m;
+            IsShowMusicOptionsPopup = true;
+        }
+
+        [RelayCommand]
+        private void GoToCommentPage(Music m)
+        {
+            IsShowMusicOptionsPopup = false;
+            navigationService.RequstNavigation(PageType.CommentPage, m);
+        }
+        [RelayCommand]
+        private void DownloadMusic(Music m)
+        {
+            IsShowMusicOptionsPopup = false;
+            App.Services.GetRequiredService<DownloadService>().PushTask(m);
+            navigationService.RequstNavigation(PageType.Notification, $"Music {m.MusicName} has been added to the download queue.");
+        }
     }
 }

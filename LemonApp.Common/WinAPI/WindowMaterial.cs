@@ -269,7 +269,7 @@ public enum MaterialType
     MicaAlt = 4
 }
 
-internal static class MaterialApis
+public static class MaterialApis
 {
     public static int ToHexColor(this Color value)
     {

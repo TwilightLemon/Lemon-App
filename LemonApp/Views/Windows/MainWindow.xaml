@@ -918,7 +918,8 @@
                                        VerticalAlignment="Top"
                                        Foreground="{DynamicResource ForeColor}"
                                        LineHeight="32"
-                                       TextAlignment="Center">
+                                       TextAlignment="Center"
+                                       TextWrapping="Wrap">
                                 <Run d:Text="Dancing With Our Hands Tied"
                                      FontSize="18"
                                      FontWeight="Bold"
@@ -931,7 +932,7 @@
                                      FontSize="14"
                                      Text="{Binding CurrentPlaying.Album.Name, StringFormat=' · {0}'}" />
                             </TextBlock>
-                            <Grid MaxWidth="580" Margin="58,0">
+                            <Grid MaxWidth="500" Margin="70,0">
                                 <TextBlock HorizontalAlignment="Left"
                                            VerticalAlignment="Center"
                                            d:Text="00:00"
@@ -1025,19 +1026,22 @@
                                           Stretch="Uniform" />
                                 </ws:Button>
                             </ws:FlexPanel>
-                            <Grid MaxWidth="580" Margin="58,0">
-                                <Slider Margin="32,0,0,0"
+                            <Grid MaxWidth="500" Margin="70,0">
+                                <Slider Margin="36,0"
                                         VerticalAlignment="Center"
                                         IsMoveToPointEnabled="True"
                                         Maximum="1"
                                         Style="{StaticResource FluentSliderStyle}"
                                         Value="{Binding CurrentPlayingVolume}" />
-                                <Path Width="16"
-                                      Height="16"
-                                      HorizontalAlignment="Left"
-                                      Data="{DynamicResource AudioIcon}"
-                                      Fill="{DynamicResource ForeColor}"
-                                      Stretch="Uniform" />
+                                <TextBlock Margin="10,0,0,0"
+                                           HorizontalAlignment="Left"
+                                           FontFamily="{StaticResource SegoeFluentIcon}"
+                                           FontSize="20"
+                                           Text="&#xe992;" />
+                                <TextBlock HorizontalAlignment="Right"
+                                           FontFamily="{StaticResource SegoeFluentIcon}"
+                                           FontSize="20"
+                                           Text="&#xe995;" />
                             </Grid>
                         </ws:FlexPanel>
                     </Grid>
@@ -1077,7 +1081,7 @@
                                 Fill="{DynamicResource HighlightThemeColor}"
                                 IsPlaying="{Binding IsPlaying, Mode=OneWay}"
                                 Opacity="0.6"
-                                StripCount="64" />
+                                StripCount="96" />
             <Grid x:Name="MusicControl"
                   Height="120"
                   VerticalAlignment="Bottom">
@@ -1296,66 +1300,11 @@
                                       Fill="{DynamicResource ForeColor}"
                                       Stretch="Uniform" />
                             </ws:Button>
-                            <base:FluentPopup x:Name="MoreOptionPopup"
-                                              Background="{DynamicResource PopupWndBgColor}"
-                                              ExtPopupAnimation="SlideUp"
-                                              HorizontalOffset="-180"
-                                              Placement="Right"
-                                              StaysOpen="False"
-                                              VerticalOffset="-210">
-                                <!--  写得有点阴间了孩子..  -->
-                                <ws:StackPanel Spacing="2">
-                                    <ws:Button Name="ViewMusicInfoBtn"
-                                               Padding="12,8"
-                                               Background="Transparent"
-                                               BorderThickness="0"
-                                               Click="ViewMusicInfoBtn_Click"
-                                               Style="{StaticResource SimpleButtonStyleForWs}">
-                                        View Music Info
-                                    </ws:Button>
-                                    <ws:Button Padding="12,8"
-                                               Background="Transparent"
-                                               BorderThickness="0"
-                                               Command="{x:Static components:PublicPopupMenuHolder.GotoArtistCommand}"
-                                               CommandParameter="{Binding CurrentPlaying}"
-                                               Style="{StaticResource SimpleButtonStyleForWs}">
-                                        View Singers
-                                    </ws:Button>
-                                    <ws:Button Padding="12,8"
-                                               Background="Transparent"
-                                               BorderThickness="0"
-                                               Command="{x:Static components:PublicPopupMenuHolder.GoToAlbumCommand}"
-                                               CommandParameter="{Binding CurrentPlaying.Album}"
-                                               Style="{StaticResource SimpleButtonStyleForWs}">
-                                        View Album
-                                    </ws:Button>
-                                    <ws:Button Padding="12,8"
-                                               Background="Transparent"
-                                               BorderThickness="0"
-                                               Command="{Binding GoToCommentPageCommand}"
-                                               Style="{StaticResource SimpleButtonStyleForWs}">
-                                        View Comments
-                                    </ws:Button>
-                                    <ws:Button Padding="12,8"
-                                               Background="Transparent"
-                                               BorderThickness="0"
-                                               Command="{x:Static components:PublicPopupMenuHolder.AddToMyDissCommand}"
-                                               Style="{StaticResource SimpleButtonStyleForWs}">
-                                        Add to Playlist
-                                    </ws:Button>
-                                    <ws:Button Padding="12,8"
-                                               Background="Transparent"
-                                               BorderThickness="0"
-                                               Command="{Binding DownloadMusicCommand}"
-                                               Style="{StaticResource SimpleButtonStyleForWs}">
-                                        Download
-                                    </ws:Button>
-                                </ws:StackPanel>
-                            </base:FluentPopup>
                             <ws:Button x:Name="MoreMenuBtn"
                                        Width="32"
                                        Height="32"
-                                       Click="MoreMenuBtn_Click"
+                                       Command="{x:Static components:PublicPopupMenuHolder.ShowMusicOptionsCommand}"
+                                       CommandParameter="{Binding CurrentPlaying}"
                                        Style="{StaticResource SimpleIconButtonStyleForWs}"
                                        ToolTip="More">
                                 <Path Height="16"
@@ -1503,6 +1452,7 @@
         <base:FluentPopup x:Name="MusicInfoPopup"
                           Background="{DynamicResource PopupWndBgColor}"
                           ExtPopupAnimation="SlideUp"
+                          IsOpen="{Binding IsShowMusicInfoPopup}"
                           Placement="Center"
                           StaysOpen="False">
             <ws:StackPanel Width="280"

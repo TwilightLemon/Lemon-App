@@ -410,18 +410,6 @@ namespace LemonApp.Views.Windows
             _vm.ReplacePlayFile(((Array)e.Data.GetData(DataFormats.FileDrop)).GetValue(0).ToString());
         }
 
-        private async void MoreMenuBtn_Click(object sender, RoutedEventArgs e)
-        {
-            await Task.Yield();
-            MoreOptionPopup.IsOpen = true;
-        }
-
-        private async void ViewMusicInfoBtn_Click(object sender, RoutedEventArgs e)
-        {
-            await Task.Yield();
-            MusicInfoPopup.IsOpen = true;
-        }
-
         private async void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(SearchBox.Text))
