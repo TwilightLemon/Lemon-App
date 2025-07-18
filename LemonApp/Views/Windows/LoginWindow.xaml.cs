@@ -27,7 +27,8 @@ namespace LemonApp.Views.Windows
             InitializeComponent();
             Loaded += LoginWindow_Loaded;
         }
-
+        private string qurl = "https://graph.qq.com/oauth2.0/show?which=Login&display=pc&response_type=code&client_id=100497308&redirect_uri=https%3A%2F%2Fy.qq.com%2Fportal%2Fwx_redirect.html%3Flogin_type%3D1%26surl%3Dhttps%253A%252F%252Fy.qq.com%252Fn%252Fryqq%252Fprofile%252Flike%252Fsong&state=state&display=pc&scope=get_user_info%2Cget_app_friends";
+        private string wurl = "https://open.weixin.qq.com/connect/qrconnect?appid=wx48db31d50e334801&redirect_uri=https%3A%2F%2Fy.qq.com%2Fportal%2Fwx_redirect.html%3Flogin_type%3D2%26surl%3Dhttps%253A%252F%252Fy.qq.com%252Fn%252Fryqq%252Fprofile%252Flike%252Fsong&response_type=code&scope=snsapi_login&state=STATE&href=https%3A%2F%2Fy.qq.com%2Fmediastyle%2Fmusic_v17%2Fsrc%2Fcss%2Fpopup_wechat.css%23wechat_redirect";
         private async void LoginWindow_Loaded(object sender, RoutedEventArgs e)
         {
             string? core = null;
@@ -47,16 +48,18 @@ namespace LemonApp.Views.Windows
             }
             var webView2Environment = await CoreWebView2Environment.CreateAsync(null, CacheManager.GetCachePath(CacheManager.CacheType.Other));
             await wb.EnsureCoreWebView2Async(webView2Environment);
+            wb.CoreWebView2.CookieManager.DeleteAllCookies();
+
             if (LoginTenc)
             {
                 wb.CoreWebView2.SourceChanged += CoreWebView2_SourceChanged;
-                wb.CoreWebView2.Navigate("https://graph.qq.com/oauth2.0/show?which=Login&display=pc&response_type=code&client_id=100497308&redirect_uri=https%3A%2F%2Fy.qq.com%2Fportal%2Fwx_redirect.html%3Flogin_type%3D1%26surl%3Dhttps%253A%252F%252Fy.qq.com%252Fn%252Fryqq%252Fprofile%252Flike%252Fsong&state=state&display=pc&scope=get_user_info%2Cget_app_friends");
+                wb.CoreWebView2.Navigate(qurl);
+                LoginMethodTB.Visibility = Visibility.Visible;
+                wb.Margin = new Thickness(0,50,0,0);
             }
             else
             {
                 //login with netease
-                Height = 580;
-                Width = 860;
                 wb.CoreWebView2.FrameNavigationCompleted += CoreWebView2_FrameNavigationCompleted;
                 wb.CoreWebView2.Navigate("https://music.163.com/#/my/");
             }
@@ -80,19 +83,26 @@ namespace LemonApp.Views.Windows
             }
         }
 
+        private string? pskey = null;
         private async void CoreWebView2_SourceChanged(object? sender, CoreWebView2SourceChangedEventArgs e)
         {
             string url = wb.CoreWebView2.Source;
+            if (url.Contains("portal/wx_redirect.html"))
+            {
+                pskey = TextHelper.FindTextByAB(url, "&code=", "&", 0);
+            }
             if (url.Contains("y.qq.com/n/ryqq/profile/like/song"))
             {
                 var cookie = await wb.CoreWebView2.CookieManager.GetCookiesAsync("https://y.qq.com");
-                var cookie2 = await wb.CoreWebView2.CookieManager.GetCookiesAsync("https://graph.qq.com");
-                var cookieDict = cookie.ToDictionary(i => i.Name, i => i.Value);
-
-                if (cookie2.FirstOrDefault(i=>i.Name=="p_skey") is { } p_skey&&
-                    cookie.FirstOrDefault(i=>i.Name=="uin") is { } uin)
+                Dictionary<string, string> cookieDict = [];
+                foreach(var c in cookie)
                 {
-                    string g_tk = TencLogin.CalculateGtk(p_skey.Value);
+                    cookieDict[c.Name] = c.Value;
+                }
+
+                if (cookie.FirstOrDefault(i=>i.Name=="uin"||i.Name=="wxuin") is { } uin&&pskey!=null)
+                {
+                    string g_tk = TencLogin.CalculateGtk(pskey);
                     string qq = uin.Value;
                     string cookieStr = ToCookieString(cookieDict);
                     OnLoginTenc?.Invoke(new TencUserAuth()
@@ -120,6 +130,12 @@ namespace LemonApp.Views.Windows
             //remove last "; "
             cookies.Remove(cookies.Length - 2, 2);
             return cookies.ToString();
+        }
+
+        private void LoginMethodTB_Click(object sender, RoutedEventArgs e)
+        {
+            pskey = null;
+            wb.CoreWebView2.Navigate(LoginMethodTB.IsChecked is true?qurl:wurl);
         }
     }
 }

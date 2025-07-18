@@ -591,6 +591,7 @@ public partial class MainWindowViewModel : ObservableObject
     {
         var view=_serviceProvider.GetRequiredService<CommentPage>();
         _ = view.LoadCommentAsync(m);
+        SelectedMenu = null;
         RequestNavigateToPage.Invoke(view);
     }
     private async void NavigateToSingerPage(string mid)
@@ -662,6 +663,7 @@ public partial class MainWindowViewModel : ObservableObject
             page.Tag = rankMenu;
             RequestNavigateToPage.Invoke(page);
         }
+        SelectedMenu = rankMenu;
         IsLoading = false;
     }
     private async void NavigateToAlbumPage(string AlbumId)
@@ -672,6 +674,7 @@ public partial class MainWindowViewModel : ObservableObject
             page.Tag = SelectedMenu;
             RequestNavigateToPage.Invoke(page);
         }
+        SelectedMenu = null;
         IsLoading = false;
     }
     private async void NavigateToSearchPage(string keyword)
@@ -697,6 +700,7 @@ public partial class MainWindowViewModel : ObservableObject
                 RequestNavigateToPage.Invoke(sp);
             }
         }
+        SelectedMenu = playlistMenu;    //distinguish my diss and other playlists?
         IsLoading = false;
     }
 
