@@ -9,6 +9,7 @@ public class PlayingPreference
     public double Volume { get; set; }
     public CircleMode PlayMode { get; set; }= CircleMode.Circle;
     public bool ShowDesktopLyric { get; set; } = false;
+    public bool EnableEmbededLyric { get; set; } = false;
 }
 public class PlaylistCache
 {

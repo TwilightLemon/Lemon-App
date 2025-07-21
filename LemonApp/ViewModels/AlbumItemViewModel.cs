@@ -29,7 +29,8 @@ public partial class AlbumItemViewModel(
             mainNavigationService.RequstNavigation(PageType.AlbumPage, value.ListInfo.Id);
         }
     }
-
+    [ObservableProperty]
+    private bool isLoaded = false;
     public ObservableCollection<DisplayEntity<AlbumInfo>> Albums { get; set; } = [];
     private async Task AddOne(AlbumInfo item)
     {
@@ -47,10 +48,16 @@ public partial class AlbumItemViewModel(
             if (now.SetEquals(reload)) return;
         }
         Albums.Clear();
+        List<Task> tasks = [];
         foreach (var item in list)
         {
-            _ = AddOne(item);
+            tasks.Add(AddOne(item));
         }
+        Task.WhenAll(tasks).ContinueWith(t =>
+        {
+            if (t.IsCompleted)
+                IsLoaded = true;
+        });
     }
 
     public void AppendMore(IEnumerable<AlbumInfo> list)

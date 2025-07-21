@@ -4,6 +4,7 @@
       xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
       xmlns:converter="clr-namespace:LemonApp.Converters"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
       xmlns:local="clr-namespace:LemonApp.Views.Pages"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:vm="clr-namespace:LemonApp.ViewModels"
@@ -23,10 +24,40 @@
                        Text="Ranking" />
             <ItemsControl x:Name="RankList"
                           Margin="0,56,0,0"
+                          Opacity="0"
+                          d:Opacity="1"
                           d:ItemsSource="{d:SampleData ItemCount=5}"
                           ItemsSource="{Binding Ranklists}"
                           VirtualizingStackPanel.IsVirtualizing="True"
                           VirtualizingStackPanel.VirtualizationMode="Recycling">
+                <ItemsControl.RenderTransform>
+                    <TranslateTransform Y="120" />
+                </ItemsControl.RenderTransform>
+                <i:Interaction.Triggers>
+                    <i:DataTrigger Binding="{Binding IsLoaded}" Value="True">
+                        <i:DataTrigger.Actions>
+                            <i:ControlStoryboardAction>
+                                <i:ControlStoryboardAction.Storyboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                         Storyboard.TargetName="RankList"
+                                                         From="0"
+                                                         To="1"
+                                                         Duration="0:0:0.3" />
+                                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                                         Storyboard.TargetName="RankList"
+                                                         To="0"
+                                                         Duration="0:0:0.3">
+                                            <DoubleAnimation.EasingFunction>
+                                                <CubicEase />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </i:ControlStoryboardAction.Storyboard>
+                            </i:ControlStoryboardAction>
+                        </i:DataTrigger.Actions>
+                    </i:DataTrigger>
+                </i:Interaction.Triggers>
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <base:AutoUniformGrid Columns="2"
@@ -37,7 +68,7 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <ws:Button Height="138"
-                                   Margin="8 6"
+                                   Margin="8,6"
                                    HorizontalContentAlignment="Stretch"
                                    VerticalContentAlignment="Stretch"
                                    Command="{Binding DataContext.SelectCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"

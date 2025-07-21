@@ -97,6 +97,9 @@ public partial class MainWindowViewModel : ObservableObject
 
         _lyricWindowViewModel = lyricWindowViewModel;
 
+        _playlistDataWrapper = playlistDataWrapper;
+        _downloadMenuDecorator = downloadMenuDecorator;
+
         _mainNavigationService.OnNavigationRequested += MainNavigationService_OnNavigatingRequsted;
         _mainNavigationService.LoadingAniRequested += () => IsLoading = true;
         _mainNavigationService.LoadingAniCancelled += () => IsLoading = false;
@@ -110,9 +113,7 @@ public partial class MainWindowViewModel : ObservableObject
         lyricWindowViewModel.SetTimerTick(_timer);
 
         LoadMainMenus();
-        LoadComponent();
-        _playlistDataWrapper = playlistDataWrapper;
-        _downloadMenuDecorator = downloadMenuDecorator;
+        App.Current.Dispatcher.InvokeAsync(LoadComponent,System.Windows.Threading.DispatcherPriority.Loaded);
     }
 
     private async void UIResourceService_OnColorModeChanged()
@@ -138,6 +139,10 @@ public partial class MainWindowViewModel : ObservableObject
                 CurrentPlayingVolume = mgr.Data.Volume;
                 CircleMode = mgr.Data.PlayMode;
                 IsShowDesktopLyric= mgr.Data.ShowDesktopLyric;
+                if (mgr.Data.EnableEmbededLyric)
+                {
+                    UserMenuViewModel.Menu_OpenDesktopWindow();
+                }
 
                 if (pl.Data.Playlist != null)
                 {
@@ -350,7 +355,7 @@ public partial class MainWindowViewModel : ObservableObject
     private WeakReference<Music[]?> _playlistSearchResult = new(null);
     private int _playlistSearchIndex = 0;
     private string? _playlistSearchKeyword;
-    public Music SearchPlaylist(string keyword)
+    public Music? SearchPlaylist(string keyword)
     {
         if (keyword != _playlistSearchKeyword || _playlistSearchResult == null || !_playlistSearchResult.TryGetTarget(out var result))
         {
@@ -358,9 +363,15 @@ public partial class MainWindowViewModel : ObservableObject
             result = [.. Playlist.Where(m => TextHelper.FuzzySearch(m, keyword))];
             _playlistSearchResult = new(result);
             _playlistSearchIndex = 0;
+            if (result.Length > 0)
+                return result[0];
         }
-        _playlistSearchIndex= (_playlistSearchIndex + 1) % result.Length;
-        return result[_playlistSearchIndex];
+        if (result.Length > 0)
+        {
+            _playlistSearchIndex = (_playlistSearchIndex + 1) % result.Length;
+            return result[_playlistSearchIndex];
+        }
+        return null;
     }
 
     [RelayCommand]

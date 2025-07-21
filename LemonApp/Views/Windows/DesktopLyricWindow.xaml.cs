@@ -91,6 +91,7 @@ namespace LemonApp.Views.Windows
         private void DesktopLyricWindow_Loaded(object sender, RoutedEventArgs e)
         {
             WindowLongAPI.SetToolWindow(this);
+            LrcPanel.Effect = shadowEffect;
         }
 
         private void CloseBtn_Click(object sender, RoutedEventArgs e)

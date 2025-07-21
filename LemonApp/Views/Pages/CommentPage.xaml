@@ -16,6 +16,32 @@
     <Page.Resources>
         <Style TargetType="ItemsControl">
             <Setter Property="Margin" Value="24,0" />
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <TranslateTransform Y="120" />
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsLoaded}" Value="True">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                 From="0"
+                                                 To="1"
+                                                 Duration="0:0:0.3" />
+                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                                 To="0"
+                                                 Duration="0:0:0.3">
+                                    <DoubleAnimation.EasingFunction>
+                                        <CubicEase />
+                                    </DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                </DataTrigger>
+            </Style.Triggers>
         </Style>
         <DataTemplate x:Key="CommentItemDataTemplate">
             <ws:Button Padding="8"

@@ -81,7 +81,7 @@ public partial class UserMenuViewModel:ObservableObject
         new ActionMenu("Log in by QQ Music",(Geometry)App.Current.FindResource("QQMusicIcon"),Menu_LoginQQ),
         new ActionMenu("Settings",(Geometry)App.Current.FindResource("Icon_Settings"),Menu_GotoSettingsPage),
         new ActionMenu("View Theme Config",(Geometry)App.Current.FindResource("Menu_Theme"),Menu_Theme),
-        new ActionMenu("Show Desktop Window",null,Menu_OpenDesktopWindow),
+        new ActionMenu("Show Embedded Lyric",(Geometry)App.Current.FindResource("Icon_Desktop"),Menu_OpenDesktopWindow),
         new ActionMenu("Exit",null,Menu_Exit)
     ];
     public static void Menu_LoginQQ()
@@ -117,13 +117,19 @@ public partial class UserMenuViewModel:ObservableObject
     }
 
     static EmbeddedWindow? _desktopWindow = null;
-    static void Menu_OpenDesktopWindow()
+    public static void Menu_OpenDesktopWindow()
     {
+        var config = App.Services.GetRequiredService<AppSettingService>().GetConfigMgr<PlayingPreference>();
         if (_desktopWindow == null||!_desktopWindow.IsLoaded)
         {
             _desktopWindow = App.Services.GetRequiredService<EmbeddedWindow>();
-            _desktopWindow.Closing += (s, e) => _desktopWindow = null;
+            _desktopWindow.Closing += (s, e) => 
+            { 
+                _desktopWindow = null;
+                config.Data.EnableEmbededLyric = false;
+            };
             _desktopWindow.Show();
+            config.Data.EnableEmbededLyric = true;
         }
         else _desktopWindow.Close();
     }

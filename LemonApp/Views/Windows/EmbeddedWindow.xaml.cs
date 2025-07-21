@@ -115,10 +115,5 @@ namespace LemonApp.Views.Windows
         {
             Close();
         }
-
-        private void ShowPlaylistBtn_Click(object sender, RoutedEventArgs e)
-        {
-            PlaylistLB.Visibility = ShowPlaylistBtn.IsChecked is true ? Visibility.Visible : Visibility.Collapsed;
-        }
     }
 }

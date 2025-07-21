@@ -11,8 +11,11 @@ namespace LemonApp.Native;
 public static class ImageHelper
 {
     #region 处理模糊图像
+
     [DllImport("gdiplus.dll", SetLastError = true, ExactSpelling = true, CharSet = CharSet.Unicode)]
-    private static extern int GdipBitmapApplyEffect(IntPtr bitmap, IntPtr effect, ref Rectangle rectOfInterest, bool useAuxData, IntPtr auxData, int auxDataSize);
+    private static extern int GdipBitmapApplyEffect(IntPtr bitmap, IntPtr effect, ref Rectangle rectOfInterest,
+        bool useAuxData, IntPtr auxData, int auxDataSize);
+
     /// <summary>
     /// 获取对象的私有字段的值
     /// </summary>
@@ -26,11 +29,14 @@ public static class ImageHelper
     {
         if (obj == null) return default(TResult);
         Type ltType = obj.GetType();
-        FieldInfo lfiFieldInfo = ltType.GetField(fieldName, BindingFlags.GetField | BindingFlags.Instance | BindingFlags.NonPublic);
+        FieldInfo lfiFieldInfo = ltType.GetField(fieldName,
+            BindingFlags.GetField | BindingFlags.Instance | BindingFlags.NonPublic);
         if (lfiFieldInfo != null)
             return (TResult)lfiFieldInfo.GetValue(obj);
         else
-            throw new InvalidOperationException(string.Format("Instance field '{0}' could not be located in object of type '{1}'.", fieldName, obj.GetType().FullName));
+            throw new InvalidOperationException(string.Format(
+                "Instance field '{0}' could not be located in object of type '{1}'.", fieldName,
+                obj.GetType().FullName));
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -39,19 +45,25 @@ public static class ImageHelper
         internal float Radius;
         internal bool ExpandEdges;
     }
+
     [DllImport("gdiplus.dll", SetLastError = true, ExactSpelling = true, CharSet = CharSet.Unicode)]
     private static extern int GdipCreateEffect(Guid guid, out IntPtr effect);
+
     private static Guid BlurEffectGuid = new Guid("{633C80A4-1843-482B-9EF2-BE2834C5FDD4}");
+
     [DllImport("gdiplus.dll", SetLastError = true, ExactSpelling = true, CharSet = CharSet.Unicode)]
     private static extern int GdipSetEffectParameters(IntPtr effect, IntPtr parameters, uint size);
+
     public static IntPtr NativeHandle(this Bitmap Bmp)
     {
         // 通过反射获取Bitmap的私有字段nativeImage的值，该值为GDI+的内部图像句柄
         //新版Drawing的Nuget包中字段由 nativeImage变更为_nativeImage
         return Bmp.GetPrivateField<IntPtr>("_nativeImage");
     }
+
     [DllImport("gdiplus.dll", SetLastError = true, ExactSpelling = true, CharSet = CharSet.Unicode)]
     private static extern int GdipDeleteEffect(IntPtr effect);
+
     public static void GaussianBlur(this Bitmap Bmp, ref Rectangle Rect, float Radius = 10, bool ExpandEdge = false)
     {
         int Result;
@@ -61,6 +73,7 @@ public static class ImageHelper
         {
             throw new ArgumentOutOfRangeException("半径必须在[0,255]范围内");
         }
+
         BlurPara.Radius = Radius;
         BlurPara.ExpandEdges = ExpandEdge;
         Result = GdipCreateEffect(BlurEffectGuid, out BlurEffect);
@@ -79,6 +92,7 @@ public static class ImageHelper
             throw new ExternalException("不支持的GDI+版本，必须为GDI+1.1及以上版本，且操作系统要求为Win Vista及之后版本.");
         }
     }
+
     #endregion
 
     public static System.Windows.Media.Color GetMajorColor(this Bitmap bitmap)
@@ -123,6 +137,7 @@ public static class ImageHelper
                         SumB = pixel.B
                     };
                 }
+
                 pixelCount++;
             }
         }
@@ -131,27 +146,27 @@ public static class ImageHelper
             return System.Windows.Media.Colors.Gray;
 
         var weightedColors = colorMap.Values.Select(info =>
-        {
-            float r = info.SumR / (float)info.Count / 255f;
-            float g = info.SumG / (float)info.Count / 255f;
-            float b = info.SumB / (float)info.Count / 255f;
-
-            // 转换为HSL来检查饱和度和亮度
-            RgbToHsl(r, g, b, out float h, out float s, out float l);
-
-            // 颜色越饱和越有可能是主色调，过亮或过暗的颜色权重降低
-            float weight = info.Count * s * (1 - Math.Abs(l - 0.6f) * 1.8f);
-
-            return new
             {
-                R = info.SumR / info.Count,
-                G = info.SumG / info.Count,
-                B = info.SumB / info.Count,
-                Weight = weight
-            };
-        })
-        .OrderByDescending(c => c.Weight)
-        .ToList();
+                float r = info.SumR / (float)info.Count / 255f;
+                float g = info.SumG / (float)info.Count / 255f;
+                float b = info.SumB / (float)info.Count / 255f;
+
+                // 转换为HSL来检查饱和度和亮度
+                RgbToHsl(r, g, b, out float h, out float s, out float l);
+
+                // 颜色越饱和越有可能是主色调，过亮或过暗的颜色权重降低
+                float weight = info.Count * s * (1 - Math.Abs(l - 0.6f) * 1.8f);
+
+                return new
+                {
+                    R = info.SumR / info.Count,
+                    G = info.SumG / info.Count,
+                    B = info.SumB / info.Count,
+                    Weight = weight
+                };
+            })
+            .OrderByDescending(c => c.Weight)
+            .ToList();
 
         if (weightedColors.Count > 0)
         {
@@ -301,7 +316,6 @@ public static class ImageHelper
         }
 
 
-
         // 5. 最终亮度修正 - 确保在各种UI模式下都有足够的对比度
         if (isDarkMode && l < 0.3f) l = 0.3f; // 暗色模式下确保最小亮度
         if (!isDarkMode && l > 0.7f) l = 0.7f; // 亮色模式下确保最大亮度
@@ -316,9 +330,10 @@ public static class ImageHelper
 
         return System.Windows.Media.Color.FromRgb(R, G, B);
     }
-    public static System.Windows.Media.Color ApplyColorMode(this System.Windows.Media.Color color,bool isDarkMode)
+
+    public static System.Windows.Media.Color ApplyColorMode(this System.Windows.Media.Color color, bool isDarkMode)
     {
-        RgbToHsl(color.R/255f,color.G/255f, color.B/255f,out float h, out float s, out float l);
+        RgbToHsl(color.R / 255f, color.G / 255f, color.B / 255f, out float h, out float s, out float l);
         if (isDarkMode)
             l = Math.Max(0.05f, l - 0.1f);
         else
@@ -408,6 +423,7 @@ public static class ImageHelper
             return p + (q - p) * (2.0f / 3.0f - t) * 6.0f;
         return p;
     }
+
     public static BitmapImage ToBitmapImage(this Bitmap bitmap)
     {
         using var memory = new MemoryStream();
@@ -423,15 +439,16 @@ public static class ImageHelper
         return bitmapImage;
     }
 
-    public static Bitmap ToBitmap(this BitmapImage img){
+    public static Bitmap ToBitmap(this BitmapImage img)
+    {
         using MemoryStream outStream = new();
         BitmapEncoder enc = new PngBitmapEncoder();
-        enc.Frames.Add(BitmapFrame.Create(img,null,null,null));
+        enc.Frames.Add(BitmapFrame.Create(img, null, null, null));
         enc.Save(outStream);
         return new Bitmap(outStream);
     }
 
-    public static void AddMask(this Bitmap bitmap,bool darkmode)
+    public static void AddMask(this Bitmap bitmap, bool darkmode)
     {
         var color1 = darkmode ? Color.FromArgb(150, 0, 0, 0) : Color.FromArgb(160, 255, 255, 255);
         var color2 = darkmode ? Color.FromArgb(180, 0, 0, 0) : Color.FromArgb(200, 255, 255, 255);
@@ -443,6 +460,7 @@ public static class ImageHelper
             LinearGradientMode.Vertical);
         g.FillRectangle(brush, new Rectangle(0, 0, bitmap.Width, bitmap.Height));
     }
+
     public static void AdjustContrast(this Bitmap bitmap, float contrast)
     {
         contrast = (100.0f + contrast) / 100.0f;
@@ -509,12 +527,13 @@ public static class ImageHelper
                 new Rectangle(0, 0, bitmap.Width, bitmap.Height),
                 GraphicsUnit.Pixel);
         }
+
         bitmap = newBitmap;
     }
 
-    public static void ApplyMicaEffect(this Bitmap bitmap,bool isDarkmode)
+    public static void ApplyMicaEffect(this Bitmap bitmap, bool isDarkmode)
     {
-        bitmap.AdjustContrast(isDarkmode?-1:-20);
+        bitmap.AdjustContrast(isDarkmode ? -1 : -20);
         bitmap.AddMask(isDarkmode);
         bitmap.ScaleImage(2);
         var rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);

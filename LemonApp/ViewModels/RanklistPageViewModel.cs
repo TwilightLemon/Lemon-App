@@ -16,7 +16,9 @@ public partial class RanklistPageViewModel(
     MainNavigationService mainNavigationService,
     IHttpClientFactory httpClientFactory) : ObservableObject
 {
-    private readonly HttpClient hc=httpClientFactory.CreateClient(App.PublicClientFlag);
+    private readonly HttpClient hc = httpClientFactory.CreateClient(App.PublicClientFlag);
+    [ObservableProperty]
+    private bool isLoaded = false;
 
     [RelayCommand]
     private void Select(DisplayEntity<RankListInfo>? value)
@@ -37,13 +39,16 @@ public partial class RanklistPageViewModel(
     {
         if (Ranklists.Count > 0) return;
         var data = await RankListAPI.GetRankListIndexAsync(hc);
+        List<Task> tasks = [];
         if (data != null)
         {
             Ranklists.Clear();
             foreach ( var item in data)
             {
-                _ = AddOne(item);
+                tasks.Add(AddOne(item));
             }
         }
+       await Task.WhenAll(tasks);
+        IsLoaded = true;
     }
 }

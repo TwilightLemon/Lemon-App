@@ -43,15 +43,19 @@ namespace LemonApp.Views.Pages
         private Brush songCover;
         [ObservableProperty]
         private Music? musicEntity;
+        [ObservableProperty]
+        private bool isLoaded = false;
         public async Task LoadCommentAsync(Music m)
         {
             using var _= nav.BeginLoading();
-            Data =await CommentAPI.GetCommentsAsync(m.MusicID, hc, user.GetAuth());
            SongName = $"{m.MusicName} - {m.SingerText}";
 
             var cover = await ImageCacheService.FetchData(await CoverGetter.GetCoverImgUrl(()=>hc, user.GetAuth(), m));
             SongCover = new ImageBrush(cover);
             MusicEntity = m;
+
+            Data =await CommentAPI.GetCommentsAsync(m.MusicID, hc, user.GetAuth());
+            IsLoaded = true;
         }
         [RelayCommand]
         private void SyncWithCurrent()

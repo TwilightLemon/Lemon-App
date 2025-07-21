@@ -44,7 +44,7 @@ namespace LemonApp.Common.UIBases
             StylusTouchDevice.SetSimulate(this, true);
 
             DependencyPropertyDescriptor
-                    .FromProperty(VerticalOffsetProperty, typeof(ScrollViewer))
+                    .FromProperty(VerticalOffsetProperty, typeof(System.Windows.Controls.ScrollViewer))
                     .AddValueChanged(this, HandleExternalScrollChanged);
 
             Unloaded += ScrollViewer_Unloaded;
@@ -61,7 +61,7 @@ namespace LemonApp.Common.UIBases
         private void ScrollViewer_Unloaded(object sender, RoutedEventArgs e)
         {
             DependencyPropertyDescriptor
-                .FromProperty(VerticalOffsetProperty, typeof(ScrollViewer))
+                .FromProperty(VerticalOffsetProperty, typeof(System.Windows.Controls.ScrollViewer))
                 .RemoveValueChanged(this, HandleExternalScrollChanged);
 
             if (_isRenderingHooked)

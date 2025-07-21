@@ -15,6 +15,8 @@ namespace LemonApp.ViewModels;
 public partial class PlaylistItemViewModel(
     MainNavigationService mainNavigationService) :ObservableObject
 {
+    [ObservableProperty]
+    private bool isLoaded = false;
     [RelayCommand]
     private void Select(DisplayEntity<Playlist> value)
     {
@@ -39,9 +41,15 @@ public partial class PlaylistItemViewModel(
             if (now.SetEquals(reload)) return;
         }
         Playlists.Clear();
+        List<Task> tasks = [];
         foreach (var item in list)
         {
-            _ = AddOne(item);
+            tasks.Add(AddOne(item));
         }
+        Task.WhenAll(tasks).ContinueWith(t =>
+        {
+            if (t.IsCompleted)
+                IsLoaded = true;
+        });
     }
 }

@@ -13,8 +13,38 @@
              d:DesignWidth="800"
              mc:Ignorable="d">
     <ItemsControl x:Name="List"
+                  d:Opacity="1"
                   ItemsPanel="{StaticResource PlaylistItemContainer}"
-                  ItemsSource="{Binding Albums}">
+                  ItemsSource="{Binding Albums}"
+                  Opacity="0">
+        <ItemsControl.RenderTransform>
+            <TranslateTransform Y="120" />
+        </ItemsControl.RenderTransform>
+        <i:Interaction.Triggers>
+            <i:DataTrigger Binding="{Binding IsLoaded}" Value="True">
+                <i:DataTrigger.Actions>
+                    <i:ControlStoryboardAction>
+                        <i:ControlStoryboardAction.Storyboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="List"
+                                                 Storyboard.TargetProperty="Opacity"
+                                                 From="0"
+                                                 To="1"
+                                                 Duration="0:0:0.3" />
+                                <DoubleAnimation Storyboard.TargetName="List"
+                                                 Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                                 To="0"
+                                                 Duration="0:0:0.3">
+                                    <DoubleAnimation.EasingFunction>
+                                        <CubicEase />
+                                    </DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                            </Storyboard>
+                        </i:ControlStoryboardAction.Storyboard>
+                    </i:ControlStoryboardAction>
+                </i:DataTrigger.Actions>
+            </i:DataTrigger>
+        </i:Interaction.Triggers>
         <ItemsControl.ItemTemplate>
             <DataTemplate>
                 <ws:Button HorizontalContentAlignment="Stretch"
