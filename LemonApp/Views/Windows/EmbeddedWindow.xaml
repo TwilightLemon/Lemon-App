@@ -22,6 +22,7 @@
         WindowStyle="None"
         mc:Ignorable="d">
     <Window.Resources>
+        <SolidColorBrush x:Key="InActiveLrcForeground" Color="#99FFFFFF" />
         <SolidColorBrush x:Key="HighligherColor" Color="#49A488" />
         <SolidColorBrush x:Key="ReversedHighligherColor" Color="#C983F9" />
         <SolidColorBrush x:Key="HighlighterColor2" Color="#FDC066" />

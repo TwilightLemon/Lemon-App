@@ -38,7 +38,7 @@ public partial class DesktopLyricWindowViewModel:ObservableObject
         //有新的歌曲加载时，先清除当前歌词
         LyricControl.ClearAll();
     }
-
+    private static readonly SolidColorBrush NormalLrcColor = new SolidColorBrush(Color.FromRgb(0xEF, 0xEF, 0xEF));
     private void CustomLyricControlStyle()
     {
 #pragma warning disable MVVMTK0034
@@ -47,9 +47,9 @@ public partial class DesktopLyricWindowViewModel:ObservableObject
         _lyricControl.MainLrcContainer.HorizontalAlignment = HorizontalAlignment.Center;
         _lyricControl.RomajiLrcContainer.HorizontalAlignment = HorizontalAlignment.Center;
 
-        _lyricControl.CustomNormalColor = new SolidColorBrush(Color.FromRgb( 0xEF, 0xEF, 0xEF));
+        _lyricControl.CustomNormalColor = NormalLrcColor;
+        _lyricControl.TranslationLrc.Foreground = NormalLrcColor;
         _lyricControl.SetResourceReference(LyricLineControl.CustomHighlighterColorProperty, "HighlightThemeColor");
-        _lyricControl.TranslationLrc.SetResourceReference(TextBlock.ForegroundProperty, "ForeColor");
 #pragma warning restore MVVMTK0034
     }
 
