@@ -18,6 +18,7 @@ public class PlaylistCache
 public class DesktopLyricOption
 {
     public bool ShowTranslation { get; set; } = true;
+    public double LrcFontSize { get; set; } = 32d;
 }
 
 public class LyricOption

@@ -28,12 +28,30 @@
     <i:Interaction.Behaviors>
         <behavior:WindowDragMoveBehavior />
     </i:Interaction.Behaviors>
+    <Window.Resources>
+        <ws:BindingProxy x:Key="proxy" Data="{Binding}" />
+    </Window.Resources>
+    <Window.ContextMenu>
+        <ContextMenu>
+            <MenuItem Command="{Binding Data.FontSizeUpCommand, Source={StaticResource proxy}}"
+                      Header="Font size ++"
+                      Icon="{x:Null}" />
+            <MenuItem Command="{Binding Data.FontSizeDownCommand, Source={StaticResource proxy}}"
+                      Header="Font size --"
+                      Icon="{x:Null}" />
+        </ContextMenu>
+    </Window.ContextMenu>
     <ws:BoxPanel>
         <Grid x:Name="LrcPanel">
-            <ContentControl x:Name="LrcHost"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Content="{Binding LyricControl, NotifyOnTargetUpdated=True}" />
+            <ScrollViewer x:Name="LrcScrollViewer"
+                          HorizontalScrollBarVisibility="Hidden"
+                          PanningMode="HorizontalOnly"
+                          VerticalScrollBarVisibility="Disabled">
+                <ContentControl x:Name="LrcHost"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Content="{Binding LyricControl}" />
+            </ScrollViewer>
         </Grid>
         <!--  功能区 鼠标进入后显示  -->
         <Grid x:Name="FuncPanel"

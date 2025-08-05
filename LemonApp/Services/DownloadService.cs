@@ -137,6 +137,10 @@ public class DownloadService(AppSettingService appSettingsService,
         var quality = AudioGetter.QualityMatcher(finalQuality);
         var cacheFile = Path.Combine(CacheManager.GetCachePath(CacheManager.CacheType.Music), music.MusicID + quality[0]);
         var dlFile = Path.Combine(DownloadPath, SanitizeFileName($"{music.MusicName} - {music.SingerText}{quality[0]}"));
+        if (File.Exists(dlFile))
+        {
+            File.Delete(dlFile);
+        }
         if (File.Exists(cacheFile))
         {
             //copy to download path

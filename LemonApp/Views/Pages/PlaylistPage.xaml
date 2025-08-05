@@ -284,10 +284,10 @@
                     <DataTemplate>
                         <Border x:Name="_border"
                                 MinHeight="48"
-                                Background="Transparent"
-                                CornerRadius="8"
                                 base:RightClickCommand.Command="{x:Static component:PublicPopupMenuHolder.ShowMusicOptionsCommand}"
-                                base:RightClickCommand.CommandParameter="{Binding}">
+                                base:RightClickCommand.CommandParameter="{Binding}"
+                                Background="Transparent"
+                                CornerRadius="8">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="3*" />

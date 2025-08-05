@@ -9,6 +9,8 @@ using LemonApp.Services;
 using System.Threading.Tasks;
 using System.Windows.Media.Animation;
 using System.Threading;
+using System.Diagnostics;
+using EleCho.WpfSuite;
 
 namespace LemonApp.Views.Windows
 {
@@ -22,6 +24,7 @@ namespace LemonApp.Views.Windows
             InitializeComponent();
             DataContext = vm;
             vm.UpdateAnimation = ShowLyricAnimation;
+            vm.ScrollLrc = ScrollLrc;
 
             var sc = SystemParameters.WorkArea;
             Top = sc.Bottom - Height;
@@ -31,6 +34,20 @@ namespace LemonApp.Views.Windows
             MouseEnter += DesktopLyricWindow_MouseEnter;
             MouseLeave += DesktopLyricWindow_MouseLeave;
             MouseDoubleClick += DesktopLyricWindow_MouseDoubleClick;
+        }
+        private FrameworkElement? currentBlock = null;
+        private void ScrollLrc(FrameworkElement block)
+        {
+            if (block == currentBlock ||block ==null)
+            {
+                return;
+            }
+            var position=block.TransformToVisual(LrcHost);
+            Point p = position.Transform(new Point(0, 0));
+            Debug.WriteLine(p.X);
+            LrcScrollViewer.BeginAnimation(ScrollViewerUtils.HorizontalOffsetProperty,
+                    new DoubleAnimation(p.X  - LrcScrollViewer.ViewportWidth *0.4, TimeSpan.FromMilliseconds(500)));
+            currentBlock = block;
         }
 
         private void ShowLyricAnimation()
@@ -49,6 +66,11 @@ namespace LemonApp.Views.Windows
                                       new LinearDoubleKeyFrame(20,TimeSpan.FromMilliseconds(300)),
                                       new LinearDoubleKeyFrame(0,TimeSpan.FromMilliseconds(500))]
             });
+            new Action(async() => {
+                await Task.Delay(200);
+                LrcScrollViewer.BeginAnimation(ScrollViewerUtils.HorizontalOffsetProperty, null);
+                ScrollViewerUtils.SetHorizontalOffset(LrcScrollViewer, 0);
+            })();
         }
 
         private void DesktopLyricWindow_MouseDoubleClick(object sender, MouseButtonEventArgs e)

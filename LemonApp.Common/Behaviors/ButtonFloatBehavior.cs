@@ -8,41 +8,49 @@ namespace LemonApp.Common.Behaviors;
 
 public class ButtonFloatBehavior : Behavior<Button>
 {
+    private TranslateTransform? _transform;
+    private const double FloatDistance = 10;
     protected override void OnAttached()
     {
         base.OnAttached();
+        AssociatedObject.RenderTransform = _transform = new();
         AssociatedObject.MouseEnter += AssociatedObject_MouseEnter;
         AssociatedObject.MouseLeave += AssociatedObject_MouseLeave;
     }
 
     private void AssociatedObject_MouseLeave(object sender, MouseEventArgs e)
     {
-        if (sender is Button { RenderTransform: TranslateTransform { } transform })
+        if(_transform!= null)
         {
-            var animation = new DoubleAnimation(-10, 0, TimeSpan.FromMilliseconds(300))
+            var animation = new DoubleAnimation(0, TimeSpan.FromMilliseconds(300))
             {
                 EasingFunction = new CubicEase()
             };
-            transform.BeginAnimation(TranslateTransform.YProperty, animation);
+            _transform.BeginAnimation(TranslateTransform.YProperty, animation);
         }
     }
 
     private void AssociatedObject_MouseEnter(object sender, MouseEventArgs e)
     {
-        if (sender is Button btn)
+        if (_transform!=null)
         {
+            //判断鼠标进入至少距离下边框FloatDistance距离
+            var mousePosition = e.GetPosition(AssociatedObject);
+            if (mousePosition.Y >AssociatedObject.ActualHeight-FloatDistance)
+                return;
             //鼠标进入时，按钮向上浮动动画
-            var transform = new TranslateTransform();
-            btn.RenderTransform = transform;
-            var animation = new DoubleAnimation(0, -10, TimeSpan.FromMilliseconds(300));
-            animation.EasingFunction = new CubicEase();
-            transform.BeginAnimation(TranslateTransform.YProperty, animation);
+            var animation = new DoubleAnimation(0, -FloatDistance, TimeSpan.FromMilliseconds(300))
+            {
+                EasingFunction = new CubicEase()
+            };
+            _transform.BeginAnimation(TranslateTransform.YProperty, animation);
         }
     }
 
     protected override void OnDetaching()
     {
         base.OnDetaching();
-        AssociatedObject.MouseEnter += AssociatedObject_MouseEnter;
+        AssociatedObject.MouseEnter -= AssociatedObject_MouseEnter;
+        AssociatedObject.MouseLeave -= AssociatedObject_MouseLeave;
     }
 }

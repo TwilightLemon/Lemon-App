@@ -16,12 +16,13 @@ namespace LemonApp.Views.UserControls;
 /// </summary>
 public partial class LyricLineControl : UserControl
 {
-    private int EmphasisThreshold { get; set; } = 1800; // 高亮抬起分词的阈值ms
+    private int EmphasisThreshold { get; set; } = 1800; // 高亮抬起分词的阈值ms,在LoadMainLrc时会重新计算
     private readonly Dictionary<ISyllableInfo, TextBlock> mainSyllableLrcs = [], romajiSyllableLrcs = [];
     private const int InActiveLrcBlurRadius = 6;
     private int ActiveLrcLiftupHeight = -4;
     private double AverageWordDuration = 0.0;
     public SyllableLineInfo? RomajiSyllables { get; private set; }
+    public Dictionary<ISyllableInfo, TextBlock> MainSyllableLrcs => mainSyllableLrcs;
 
     private bool _isPlainLrc = false;
 
