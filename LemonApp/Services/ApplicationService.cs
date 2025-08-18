@@ -47,6 +47,8 @@ namespace LemonApp.Services
             });
 
             var startup = async() =>{
+                UpdaterWindow.CheckUpdateAsync();
+
                 await CacheManager.LoadPath();
                 await serviceProvider.GetRequiredService<MediaPlayerService>().Init();
 

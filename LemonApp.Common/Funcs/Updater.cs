@@ -33,7 +33,7 @@ public class Updater
             if (string.IsNullOrEmpty(ver) || string.IsNullOrEmpty(title) || string.IsNullOrEmpty(desc) || string.IsNullOrEmpty(date) || string.IsNullOrEmpty(downloadUrl))
                 return false;
 
-            Version version = Version.Parse(ver);
+            Version version = Version.Parse(ver.TrimStart('v'));
             DateTimeOffset publishDate = DateTimeOffset.Parse(date);
             Config = new UpdaterConfig(version, title, desc, downloadUrl, publishDate.ToString("d"),filesize);
 

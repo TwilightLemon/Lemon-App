@@ -38,16 +38,18 @@ public partial class DesktopLyricWindowViewModel:ObservableObject
     private async void _settingsMgr_OnDataChanged()
     {
         await _settingsMgr.LoadAsync();
-        LyricControl.Dispatcher.Invoke(ApplyLrcFontSize);
+        LyricControl.Dispatcher.Invoke(ApplySettings);
     }
 
     public Action? UpdateAnimation { get;set; }
     public Action<FrameworkElement>? ScrollLrc { get; set; }
-    private void ApplyLrcFontSize()
+    private void ApplySettings()
     {
 #pragma warning disable MVVMTK0034 
         if (_lyricControl != null)
         {
+            ShowTranslation = _settingsMgr.Data.ShowTranslation;
+            _lyricControl.FontFamily = new FontFamily(_settingsMgr.Data.FontFamily);
             _lyricControl.FontSize = _settingsMgr.Data.LrcFontSize*0.6;
             foreach (var block in _lyricControl.MainSyllableLrcs)
             {
@@ -65,7 +67,7 @@ public partial class DesktopLyricWindowViewModel:ObservableObject
     private void CustomLyricControlStyle()
     {
 #pragma warning disable MVVMTK0034
-        ApplyLrcFontSize();
+        ApplySettings();
         _lyricControl.TranslationLrc.TextAlignment = TextAlignment.Center;
         _lyricControl.MainLrcContainer.HorizontalAlignment = HorizontalAlignment.Center;
         _lyricControl.RomajiLrcContainer.HorizontalAlignment = HorizontalAlignment.Center;
@@ -182,12 +184,12 @@ public partial class DesktopLyricWindowViewModel:ObservableObject
     private void FontSizeUp()
     {
         _settingsMgr.Data.LrcFontSize += 2;
-        ApplyLrcFontSize();
+        ApplySettings();
     }
     [RelayCommand]
     private void FontSizeDown()
     {
         _settingsMgr.Data.LrcFontSize -= 2;
-        ApplyLrcFontSize();
+        ApplySettings();
     }
 }

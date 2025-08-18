@@ -19,11 +19,11 @@
     <Grid>
         <Grid Margin="0,0,0,56" Background="{DynamicResource TabMaskColor}">
             <TextBlock x:Name="TitleTb"
-                       Margin="16,8"
+                       Margin="16,14"
                        FontSize="16"
                        FontWeight="Bold"
                        Text="Update Available" />
-            <TextBlock Margin="20,36,0,8">
+            <TextBlock Margin="20,42,0,8" TextWrapping="Wrap">
                 <Run d:Text="v1.0.0.0-preview" Text="{Binding Config.Title}" />
                 <LineBreak />
                 <Run d:Text="Description..." Text="{Binding Config.Description}" />
@@ -31,7 +31,7 @@
         </Grid>
         <ws:ProgressBar x:Name="DownloadProgressBar"
                         Height="4"
-                        Margin="20,0,20,56"
+                        Margin="20,0,20,54"
                         VerticalAlignment="Bottom"
                         d:IsIndeterminate="True"
                         Background="{DynamicResource MaskColor}"
@@ -39,7 +39,12 @@
                         CornerRadius="2"
                         Foreground="{DynamicResource HighlightThemeColor}"
                         Maximum="100" />
-        <Border Height="56" VerticalAlignment="Bottom">
+        <Grid Height="56" VerticalAlignment="Bottom">
+            <TextBlock Margin="22,0,0,0"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center">
+                Package Size: <Run Text="{Binding PackageSize}" />
+            </TextBlock>
             <ws:WrapPanel Margin="0,0,20,0"
                           HorizontalAlignment="Right"
                           VerticalAlignment="Center"
@@ -54,6 +59,6 @@
                            Content="Cancel"
                            Style="{StaticResource SimpleButtonStyleForWs}" />
             </ws:WrapPanel>
-        </Border>
+        </Grid>
     </Grid>
 </base:FluentWindowBase>

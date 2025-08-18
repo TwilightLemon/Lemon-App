@@ -475,7 +475,7 @@ public partial class MainWindowViewModel : ObservableObject
         homeMenu = new MainMenu("Home", (Geometry)App.Current.FindResource("Menu_Home"), typeof(HomePage));
         rankMenu = new MainMenu("Rank", (Geometry)App.Current.FindResource("Menu_Ranklist"), typeof(RanklistPage));
         singerMenu = new MainMenu("Singer", (Geometry)App.Current.FindResource("Menu_Singer"), typeof(UnsupportedPage));
-        playlistMenu = new MainMenu("Playlists", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(UnsupportedPage));
+        playlistMenu = new MainMenu("Playlists", (Geometry)App.Current.FindResource("Menu_Platlists"), typeof(UnsupportedPage));
         radioMenu = new MainMenu("Radio", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(UnsupportedPage));
         
         boughtMenu = new MainMenu("Bought", (Geometry)App.Current.FindResource("Menu_Bought"), typeof(AlbumListPage), MenuType.Mine, LoadMyBoughtAlbum);

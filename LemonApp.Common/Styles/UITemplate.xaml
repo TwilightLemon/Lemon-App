@@ -140,9 +140,6 @@
         </Setter>
     </Style>
     <!--#endregion-->
-    <!--#region ContextMenu-->
-
-    <!--#endregion-->
     <Style x:Key="SelectiveOnlyTextBoxStyle" TargetType="TextBox">
         <Setter Property="Foreground" Value="{DynamicResource ForeColor}" />
         <Setter Property="Background" Value="Transparent" />

@@ -19,6 +19,7 @@ public class DesktopLyricOption
 {
     public bool ShowTranslation { get; set; } = true;
     public double LrcFontSize { get; set; } = 32d;
+    public string FontFamily { get; set; } = "Segou UI";
 }
 
 public class LyricOption

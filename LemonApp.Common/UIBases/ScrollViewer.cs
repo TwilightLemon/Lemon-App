@@ -31,7 +31,7 @@ namespace LemonApp.Common.UIBases
         /// <summary>
         /// 精确模型的插值系数，数值越大，滚动越快接近目标
         /// </summary>
-        private const double LerpFactor = 0.3;
+        private const double LerpFactor = 0.5;
 
         public ScrollViewer()
         {
@@ -89,7 +89,7 @@ namespace LemonApp.Common.UIBases
             //手还在屏幕上，使用精确滚动
             _isAccuracyControl = true;
             double deltaY = -e.DeltaManipulation.Translation.Y;
-            _targetOffset = Math.Clamp(_targetOffset + deltaY, 0, ScrollableHeight);
+            _targetOffset = Math.Clamp(_currentOffset + deltaY, 0, ScrollableHeight);
             // 记录最后一次速度
             _lastTouchVelocity = -e.Velocities.LinearVelocity.Y;
 
