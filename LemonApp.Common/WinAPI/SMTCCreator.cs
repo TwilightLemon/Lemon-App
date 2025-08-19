@@ -35,7 +35,7 @@ public class SMTCUpdater
     }
     public SMTCUpdater SetThumbnail(string ImgUrl)
     {
-        _updater.Thumbnail = RandomAccessStreamReference.CreateFromUri(new Uri(ImgUrl));
+        _updater.Thumbnail = string.IsNullOrEmpty(ImgUrl) ? null : RandomAccessStreamReference.CreateFromUri(new Uri(ImgUrl));
         return this;
     }
     public void Update()=>_updater.Update();

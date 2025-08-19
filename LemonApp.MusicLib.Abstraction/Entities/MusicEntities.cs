@@ -40,4 +40,5 @@ public class Music
     public MusicQuality Quality { set; get; }
     public string Littleid { set; get; } = "";
     public int MusicType { set; get; } = 0;
+    public string? LocalPath { set; get; } = null;
 }

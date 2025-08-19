@@ -11,7 +11,6 @@ public static class CoverGetter
 {
     public static async Task<string> GetCoverImgUrl(Func<HttpClient> hc,TencUserAuth auth,Music m)
     {
-        if (string.IsNullOrEmpty(m.MusicID)) return "";
         if (m.Source == Platform.qq)
         {
             if (m.Album != null && m.Album.Id != null)

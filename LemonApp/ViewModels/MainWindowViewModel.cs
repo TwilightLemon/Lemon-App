@@ -202,13 +202,13 @@ public partial class MainWindowViewModel : ObservableObject
     #region playlist & play controller
     private Random? _random;
     private List<int>? _randomIndexList;
-    private int GetIndexOfPlaylist(string? musicId)
+    private int GetIndexOfPlaylist(Music? m)
     {
-        if (musicId == null) return -1;
+        if (m == null||string.IsNullOrEmpty(m.MusicID)) return -1;
         int index = 0;
         foreach(var item in Playlist)
         {
-            if (item.MusicID == musicId)
+            if (item.MusicID == m.MusicID&&item.LocalPath==m.LocalPath)
                 break;
             index++;
         }
@@ -222,7 +222,7 @@ public partial class MainWindowViewModel : ObservableObject
         {
             if (CurrentPlaying != null)
             {
-                int index = GetIndexOfPlaylist(CurrentPlaying.MusicID);
+                int index = GetIndexOfPlaylist(CurrentPlaying);
                 if (index == -1) index = 0;
                 index = index == Playlist.Count - 1 ? 0 : index + 1;
                 PlaylistChoosen = Playlist[index];
@@ -232,7 +232,7 @@ public partial class MainWindowViewModel : ObservableObject
         {
             _random ??= new();
             _randomIndexList ??= [];
-            int currentIndex = GetIndexOfPlaylist(CurrentPlaying?.MusicID);
+            int currentIndex = GetIndexOfPlaylist(CurrentPlaying);
             if (currentIndex != -1)
             {
                 _randomIndexList.Add(currentIndex);
@@ -257,7 +257,7 @@ public partial class MainWindowViewModel : ObservableObject
         {
             if (CurrentPlaying != null)
             {
-                int index = GetIndexOfPlaylist(CurrentPlaying.MusicID);
+                int index = GetIndexOfPlaylist(CurrentPlaying);
                 if (index == -1) index = 0;
                 index = index == 0 ? Playlist.Count - 1 : index - 1;
                 PlaylistChoosen = Playlist[index];
@@ -405,11 +405,33 @@ public partial class MainWindowViewModel : ObservableObject
     public event Action<string>? SyncCurrentPlayingWithPlayListPage;
     private void MediaPlayerService_OnLoaded(Music m)
     {
-        App.Current.Dispatcher.Invoke(() =>
+        App.Current.Dispatcher.Invoke(async () =>
         {
-            CurrentPlaying = m;
             SyncCurrentPlayingWithPlayListPage?.Invoke(m.MusicID);
-            LyricView.LoadFromMusic(m);
+            if (m.Source != Platform.none)
+            {
+                CurrentPlaying = m;
+                LyricView.LoadFromMusic(m);
+            }
+            else
+            {
+                //从LocalDirService中查询后再加载
+                var localService = App.Services.GetRequiredService<LocalDissService>();
+                if (await localService.GetRelatedMusic(m) is { } matched)
+                {
+                    matched.LocalPath = m.LocalPath; //保持本地路径
+                    _mediaPlayerService.RewriteMusicMetadata(matched);
+
+                    int index = GetIndexOfPlaylist(m);
+                    if (index != -1)
+                        Playlist[index] = matched;
+                }
+                else
+                {
+                    CurrentPlaying = m;
+                    LyricView.LrcHost.Reset();
+                }
+            }
         });
     }
     private void MediaPlayerService_OnQualityChanged()
@@ -469,15 +491,15 @@ public partial class MainWindowViewModel : ObservableObject
     /// </summary>
     public ObservableCollection<MainMenu> MainMenus { get; set; } = [];
     private MainMenu? homeMenu, rankMenu, singerMenu, playlistMenu,
-        radioMenu, boughtMenu, downloadMenu, favMenu, mydissMenu;
+        localMenu, boughtMenu, downloadMenu, favMenu, mydissMenu;
     private void LoadMainMenus()
     {
         homeMenu = new MainMenu("Home", (Geometry)App.Current.FindResource("Menu_Home"), typeof(HomePage));
         rankMenu = new MainMenu("Rank", (Geometry)App.Current.FindResource("Menu_Ranklist"), typeof(RanklistPage));
         singerMenu = new MainMenu("Singer", (Geometry)App.Current.FindResource("Menu_Singer"), typeof(UnsupportedPage));
         playlistMenu = new MainMenu("Playlists", (Geometry)App.Current.FindResource("Menu_Platlists"), typeof(UnsupportedPage));
-        radioMenu = new MainMenu("Radio", Geometry.Parse("M0,0 L24,0 24,24 0,24 Z"), typeof(UnsupportedPage));
-        
+        localMenu = new MainMenu("Local", (Geometry)App.Current.FindResource("Menu_Local"), typeof(LocalMusicPage));
+
         boughtMenu = new MainMenu("Bought", (Geometry)App.Current.FindResource("Menu_Bought"), typeof(AlbumListPage), MenuType.Mine, LoadMyBoughtAlbum);
         downloadMenu = new MainMenu("Download", (Geometry)App.Current.FindResource("Menu_Download"), typeof(DownloadPage), MenuType.Mine) {
             Decorator = _downloadMenuDecorator
@@ -490,10 +512,9 @@ public partial class MainWindowViewModel : ObservableObject
             rankMenu,
             singerMenu, 
             playlistMenu,
-            radioMenu,
+            localMenu,
             boughtMenu,
             downloadMenu,
-            //new MainMenu("Local",(Geometry)App.Current.FindResource("Menu_Local"),typeof(Page),MenuType.Mine),    //先留几天再做吧  有点懒
             favMenu,
             mydissMenu
         ];
@@ -594,9 +615,22 @@ public partial class MainWindowViewModel : ObservableObject
                     NavigateToCommentPage(music);
                 }
                 break;
+            case PageType.LocalPlaylistPage:
+                if(arg is LocalDirMeta meta)
+                {
+                    NavigateToLocalPlaylistPage(meta);
+                }
+                break;
             default:
                 break;
         }
+    }
+    private void NavigateToLocalPlaylistPage(LocalDirMeta meta)
+    {
+        var view = _serviceProvider.GetRequiredService<LocalPlaylistPage>();
+        view.ViewModel=_playlistDataWrapper.LoadLocalPlaylistVm(meta);
+        RequestNavigateToPage.Invoke(view);
+        SelectedMenu = localMenu;
     }
     private void NavigateToCommentPage(Music m)
     {
@@ -819,11 +853,12 @@ public partial class MainWindowViewModel : ObservableObject
         _windowBasicComponent.UpdateThumbButtonState();
     }
 
-    async partial void OnPlaylistChoosenChanged(Music? value)
+    partial void OnPlaylistChoosenChanged(Music? value)
     {
         if (value != null&&value.MusicID!=CurrentPlaying?.MusicID)
         {
-            await _mediaPlayerService.LoadThenPlay(value);
+            
+            _=_mediaPlayerService.LoadThenPlay(value);
         }
     }
 
@@ -874,7 +909,7 @@ public partial class MainWindowViewModel : ObservableObject
 
     async partial void OnCurrentPlayingChanged(Music? value)
     {
-        if (value == null||string.IsNullOrEmpty(value.MusicID)) return;
+        if (value == null) return;
 
         await UpdateCover();
 

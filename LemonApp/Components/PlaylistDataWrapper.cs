@@ -1,4 +1,5 @@
-﻿using LemonApp.MusicLib.Abstraction.Entities;
+﻿using LemonApp.Common.Configs;
+using LemonApp.MusicLib.Abstraction.Entities;
 using LemonApp.MusicLib.Album;
 using LemonApp.MusicLib.Playlist;
 using LemonApp.MusicLib.RankList;
@@ -164,5 +165,16 @@ public class PlaylistDataWrapper(IServiceProvider sp,
             }
         }
        return vm;
+    }
+
+    public PlaylistPageViewModel LoadLocalPlaylistVm(LocalDirMeta meta)
+    {
+        var vm = sp.GetRequiredService<PlaylistPageViewModel>();
+        vm.Description = meta.Path;
+        vm.ListName = meta.Name?? "Local Playlist";
+        vm.PlaylistType= PlaylistType.Playlist;
+        //init music list
+        vm.InitMusicList(LocalDissService.GetMusics(meta.Path));
+        return vm;
     }
 }

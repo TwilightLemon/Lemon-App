@@ -101,6 +101,8 @@ namespace LemonApp
             services.AddTransient<SingerPage>();
             services.AddTransient<CommentPage>();
             services.AddSingleton<UnsupportedPage>();
+            services.AddSingleton<LocalMusicPage>();
+            services.AddTransient<LocalPlaylistPage>();
 
             //UI Components
             services.AddSingleton<LyricView>();

@@ -42,7 +42,11 @@ public enum PageType
     /// <summary>
     /// para: music entity
     /// </summary>
-    CommentPage
+    CommentPage,
+    /// <summary>
+    /// para: LocalDirMeta
+    /// </summary>
+    LocalPlaylistPage
 }
 public class MainNavigationService
 {

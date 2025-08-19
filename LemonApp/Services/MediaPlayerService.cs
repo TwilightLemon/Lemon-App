@@ -97,13 +97,8 @@ public class MediaPlayerService(UserProfileService userProfileService,
     {
         return LoadMusic(music, _playingMgr.Data.Quality);
     }
-    private async Task<bool> LoadMusic(Music music, MusicQuality prefer)
+    public async void RewriteMusicMetadata(Music music)
     {
-        if (AudioGetter == null)
-            throw new InvalidOperationException("MediaPlayerService not initialized.");
-
-        Pause();
-        //set flag first
         CurrentMusic = music;
         _smtc.SetMediaStatus(SMTCMediaStatus.Playing);
         _smtc.Info.SetTitle(music.MusicName)
@@ -113,6 +108,33 @@ public class MediaPlayerService(UserProfileService userProfileService,
         _smtc.SetMediaStatus(SMTCMediaStatus.Paused);
 
         OnLoaded?.Invoke(music);
+    }
+    private async Task<bool> LoadMusic(Music music, MusicQuality prefer)
+    {
+        if (AudioGetter == null)
+            throw new InvalidOperationException("MediaPlayerService not initialized.");
+
+        Pause();
+        //set flag first
+        RewriteMusicMetadata(music);
+
+        //如果是本地歌曲，直接检索文件
+        if (music.LocalPath!=null)
+        {
+            if (File.Exists(music.LocalPath))
+            {
+                _player.Load(music.LocalPath);
+                string exName = new FileInfo(music.LocalPath).Extension;
+                CurrentQuality= AudioGetter.GetQualityByExtensionName(exName);
+                return true;
+            }
+            else
+            {
+                //本地文件不存在
+                FailedToLoadMusic?.Invoke(music);
+                return false;
+            }
+        }
 
         bool loadSucceeded= false;
 

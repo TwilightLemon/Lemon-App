@@ -32,6 +32,14 @@ public class AudioGetter(HttpClient hc,
         _ => throw new NotImplementedException("not supported quality.")
     };
 
+    public static MusicQuality GetQualityByExtensionName(string name)=> name switch
+    {
+        ".flac" => MusicQuality.SQ,
+        ".mp3" => MusicQuality.HQ,
+        ".m4a" => MusicQuality.Std,
+        ".wav" => MusicQuality.SQ,
+        _ => MusicQuality.Std
+    };
     public static MusicQuality GetFinalQuality(MusicQuality supported,MusicQuality preferred)
         => supported >= preferred ? preferred : supported;
     

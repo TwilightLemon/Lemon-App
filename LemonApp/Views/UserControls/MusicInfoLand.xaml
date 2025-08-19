@@ -34,10 +34,12 @@
                    Width="34"
                    Padding="0"
                    VerticalContentAlignment="Center"
+                   d:Visibility="Visible"
                    BorderBrush="{DynamicResource ForeColor}"
                    BorderThickness="1.5"
                    CornerRadius="6"
-                   Style="{StaticResource SimpleIconButtonStyleForWs}">
+                   Style="{StaticResource SimpleIconButtonStyleForWs}"
+                   Visibility="Collapsed">
             <TextBlock VerticalAlignment="Center"
                        FontSize="12"
                        FontWeight="Bold"

@@ -7,16 +7,12 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace LemonApp.Common.Configs;
-public class LocalDirMeta
-{
-    public string? Path { get; set; }
-    public string? Name { get; set; }
-    /// <summary>
-    /// filename - metadata
-    /// </summary>
-    public Dictionary<string, Music>? Musics;
-}
+public record class LocalDirMeta(string Path, string Name);
 public class LocalPlaylist
 {
     public List<LocalDirMeta> LocalDirs { get; set; } = [];
+    /// <summary>
+    /// file path hash -> music map
+    /// </summary>
+    public Dictionary<string, Music> IdMap { get; set; } = [];
 }
