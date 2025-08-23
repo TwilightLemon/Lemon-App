@@ -3,7 +3,13 @@ using System.Net.Http;
 using System.Text.Json.Nodes;
 
 namespace LemonApp.Common.Funcs;
-public record class UpdaterConfig(Version NewestVersion,string Title,string Description,string DownloadUrl,string PublishDate,int ReleaseFileSize);
+public record class UpdaterConfig(Version NewestVersion,
+                                  string Title,
+                                  string Description,
+                                  string DownloadUrl,
+                                  string PublishDate,
+                                  int ReleaseFileSize,
+                                  string ReleasePage);
 public class Updater
 {
     public Updater(HttpClient httpClient)
@@ -30,12 +36,13 @@ public class Updater
             var release = obj?["assets"]?.AsArray()?.FirstOrDefault(x => x?["name"]?.ToString() == ReleaseFileName);
             var downloadUrl = release?["browser_download_url"]?.ToString();
             var filesize = release?["size"]?.GetValue<int>() ?? 0;
+            var releasePage = obj?["html_url"]?.ToString() ?? "";
             if (string.IsNullOrEmpty(ver) || string.IsNullOrEmpty(title) || string.IsNullOrEmpty(desc) || string.IsNullOrEmpty(date) || string.IsNullOrEmpty(downloadUrl))
                 return false;
 
             Version version = Version.Parse(ver.TrimStart('v'));
             DateTimeOffset publishDate = DateTimeOffset.Parse(date);
-            Config = new UpdaterConfig(version, title, desc, downloadUrl, publishDate.ToString("d"),filesize);
+            Config = new UpdaterConfig(version, title, desc, downloadUrl, publishDate.ToString("d"),filesize,releasePage);
 
             return version > currentVersion;
         }

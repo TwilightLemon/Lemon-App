@@ -63,29 +63,37 @@ namespace LemonApp.Views.Windows
             {
                 ChunkCount = 4,
                 ParallelDownload = true,
-                MaxTryAgainOnFailover = 10
+                MaxTryAgainOnFailover = 10,
+                ClearPackageOnCompletionWithFailure = true
             }, null);
             downloader.DownloadProgressChanged += (_, e) => {
                 Dispatcher.Invoke(() => { DownloadProgressBar.Value = e.ProgressPercentage; });
             };
             await downloader.DownloadFileTaskAsync(redirectUrl, zipFile);
-            // Extract the zip file
-            ZipFile.ExtractToDirectory(zipFile, extractPath);
-            // run installer
-            var installerPath = Path.Combine(extractPath, "win-release.exe");
-            if (File.Exists(installerPath))
+            var zipInfo = new FileInfo(zipFile);
+            if (zipInfo.Exists && zipInfo.Length == Config.ReleaseFileSize)
             {
-                var process = new Process
+                // Extract the zip file
+                ZipFile.ExtractToDirectory(zipFile, extractPath);
+                // run installer
+                var installerPath = Path.Combine(extractPath, "win-release.exe");
+                if (File.Exists(installerPath))
                 {
-                    StartInfo = new ()
+                    var process = new Process
                     {
-                        FileName = installerPath,
-                        UseShellExecute = true
-                    }
-                };
-                process.Start();
-                Close();
+                        StartInfo = new()
+                        {
+                            FileName = installerPath,
+                            UseShellExecute = true
+                        }
+                    };
+                    process.Start();
+                    Close();
+                    return;
+                }
             }
+            //failed
+            ExMessageBox.Show("Failed to download update package, please refer to the release page on GitHub to update manually.");
         }
 
         private void CancelBtn_Click(object sender, RoutedEventArgs e)

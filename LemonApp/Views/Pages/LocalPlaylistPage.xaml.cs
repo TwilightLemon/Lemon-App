@@ -1,5 +1,7 @@
 ﻿using LemonApp.MusicLib.Abstraction.Entities;
 using LemonApp.ViewModels;
+using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -37,6 +39,18 @@ namespace LemonApp.Views.Pages
         {
             get => DataContext as PlaylistPageViewModel;
             set => DataContext = value;
+        }
+
+        private void OpenDirectoryBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if(ViewModel.Description is { }dir && Directory.Exists(dir))
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = dir,
+                    UseShellExecute = true
+                });
+            }
         }
     }
 }

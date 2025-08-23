@@ -36,7 +36,7 @@
                            Text="{Binding ListName}"
                            TextWrapping="NoWrap"
                            ToolTip="{Binding Description}" />
-                <Grid VerticalAlignment="Bottom" Margin="10 0 0 0">
+                <Grid Margin="10,0,0,0" VerticalAlignment="Bottom">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="2*" />
                         <ColumnDefinition Width="1*" />
@@ -63,20 +63,22 @@
                                      FontSize="16"
                                      Text="&#xE768;" /><Run Text=" " /><Run Text=" Play All" /></TextBlock>
                         </ws:Button>
-                        <ws:Button Width="36"
+                        <!--  complete later  -->
+                        <!--<ws:Button Width="36"
                                    Command="{x:Static component:PublicPopupMenuHolder.AddToQuickAccessCommand}"
                                    CommandParameter="{Binding QuickAccessData}"
                                    Content="&#xE710;"
                                    FontFamily="{StaticResource SegoeFluentIcon}"
                                    FontSize="14"
                                    Style="{StaticResource SimpleButtonStyleForWs}"
-                                   ToolTip="Add to Quick Access" />
+                                   ToolTip="Add to Quick Access" />-->
                         <ws:Button Width="36"
+                                   Click="OpenDirectoryBtn_Click"
                                    Content="&#xE72D;"
                                    FontFamily="{StaticResource SegoeFluentIcon}"
                                    FontSize="14"
                                    Style="{StaticResource SimpleButtonStyleForWs}"
-                                   ToolTip="Share" />
+                                   ToolTip="Open directory" />
                         <TextBlock Padding="6,0"
                                    HorizontalAlignment="Left"
                                    VerticalAlignment="Center">
@@ -106,25 +108,23 @@
                                                    Height="22"
                                                    HorizontalAlignment="Left"
                                                    d:Condition="True">
-                                <Border Background="{DynamicResource HighlightThemeColor}"
-                                        CornerRadius="2" />
+                                <Border Background="{DynamicResource HighlightThemeColor}" CornerRadius="2" />
                             </ws:ConditionalControl>
                             <TextBlock Margin="10,0,0,0"
                                        HorizontalAlignment="Left"
                                        VerticalAlignment="Center"
-                                       FontSize="12"
                                        d:Text="1"
+                                       FontSize="12"
                                        Opacity="0.6">
                                 <TextBlock.Text>
                                     <MultiBinding Converter="{x:Static converter:IndexOfConverter.Instance}">
                                         <Binding />
-                                        <Binding ElementName="listBox"
-                                                 Path="ItemsSource" />
+                                        <Binding ElementName="listBox" Path="ItemsSource" />
                                     </MultiBinding>
                                 </TextBlock.Text>
                             </TextBlock>
-                            <TextBlock VerticalAlignment="Center"
-                                       Margin="32 0 0 0"
+                            <TextBlock Margin="32,0,0,0"
+                                       VerticalAlignment="Center"
                                        Text="{Binding MusicName}" />
                         </Grid>
                     </Border>
@@ -133,17 +133,12 @@
                             <DataTrigger.Binding>
                                 <MultiBinding Converter="{x:Static converter:MusicEqualConverter.Instance}">
                                     <Binding />
-                                    <Binding Path="DataContext.Playing"
-                                             RelativeSource="{RelativeSource AncestorType={x:Type ws:ListBox}}" />
+                                    <Binding Path="DataContext.Playing" RelativeSource="{RelativeSource AncestorType={x:Type ws:ListBox}}" />
                                 </MultiBinding>
                             </DataTrigger.Binding>
-                            <Setter Property="TextElement.Foreground"
-                                    Value="{DynamicResource HighlightThemeColor}" />
-                            <Setter Property="TextElement.FontWeight"
-                                    Value="Bold" />
-                            <Setter TargetName="Highlighter"
-                                    Property="Condition"
-                                    Value="True" />
+                            <Setter Property="TextElement.Foreground" Value="{DynamicResource HighlightThemeColor}" />
+                            <Setter Property="TextElement.FontWeight" Value="Bold" />
+                            <Setter TargetName="Highlighter" Property="Condition" Value="True" />
                             <!--<Setter TargetName="_border"
                                         Property="Background"
                                         Value="{DynamicResource MaskColor}" />-->

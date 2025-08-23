@@ -23,6 +23,8 @@ public partial class LyricLineControl : UserControl
     private double AverageWordDuration = 0.0;
     public SyllableLineInfo? RomajiSyllables { get; private set; }
     public Dictionary<ISyllableInfo, TextBlock> MainSyllableLrcs => mainSyllableLrcs;
+    private readonly EasingFunctionBase _lrcAnimationEasing = new ExponentialEase()
+    { EasingMode = EasingMode.EaseIn, Exponent = 3 };
 
     private bool _isPlainLrc = false;
 
@@ -249,12 +251,12 @@ public partial class LyricLineControl : UserControl
                                         {
                                             KeyFrames = [
                                                 new EasingDoubleKeyFrame(default, TimeSpan.FromMilliseconds(begin)),
-                                            new EasingDoubleKeyFrame(up, TimeSpan.FromMilliseconds((double)syllable.Duration*(double)(index+1)/(double)textBlock.Inlines.Count)){
-                                                EasingFunction=easing
-                                            },
-                                            new EasingDoubleKeyFrame(up, TimeSpan.FromMilliseconds(syllable.Duration))
-                                                //此处移除了下落动画，统一在该句结束后调整
-                                                ]
+                                                new EasingDoubleKeyFrame(up, TimeSpan.FromMilliseconds((double)syllable.Duration*(double)(index+1)/(double)textBlock.Inlines.Count)){
+                                                    EasingFunction=easing
+                                                },
+                                                new EasingDoubleKeyFrame(up, TimeSpan.FromMilliseconds(syllable.Duration))
+                                                    //此处移除了下落动画，统一在该句结束后调整
+                                            ]
                                         };
                                         upAni.Completed += (_, _) => hideLighter();
                                         ts.BeginAnimation(TranslateTransform.YProperty, upAni);
@@ -269,15 +271,17 @@ public partial class LyricLineControl : UserControl
                                             KeyFrames =
                                             [
                                                 new EasingDoubleKeyFrame(0, TimeSpan.FromMilliseconds(begin)),
-                                            new EasingDoubleKeyFrame(1, TimeSpan.FromMilliseconds(syllable.Duration * (index + 1) / textBlock.Inlines.Count))
+                                                new EasingDoubleKeyFrame(1, TimeSpan.FromMilliseconds(syllable.Duration * (index + 1) / textBlock.Inlines.Count))
                                             ]
                                         };
                                         var aniDelay = new DoubleAnimationUsingKeyFrames
                                         {
                                             KeyFrames =
                                             [
-                                                new EasingDoubleKeyFrame(0, TimeSpan.FromMilliseconds(begin*1.2)),
-                                            new EasingDoubleKeyFrame(1, TimeSpan.FromMilliseconds(begin*1.2+ syllable.Duration/textBlock.Inlines.Count))
+                                                new EasingDoubleKeyFrame(0, TimeSpan.FromMilliseconds(begin)),
+                                                new EasingDoubleKeyFrame(1, TimeSpan.FromMilliseconds(begin + syllable.Duration/textBlock.Inlines.Count)){
+                                                    EasingFunction=_lrcAnimationEasing
+                                                }
                                             ]
                                         };
                                         single.GradientStops[1].BeginAnimation(GradientStop.OffsetProperty, aniDelay);
@@ -297,8 +301,13 @@ public partial class LyricLineControl : UserControl
                         {
                             var brush = EnsureBrush(textBlock, syllable, 0.0);
                             var duration = TimeSpan.FromMilliseconds(syllable.Duration);
-                            var anim = new DoubleAnimation(0.0, 1.0, new Duration(duration * 0.8));
-                            var animDelay = new DoubleAnimation(0.0, 1.0, new Duration(duration));
+                            var anim = new DoubleAnimation(0.0, 1.0, new Duration(duration));
+                            var animDelay = new DoubleAnimation(0.0, 1.0, new Duration(duration))
+                            {
+                                //using an easing function (EaseOut) to make the latter part slower, but make sure
+                                //it will end at the same time
+                                EasingFunction = _lrcAnimationEasing
+                            };
                             brush.GradientStops[1].BeginAnimation(GradientStop.OffsetProperty, animDelay);
                             brush.GradientStops[2].BeginAnimation(GradientStop.OffsetProperty, anim);
 
@@ -490,7 +499,8 @@ public partial class LyricLineControl : UserControl
             {   //Active
                 var blur = new BlurEffect() { Radius = InActiveLrcBlurRadius };
                 control.Effect = blur;
-                blur.BeginAnimation(BlurEffect.RadiusProperty, new DoubleAnimation(InActiveLrcBlurRadius, 0, TimeSpan.FromMilliseconds(300)));
+                var da = new DoubleAnimation(InActiveLrcBlurRadius, 0, TimeSpan.FromMilliseconds(300));
+                blur.BeginAnimation(BlurEffect.RadiusProperty, da);
 
                 if (control._isPlainLrc)
                 {

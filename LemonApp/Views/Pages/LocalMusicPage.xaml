@@ -12,7 +12,9 @@
       d:DesignWidth="800"
       Foreground="{DynamicResource ForeColor}"
       mc:Ignorable="d">
-
+    <Page.Resources>
+        <ws:BindingProxy x:Key="proxy" Data="{Binding}" />
+    </Page.Resources>
     <Grid>
         <base:ScrollViewer Style="{StaticResource SimpleVerticalScrollViewerStyle}">
             <StackPanel>
@@ -41,7 +43,15 @@
                                        CommandParameter="{Binding}"
                                        Content="{Binding Name}"
                                        Style="{StaticResource SimpleButtonStyleForWs}"
-                                       ToolTip="{Binding Path}" />
+                                       ToolTip="{Binding Path}">
+                                <ws:Button.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Command="{Binding Data.RemoveDirCommand, Source={StaticResource proxy}}"
+                                                  CommandParameter="{Binding}"
+                                                  Header="Remove" />
+                                    </ContextMenu>
+                                </ws:Button.ContextMenu>
+                            </ws:Button>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

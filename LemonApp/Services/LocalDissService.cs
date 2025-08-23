@@ -45,6 +45,8 @@ public class LocalDissService
         var meta = new LocalDirMeta(path, info.Name);
         LocalDirs.Add(meta);
     }
+
+    public bool RemoveDir(LocalDirMeta meta) => LocalDirs.Remove(meta);
     //TODO: 从文件元数据中获取音乐信息
     public async Task<Music?> GetRelatedMusic(Music local)
     {

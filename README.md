@@ -8,6 +8,7 @@
 [<img src="https://img.shields.io/badge/license-GPL%203.0-yellow"/>](LICENSE.txt)
 ![C#](https://img.shields.io/badge/lang-C%23-orange)
 ![WPF](https://img.shields.io/badge/UI-WPF-b33bb3)
+[![Release](https://img.shields.io/badge/Release-Lemon%20App-%23FF4D5B.svg?style=flat-squar)](https://github.com/TwilightLemon/Lemon-App/releases)
 ![GitHub Repo stars](https://img.shields.io/github/stars/TwilightLemon/Lemon-App)
 
 </div>
@@ -22,15 +23,13 @@
 - 🚧 **Actively Developed**: Currently in **pre-release**. Some pages are still under construction. Contributions are welcome!
 
 ## 📦 Installation
-
-> No installer yet, build from source is required.
+Download the lastest release here: [Releases](https://github.com/TwilightLemon/Lemon-App/releases). Or build from source manually.
 
 ### Requirements
 
 - ✅ [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 - ✅ WebView2 Runtime (for Windows 10 users, required for login)
   - [Download WebView2](https://developer.microsoft.com/en-us/microsoft-edge/webview2/)
-  - [WebView2 Runtime Installer](https://go.microsoft.com/fwlink/p/?LinkId=2124703)
 - ✅ Visual Studio 2022+ with WPF development tools
 - ✅ Windows 10+ (Windows 11 recommended)
 
@@ -57,7 +56,7 @@ dotnet build
 The application data is stored in the following directory:
 - **User Data**: `%APPDATA%\LemonAppNew` logs, settings, and cached data.
 - **Resource Cache**: `VOL:\LemonApp` where `VOL` is usually the second drive of your system. This folder contains cached resources like album covers, lyrics and media files etc.
-- **Download Location**: `%USERPROFILE%\Downloads\LemonApp` is the default download location.
+- **Download Location**: `%USERPROFILE%\Music\Lemon App` is the default download location.
 
 ### More to Explore
 - **Quick Access**: Fix playlists, artists, albums, and rankings to the title bar for quick access.
@@ -69,7 +68,7 @@ The application data is stored in the following directory:
 This project is licensed under the GNU General Public License v3.0. See the [LICENSE](LICENSE.txt) file for details.
 ### Third-Party Libraries
 
-This project uses the following third-party open-source libraries. We acknowledge and thank all contributors of these amazing tools.
+This project uses the following third-party libraries. We acknowledge and thank all contributors of these amazing tools.
 
 | Library | Description | License |
 |--------|-------------|---------|

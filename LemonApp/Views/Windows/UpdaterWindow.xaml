@@ -18,11 +18,14 @@
                        mc:Ignorable="d">
     <Grid>
         <Grid Margin="0,0,0,56" Background="{DynamicResource TabMaskColor}">
-            <TextBlock x:Name="TitleTb"
-                       Margin="16,14"
-                       FontSize="16"
-                       FontWeight="Bold"
-                       Text="Update Available" />
+            <TextBlock x:Name="TitleTb" Margin="16,14">
+                <Run FontSize="16"
+                     FontWeight="Bold"
+                     Text="Update Available  " />
+                <Hyperlink NavigateUri="{Binding Config.ReleasePage}">
+                    View on GitHub
+                </Hyperlink>
+            </TextBlock>
             <TextBlock Margin="20,42,0,8" TextWrapping="Wrap">
                 <Run d:Text="v1.0.0.0-preview" Text="{Binding Config.Title}" />
                 <LineBreak />
@@ -43,7 +46,7 @@
             <TextBlock Margin="22,0,0,0"
                        HorizontalAlignment="Left"
                        VerticalAlignment="Center">
-                Package Size: <Run Text="{Binding PackageSize}" />
+                Package Size:<Run Text="{Binding PackageSize}" />
             </TextBlock>
             <ws:WrapPanel Margin="0,0,20,0"
                           HorizontalAlignment="Right"
