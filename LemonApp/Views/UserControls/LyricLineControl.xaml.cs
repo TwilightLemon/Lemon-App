@@ -246,7 +246,7 @@ public partial class LyricLineControl : UserControl
                                 {
                                     if (line.Child.RenderTransform is TranslateTransform ts)
                                     {
-                                        double begin = 100 * index;
+                                        double begin = 60 * index;
                                         var upAni = new DoubleAnimationUsingKeyFrames()
                                         {
                                             KeyFrames = [
@@ -255,7 +255,7 @@ public partial class LyricLineControl : UserControl
                                                     EasingFunction=easing
                                                 },
                                                 new EasingDoubleKeyFrame(up, TimeSpan.FromMilliseconds(syllable.Duration))
-                                                    //此处移除了下落动画，统一在该句结束后调整
+                                                //此处移除了下落动画，统一在该句结束后调整
                                             ]
                                         };
                                         upAni.Completed += (_, _) => hideLighter();

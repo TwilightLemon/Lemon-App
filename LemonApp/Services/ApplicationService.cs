@@ -67,9 +67,14 @@ namespace LemonApp.Services
                     mainWindow.Width = size.Width;
                     mainWindow.Height = size.Height;
                 }
-                appSettingsService.OnExiting += delegate {
-                    //save window size
-                    uiResourceService.SettingsMgr.Data.WindowSize = new Size(mainWindow.ActualWidth, mainWindow.ActualHeight);
+                appSettingsService.OnDataSaving += delegate
+                {
+                    App.Current.Dispatcher.Invoke(() =>
+                    {
+                        //save window size
+                        if (mainWindow.WindowState == WindowState.Normal)
+                            uiResourceService.SettingsMgr.Data.WindowSize = new Size(mainWindow.ActualWidth, mainWindow.ActualHeight);
+                    });
                 };
                 mainWindow.Show();
                 SystemThemeAPI.RegesterOnThemeChanged(mainWindow, OnThemeChanged, OnSystemColorChanged);

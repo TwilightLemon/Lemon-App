@@ -57,13 +57,5 @@ namespace LemonApp.Views.Pages
                 }
             }
         }
-
-        private void HotSongList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            if (DataContext is SingerPageViewModel { SingerPageData: not null } vm)
-            {
-                _ = vm.PlayHotSongs();
-            }
-        }
     }
 }

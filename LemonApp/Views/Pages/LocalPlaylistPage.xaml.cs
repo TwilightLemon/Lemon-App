@@ -16,11 +16,6 @@ namespace LemonApp.Views.Pages
         {
             InitializeComponent();
         }
-        private void listBox_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            if (listBox.SelectedItem is Music { } m)
-                ViewModel.PlayMusicCommand.Execute(m);
-        }
 
         private void GotoPlayingBtn_Click(object sender, RoutedEventArgs e)
         {

@@ -77,7 +77,7 @@ public partial class MainWindowViewModel : ObservableObject
 
         _uiResourceService.OnColorModeChanged += UIResourceService_OnColorModeChanged;
 
-        _appSettingsService.OnExiting += AppSettingsService_OnExiting;
+        _appSettingsService.OnDataSaving += AppSettingsService_OnDataSaving;
 
         _mediaPlayerService.OnLoaded += MediaPlayerService_OnLoaded;
         _mediaPlayerService.OnPlay += MediaPlayerService_OnPlay;
@@ -289,7 +289,7 @@ public partial class MainWindowViewModel : ObservableObject
         }else PlayNext();
     }
 
-    private void AppSettingsService_OnExiting()
+    private void AppSettingsService_OnDataSaving()
     {
         //save playing and play list
         _currentPlayingMgr.Data ??= new();
@@ -907,16 +907,14 @@ public partial class MainWindowViewModel : ObservableObject
         }
     }
 
-    async partial void OnCurrentPlayingChanged(Music? value)
+    partial void OnCurrentPlayingChanged(Music? value)
     {
         if (value == null) return;
-
-        await UpdateCover();
-
+        PlaylistChoosen = value;
         CurrentPlayingPosition = 0;
         CurrentPlayingPositionText = "00:00";
 
-        PlaylistChoosen = value;
+        _= UpdateCover();
     }
     partial void OnCurrentPlayingVolumeChanged(double value)
     {

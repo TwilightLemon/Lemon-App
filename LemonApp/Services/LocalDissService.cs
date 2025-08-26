@@ -25,13 +25,13 @@ public class LocalDissService
         settings = appSettingsService.GetConfigMgr<LocalPlaylist>();
         hc = httpClientFactory.CreateClient(App.PublicClientFlag);
         LocalDirs = [.. settings.Data.LocalDirs];
-        appSettingsService.OnExiting += AppSettingsService_OnExiting;
+        appSettingsService.OnDataSaving += AppSettingsService_OnDataSaving;
     }
 
     /// <summary>
     /// Sync while exiting.
     /// </summary>
-    private void AppSettingsService_OnExiting()
+    private void AppSettingsService_OnDataSaving()
     {
         settings.Data.LocalDirs = [.. LocalDirs];
     }

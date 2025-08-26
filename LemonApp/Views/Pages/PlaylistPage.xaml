@@ -277,13 +277,14 @@
                         d:ItemsSource="{d:SampleData ItemCount=5}"
                         ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}"
                         ItemsSource="{Binding Musics}"
-                        MouseDoubleClick="listBox_MouseDoubleClick"
                         ScrollViewer.ScrollChanged="listBox_ScrollChanged"
                         Style="{DynamicResource SimpleListBoxStyle}">
                 <ws:ListBox.ItemTemplate>
                     <DataTemplate>
                         <Border x:Name="_border"
                                 MinHeight="48"
+                                base:DoubleClickCommand.Command="{Binding DataContext.PlayMusicCommand, RelativeSource={RelativeSource AncestorType=ws:ListBox}}"
+                                base:DoubleClickCommand.CommandParameter="{Binding}"
                                 base:RightClickCommand.Command="{x:Static component:PublicPopupMenuHolder.ShowMusicOptionsCommand}"
                                 base:RightClickCommand.CommandParameter="{Binding}"
                                 Background="Transparent"

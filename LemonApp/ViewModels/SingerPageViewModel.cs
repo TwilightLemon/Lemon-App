@@ -25,7 +25,8 @@ public partial class SingerPageViewModel(
     private Brush? _bigBackground;
 
     private bool _hasAddToPlayList;
-    public async Task PlayHotSongs()
+    [RelayCommand]
+    private async Task PlaySelectedHotSong()
     {
         if (SelectedHotSong == null|| SingerPageData==null) return;
         if (!_hasAddToPlayList)

@@ -4,6 +4,7 @@ using Downloader;
 using LemonApp.Common.Funcs;
 using LemonApp.Common.UIBases;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -49,7 +50,7 @@ namespace LemonApp.Views.Windows
         partial void OnConfigChanged(UpdaterConfig? value)
         {
             if(value is null) return;
-            PackageSize = value.ReleaseFileSize / 1024.0 / 1024.0 + " MB";
+            PackageSize =Math.Round( value.ReleaseFileSize / 1024.0 / 1024.0,3) + " MB";
         }
         [RelayCommand]
         private async Task Update()
@@ -74,6 +75,8 @@ namespace LemonApp.Views.Windows
             if (zipInfo.Exists && zipInfo.Length == Config.ReleaseFileSize)
             {
                 // Extract the zip file
+                if(Directory.Exists(extractPath))
+                    Directory.Delete(extractPath,true);
                 ZipFile.ExtractToDirectory(zipFile, extractPath);
                 // run installer
                 var installerPath = Path.Combine(extractPath, "win-release.exe");

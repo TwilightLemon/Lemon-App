@@ -15,7 +15,9 @@ namespace LemonApp.Services;
 public class AppSettingService :IHostedService,IConfigManager
 {
     private readonly Dictionary<Type, object> _settingsMgrs = [];
-    public event Action? OnExiting;
+    private readonly TimeSpan SaveInterval = TimeSpan.FromMinutes(10);
+    private Timer? _timer;
+    public event Action? OnDataSaving;
 
     public AppSettingService AddConfig<T>(Settings.sType type=Settings.sType.Settings) where T : class{
         if(Activator.CreateInstance(typeof(SettingsMgr<>).MakeGenericType(typeof(T)),
@@ -50,17 +52,11 @@ public class AppSettingService :IHostedService,IConfigManager
                 throw new Exception($"failed to load AppSettings: {mgr}");
         }
     }
-    public Task StartAsync(CancellationToken cancellationToken)
-    {
-        Load();
-        return Task.CompletedTask;
-    }
-
-    public Task StopAsync(CancellationToken cancellationToken)
+    private void Save()
     {
         try
         {
-            OnExiting?.Invoke();
+            OnDataSaving?.Invoke();
         }
         finally
         {
@@ -71,6 +67,18 @@ public class AppSettingService :IHostedService,IConfigManager
                 Debug.WriteLine($"SettingsMgr<{mgr.GetType().GenericTypeArguments[0].Name}> Saved");
             }
         }
+    }
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        Load();
+        _timer = new Timer(_ => Save(), null, SaveInterval, SaveInterval);
+        return Task.CompletedTask;
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        Save();
+        _timer?.Dispose();
         return Task.CompletedTask;
     }
 }
