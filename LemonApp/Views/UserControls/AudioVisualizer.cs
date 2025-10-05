@@ -10,23 +10,29 @@ public class AudioVisualizer : FrameworkElement
     {
         DefaultStyleKeyProperty.OverrideMetadata(typeof(AudioVisualizer), new FrameworkPropertyMetadata(typeof(AudioVisualizer)));
     }
-    private readonly DrawingVisual _visualHost = new();
+    private readonly DrawingVisual _lowFreqVisual = new();
+    private readonly DrawingVisual _highFreqVisual = new();
     private readonly VisualCollection _children;
     public AudioVisualizer()
     {
         this.IsVisibleChanged += AudioVisualizer_IsVisibleChanged;
         _children = new(this)
         {
-            _visualHost
+            _highFreqVisual,
+            _lowFreqVisual
         };
     }
 
     // 必须重写这两个方法以支持视觉子元素
-    protected override int VisualChildrenCount => 1;
+    protected override int VisualChildrenCount => 2;
     protected override Visual GetVisualChild(int index)
     {
-        ArgumentOutOfRangeException.ThrowIfNotEqual(index, 0);
-        return _visualHost;
+        return index switch
+        {
+            0 => _highFreqVisual,
+            1 => _lowFreqVisual,
+            _ => throw new ArgumentOutOfRangeException(nameof(index)),
+        };
     }
 
     private void AudioVisualizer_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -56,6 +62,7 @@ public class AudioVisualizer : FrameworkElement
     private bool _isRunning = false;
     private readonly float[] _spectrumData = new float[1024];
     private readonly float[] _displayValues = new float[1024];
+    private Brush _highFreqFill;
 
     public int StripCount
     {
@@ -73,7 +80,18 @@ public class AudioVisualizer : FrameworkElement
         set { SetValue(FillProperty, value); }
     }
     public static readonly DependencyProperty FillProperty =
-        DependencyProperty.Register("Fill", typeof(Brush), typeof(AudioVisualizer), new PropertyMetadata(Brushes.LightBlue));
+        DependencyProperty.Register("Fill", typeof(Brush), typeof(AudioVisualizer), new PropertyMetadata(Brushes.LightBlue, OnFillChanged));
+
+    private static void OnFillChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if (d is AudioVisualizer visualizer && e.NewValue is Brush newBrush)
+        {
+            var highFreqBrush = newBrush.Clone();
+            highFreqBrush.Opacity = 0.6;
+            highFreqBrush.Freeze();
+            visualizer._highFreqFill = highFreqBrush;
+        }
+    }
 
     public bool IsPlaying
     {
@@ -103,34 +121,83 @@ public class AudioVisualizer : FrameworkElement
 
     private void CompositionTarget_Rendering(object? sender, EventArgs e)
     {
+        if (Player == null) return;
         Player.GetFFTData(_spectrumData);
 
-        using DrawingContext dc = _visualHost.RenderOpen();
-        DrawStrips(dc, _spectrumData);
+        using (DrawingContext dcHigh = _highFreqVisual.RenderOpen())
+        {
+            DrawStrips(dcHigh, _spectrumData,  _highFreqFill, true);
+        }
+        using (DrawingContext dcLow = _lowFreqVisual.RenderOpen())
+        {
+            DrawStrips(dcLow, _spectrumData,  Fill, false);
+        }
     }
 
-    private void DrawStrips(DrawingContext drawingContext, float[] spectrumData)
+    private void DrawStrips(DrawingContext drawingContext, float[] spectrumData,  Brush fill, bool reversed)
     {
         int stripCount = StripCount;
-        int total = stripCount - 1;
-        const float easing = 0.25f;
+        int actualHeight = (int)ActualHeight;
+        if (stripCount <= 0) return;
 
-        // 更新缓动值
+        float[] processedData = new float[stripCount];
+        int dataLen = spectrumData.Length / 2; // We only use the first half of the spectrum data (real part)
+
+        // Logarithmic scaling
+        double logMin = Math.Log(1);
+        double logMax = Math.Log(dataLen);
+        double logRange = logMax - logMin;
+
         for (int i = 0; i < stripCount; i++)
         {
-            double target = spectrumData[i];
-            _displayValues[i] += (float)((target - _displayValues[i]) * easing);
+            double logI = logMin + (logRange / stripCount) * i;
+            double linearI = Math.Exp(logI);
+            int index = (int)Math.Round(linearI);
+            if (index >= dataLen) index = dataLen - 1;
+
+            float value = (float)Math.Log10(1 + actualHeight * spectrumData[index]);
+            processedData[i] = value;
+        }
+
+        // Improved smoothing
+        const float attack = 0.15f; // Faster rise
+        const float decay = 0.08f;  // Slower fall
+
+        for (int i = 0; i < stripCount; i++)
+        {
+            float newValue = processedData[i];
+            float oldValue = _displayValues[i];
+
+            if (newValue > oldValue)
+            {
+                _displayValues[i] += (newValue - oldValue) * attack;
+            }
+            else
+            {
+                _displayValues[i] += (newValue - oldValue) * decay;
+            }
         }
 
         // 构建点集
         Point[] points = new Point[stripCount];
+        int total = stripCount > 1 ? stripCount - 1 : 1;
         for (int i = 0; i < stripCount; i++)
         {
-            double x = (1.0d - (double)i / total) * ActualWidth;
-            double y = ActualHeight * (1 - _displayValues[i]);
+            int displayIndex = i;
+            double x;
+            if (reversed)
+            {
+                x = (double)i / total * ActualWidth;
+            }
+            else
+            {
+                x = (1.0d - (double)i / total) * ActualWidth;
+            }
+            double y = actualHeight * (1 - _displayValues[displayIndex]);
             points[i] = new Point(x, y);
         }
 
+        // 绘制几何图形
         var geometry = new StreamGeometry();
         using (var ctx = geometry.Open())
         {
@@ -138,22 +205,21 @@ public class AudioVisualizer : FrameworkElement
 
             for (int i = 1; i < stripCount - 2; i++)
             {
-                // 取中点做平滑
                 var mid = new Point(
                     (points[i].X + points[i + 1].X) / 2,
                     (points[i].Y + points[i + 1].Y) / 2
                 );
                 ctx.QuadraticBezierTo(points[i], mid, true, false);
             }
-            // 最后两个点直接连接
-            ctx.LineTo(points[stripCount - 1], true, false);
-            // 闭合到底部
-            ctx.LineTo(new Point(points[stripCount - 1].X, ActualHeight), true, false);
-            ctx.LineTo(new Point(points[0].X, ActualHeight), true, false);
+            if (stripCount > 1)
+            {
+                ctx.LineTo(points[stripCount - 1], true, false);
+            }
+            ctx.LineTo(new Point(points[stripCount - 1].X, actualHeight), true, false);
+            ctx.LineTo(new Point(points[0].X, actualHeight), true, false);
             ctx.LineTo(points[0], true, false);
         }
         geometry.Freeze();
-        drawingContext.DrawGeometry(Fill, null, geometry);
+        drawingContext.DrawGeometry(fill, null, geometry);
     }
-
 }

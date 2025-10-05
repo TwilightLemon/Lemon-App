@@ -16,7 +16,6 @@ using System;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Windows;
-using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
 
 namespace LemonApp
 {

@@ -145,7 +145,7 @@ public class MusicPlayer
     /// <param name="fft"></param>
     public void GetFFTData(float[] fft)
     {
-        Bass.BASS_ChannelGetData(stream, fft, (int)BASSData.BASS_DATA_FFT2048);
+        Bass.BASS_ChannelGetData(stream, fft, (int)(BASSData.BASS_DATA_FFT2048 | BASSData.BASS_DATA_FFT_REMOVEDC));
     }
     /// <summary>
     /// 更新设备

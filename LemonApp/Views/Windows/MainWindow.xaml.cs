@@ -121,6 +121,7 @@ namespace LemonApp.Views.Windows
 
             //disabled for performance issue
             visualizer.Player = _serviceProvider.GetRequiredService<MediaPlayerService>().Player;
+            //roundVisualizer.Player = visualizer.Player;
             MainContentPage.Children.Add(_publicPopupMenuHolder.selector);
         }
 
