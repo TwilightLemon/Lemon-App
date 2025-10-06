@@ -22,6 +22,7 @@ public partial class LyricLineControl : UserControl
     private int ActiveLrcLiftupHeight = -4;
     private double AverageWordDuration = 0.0;
     public SyllableLineInfo? RomajiSyllables { get; private set; }
+    public ILineInfo? MainLineInfo { get; private set; }
     public Dictionary<ISyllableInfo, TextBlock> MainSyllableLrcs => mainSyllableLrcs;
     private readonly EasingFunctionBase _lrcAnimationEasing = new ExponentialEase()
     { EasingMode = EasingMode.EaseIn, Exponent = 3 };
@@ -35,19 +36,21 @@ public partial class LyricLineControl : UserControl
         //no blur effect
     }
 
-    public LyricLineControl(List<ISyllableInfo> words)
+    public LyricLineControl(SyllableLineInfo info)
     {
         InitializeComponent();
+        MainLineInfo = info;
         Effect = new BlurEffect() { Radius = InActiveLrcBlurRadius };
-        LoadMainLrc(words);
+        LoadMainLrc(info.Syllables);
     }
 
-    public LyricLineControl(string plainLrc)
+    public LyricLineControl(LineInfo info)
     {
         InitializeComponent();
+        MainLineInfo = info;
         Effect = new BlurEffect() { Radius = InActiveLrcBlurRadius };
         _isPlainLrc = true;
-        LoadPlainLrc(plainLrc);
+        LoadPlainLrc(info.Text);
     }
 
     public void ClearAll()
@@ -481,6 +484,60 @@ public partial class LyricLineControl : UserControl
         }
     }
 
+    public void SetActiveState(bool isActive,bool inactiveAnimated=true)
+    {
+        var control = this;
+        if (isActive)
+        {   //Active
+            var blur = new BlurEffect() { Radius = InActiveLrcBlurRadius };
+            control.Effect = blur;
+            var da = new DoubleAnimation(InActiveLrcBlurRadius, 0, TimeSpan.FromMilliseconds(300));
+            blur.BeginAnimation(BlurEffect.RadiusProperty, da);
+
+            if (control._isPlainLrc)
+            {
+                var fontColor = (SolidColorBrush)control.FindResource("ForeColor");
+                var highlightColor = control.CustomHighlighterColor ?? fontColor;
+                if (control.MainLrcContainer.Children[0] is TextBlock tb)
+                {
+                    tb.Foreground = highlightColor;
+                }
+            }
+            else
+            {
+                foreach (var lrc in control.mainSyllableLrcs)
+                {
+                    control.EnsureBrush(lrc.Value, lrc.Key, 0);
+                    if (lrc.Key.Duration >= control.EmphasisThreshold && lrc.Value.Inlines.Count > 1)
+                    {
+                        var empty = control.CreateBrush(0.0);
+                        foreach (var line in lrc.Value.Inlines)
+                        {
+                            if (line is InlineUIContainer con && con.Child is TextBlock block)
+                            {
+                                block.Foreground = empty;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            var blur = new BlurEffect() { Radius = 0 };
+            control.Effect = blur;
+            blur.BeginAnimation(BlurEffect.RadiusProperty, new DoubleAnimation(0, InActiveLrcBlurRadius, TimeSpan.FromMilliseconds(300)));
+            if (control._isPlainLrc)
+            {
+                if (control.MainLrcContainer.Children[0] is TextBlock tb)
+                {
+                    tb.SetResourceReference(ForegroundProperty, "InActiveLrcForeground");
+                }
+            }
+            else control.ClearHighlighter(inactiveAnimated);
+        }
+    }
+
     public bool IsCurrent
     {
         get { return (bool)GetValue(IsCurrentProperty); }
@@ -495,56 +552,7 @@ public partial class LyricLineControl : UserControl
     {
         if (d is LyricLineControl control)
         {
-            if ((bool)e.NewValue)
-            {   //Active
-                var blur = new BlurEffect() { Radius = InActiveLrcBlurRadius };
-                control.Effect = blur;
-                var da = new DoubleAnimation(InActiveLrcBlurRadius, 0, TimeSpan.FromMilliseconds(300));
-                blur.BeginAnimation(BlurEffect.RadiusProperty, da);
-
-                if (control._isPlainLrc)
-                {
-                    var fontColor = (SolidColorBrush)control.FindResource("ForeColor");
-                    var highlightColor = control.CustomHighlighterColor ?? fontColor;
-                    if (control.MainLrcContainer.Children[0] is TextBlock tb)
-                    {
-                        tb.Foreground = highlightColor;
-                    }
-                }
-                else
-                {
-                    foreach (var lrc in control.mainSyllableLrcs)
-                    {
-                        control.EnsureBrush(lrc.Value, lrc.Key, 0);
-                        if (lrc.Key.Duration >= control.EmphasisThreshold && lrc.Value.Inlines.Count > 1)
-                        {
-                            var empty = control.CreateBrush(0.0);
-                            foreach (var line in lrc.Value.Inlines)
-                            {
-                                if (line is InlineUIContainer con && con.Child is TextBlock block)
-                                {
-                                    block.Foreground = empty;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                var blur = new BlurEffect() { Radius = 0 };
-                control.Effect = blur;
-                blur.BeginAnimation(BlurEffect.RadiusProperty, new DoubleAnimation(0, InActiveLrcBlurRadius, TimeSpan.FromMilliseconds(300)));
-                if (control._isPlainLrc)
-                {
-                    if (control.MainLrcContainer.Children[0] is TextBlock tb)
-                    {
-                        tb.SetResourceReference(ForegroundProperty, "InActiveLrcForeground");
-                    }
-                }
-                else control.ClearHighlighter(true);
-            }
+            control.SetActiveState((bool)e.NewValue);
         }
-
     }
 }

@@ -1,29 +1,79 @@
 ﻿using EleCho.WpfSuite;
+using EleCho.WpfSuite.Media.Animation;
+using LemonApp.Services;
 using Lyricify.Lyrics.Models;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 
 namespace LemonApp.Views.UserControls;
 public record class LrcLine(ILineInfo Lrc, string? Trans = null, ILineInfo? Romaji = null);
-/// <summary>
-/// SimpleLyricView and LyricLineControl are used to display lyrics with syllables
-/// </summary>
-public partial class SimpleLyricView : UserControl
+public sealed class SelectiveLyricLine : Border
 {
-    public SimpleLyricView()
+    public  LyricLineControl LyricLine { get; init; }
+    public SelectiveLyricLine(LyricLineControl line)
+    {
+       // Style = (Style)Application.Current.FindResource("SimpleIconButtonStyleForWs");
+        Background = Brushes.Transparent;
+        CornerRadius = new(12);
+        Padding = new(8, 4, 8, 4);
+        Child = LyricLine = line;
+        MouseEnter += SelectiveLyricLine_MouseEnter;
+        MouseLeave += SelectiveLyricLine_MouseLeave;
+        MouseDown += SelectiveLyricLine_MouseDown;
+    }
+
+    private void SelectiveLyricLine_MouseDown(object sender, MouseButtonEventArgs e)
+    {
+        if( LyricLine.MainLineInfo?.StartTime is int startTime )
+        {
+            var player = App.Services.GetRequiredService<MediaPlayerService>();
+            player.Position = TimeSpan.FromMilliseconds(startTime);
+            if(!player.IsPlaying)
+                player.Play();
+        }
+    }
+
+    private void SelectiveLyricLine_MouseLeave(object sender, MouseEventArgs e)
+    {
+        if (Background is SolidColorBrush)
+            Background.BeginAnimation(SolidColorBrush.ColorProperty, new ColorAnimation(Colors.Transparent, TimeSpan.FromMilliseconds(200)));
+
+        if (!LyricLine.IsCurrent)
+            LyricLine.SetActiveState(false,false);
+    }
+
+    private void SelectiveLyricLine_MouseEnter(object sender,  MouseEventArgs e)
+    {
+        var color = ((SolidColorBrush)Application.Current.FindResource("MaskColor")).Color;
+        var brush = new SolidColorBrush(Colors.Transparent);
+        var da = new ColorAnimation(color, TimeSpan.FromMilliseconds(200));
+        Background = brush;
+        brush.BeginAnimation(SolidColorBrush.ColorProperty, da);
+
+        LyricLine.SetActiveState(true);
+    }
+}
+
+public partial class LyricHost : UserControl
+{
+    public LyricHost()
     {
         InitializeComponent();
         SizeChanged += SimpleLyricView_SizeChanged;
     }
 
-    private readonly Dictionary<ILineInfo, LyricLineControl> lrcs = [];
+    private readonly Dictionary<ILineInfo, SelectiveLyricLine> lrcs = [];
     private ILineInfo? currentLrc,notifiedLrc;
     private bool _isPureLrc = false;
+    private DateTime _interruptedTime;
 
     public event Action<LrcLine> OnNextLrcReached;
 
@@ -34,33 +84,41 @@ public partial class SimpleLyricView : UserControl
         LrcContainer.Children.Clear();
         scrollviewer.BeginAnimation(ScrollViewerUtils.VerticalOffsetProperty, null);
     }
+    private async Task WaitToScroll()
+    {
+        await Task.Delay(100);
+        Dispatcher.Invoke(ScrollToCurrent);
+    }
     public void ApplyFontSize(double size, double scale)
     {
         foreach(var control in lrcs.Values)
         {
-            control.FontSize = size * scale;
-            foreach( TextBlock tb in control.MainLrcContainer.Children)
+            control.LyricLine.FontSize = size * scale;
+            foreach( TextBlock tb in control.LyricLine.MainLrcContainer.Children)
             {
                 tb.FontSize = size;
             }
         }
+        _ = WaitToScroll();
     }
     public void SetShowTranslation(bool show)
     {
         foreach (var lrc in lrcs.Values)
         {
-            lrc.TranslationLrc.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
+            lrc.LyricLine.TranslationLrc.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
         }
+        _ = WaitToScroll();
     }
     public void SetShowRomaji(bool show)
     {
         foreach (var lrc in lrcs.Values)
         {
-            lrc.RomajiLrcContainer.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
+            lrc.LyricLine.RomajiLrcContainer.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
         }
+        _ = WaitToScroll();
     }
 
-    private Thickness lyricSpacing= new(0, 0, 0, 40);
+    private Thickness lyricSpacing= new(0, 0, 0, 30);
     public void Load(LyricsData lyricsData,LyricsData? trans=null,LyricsData? romaji=null,bool isPureLrc=false)
     {
         _isPureLrc= isPureLrc;
@@ -71,14 +129,16 @@ public partial class SimpleLyricView : UserControl
         {
             if(line is SyllableLineInfo{ } syllable)
             {
-                var lrc=new LyricLineControl(syllable.Syllables) {Margin= lyricSpacing };
-                LrcContainer.Children.Add(lrc);
-                lrcs[syllable] = lrc;
+                var lrc = new LyricLineControl(syllable);
+                var container =new SelectiveLyricLine(lrc) { Margin = lyricSpacing };
+                LrcContainer.Children.Add(container);
+                lrcs[syllable] = container;
             }else if(line is LineInfo { } pure)
             {
-                var lrc = new LyricLineControl(pure.Text) { Margin = lyricSpacing };
-                LrcContainer.Children.Add(lrc);
-                lrcs[pure] = lrc;
+                var lrc = new LyricLineControl(pure);
+                var container = new SelectiveLyricLine(lrc) { Margin = lyricSpacing };
+                LrcContainer.Children.Add(container);
+                lrcs[pure] = container;
             }
         }
         LrcContainer.Children.Add(new TextBlock() { Height = 300, Background = Brushes.Transparent });
@@ -88,7 +148,7 @@ public partial class SimpleLyricView : UserControl
             {
                 var transLrc = trans.Lines.FirstOrDefault(a=>a.StartTime>=lrc.Key.StartTime-10);
                 if (transLrc != null&&transLrc.Text!="//")
-                    lrc.Value.TranslationLrc.Text = transLrc.Text;
+                    lrc.Value.LyricLine.TranslationLrc.Text = transLrc.Text;
             }
         }
         if (romaji  is { Lines: not null})
@@ -97,9 +157,9 @@ public partial class SimpleLyricView : UserControl
             {
                 var romajiLrc = romaji.Lines.FirstOrDefault(a => a.StartTime >= lrc.Key.StartTime - 10);
                 if (romajiLrc is SyllableLineInfo { } roma)
-                    lrc.Value.LoadRomajiLrc(roma);
+                    lrc.Value.LyricLine.LoadRomajiLrc(roma);
                 else if (romajiLrc is LineInfo { } pure)
-                    lrc.Value.LoadPlainRomaji(pure.Text);
+                    lrc.Value.LyricLine.LoadPlainRomaji(pure.Text);
             }
         }
     }
@@ -108,11 +168,11 @@ public partial class SimpleLyricView : UserControl
     {
         {
             if (currentLrc != null && lrcs.TryGetValue(currentLrc, out var lrc))
-                lrc.UpdateTime(ms);
+                lrc.LyricLine.UpdateTime(ms);
         }
 
         //从上一条结束到本条结束都是当前歌词时间，目的是本条歌词结束就跳转到下一个
-        KeyValuePair<ILineInfo, LyricLineControl>? lastItem=null,target = null;
+        KeyValuePair<ILineInfo, SelectiveLyricLine>? lastItem=null,target = null;
         if (!_isPureLrc)
         {
             foreach (var cur in lrcs)
@@ -140,7 +200,7 @@ public partial class SimpleLyricView : UserControl
             //Notify the change in current line
             if (line != notifiedLrc)
             {
-                OnNextLrcReached?.Invoke(new(line, control.TranslationLrc.Text, control.RomajiSyllables));
+                OnNextLrcReached?.Invoke(new(line, control.LyricLine.TranslationLrc.Text, control.LyricLine.RomajiSyllables));
                 notifiedLrc = line;
             }
 
@@ -149,33 +209,35 @@ public partial class SimpleLyricView : UserControl
             if (line == currentLrc) return;//skip if already being the current lrc.
             if (currentLrc != null && lrcs.TryGetValue(currentLrc, out var lrc))
             {
-                lrc.IsCurrent = false;// set last-played lrc inactive.
+                lrc.LyricLine.IsCurrent = false;// set last-played lrc inactive.
             }
             currentLrc = line;
             var currentControl = control;
-            currentControl.IsCurrent = true;
+            currentControl.LyricLine.IsCurrent = true;
             ScrollToCurrent();
         }
     }
 
     public void ScrollToCurrent()
     {
+        //被打断的xs内不再滚动
+        if ((DateTime.Now - _interruptedTime).TotalSeconds < 5) return;
         try
         {
             if (currentLrc == null) return;
             GeneralTransform gf = lrcs[currentLrc].TransformToVisual(LrcContainer);
             Point p = gf.Transform(new Point(0, 0));
             double os = p.Y - (scrollviewer.ActualHeight / 2) + 120;
-            var da = new DoubleAnimation(os, TimeSpan.FromMilliseconds(500));
+            var da = new DoubleAnimation(scrollviewer.VerticalOffset,os, TimeSpan.FromMilliseconds(500));
             da.EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut };
             scrollviewer.BeginAnimation(ScrollViewerUtils.VerticalOffsetProperty, da);
         }
         catch { }
     }
 
-    private void scrollviewer_PreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+    private void scrollviewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
     {
-        e.Handled = true;
+        _interruptedTime = DateTime.Now;
     }
     private void SimpleLyricView_SizeChanged(object sender, SizeChangedEventArgs e)
     {

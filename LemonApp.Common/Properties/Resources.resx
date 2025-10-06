@@ -121,6 +121,12 @@
   <data name="bass" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\bass.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="bassflac" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bassflac.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bassflac_x86" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bassflac_x86.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="bass_x86" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\bass_x86.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>

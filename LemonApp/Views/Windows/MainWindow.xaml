@@ -1181,7 +1181,7 @@
                                 Fill="{DynamicResource HighlightThemeColor}"
                                 IsPlaying="{Binding IsPlaying, Mode=OneWay}"
                                 Opacity="0.6"
-                                StripCount="24" />
+                                StripCount="36" />
             <Grid x:Name="MusicControl"
                   Height="120"
                   VerticalAlignment="Bottom">

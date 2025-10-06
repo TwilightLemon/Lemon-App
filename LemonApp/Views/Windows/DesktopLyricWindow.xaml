@@ -23,7 +23,7 @@
         WindowStyle="None"
         mc:Ignorable="d">
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="0" ResizeBorderThickness="12" />
+        <WindowChrome CaptionHeight="0" ResizeBorderThickness="24" />
     </WindowChrome.WindowChrome>
     <i:Interaction.Behaviors>
         <behavior:WindowDragMoveBehavior />

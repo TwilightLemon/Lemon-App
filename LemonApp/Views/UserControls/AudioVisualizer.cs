@@ -60,8 +60,8 @@ public class AudioVisualizer : FrameworkElement
     public MusicPlayer Player;
 
     private bool _isRunning = false;
-    private readonly float[] _spectrumData = new float[1024];
-    private readonly float[] _displayValues = new float[1024];
+    private readonly float[] _spectrumData = new float[512];
+    private readonly float[] _displayValues = new float[512];
     private Brush _highFreqFill;
 
     public int StripCount
@@ -124,24 +124,12 @@ public class AudioVisualizer : FrameworkElement
         if (Player == null) return;
         Player.GetFFTData(_spectrumData);
 
-        using (DrawingContext dcHigh = _highFreqVisual.RenderOpen())
-        {
-            DrawStrips(dcHigh, _spectrumData,  _highFreqFill, true);
-        }
-        using (DrawingContext dcLow = _lowFreqVisual.RenderOpen())
-        {
-            DrawStrips(dcLow, _spectrumData,  Fill, false);
-        }
-    }
-
-    private void DrawStrips(DrawingContext drawingContext, float[] spectrumData,  Brush fill, bool reversed)
-    {
         int stripCount = StripCount;
         int actualHeight = (int)ActualHeight;
         if (stripCount <= 0) return;
 
         float[] processedData = new float[stripCount];
-        int dataLen = spectrumData.Length / 2; // We only use the first half of the spectrum data (real part)
+        int dataLen = _spectrumData.Length / 2; // We only use the first half of the spectrum data (real part)
 
         // Logarithmic scaling
         double logMin = Math.Log(1);
@@ -155,12 +143,12 @@ public class AudioVisualizer : FrameworkElement
             int index = (int)Math.Round(linearI);
             if (index >= dataLen) index = dataLen - 1;
 
-            float value = (float)Math.Log10(1 + actualHeight * spectrumData[index]);
+            float value = (float)Math.Log10(1 + actualHeight * _spectrumData[index]);
             processedData[i] = value;
         }
 
         // Improved smoothing
-        const float attack = 0.15f; // Faster rise
+        const float attack = 0.25f; // Faster rise
         const float decay = 0.08f;  // Slower fall
 
         for (int i = 0; i < stripCount; i++)
@@ -177,6 +165,22 @@ public class AudioVisualizer : FrameworkElement
                 _displayValues[i] += (newValue - oldValue) * decay;
             }
         }
+
+        using (DrawingContext dcHigh = _highFreqVisual.RenderOpen())
+        {
+            DrawStrips(dcHigh,  _highFreqFill, true);
+        }
+        using (DrawingContext dcLow = _lowFreqVisual.RenderOpen())
+        {
+            DrawStrips(dcLow,  Fill, false);
+        }
+    }
+
+    private void DrawStrips(DrawingContext drawingContext,   Brush fill, bool reversed)
+    {
+        int stripCount = StripCount;
+        if (stripCount <= 0) return;
+        int actualHeight = (int)ActualHeight;
 
         // 构建点集
         Point[] points = new Point[stripCount];

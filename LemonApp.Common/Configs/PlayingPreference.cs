@@ -1,4 +1,5 @@
 ﻿using LemonApp.MusicLib.Abstraction.Entities;
+using System.Windows;
 
 namespace LemonApp.Common.Configs;
 public class PlayingPreference
@@ -17,6 +18,7 @@ public class PlaylistCache
 }
 public class DesktopLyricOption
 {
+    public Size WindowSize { get; set; } = new(0, 0);
     public bool ShowTranslation { get; set; } = true;
     public double LrcFontSize { get; set; } = 32d;
     public string FontFamily { get; set; } = "Segou UI";

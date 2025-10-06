@@ -9,13 +9,10 @@
 		<UseWindowsForms>true</UseWindowsForms>
 		<StartupObject>LemonApp.EntryPoint</StartupObject>
 		<ApplicationIcon>Resources\icon.ico</ApplicationIcon>
-		<Version>1.0.3</Version>
+		<Version>1.0.4</Version>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<None Remove="Resources\icon.ico" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />

@@ -29,18 +29,18 @@
         <SolidColorBrush x:Key="HighlighterColor3" Color="#63D6FD" />
     </Window.Resources>
     <Grid>
-        <uc:SimpleLyricView x:Name="lv"
+        <uc:LyricHost x:Name="lv"
                             Grid.Column="0"
                             Margin="0,0,0,200">
-            <uc:SimpleLyricView.OpacityMask>
+            <uc:LyricHost.OpacityMask>
                 <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
                     <GradientStop Color="Transparent" />
                     <GradientStop Offset="1" Color="Transparent" />
                     <GradientStop Offset="0.2" Color="Black" />
                     <GradientStop Offset="0.8" Color="Black" />
                 </LinearGradientBrush>
-            </uc:SimpleLyricView.OpacityMask>
-        </uc:SimpleLyricView>
+            </uc:LyricHost.OpacityMask>
+        </uc:LyricHost>
 
         <Grid Height="200" VerticalAlignment="Bottom">
             <Grid.ColumnDefinitions>
@@ -227,11 +227,13 @@
             <uc:AudioVisualizer x:Name="visualizer"
                                 Grid.ColumnSpan="2"
                                 Margin="8,0"
-                                VerticalAlignment="Stretch"
+                                VerticalAlignment="Bottom"
+                                Height="80"
+                                IsHitTestVisible="False"
                                 Fill="{DynamicResource HighlightThemeColor}"
                                 IsPlaying="{Binding IsPlaying, Mode=OneWay}"
                                 Opacity="0.8"
-                                StripCount="64" />
+                                StripCount="32" />
         </Grid>
     </Grid>
 </Window>

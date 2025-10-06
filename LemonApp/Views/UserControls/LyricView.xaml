@@ -7,5 +7,5 @@
              d:DesignHeight="200"
              d:DesignWidth="100"
              mc:Ignorable="d">
-    <local:SimpleLyricView x:Name="LrcHost" />
+    <local:LyricHost x:Name="LrcHost" />
 </UserControl>

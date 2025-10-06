@@ -1,16 +1,18 @@
-﻿using LemonApp.Common.WinAPI;
-using System.Windows;
-using System.Windows.Media.Effects;
-using System.Windows.Media;
+﻿using EleCho.WpfSuite;
+using LemonApp.Common.Configs;
+using LemonApp.Common.Funcs;
+using LemonApp.Common.WinAPI;
+using LemonApp.Services;
 using LemonApp.ViewModels;
 using System;
-using System.Windows.Input;
-using LemonApp.Services;
-using System.Threading.Tasks;
-using System.Windows.Media.Animation;
-using System.Threading;
 using System.Diagnostics;
-using EleCho.WpfSuite;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
+using System.Windows.Media.Effects;
 
 namespace LemonApp.Views.Windows
 {
@@ -19,23 +21,28 @@ namespace LemonApp.Views.Windows
     /// </summary>
     public partial class DesktopLyricWindow : Window
     {
-        public DesktopLyricWindow(DesktopLyricWindowViewModel vm)
+        public DesktopLyricWindow(DesktopLyricWindowViewModel vm, AppSettingService appSettingsService)
         {
             InitializeComponent();
             DataContext = vm;
             vm.UpdateAnimation = ShowLyricAnimation;
             vm.ScrollLrc = ScrollLrc;
+            _settingsMgr = appSettingsService.GetConfigMgr<DesktopLyricOption>();
 
             var sc = SystemParameters.WorkArea;
             Top = sc.Bottom - Height;
             Left = (sc.Right - Width) / 2;
-            Closing += delegate { vm.UpdateAnimation = null; };
+            Closing += delegate {
+                vm.UpdateAnimation = null; 
+                _settingsMgr.Data.WindowSize = new Size(Width, Height);
+            };
             Loaded += DesktopLyricWindow_Loaded;
             MouseEnter += DesktopLyricWindow_MouseEnter;
             MouseLeave += DesktopLyricWindow_MouseLeave;
             MouseDoubleClick += DesktopLyricWindow_MouseDoubleClick;
         }
         private FrameworkElement? currentBlock = null;
+        private readonly SettingsMgr<DesktopLyricOption> _settingsMgr;
         private void ScrollLrc(FrameworkElement block)
         {
             if (block == currentBlock ||block ==null)
@@ -114,6 +121,12 @@ namespace LemonApp.Views.Windows
         {
             WindowLongAPI.SetToolWindow(this);
             LrcPanel.Effect = shadowEffect;
+
+            if(_settingsMgr.Data.WindowSize is { Width:>0,Height:>0} size)
+            {
+                Width = size.Width;
+                Height = size.Height;
+            }
         }
 
         private void CloseBtn_Click(object sender, RoutedEventArgs e)

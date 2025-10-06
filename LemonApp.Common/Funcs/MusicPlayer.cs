@@ -9,10 +9,12 @@ namespace LemonApp.Common.Funcs;
 public class MusicPlayer
 {
     private int stream = -1024;
+    private readonly int bassflacHandle = -1;
     public MusicPlayer()
     {
         BassNet.Registration("lemon.app@qq.com", "2X52325160022");
         Bass.BASS_Init(-1, 44100, BASSInit.BASS_DEVICE_CPSPEAKERS, IntPtr.Zero);
+        bassflacHandle = Bass.BASS_PluginLoad("bassflac.dll");
     }
     /// <summary>
     /// 根据平台释放解码器dll
@@ -20,15 +22,21 @@ public class MusicPlayer
     /// <returns></returns>
     public static async Task PrepareDll() 
     {
-        if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + "\\bass.dll"))
+        if (!File.Exists("bass.dll"))
         {
             if (Environment.Is64BitProcess)
-                await ReleaseDLLFiles(Properties.Resources.bass);
-            else await ReleaseDLLFiles(Properties.Resources.bass_x86);
+                await ReleaseDLLFiles(Properties.Resources.bass,"bass.dll");
+            else await ReleaseDLLFiles(Properties.Resources.bass_x86, "bass.dll");
+        }
+        if (!File.Exists("bassflac.dll"))
+        {
+            if (Environment.Is64BitProcess)
+                await ReleaseDLLFiles(Properties.Resources.bassflac, "bassflac.dll");
+            else await ReleaseDLLFiles(Properties.Resources.bassflac_x86, "bassflac.dll");
         }
     }
-    private static async Task ReleaseDLLFiles(byte[] maindll) {
-        FileStream fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "\\bass.dll", FileMode.Create);
+    private static async Task ReleaseDLLFiles(byte[] maindll,string name) {
+        FileStream fs = new FileStream(name, FileMode.Create);
         byte[] datas = maindll;
         await fs.WriteAsync(datas);
         await fs.FlushAsync();
@@ -140,12 +148,12 @@ public class MusicPlayer
         set => Bass.BASS_ChannelSetPosition(stream, value.TotalSeconds);
     }
     /// <summary>
-    /// FFT 1024
+    /// FFT 512
     /// </summary>
     /// <param name="fft"></param>
     public void GetFFTData(float[] fft)
     {
-        Bass.BASS_ChannelGetData(stream, fft, (int)(BASSData.BASS_DATA_FFT2048 | BASSData.BASS_DATA_FFT_REMOVEDC));
+        Bass.BASS_ChannelGetData(stream, fft, (int)(BASSData.BASS_DATA_FFT1024 | BASSData.BASS_DATA_FFT_REMOVEDC));
     }
     /// <summary>
     /// 更新设备
@@ -176,6 +184,7 @@ public class MusicPlayer
     {
         Bass.BASS_ChannelStop(stream);
         Bass.BASS_StreamFree(stream);
+        Bass.BASS_PluginFree(bassflacHandle);
         Bass.BASS_Stop();
         Bass.BASS_Free();
     }
