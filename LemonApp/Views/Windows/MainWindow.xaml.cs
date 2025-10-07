@@ -104,6 +104,8 @@ namespace LemonApp.Views.Windows
         {
             Dispatcher.Invoke(() =>
             {
+                if (_vm.IsLyricPageOpen)//如果歌词页打开，先关闭
+                    LyricPage_BackBtn_Click(null, null);
                 MainContentFrame.Navigate(page);
             });
         }

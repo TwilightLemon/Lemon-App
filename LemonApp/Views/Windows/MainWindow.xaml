@@ -1015,16 +1015,33 @@
                                        HorizontalAlignment="Stretch"
                                        VerticalAlignment="Top"
                                        Foreground="{DynamicResource ForeColor}"
-                                       LineHeight="32"
                                        TextAlignment="Center"
-                                       TextWrapping="Wrap"><Run d:Text="Dancing With Our Hands Tied"
-                                                                FontSize="18"
-                                                                FontWeight="Bold"
-                                                                Text="{Binding CurrentPlaying.MusicName, TargetNullValue=Welcome~}" /><LineBreak /><Run d:Text="Taylor Swift"
-                                                                                                                                                        FontSize="14"
-                                                                                                                                                        Text="{Binding CurrentPlaying.SingerText, TargetNullValue=Lemon App}" /><Run Text=" " /><Run d:Text="reputation"
-                                                                                                                                                                                                                                                     FontSize="14"
-                                                                                                                                                                                                                                                     Text="{Binding CurrentPlaying.Album.Name, StringFormat=' · \{0\}'}" /></TextBlock>
+                                       TextWrapping="Wrap">
+                                <Run d:Text="Dancing With Our Hands Tied"
+                                     FontSize="18"
+                                     FontWeight="Bold"
+                                     Text="{Binding CurrentPlaying.MusicName, TargetNullValue=Welcome~}" />
+                                <LineBreak />
+                                <ws:Button  d:Content="Taylor Swift"
+                                            FontSize="14"
+                                            Padding="8 4"
+                                            Margin="0 8"
+                                            Command="{x:Static components:PublicPopupMenuHolder.GotoArtistCommand}"
+                                            CommandParameter="{Binding CurrentPlaying}"
+                                            Style="{StaticResource SimpleIconButtonStyleForWs}"
+                                            VerticalContentAlignment="Center"
+                                            Content="{Binding CurrentPlaying.SingerText, TargetNullValue='Lemon App'}" />
+                                <Run Text="·" BaselineAlignment="Center"/>
+                                <ws:Button  d:Content="reputation"
+                                            FontSize="14"
+                                            Padding="8 4"
+                                            Margin="0 8"
+                                            Command="{x:Static components:PublicPopupMenuHolder.GoToAlbumCommand}"
+                                            CommandParameter="{Binding CurrentPlaying.Album}"
+                                            Style="{StaticResource SimpleIconButtonStyleForWs}"
+                                            VerticalContentAlignment="Center"
+                                            Content="{Binding CurrentPlaying.Album.Name,TargetNullValue=''}" />
+                            </TextBlock>
                             <Grid MaxWidth="500"
                                   Margin="70,0">
                                 <TextBlock HorizontalAlignment="Left"
