@@ -44,7 +44,7 @@ namespace LemonApp.Views.Pages
                 ExplorePlaylist.ViewModel = App.Services.GetRequiredService<PlaylistItemViewModel>();
                 ExplorePlaylist.ViewModel.SetPlaylistItems(data.Explore);
 
-                NewMusicList.ItemsSource = data.NewMusics[0..30];
+                NewMusicList.ItemsSource = data.NewMusics.Count > 30 ? data.NewMusics[0..30] : data.NewMusics;
             }
 
             if(user.GetAuth() is { IsValid: true } auth)

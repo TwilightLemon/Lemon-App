@@ -20,7 +20,6 @@ public sealed class SelectiveLyricLine : Border
     public  LyricLineControl LyricLine { get; init; }
     public SelectiveLyricLine(LyricLineControl line)
     {
-       // Style = (Style)Application.Current.FindResource("SimpleIconButtonStyleForWs");
         Background = Brushes.Transparent;
         CornerRadius = new(12);
         Padding = new(8, 4, 8, 4);
@@ -57,8 +56,8 @@ public sealed class SelectiveLyricLine : Border
         var da = new ColorAnimation(color, TimeSpan.FromMilliseconds(200));
         Background = brush;
         brush.BeginAnimation(SolidColorBrush.ColorProperty, da);
-
-        LyricLine.SetActiveState(true);
+        if (!LyricLine.IsCurrent)
+            LyricLine.SetActiveState(true);
     }
 }
 

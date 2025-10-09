@@ -4,15 +4,21 @@ using System.Text.Json.Serialization;
 using System.Text.Json;
 
 namespace LemonApp.Common.Funcs;
+public interface ISettingsMgr
+{
+    bool Load();
+    void Save();
+    event Action? OnDataChanged;
+}
 /// <summary>
 /// 统一的缓存和配置类
 /// </summary>
 /// <typeparam name="T">数据类型</typeparam>
-public class SettingsMgr<T> where T : class
+public class SettingsMgr<T>: ISettingsMgr where T : class
 {
     public string? Sign { get; set; }
     public string? PackageName { get; set; }
-    public T Data { get; set; } = null;
+    public T Data { get; set; } = null!;
     [JsonIgnore]
     private FileSystemWatcher? _watcher;
     [JsonIgnore]
