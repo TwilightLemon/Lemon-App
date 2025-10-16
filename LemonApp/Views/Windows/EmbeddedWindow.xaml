@@ -21,17 +21,10 @@
         ShowInTaskbar="False"
         WindowStyle="None"
         mc:Ignorable="d">
-    <Window.Resources>
-        <SolidColorBrush x:Key="InActiveLrcForeground" Color="#99FFFFFF" />
-        <SolidColorBrush x:Key="HighligherColor" Color="#49A488" />
-        <SolidColorBrush x:Key="ReversedHighligherColor" Color="#C983F9" />
-        <SolidColorBrush x:Key="HighlighterColor2" Color="#FDC066" />
-        <SolidColorBrush x:Key="HighlighterColor3" Color="#63D6FD" />
-    </Window.Resources>
     <Grid>
         <uc:LyricHost x:Name="lv"
-                            Grid.Column="0"
-                            Margin="0,0,0,200">
+                      Grid.Column="0"
+                      Margin="0,0,0,200">
             <uc:LyricHost.OpacityMask>
                 <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
                     <GradientStop Color="Transparent" />
@@ -47,6 +40,16 @@
                 <ColumnDefinition Width="3*" />
                 <ColumnDefinition Width="2*" MaxWidth="400" />
             </Grid.ColumnDefinitions>
+            <uc:AudioVisualizer x:Name="visualizer"
+                                Grid.ColumnSpan="2"
+                                Height="80"
+                                Margin="8,0"
+                                VerticalAlignment="Bottom"
+                                Fill="{DynamicResource HighlightThemeColor}"
+                                IsHitTestVisible="False"
+                                IsPlaying="{Binding IsPlaying, Mode=OneWay}"
+                                Opacity="0.8"
+                                StripCount="36" />
             <Border Width="158"
                     Height="158"
                     HorizontalAlignment="Left"
@@ -75,21 +78,10 @@
                             </i:ControlStoryboardAction.Storyboard>
                         </i:ControlStoryboardAction>
                     </i:EventTrigger>
-                </i:Interaction.Triggers>
-                <Run d:Text="Dancing With Our Hands Tied"
+                </i:Interaction.Triggers><Run d:Text="Dancing With Our Hands Tied"
                      FontSize="36"
                      FontWeight="Bold"
-                     Text="{Binding MusicName, TargetNullValue=Welcome~}" />
-                <LineBreak />
-                <LineBreak />
-                <Run Foreground="{StaticResource HighlighterColor2}" Text="[Singer]" />
-                <Run Text=" " />
-                <Run d:Text="Taylor Swift" Text="{Binding SingerText, TargetNullValue=Lemon App}" />
-                <LineBreak />
-                <Run Foreground="{StaticResource HighlighterColor2}" Text="[Album]" />
-                <Run Text=" " />
-                <Run d:Text="reputation" Text="{Binding Album.Name}" />
-            </TextBlock>
+                     Text="{Binding MusicName, TargetNullValue=Welcome~}" /><LineBreak /><LineBreak /><Run Foreground="{DynamicResource HintForeColor}" Text="[Singer]" /><Run Text=" " /><Run Text=" " /><Run Text=" " /><Run d:Text="Taylor Swift" Text="{Binding SingerText, TargetNullValue=Lemon App}" /><LineBreak /><Run Foreground="{DynamicResource HintForeColor}" Text="[Album]" /><Run Text=" " /><Run Text=" " /><Run Text=" " /><Run d:Text="reputation" Text="{Binding Album.Name}" /></TextBlock>
             <base:FluentPopup x:Name="PlaylistPopup"
                               Grid.Column="1"
                               Width="400"
@@ -103,7 +95,7 @@
                               StaysOpen="False"
                               VerticalOffset="-20">
                 <Grid>
-                    <ws:ListBox Name="PlaylistLB"
+                    <ws:ListBox x:Name="PlaylistLB"
                                 Margin="2,8"
                                 d:ItemsSource="{d:SampleData ItemCount=5}"
                                 ItemsSource="{Binding Playlist, Mode=OneWay}"
@@ -129,8 +121,7 @@
                                 <Grid MinHeight="30" Background="Transparent">
                                     <TextBlock Margin="4,0,0,0"
                                                VerticalAlignment="Center"
-                                               TextWrapping="Wrap">
-                                        <InlineUIContainer>
+                                               TextWrapping="Wrap"><InlineUIContainer>
                                             <TextBlock Margin="0,0,4,0"
                                                        d:Text="1"
                                                        FontStyle="Italic">
@@ -141,12 +132,7 @@
                                                     </MultiBinding>
                                                 </TextBlock.Text>
                                             </TextBlock>
-                                        </InlineUIContainer>
-                                        <Run Text=" " />
-                                        <Run Text="{Binding MusicName}" />
-                                        <Run Text=" - " />
-                                        <Run Text="{Binding SingerText}" />
-                                    </TextBlock>
+                                        </InlineUIContainer><Run Text=" " /><Run Text=" " /><Run Text=" " /><Run Text="{Binding MusicName}" /><Run Text=" " /><Run Text=" - " /><Run Text=" " /><Run Text="{Binding SingerText}" /></TextBlock>
                                 </Grid>
                             </DataTemplate>
                         </ws:ListBox.ItemTemplate>
@@ -224,16 +210,6 @@
                               Style="{StaticResource IconToggleButton}"
                               Tag="{DynamicResource OpenPlaylist}" />
             </ws:FlexPanel>
-            <uc:AudioVisualizer x:Name="visualizer"
-                                Grid.ColumnSpan="2"
-                                Margin="8,0"
-                                VerticalAlignment="Bottom"
-                                Height="80"
-                                IsHitTestVisible="False"
-                                Fill="{DynamicResource HighlightThemeColor}"
-                                IsPlaying="{Binding IsPlaying, Mode=OneWay}"
-                                Opacity="0.8"
-                                StripCount="32" />
         </Grid>
     </Grid>
 </Window>

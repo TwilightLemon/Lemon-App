@@ -27,9 +27,9 @@
                   Fill="Orange"
                   Stretch="Fill" />
             <TextBlock x:Name="ContentTb"
-                       Margin="128,36,12,12"
+                       Margin="128,42,12,12"
+                       d:Text="Hello"
                        FontSize="14"
-                       Text="Hello"
                        TextWrapping="Wrap" />
         </Grid>
         <Border Height="56" VerticalAlignment="Bottom">
