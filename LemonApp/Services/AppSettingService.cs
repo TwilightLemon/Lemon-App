@@ -12,43 +12,43 @@ namespace LemonApp.Services;
 /// <summary>
 /// Manage user settings.
 /// </summary>
-public class AppSettingService :IHostedService,IConfigManager
+public class AppSettingService : IHostedService, IConfigManager
 {
-    private readonly Dictionary<Type, object> _settingsMgrs = [];
-    private readonly TimeSpan SaveInterval = TimeSpan.FromMinutes(10);
+    private readonly Dictionary<Type, ISettingsMgr> _settingsMgrs = [];
+    private readonly TimeSpan SaveInterval = TimeSpan.FromMinutes(5);
+    private readonly string _pkgName = typeof(AppSettingService).Namespace!;
     private Timer? _timer;
     public event Action? OnDataSaving;
 
-    public AppSettingService AddConfig<T>(Settings.sType type=Settings.sType.Settings) where T : class{
-        if(Activator.CreateInstance(typeof(SettingsMgr<>).MakeGenericType(typeof(T)),
-        [typeof(T).Name,typeof(AppSettingService).Namespace,type]) is {} mgr)
-            _settingsMgrs.Add(typeof(T),mgr);
+    public AppSettingService AddConfig<T>(Settings.sType type = Settings.sType.Settings) where T : class
+    {
+        var instance = new SettingsMgr<T>(typeof(T).Name, _pkgName, type);
+        if (instance is ISettingsMgr { } mgr)
+            _settingsMgrs.Add(typeof(T), mgr);
         return this;
     }
 
-    public SettingsMgr<T> GetConfigMgr<T>() where T : class{
-        if(_settingsMgrs.TryGetValue(typeof(T),out var mgr))
+    public SettingsMgr<T> GetConfigMgr<T>() where T : class
+    {
+        if (_settingsMgrs.TryGetValue(typeof(T), out var mgr))
             return (SettingsMgr<T>)mgr;
         throw new InvalidOperationException($"{typeof(T)} is not registered.");
     }
     public bool AddEventHandler<T>(Action handler) where T : class
     {
-        if(_settingsMgrs.TryGetValue(typeof(T), out var mgr))
+        if (_settingsMgrs.TryGetValue(typeof(T), out var mgr))
         {
-            if(mgr.GetType().GetEvent("OnDataChanged") is { } info)
-            {
-                info.AddEventHandler(mgr, handler);
-                return true;
-            }
+            mgr.OnDataChanged += handler;
+            return true;
         }
         return false;
     }
-    public void Load(){
+    private void Load()
+    {
         GlobalConstants.ConfigManager = this;
         foreach (var mgr in _settingsMgrs.Values)
         {
-            var loadMethod = mgr.GetType().GetMethod("Load");
-            if (loadMethod?.Invoke(mgr, null) is false)
+            if (!mgr.Load())
                 throw new Exception($"failed to load AppSettings: {mgr}");
         }
     }
@@ -60,11 +60,19 @@ public class AppSettingService :IHostedService,IConfigManager
         }
         finally
         {
+            OnDataSaving = null;
             foreach (var mgr in _settingsMgrs.Values)
             {
-                var saveMethod = mgr.GetType().GetMethod("Save");
-                saveMethod?.Invoke(mgr, null);
-                Debug.WriteLine($"SettingsMgr<{mgr.GetType().GenericTypeArguments[0].Name}> Saved");
+                try
+                {
+                    mgr.Save();
+                    Debug.WriteLine($"SettingsMgr<{mgr}> Saved");
+                }
+                catch
+                {
+                    Debug.WriteLine($"SettingsMgr<{mgr}> failed to save");
+                    continue;
+                }
             }
         }
     }

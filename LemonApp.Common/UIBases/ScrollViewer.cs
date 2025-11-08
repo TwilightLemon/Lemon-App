@@ -10,38 +10,36 @@ namespace LemonApp.Common.UIBases
 {
     public class ScrollViewer : System.Windows.Controls.ScrollViewer
     {
+        #region 模型参数
         /// <summary>
-        /// 精确滚动模型，指定目标偏移
+        /// 缓动模型的叠加速度力度，数值越大，滚动起始速率越快，滚得越远
         /// </summary>
-        private double _targetOffset = 0;
+        private const  double VelocityFactor = 2.0;
         /// <summary>
-        /// 缓动滚动模型，指定目标速度
+        /// 缓动模型的速度衰减系数，数值越小，越快停下来
         /// </summary>
-        private double _targetVelocity = 0;
-
-        /// <summary>
-        /// 缓动模型的叠加速度力度
-        /// </summary>
-        private const double VelocityFactor = 1.2;
-        /// <summary>
-        /// 缓动模型的速度衰减系数，数值越小，滚动越慢
-        /// </summary>
-        private const double Friction = 0.96;
+        private const double Friction = 0.92;
 
         /// <summary>
         /// 精确模型的插值系数，数值越大，滚动越快接近目标
         /// </summary>
         private const double LerpFactor = 0.5;
 
+        /// <summary>
+        /// 目标帧时间
+        /// </summary>
+        private const double TargetFrameTime =1.0d/144;
+        #endregion
+
         public ScrollViewer()
         {
             _currentOffset = VerticalOffset;
 
-            this.IsManipulationEnabled = true;
             this.PanningMode = PanningMode.VerticalOnly;
-           // this.PanningDeceleration = 0; // 禁用默认惯性
-
-            StylusTouchDevice.SetSimulate(this, true);
+            //使用此触屏滚动会导致闪屏，先不用了..
+            // this.IsManipulationEnabled = true;
+            // this.PanningDeceleration = 0; // 禁用默认惯性
+            //StylusTouchDevice.SetSimulate(this, true);
 
             DependencyPropertyDescriptor
                     .FromProperty(VerticalOffsetProperty, typeof(System.Windows.Controls.ScrollViewer))
@@ -51,8 +49,11 @@ namespace LemonApp.Common.UIBases
         }
         //记录参数
         private int _lastScrollingTick = 0, _lastScrollDelta = 0;
-        private double _lastTouchVelocity = 0;
+        //private double _lastTouchVelocity = 0;
         private double _currentOffset = 0;
+        private double _targetOffset = 0;
+        private double _targetVelocity = 0;
+        private long _lastTimestamp = 0;
         //标志位
         private bool _isRenderingHooked = false;
         private bool _isAccuracyControl = false;
@@ -82,7 +83,7 @@ namespace LemonApp.Common.UIBases
                 _currentOffset = VerticalOffset;
         }
 
-        protected override void OnManipulationDelta(ManipulationDeltaEventArgs e)
+       /* protected override void OnManipulationDelta(ManipulationDeltaEventArgs e)
         {
             base.OnManipulationDelta(e);    //如果没有这一行则不会触发ManipulationCompleted事件??
             e.Handled = true;
@@ -95,6 +96,7 @@ namespace LemonApp.Common.UIBases
 
             if (!_isRenderingHooked)
             {
+                _lastTimestamp = Stopwatch.GetTimestamp();
                 CompositionTarget.Rendering += OnRendering;
                 _isRenderingHooked = true;
             }
@@ -110,10 +112,11 @@ namespace LemonApp.Common.UIBases
 
             if (!_isRenderingHooked)
             {
+                _lastTimestamp = Stopwatch.GetTimestamp();
                 CompositionTarget.Rendering += OnRendering;
                 _isRenderingHooked = true;
             }
-        }
+        }*/
 
         /// <summary>
         /// 判断MouseWheel事件由鼠标触发还是由触控板触发
@@ -126,7 +129,7 @@ namespace LemonApp.Common.UIBases
             var isTouchpadScrolling =
                     e.Delta % Mouse.MouseWheelDeltaForOneLine != 0 ||
                     (tickCount - _lastScrollingTick < 100 && _lastScrollDelta % Mouse.MouseWheelDeltaForOneLine != 0);
-            Debug.WriteLine(e.Delta + "  " + e.Timestamp + "  ==>" + isTouchpadScrolling);
+            //Debug.WriteLine(e.Delta + "  " + e.Timestamp + "  ==>" + isTouchpadScrolling);
             _lastScrollDelta = e.Delta;
             _lastScrollingTick = e.Timestamp;
             return isTouchpadScrolling;
@@ -149,6 +152,7 @@ namespace LemonApp.Common.UIBases
 
             if (!_isRenderingHooked)
             {
+                _lastTimestamp = Stopwatch.GetTimestamp();
                 CompositionTarget.Rendering += OnRendering;
                 _isRenderingHooked = true;
             }
@@ -156,10 +160,18 @@ namespace LemonApp.Common.UIBases
 
         private void OnRendering(object? sender, EventArgs e)
         {
+            // 计算时间增量（deltaTime）
+            long currentTimestamp = Stopwatch.GetTimestamp();
+            double deltaTime = (double)(currentTimestamp - _lastTimestamp) / Stopwatch.Frequency;
+            _lastTimestamp = currentTimestamp;
+
+            double timeFactor = deltaTime / TargetFrameTime;
+
             if (_isAccuracyControl)
             {
-                // 精确滚动：Lerp 逼近目标
-                _currentOffset += (_targetOffset - _currentOffset) * LerpFactor;
+                // 精确滚动：Lerp 逼近目标（使用时间因子调整）
+                double lerpAmount = 1.0 - Math.Pow(1.0 - LerpFactor, timeFactor);
+                _currentOffset += (_targetOffset - _currentOffset) * lerpAmount;
 
                 // 如果已经接近目标，就停止
                 if (Math.Abs(_targetOffset - _currentOffset) < 0.5)
@@ -170,7 +182,7 @@ namespace LemonApp.Common.UIBases
             }
             else
             {
-                // 缓动滚动：速度衰减模拟
+                // 缓动滚动：速度衰减模拟（使用时间因子调整）
                 if (Math.Abs(_targetVelocity) < 0.1)
                 {
                     _targetVelocity = 0;
@@ -178,8 +190,11 @@ namespace LemonApp.Common.UIBases
                     return;
                 }
 
-                _targetVelocity *= Friction;
-                _currentOffset = Math.Clamp(_currentOffset + _targetVelocity * (1.0 / 60), 0, ScrollableHeight);
+                // 使用时间因子调整摩擦力衰减
+                _targetVelocity *= Math.Pow(Friction, timeFactor);
+
+                // 根据实际时间计算偏移量
+                _currentOffset = Math.Clamp(_currentOffset + _targetVelocity * (timeFactor / 24), 0, ScrollableHeight);
             }
 
             InternalScrollToVerticalOffset(_currentOffset);

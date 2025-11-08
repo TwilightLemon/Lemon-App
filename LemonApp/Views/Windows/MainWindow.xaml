@@ -1030,7 +1030,7 @@
                                             CommandParameter="{Binding CurrentPlaying}"
                                             Style="{StaticResource SimpleIconButtonStyleForWs}"
                                             VerticalContentAlignment="Center"
-                                            Content="{Binding CurrentPlaying.SingerText, TargetNullValue='Lemon App'}" />
+                                            Content="{Binding CurrentPlaying.SingerText, TargetNullValue=''}" />
                                 <Run Text="·" BaselineAlignment="Center"/>
                                 <ws:Button  d:Content="reputation"
                                             FontSize="14"

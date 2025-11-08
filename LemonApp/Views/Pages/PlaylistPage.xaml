@@ -1,22 +1,23 @@
-﻿<Page x:Class="LemonApp.Views.Pages.PlaylistPage"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
-      xmlns:common="clr-namespace:LemonApp.Common;assembly=LemonApp.Common"
-      xmlns:component="clr-namespace:LemonApp.Components"
-      xmlns:converter="clr-namespace:LemonApp.Converters"
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:local="clr-namespace:LemonApp.Views.Pages"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:uc="clr-namespace:LemonApp.Views.UserControls"
-      xmlns:vm="clr-namespace:LemonApp.ViewModels"
-      xmlns:ws="https://schemas.elecho.dev/wpfsuite"
-      Title="PlaylistPage"
-      d:DataContext="{d:DesignInstance Type=vm:PlaylistPageViewModel}"
-      d:DesignHeight="450"
-      d:DesignWidth="800"
-      Foreground="{DynamicResource ForeColor}"
-      mc:Ignorable="d">
+﻿<Page
+    x:Class="LemonApp.Views.Pages.PlaylistPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
+    xmlns:common="clr-namespace:LemonApp.Common;assembly=LemonApp.Common"
+    xmlns:component="clr-namespace:LemonApp.Components"
+    xmlns:converter="clr-namespace:LemonApp.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:LemonApp.Views.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:uc="clr-namespace:LemonApp.Views.UserControls"
+    xmlns:vm="clr-namespace:LemonApp.ViewModels"
+    xmlns:ws="https://schemas.elecho.dev/wpfsuite"
+    Title="PlaylistPage"
+    d:DataContext="{d:DesignInstance Type=vm:PlaylistPageViewModel}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    Foreground="{DynamicResource ForeColor}"
+    mc:Ignorable="d">
     <Page.Resources>
         <Storyboard x:Key="HideInfoViewAni">
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="CreatorView" Storyboard.TargetProperty="(UIElement.Visibility)">
@@ -101,95 +102,108 @@
         </Storyboard>
     </Page.Resources>
     <Grid>
-        <Border x:Name="InfoView"
-                Height="200"
-                Margin="8"
-                Padding="12"
-                VerticalAlignment="Top"
-                Background="{DynamicResource TabMaskColor}"
-                BorderBrush="{DynamicResource BorderColor}"
-                BorderThickness="1"
-                CornerRadius="8">
+        <Border
+            x:Name="InfoView"
+            Height="200"
+            Margin="8"
+            Padding="12"
+            VerticalAlignment="Top"
+            Background="{DynamicResource TabMaskColor}"
+            BorderBrush="{DynamicResource BorderColor}"
+            BorderThickness="1"
+            CornerRadius="8">
             <Grid Visibility="Visible">
-                <Border x:Name="CoverImg"
-                        Width="{Binding ElementName=CoverImg, Path=ActualHeight}"
-                        Margin="4"
-                        HorizontalAlignment="Left"
-                        d:Background="Pink"
-                        Background="{Binding Cover}"
-                        CornerRadius="8"
-                        RenderOptions.BitmapScalingMode="HighQuality" />
+                <Border
+                    x:Name="CoverImg"
+                    Width="{Binding ElementName=CoverImg, Path=ActualHeight}"
+                    Margin="4"
+                    HorizontalAlignment="Left"
+                    d:Background="Pink"
+                    Background="{Binding Cover}"
+                    CornerRadius="8"
+                    RenderOptions.BitmapScalingMode="HighQuality" />
                 <Grid x:Name="TitleTb" Margin="190,0,0,86">
-                    <TextBlock VerticalAlignment="Top"
-                               d:Text="Twlm's Music World"
-                               FontSize="32"
-                               FontWeight="Bold"
-                               Text="{Binding ListName}"
-                               TextWrapping="NoWrap"
-                               ToolTip="{Binding ListName}" />
-                    <TextBlock Margin="0,50,0,0"
-                               d:Text="Desc"
-                               FontSize="12"
-                               Text="{Binding Description}">
+                    <TextBlock
+                        VerticalAlignment="Top"
+                        d:Text="Twlm's Music World"
+                        FontSize="32"
+                        FontWeight="Bold"
+                        Text="{Binding ListName}"
+                        TextWrapping="NoWrap"
+                        ToolTip="{Binding ListName}" />
+                    <TextBlock
+                        Margin="0,50,0,0"
+                        d:Text="Desc"
+                        FontSize="12"
+                        Text="{Binding Description}">
                         <TextBlock.ToolTip>
                             <ToolTip MaxWidth="420">
-                                <TextBlock Margin="8"
-                                           Text="{Binding Description}"
-                                           TextWrapping="Wrap" />
+                                <TextBlock
+                                    Margin="8"
+                                    Text="{Binding Description}"
+                                    TextWrapping="Wrap" />
                             </ToolTip>
                         </TextBlock.ToolTip>
                     </TextBlock>
                 </Grid>
-                <Grid x:Name="CreatorView"
-                      Margin="190,83,0,0"
-                      HorizontalAlignment="Stretch"
-                      VerticalAlignment="Top">
-                    <Border Width="32"
-                            Height="32"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Center"
-                            d:Background="Pink"
-                            Background="{Binding CreatorAvatar}"
-                            CornerRadius="16"
-                            RenderOptions.BitmapScalingMode="HighQuality" />
-                    <TextBlock Margin="40,0,0,0"
-                               HorizontalAlignment="Left"
-                               VerticalAlignment="Center"
-                               d:Text="Creator"
-                               Text="{Binding CreatorName}" />
+                <Grid
+                    x:Name="CreatorView"
+                    Margin="190,83,0,0"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Top">
+                    <Border
+                        Width="32"
+                        Height="32"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        d:Background="Pink"
+                        Background="{Binding CreatorAvatar}"
+                        CornerRadius="16"
+                        RenderOptions.BitmapScalingMode="HighQuality" />
+                    <TextBlock
+                        Margin="40,0,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        d:Text="Creator"
+                        Text="{Binding CreatorName}" />
                 </Grid>
-                <ws:WrapPanel x:Name="FuncView"
-                              Height="36"
-                              Margin="190,0,0,4"
-                              HorizontalAlignment="Stretch"
-                              VerticalAlignment="Bottom"
-                              HorizontalSpacing="16"
-                              ItemHeight="36">
-                    <ws:Button Padding="16,0"
-                               Command="{Binding PlayAllCommand}"
-                               Style="{StaticResource AccentButtonStyleForWs}">
+                <ws:WrapPanel
+                    x:Name="FuncView"
+                    Height="36"
+                    Margin="190,0,0,4"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Bottom"
+                    HorizontalSpacing="16"
+                    ItemHeight="36">
+                    <ws:Button
+                        Padding="16,0"
+                        Command="{Binding PlayAllCommand}"
+                        Style="{StaticResource AccentButtonStyleForWs}">
                         <TextBlock>
-                            <Run BaselineAlignment="Center"
-                                 FontFamily="{StaticResource SegoeFluentIcon}"
-                                 FontSize="16"
-                                 Text="&#xe768;" />
+                            <Run
+                                BaselineAlignment="Center"
+                                FontFamily="{StaticResource SegoeFluentIcon}"
+                                FontSize="16"
+                                Text="&#xe768;" />
                             <Run Text=" Play All" />
                         </TextBlock>
                     </ws:Button>
-                    <ws:Button Width="36"
-                               Command="{x:Static component:PublicPopupMenuHolder.AddToQuickAccessCommand}"
-                               CommandParameter="{Binding QuickAccessData}"
-                               FontFamily="{StaticResource SegoeFluentIcon}"
-                               FontSize="14"
-                               Style="{StaticResource SimpleButtonStyleForWs}"
-                               ToolTip="Add to Quick Access">
+                    <ws:Button
+                        Width="36"
+                        Command="{x:Static component:PublicPopupMenuHolder.AddToQuickAccessCommand}"
+                        CommandParameter="{Binding QuickAccessData}"
+                        FontFamily="{StaticResource SegoeFluentIcon}"
+                        FontSize="14"
+                        Style="{StaticResource SimpleButtonStyleForWs}"
+                        ToolTip="Add to Quick Access">
                         &#xe710;
                     </ws:Button>
-                    <ws:Button Width="36"
-                               FontFamily="{StaticResource SegoeFluentIcon}"
-                               FontSize="14"
-                               Style="{StaticResource SimpleButtonStyleForWs}"
-                               ToolTip="Share">
+                    <ws:Button
+                        Width="36"
+                        FontFamily="{StaticResource SegoeFluentIcon}"
+                        FontSize="14"
+                        Style="{StaticResource SimpleButtonStyleForWs}"
+                        ToolTip="Share">
                         &#xe72d;
                     </ws:Button>
                 </ws:WrapPanel>
@@ -197,118 +211,130 @@
         </Border>
 
         <Grid x:Name="ContentView" Margin="0,208,0,0">
-            <Border Height="42"
-                    Margin="8,4,8,8"
-                    VerticalAlignment="Top"
-                    Background="{DynamicResource TabMaskColor}"
-                    BorderBrush="{DynamicResource BorderColor}"
-                    BorderThickness="1"
-                    CornerRadius="8">
+            <Border
+                Height="42"
+                Margin="8,4,8,8"
+                VerticalAlignment="Top"
+                Background="{DynamicResource TabMaskColor}"
+                BorderBrush="{DynamicResource BorderColor}"
+                BorderThickness="1"
+                CornerRadius="8">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="2*" />
                         <ColumnDefinition Width="1*" />
                     </Grid.ColumnDefinitions>
-                    <ws:TextBox x:Name="ListSearchBox"
-                                Grid.Column="1"
-                                Height="30"
-                                Margin="8,2"
-                                Padding="8,6"
-                                Placeholder="Search"
-                                Style="{StaticResource SimpleTextBoxStyleForWs}"
-                                TextChanged="ListSearchBox_TextChanged" />
-                    <ws:WrapPanel Margin="20,0"
-                                  VerticalAlignment="Center"
-                                  HorizontalSpacing="12"
-                                  ItemHeight="30">
-                        <ToggleButton x:Name="SelectAllBtn"
-                                      Padding="6,0"
-                                      Click="SelectAllBtn_Click"
-                                      Style="{StaticResource AccentToggleButtonStyle}"
-                                      ToolTip="Select All">
+                    <ws:TextBox
+                        x:Name="ListSearchBox"
+                        Grid.Column="1"
+                        Height="30"
+                        Margin="8,2"
+                        Padding="8,6"
+                        Placeholder="Search"
+                        Style="{StaticResource SimpleTextBoxStyleForWs}"
+                        TextChanged="ListSearchBox_TextChanged" />
+                    <ws:WrapPanel
+                        Margin="20,0"
+                        VerticalAlignment="Center"
+                        HorizontalSpacing="12"
+                        ItemHeight="30">
+                        <ToggleButton
+                            x:Name="SelectAllBtn"
+                            Padding="6,0"
+                            Click="SelectAllBtn_Click"
+                            Style="{StaticResource AccentToggleButtonStyle}"
+                            ToolTip="Select All">
                             <TextBlock VerticalAlignment="Center">
                                 <Run d:Text="520" Text="{Binding Musics.Count, Mode=OneWay}" />
                                 <Run Text=" Songs" />
                             </TextBlock>
                         </ToggleButton>
-                        <ToggleButton x:Name="SelectModeTB"
-                                      Padding="16,0"
-                                      Click="SelectModeTB_Click"
-                                      FontFamily="{StaticResource SegoeFluentIcon}"
-                                      FontSize="12"
-                                      IsChecked="{Binding ElementName=listBox, Path=SelectionMode, Converter={x:Static ws:EqualConverter.Instance}, ConverterParameter={x:Static SelectionMode.Multiple}, Mode=OneWay}"
-                                      Style="{StaticResource AccentToggleButtonStyle}"
-                                      ToolTip="Multiple Select">
+                        <ToggleButton
+                            x:Name="SelectModeTB"
+                            Padding="16,0"
+                            Click="SelectModeTB_Click"
+                            FontFamily="{StaticResource SegoeFluentIcon}"
+                            FontSize="12"
+                            IsChecked="{Binding ElementName=listBox, Path=SelectionMode, Converter={x:Static ws:EqualConverter.Instance}, ConverterParameter={x:Static SelectionMode.Multiple}, Mode=OneWay}"
+                            Style="{StaticResource AccentToggleButtonStyle}"
+                            ToolTip="Multiple Select">
                             &#xe762;
                         </ToggleButton>
-                        <ws:Button x:Name="AddToBtn"
-                                   Padding="16,0"
-                                   Click="AddToBtn_Click"
-                                   FontFamily="{StaticResource SegoeFluentIcon}"
-                                   FontSize="12"
-                                   Style="{StaticResource SimpleButtonStyleForWs}"
-                                   ToolTip="Add to playlist or diss">
+                        <ws:Button
+                            x:Name="AddToBtn"
+                            Padding="16,0"
+                            Click="AddToBtn_Click"
+                            FontFamily="{StaticResource SegoeFluentIcon}"
+                            FontSize="12"
+                            Style="{StaticResource SimpleButtonStyleForWs}"
+                            ToolTip="Add to playlist or diss">
                             &#xe710;
                         </ws:Button>
-                        <ws:Button x:Name="DeleteBtn"
-                                   Padding="16,0"
-                                   Click="DeleteBtn_Click"
-                                   FontFamily="{StaticResource SegoeFluentIcon}"
-                                   FontSize="12"
-                                   Style="{StaticResource SimpleButtonStyleForWs}"
-                                   ToolTip="Delete"
-                                   Visibility="{Binding IsOwned, Converter={x:Static ws:BooleanToVisibilityConverter.Instance}}">
+                        <ws:Button
+                            x:Name="DeleteBtn"
+                            Padding="16,0"
+                            Click="DeleteBtn_Click"
+                            FontFamily="{StaticResource SegoeFluentIcon}"
+                            FontSize="12"
+                            Style="{StaticResource SimpleButtonStyleForWs}"
+                            ToolTip="Delete"
+                            Visibility="{Binding IsOwned, Converter={x:Static ws:BooleanToVisibilityConverter.Instance}}">
                             &#xe74d;
                         </ws:Button>
-                        <ws:Button x:Name="DownloadBtn"
-                                   Padding="16,0"
-                                   Click="DownloadBtn_Click"
-                                   FontFamily="{StaticResource SegoeFluentIcon}"
-                                   FontSize="12"
-                                   Style="{StaticResource SimpleButtonStyleForWs}"
-                                   ToolTip="Download">
+                        <ws:Button
+                            x:Name="DownloadBtn"
+                            Padding="16,0"
+                            Click="DownloadBtn_Click"
+                            FontFamily="{StaticResource SegoeFluentIcon}"
+                            FontSize="12"
+                            Style="{StaticResource SimpleButtonStyleForWs}"
+                            ToolTip="Download">
                             &#xe896;
                         </ws:Button>
                     </ws:WrapPanel>
                 </Grid>
             </Border>
-            <ws:ListBox x:Name="listBox"
-                        Margin="0,46,0,0"
-                        d:ItemsSource="{d:SampleData ItemCount=5}"
-                        ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}"
-                        ItemsSource="{Binding Musics}"
-                        ScrollViewer.ScrollChanged="listBox_ScrollChanged"
-                        Style="{DynamicResource SimpleListBoxStyle}">
+            <ws:ListBox
+                x:Name="listBox"
+                Margin="0,46,0,0"
+                d:ItemsSource="{d:SampleData ItemCount=5}"
+                ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}"
+                ItemsSource="{Binding Musics}"
+                ScrollViewer.ScrollChanged="listBox_ScrollChanged"
+                Style="{DynamicResource SimpleListBoxStyle}">
                 <ws:ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Border x:Name="_border"
-                                MinHeight="48"
-                                base:DoubleClickCommand.Command="{Binding DataContext.PlayMusicCommand, RelativeSource={RelativeSource AncestorType=ws:ListBox}}"
-                                base:DoubleClickCommand.CommandParameter="{Binding}"
-                                base:RightClickCommand.Command="{x:Static component:PublicPopupMenuHolder.ShowMusicOptionsCommand}"
-                                base:RightClickCommand.CommandParameter="{Binding}"
-                                Background="Transparent"
-                                CornerRadius="8">
+                        <Border
+                            x:Name="_border"
+                            MinHeight="48"
+                            base:DoubleClickCommand.Command="{Binding DataContext.PlayMusicCommand, RelativeSource={RelativeSource AncestorType=ws:ListBox}}"
+                            base:DoubleClickCommand.CommandParameter="{Binding}"
+                            base:RightClickCommand.Command="{x:Static component:PublicPopupMenuHolder.ShowMusicOptionsCommand}"
+                            base:RightClickCommand.CommandParameter="{Binding}"
+                            Background="Transparent"
+                            CornerRadius="8">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="3*" />
                                     <ColumnDefinition Width="2*" />
                                     <ColumnDefinition Width="2*" />
                                 </Grid.ColumnDefinitions>
-                                <ws:ConditionalControl x:Name="Highlighter"
-                                                       Width="4"
-                                                       Height="22"
-                                                       HorizontalAlignment="Left"
-                                                       d:Condition="True">
+                                <ws:ConditionalControl
+                                    x:Name="Highlighter"
+                                    Width="4"
+                                    Height="22"
+                                    HorizontalAlignment="Left"
+                                    d:Condition="True">
                                     <ws:ConditionalControl.ContentWhenTrue>
                                         <Border Background="{DynamicResource HighlightThemeColor}" CornerRadius="2" />
                                     </ws:ConditionalControl.ContentWhenTrue>
                                 </ws:ConditionalControl>
-                                <TextBlock Margin="10,0,0,0"
-                                           HorizontalAlignment="Left"
-                                           VerticalAlignment="Center"
-                                           FontSize="12"
-                                           Opacity="0.6">
+                                <TextBlock
+                                    Margin="10,0,0,0"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    FontSize="12"
+                                    Opacity="0.6">
                                     <TextBlock.Text>
                                         <MultiBinding Converter="{x:Static converter:IndexOfConverter.Instance}">
                                             <Binding />
@@ -316,39 +342,44 @@
                                         </MultiBinding>
                                     </TextBlock.Text>
                                 </TextBlock>
-                                <ws:WrapPanel Margin="38,0"
-                                              HorizontalAlignment="Stretch"
-                                              VerticalAlignment="Center"
-                                              HorizontalSpacing="4"
-                                              VerticalSpacing="2">
+                                <ws:WrapPanel
+                                    Margin="38,0"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Center"
+                                    HorizontalSpacing="4"
+                                    VerticalSpacing="2">
                                     <TextBlock VerticalAlignment="Center" Text="{Binding MusicName}" />
-                                    <TextBlock VerticalAlignment="Center"
-                                               FontSize="10"
-                                               FontWeight="Normal"
-                                               Opacity="0.6"
-                                               Text="{Binding MusicName_Lyric}" />
-                                    <uc:MusicInfoLand x:Name="InfoLand"
-                                                      HorizontalAlignment="Right"
-                                                      VerticalAlignment="Center"
-                                                      MvId="{Binding Mvmid}"
-                                                      Quality="{Binding Quality}" />
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        FontSize="10"
+                                        FontWeight="Normal"
+                                        Opacity="0.6"
+                                        Text="{Binding MusicName_Lyric}" />
+                                    <uc:MusicInfoLand
+                                        x:Name="InfoLand"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        MvId="{Binding Mvmid}"
+                                        Quality="{Binding Quality}" />
                                 </ws:WrapPanel>
-                                <ws:Button Grid.Column="1"
-                                           Margin="4"
-                                           Padding="8,4"
-                                           HorizontalAlignment="Left"
-                                           Command="{x:Static component:PublicPopupMenuHolder.GotoArtistCommand}"
-                                           CommandParameter="{Binding}"
-                                           Style="{StaticResource SimpleIconButtonStyleForWs}">
+                                <ws:Button
+                                    Grid.Column="1"
+                                    Margin="4"
+                                    Padding="8,4"
+                                    HorizontalAlignment="Left"
+                                    Command="{x:Static component:PublicPopupMenuHolder.GotoArtistCommand}"
+                                    CommandParameter="{Binding}"
+                                    Style="{StaticResource SimpleIconButtonStyleForWs}">
                                     <TextBlock Text="{Binding SingerText}" />
                                 </ws:Button>
-                                <ws:Button Grid.Column="2"
-                                           Margin="4"
-                                           Padding="8,4"
-                                           HorizontalAlignment="Left"
-                                           Command="{x:Static component:PublicPopupMenuHolder.GoToAlbumCommand}"
-                                           CommandParameter="{Binding Album}"
-                                           Style="{StaticResource SimpleIconButtonStyleForWs}">
+                                <ws:Button
+                                    Grid.Column="2"
+                                    Margin="4"
+                                    Padding="8,4"
+                                    HorizontalAlignment="Left"
+                                    Command="{x:Static component:PublicPopupMenuHolder.GoToAlbumCommand}"
+                                    CommandParameter="{Binding Album}"
+                                    Style="{StaticResource SimpleIconButtonStyleForWs}">
                                     <TextBlock Text="{Binding Album.Name}" />
                                 </ws:Button>
                             </Grid>
@@ -373,42 +404,47 @@
                 </ws:ListBox.ItemTemplate>
             </ws:ListBox>
         </Grid>
-        <base:FluentPopup x:Name="AddtoMenu"
-                          Background="{DynamicResource PopupWndBgColor}"
-                          ExtPopupAnimation="SlideDown"
-                          Placement="Mouse"
-                          StaysOpen="False">
+        <base:FluentPopup
+            x:Name="AddtoMenu"
+            Background="{DynamicResource PopupWndBgColor}"
+            ExtPopupAnimation="SlideDown"
+            Placement="Mouse"
+            StaysOpen="False">
             <ws:StackPanel>
-                <ws:Button Padding="16,8"
-                           Background="Transparent"
-                           Click="AddToDissBtn_Click"
-                           CornerRadius="0"
-                           Style="{StaticResource SimpleButtonStyleForWs}">
+                <ws:Button
+                    Padding="16,8"
+                    Background="Transparent"
+                    Click="AddToDissBtn_Click"
+                    CornerRadius="0"
+                    Style="{StaticResource SimpleButtonStyleForWs}">
                     My Diss
                 </ws:Button>
-                <ws:Button Padding="16,8"
-                           Background="Transparent"
-                           Click="AddToNextBtn_Click"
-                           CornerRadius="0"
-                           Style="{StaticResource SimpleButtonStyleForWs}">
+                <ws:Button
+                    Padding="16,8"
+                    Background="Transparent"
+                    Click="AddToNextBtn_Click"
+                    CornerRadius="0"
+                    Style="{StaticResource SimpleButtonStyleForWs}">
                     Next To Play
                 </ws:Button>
             </ws:StackPanel>
         </base:FluentPopup>
-        <ws:Button x:Name="GotoPlayingBtn"
-                   Width="36"
-                   Height="36"
-                   Margin="32"
-                   HorizontalAlignment="Right"
-                   VerticalAlignment="Bottom"
-                   Click="GotoPlayingBtn_Click"
-                   CornerRadius="18"
-                   Style="{StaticResource AccentButtonStyleForWs}"
-                   Visibility="{Binding ShowGotoPlaying}">
-            <Path Width="16"
-                  Data="{StaticResource Icon_Position}"
-                  Fill="{DynamicResource BackgroundColor}"
-                  Stretch="Uniform" />
+        <ws:Button
+            x:Name="GotoPlayingBtn"
+            Width="36"
+            Height="36"
+            Margin="32"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Click="GotoPlayingBtn_Click"
+            CornerRadius="18"
+            Style="{StaticResource AccentButtonStyleForWs}"
+            Visibility="{Binding ShowGotoPlaying}">
+            <Path
+                Width="16"
+                Data="{StaticResource Icon_Position}"
+                Fill="{DynamicResource BackgroundColor}"
+                Stretch="Uniform" />
         </ws:Button>
     </Grid>
 </Page>

@@ -1,6 +1,7 @@
 ﻿using EleCho.WpfSuite;
 using LemonApp.Common.Configs;
 using LemonApp.Common.Funcs;
+using LemonApp.Common.UIBases;
 using LemonApp.Common.WinAPI;
 using LemonApp.Services;
 using LemonApp.ViewModels;
@@ -9,6 +10,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -120,6 +122,10 @@ namespace LemonApp.Views.Windows
         private void DesktopLyricWindow_Loaded(object sender, RoutedEventArgs e)
         {
             WindowLongAPI.SetToolWindow(this);
+            var c = this.Content as UIElement;
+            var layer = AdornerLayer.GetAdornerLayer(c);
+            layer.Add(new WindowResizeAdorner(c));
+
             LrcPanel.Effect = shadowEffect;
 
             if(_settingsMgr.Data.WindowSize is { Width:>0,Height:>0} size)
