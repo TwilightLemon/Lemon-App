@@ -33,19 +33,53 @@ namespace LemonApp.Common.UIBases
         /// </summary>
         private const double LerpFactor = 0.5;
 
+        /// <summary>
+        /// 上一帧的时间戳
+        /// </summary>
+        private long _lastTimestamp = 0;
+
+        /// <summary>
+        /// 目标帧率（用于归一化计算）
+        /// </summary>
+        private const double TargetFps = 144;
+
+        /// <summary>
+        /// 最小偏移量变化阈值，避免不必要的滚动更新
+        /// </summary>
+        private const double MinOffsetChange = 0.01;
+
+        /// <summary>
+        /// 精确滚动停止阈值
+        /// </summary>
+        private const double AccuracyStopThreshold = 0.5;
+
+        /// <summary>
+        /// 速度停止阈值
+        /// </summary>
+        private const double VelocityStopThreshold = 0.1;
+
+        /// <summary>
+        /// 最大时间跳跃限制（秒），防止窗口失焦后的大跳跃
+        /// </summary>
+        private const double MaxDeltaTime = 0.1;
+
+        /// <summary>
+        /// 预计算的摩擦力常数
+        /// </summary>
+        private static readonly double OneMinusLerpFactor = 1.0 - LerpFactor;
+
         public ScrollViewer()
         {
             _currentOffset = VerticalOffset;
 
             this.IsManipulationEnabled = true;
             this.PanningMode = PanningMode.VerticalOnly;
-           // this.PanningDeceleration = 0; // 禁用默认惯性
+            // this.PanningDeceleration = 0; // 禁用默认惯性
 
             StylusTouchDevice.SetSimulate(this, true);
 
-            DependencyPropertyDescriptor
-                    .FromProperty(VerticalOffsetProperty, typeof(System.Windows.Controls.ScrollViewer))
-                    .AddValueChanged(this, HandleExternalScrollChanged);
+            // 使用 ScrollChanged 事件替代 DependencyPropertyDescriptor（性能更好）
+            this.ScrollChanged += OnScrollChanged;
 
             Unloaded += ScrollViewer_Unloaded;
         }
@@ -60,9 +94,7 @@ namespace LemonApp.Common.UIBases
 
         private void ScrollViewer_Unloaded(object sender, RoutedEventArgs e)
         {
-            DependencyPropertyDescriptor
-                .FromProperty(VerticalOffsetProperty, typeof(System.Windows.Controls.ScrollViewer))
-                .RemoveValueChanged(this, HandleExternalScrollChanged);
+            this.ScrollChanged -= OnScrollChanged;
 
             if (_isRenderingHooked)
             {
@@ -74,12 +106,12 @@ namespace LemonApp.Common.UIBases
         /// <summary>
         /// 处理外部滚动事件，更新当前偏移量
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void HandleExternalScrollChanged(object? sender, EventArgs e)
+        private void OnScrollChanged(object sender, ScrollChangedEventArgs e)
         {
-            if (!_isInternalScrollChange)
+            if (!_isInternalScrollChange && e.VerticalChange != 0)
+            {
                 _currentOffset = VerticalOffset;
+            }
         }
 
         protected override void OnManipulationDelta(ManipulationDeltaEventArgs e)
@@ -89,12 +121,18 @@ namespace LemonApp.Common.UIBases
             //手还在屏幕上，使用精确滚动
             _isAccuracyControl = true;
             double deltaY = -e.DeltaManipulation.Translation.Y;
+
+            // 跳过微小的变化，减少不必要的更新
+            if (Math.Abs(deltaY) < MinOffsetChange)
+                return;
+
             _targetOffset = Math.Clamp(_currentOffset + deltaY, 0, ScrollableHeight);
             // 记录最后一次速度
             _lastTouchVelocity = -e.Velocities.LinearVelocity.Y;
 
             if (!_isRenderingHooked)
             {
+                _lastTimestamp = Stopwatch.GetTimestamp();
                 CompositionTarget.Rendering += OnRendering;
                 _isRenderingHooked = true;
             }
@@ -104,12 +142,12 @@ namespace LemonApp.Common.UIBases
         {
             base.OnManipulationCompleted(e);
             e.Handled = true;
-            Debug.WriteLine("vel: " + _lastTouchVelocity);
             _targetVelocity = _lastTouchVelocity; // 用系统识别的速度继续滚动
             _isAccuracyControl = false;
 
             if (!_isRenderingHooked)
             {
+                _lastTimestamp = Stopwatch.GetTimestamp();
                 CompositionTarget.Rendering += OnRendering;
                 _isRenderingHooked = true;
             }
@@ -124,9 +162,8 @@ namespace LemonApp.Common.UIBases
         {
             var tickCount = Environment.TickCount;
             var isTouchpadScrolling =
-                    e.Delta % Mouse.MouseWheelDeltaForOneLine != 0 ||
-                    (tickCount - _lastScrollingTick < 100 && _lastScrollDelta % Mouse.MouseWheelDeltaForOneLine != 0);
-            Debug.WriteLine(e.Delta + "  " + e.Timestamp + "  ==>" + isTouchpadScrolling);
+                  e.Delta % Mouse.MouseWheelDeltaForOneLine != 0 ||
+                (tickCount - _lastScrollingTick < 100 && _lastScrollDelta % Mouse.MouseWheelDeltaForOneLine != 0);
             _lastScrollDelta = e.Delta;
             _lastScrollingTick = e.Timestamp;
             return isTouchpadScrolling;
@@ -149,6 +186,7 @@ namespace LemonApp.Common.UIBases
 
             if (!_isRenderingHooked)
             {
+                _lastTimestamp = Stopwatch.GetTimestamp();
                 CompositionTarget.Rendering += OnRendering;
                 _isRenderingHooked = true;
             }
@@ -156,33 +194,64 @@ namespace LemonApp.Common.UIBases
 
         private void OnRendering(object? sender, EventArgs e)
         {
+            // 计算时间增量（deltaTime）
+            long currentTimestamp = Stopwatch.GetTimestamp();
+            double deltaTime = (double)(currentTimestamp - _lastTimestamp) / Stopwatch.Frequency;
+            _lastTimestamp = currentTimestamp;
+
+            // 限制最大时间跳跃，防止窗口失焦后的异常行为
+            if (deltaTime > MaxDeltaTime)
+                deltaTime = MaxDeltaTime;
+
+            // 归一化到目标帧率
+            double targetFrameTime = 1.0 / TargetFps;
+            double timeFactor = deltaTime / targetFrameTime;
+
+            double newOffset = _currentOffset;
+
             if (_isAccuracyControl)
             {
-                // 精确滚动：Lerp 逼近目标
-                _currentOffset += (_targetOffset - _currentOffset) * LerpFactor;
+                // 精确滚动：Lerp 逼近目标（使用时间因子调整）
+                // 优化: 使用预计算的常数和更高效的指数计算
+                double difference = _targetOffset - _currentOffset;
 
-                // 如果已经接近目标，就停止
-                if (Math.Abs(_targetOffset - _currentOffset) < 0.5)
+                // 如果已经接近目标，直接设置并停止
+                if (Math.Abs(difference) < AccuracyStopThreshold)
                 {
-                    _currentOffset = _targetOffset;
+                    newOffset = _targetOffset;
                     StopRendering();
+                }
+                else
+                {
+                    // 使用优化的指数衰减计算
+                    double lerpAmount = 1.0 - Math.Pow(OneMinusLerpFactor, timeFactor);
+                    newOffset = _currentOffset + difference * lerpAmount;
                 }
             }
             else
             {
-                // 缓动滚动：速度衰减模拟
-                if (Math.Abs(_targetVelocity) < 0.1)
+                // 缓动滚动：速度衰减模拟（使用时间因子调整）
+                if (Math.Abs(_targetVelocity) < VelocityStopThreshold)
                 {
                     _targetVelocity = 0;
                     StopRendering();
                     return;
                 }
 
-                _targetVelocity *= Friction;
-                _currentOffset = Math.Clamp(_currentOffset + _targetVelocity * (1.0 / 60), 0, ScrollableHeight);
+                // 使用时间因子调整摩擦力衰减
+                _targetVelocity *= Math.Pow(Friction, timeFactor);
+
+                // 根据实际时间计算偏移量
+                newOffset = _currentOffset + _targetVelocity * (timeFactor / 24);
+                newOffset = Math.Clamp(newOffset, 0, ScrollableHeight);
             }
 
-            InternalScrollToVerticalOffset(_currentOffset);
+            // 只有当偏移量变化足够大时才更新，避免不必要的布局刷新
+            if (Math.Abs(newOffset - _currentOffset) >= MinOffsetChange)
+            {
+                _currentOffset = newOffset;
+                InternalScrollToVerticalOffset(_currentOffset);
+            }
         }
 
         private void InternalScrollToVerticalOffset(double offset)
@@ -195,8 +264,11 @@ namespace LemonApp.Common.UIBases
 
         private void StopRendering()
         {
-            CompositionTarget.Rendering -= OnRendering;
-            _isRenderingHooked = false;
+            if (_isRenderingHooked)
+            {
+                CompositionTarget.Rendering -= OnRendering;
+                _isRenderingHooked = false;
+            }
         }
     }
 

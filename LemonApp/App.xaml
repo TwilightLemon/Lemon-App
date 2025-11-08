@@ -1,10 +1,11 @@
-﻿<Application x:Class="LemonApp.App"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
-             xmlns:component="clr-namespace:LemonApp.Components"
-             xmlns:local="clr-namespace:LemonApp"
-             xmlns:ws="https://schemas.elecho.dev/wpfsuite">
+﻿<Application
+    x:Class="LemonApp.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
+    xmlns:component="clr-namespace:LemonApp.Components"
+    xmlns:local="clr-namespace:LemonApp"
+    xmlns:ws="https://schemas.elecho.dev/wpfsuite">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -55,10 +56,11 @@
                 <Setter Property="Height" Value="32" />
             </Style>
             <ContextMenu x:Key="AddToQuickGotoMenu">
-                <MenuItem Command="{x:Static component:PublicPopupMenuHolder.AddToQuickAccessCommand}"
-                          CommandParameter="{Binding}"
-                          Header="Add to Quick Access"
-                          Icon="{x:Null}" />
+                <MenuItem
+                    Command="{x:Static component:PublicPopupMenuHolder.AddToQuickAccessCommand}"
+                    CommandParameter="{Binding}"
+                    Header="Add to Quick Access"
+                    Icon="{x:Null}" />
             </ContextMenu>
             <!--  涟漪点击效果  -->
             <!--<Style TargetType="{x:Type ws:Button}">

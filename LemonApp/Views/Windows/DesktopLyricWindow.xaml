@@ -1,29 +1,29 @@
-﻿<Window x:Class="LemonApp.Views.Windows.DesktopLyricWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:behavior="clr-namespace:LemonApp.Common.Behaviors;assembly=LemonApp.Common"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-        xmlns:local="clr-namespace:LemonApp.Views.Windows"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:vm="clr-namespace:LemonApp.ViewModels"
-        xmlns:ws="https://schemas.elecho.dev/wpfsuite"
-        x:Name="window"
-        Title="DesktopLyricWindow"
-        Width="720"
-        Height="158"
-        d:DataContext="{d:DesignInstance Type=vm:DesktopLyricWindowViewModel}"
-        AllowsTransparency="True"
-        Background="#01000000"
-        FontFamily="{StaticResource DefaultFontFamily}"
-        Foreground="{DynamicResource ForeColor}"
-        ResizeMode="CanResize"
-        ShowInTaskbar="False"
-        Topmost="True"
-        WindowStyle="None"
-        mc:Ignorable="d">
+﻿<Window
+    x:Class="LemonApp.Views.Windows.DesktopLyricWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:behavior="clr-namespace:LemonApp.Common.Behaviors;assembly=LemonApp.Common"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:local="clr-namespace:LemonApp.Views.Windows"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:LemonApp.ViewModels"
+    xmlns:ws="https://schemas.elecho.dev/wpfsuite"
+    x:Name="window"
+    Title="DesktopLyricWindow"
+    Width="720"
+    Height="158"
+    d:DataContext="{d:DesignInstance Type=vm:DesktopLyricWindowViewModel}"
+    Background="Transparent"
+    FontFamily="{StaticResource DefaultFontFamily}"
+    Foreground="{DynamicResource ForeColor}"
+    ResizeMode="NoResize"
+    ShowInTaskbar="False"
+    Topmost="True"
+    WindowStyle="None"
+    mc:Ignorable="d">
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="0" ResizeBorderThickness="12" />
+        <WindowChrome CaptionHeight="0" GlassFrameThickness="-1" />
     </WindowChrome.WindowChrome>
     <i:Interaction.Behaviors>
         <behavior:WindowDragMoveBehavior />
@@ -33,112 +33,130 @@
     </Window.Resources>
     <Window.ContextMenu>
         <ContextMenu>
-            <MenuItem Command="{Binding Data.FontSizeUpCommand, Source={StaticResource proxy}}"
-                      Header="Font size ++"
-                      Icon="{x:Null}" />
-            <MenuItem Command="{Binding Data.FontSizeDownCommand, Source={StaticResource proxy}}"
-                      Header="Font size --"
-                      Icon="{x:Null}" />
+            <MenuItem
+                Command="{Binding Data.FontSizeUpCommand, Source={StaticResource proxy}}"
+                Header="Font size ++"
+                Icon="{x:Null}" />
+            <MenuItem
+                Command="{Binding Data.FontSizeDownCommand, Source={StaticResource proxy}}"
+                Header="Font size --"
+                Icon="{x:Null}" />
         </ContextMenu>
     </Window.ContextMenu>
     <ws:BoxPanel>
         <Grid x:Name="LrcPanel">
-            <ScrollViewer x:Name="LrcScrollViewer"
-                          HorizontalScrollBarVisibility="Hidden"
-                          PanningMode="HorizontalOnly"
-                          VerticalScrollBarVisibility="Disabled">
-                <ContentControl x:Name="LrcHost"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Content="{Binding LyricControl}" />
+            <ScrollViewer
+                x:Name="LrcScrollViewer"
+                HorizontalScrollBarVisibility="Hidden"
+                PanningMode="HorizontalOnly"
+                VerticalScrollBarVisibility="Disabled">
+                <ContentControl
+                    x:Name="LrcHost"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Content="{Binding LyricControl}" />
             </ScrollViewer>
         </Grid>
         <!--  功能区 鼠标进入后显示  -->
-        <Grid x:Name="FuncPanel"
-              d:Visibility="Visible"
-              Visibility="Collapsed">
-            <Border Background="{DynamicResource WindowBackgroundColor}"
-                    BorderBrush="{DynamicResource BorderColor}"
-                    BorderThickness="1"
-                    CornerRadius="12" />
-            <ws:WrapPanel HorizontalAlignment="Center"
-                          VerticalAlignment="Center"
-                          HorizontalSpacing="24">
-                <ToggleButton Width="48"
-                              Height="48"
-                              Padding="12"
-                              Command="{Binding ShowOrHideTranslationCommand}"
-                              IsChecked="{Binding ShowTranslation}"
-                              Style="{StaticResource IconToggleButton}"
-                              Tag="{StaticResource Icon_Trans}"
-                              ToolTip="Show Translation and Romaji" />
-                <ws:Button x:Name="PlayLastBtn"
-                           Width="48"
-                           Height="48"
-                           HorizontalAlignment="Left"
-                           Command="{Binding PlayLastCommand}"
-                           Style="{StaticResource SimpleIconButtonStyleForWs}"
-                           ToolTip="Play the last one">
-                    <Path Height="22"
-                          Data="{DynamicResource PlayIcon_Last}"
-                          Fill="{DynamicResource ForeColor}"
-                          Stretch="Uniform" />
+        <Grid
+            x:Name="FuncPanel"
+            d:Visibility="Visible"
+            Visibility="Collapsed">
+            <Border
+                Background="{DynamicResource WindowBackgroundColor}"
+                BorderBrush="{DynamicResource BorderColor}"
+                BorderThickness="1"
+                CornerRadius="12" />
+            <ws:WrapPanel
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                HorizontalSpacing="24">
+                <ToggleButton
+                    Width="48"
+                    Height="48"
+                    Padding="12"
+                    Command="{Binding ShowOrHideTranslationCommand}"
+                    IsChecked="{Binding ShowTranslation}"
+                    Style="{StaticResource IconToggleButton}"
+                    Tag="{StaticResource Icon_Trans}"
+                    ToolTip="Show Translation and Romaji" />
+                <ws:Button
+                    x:Name="PlayLastBtn"
+                    Width="48"
+                    Height="48"
+                    HorizontalAlignment="Left"
+                    Command="{Binding PlayLastCommand}"
+                    Style="{StaticResource SimpleIconButtonStyleForWs}"
+                    ToolTip="Play the last one">
+                    <Path
+                        Height="22"
+                        Data="{DynamicResource PlayIcon_Last}"
+                        Fill="{DynamicResource ForeColor}"
+                        Stretch="Uniform" />
                 </ws:Button>
-                <ws:Button x:Name="PlayBtn"
-                           Width="54"
-                           Height="54"
-                           Command="{Binding PlayOrPauseCommand}"
-                           Style="{StaticResource SimpleIconButtonStyleForWs}"
-                           ToolTip="Play or Pause">
+                <ws:Button
+                    x:Name="PlayBtn"
+                    Width="54"
+                    Height="54"
+                    Command="{Binding PlayOrPauseCommand}"
+                    Style="{StaticResource SimpleIconButtonStyleForWs}"
+                    ToolTip="Play or Pause">
                     <ws:ConditionalControl Condition="{Binding IsPlaying}">
                         <ws:ConditionalControl.ContentWhenFalse>
-                            <Path Data="{DynamicResource PlayIcon_Play}"
-                                  Fill="{DynamicResource HighlightThemeColor}"
-                                  Stretch="Uniform" />
+                            <Path
+                                Data="{DynamicResource PlayIcon_Play}"
+                                Fill="{DynamicResource HighlightThemeColor}"
+                                Stretch="Uniform" />
                         </ws:ConditionalControl.ContentWhenFalse>
                         <ws:ConditionalControl.ContentWhenTrue>
-                            <Path Data="{DynamicResource PlayIcon_Pause}"
-                                  Fill="{DynamicResource HighlightThemeColor}"
-                                  Stretch="Uniform" />
+                            <Path
+                                Data="{DynamicResource PlayIcon_Pause}"
+                                Fill="{DynamicResource HighlightThemeColor}"
+                                Stretch="Uniform" />
                         </ws:ConditionalControl.ContentWhenTrue>
                     </ws:ConditionalControl>
                 </ws:Button>
-                <ws:Button x:Name="PlayNextBtn"
-                           Width="48"
-                           Height="48"
-                           HorizontalAlignment="Right"
-                           Command="{Binding PlayNextCommand}"
-                           Style="{StaticResource SimpleIconButtonStyleForWs}"
-                           ToolTip="Play the next one">
-                    <Path Height="22"
-                          Data="{DynamicResource PlayIcon_Next}"
-                          Fill="{DynamicResource ForeColor}"
-                          Stretch="Uniform" />
+                <ws:Button
+                    x:Name="PlayNextBtn"
+                    Width="48"
+                    Height="48"
+                    HorizontalAlignment="Right"
+                    Command="{Binding PlayNextCommand}"
+                    Style="{StaticResource SimpleIconButtonStyleForWs}"
+                    ToolTip="Play the next one">
+                    <Path
+                        Height="22"
+                        Data="{DynamicResource PlayIcon_Next}"
+                        Fill="{DynamicResource ForeColor}"
+                        Stretch="Uniform" />
                 </ws:Button>
-                <ws:Button Width="48"
-                           Height="48"
-                           Padding="12"
-                           Command="{Binding ShowMainWindowCommand}"
-                           Style="{StaticResource SimpleIconButtonStyleForWs}"
-                           ToolTip="Show Main Window">
-                    <Path Height="22"
-                          Data="{StaticResource Icon_Show}"
-                          Fill="{DynamicResource ForeColor}"
-                          Stretch="Uniform" />
+                <ws:Button
+                    Width="48"
+                    Height="48"
+                    Padding="12"
+                    Command="{Binding ShowMainWindowCommand}"
+                    Style="{StaticResource SimpleIconButtonStyleForWs}"
+                    ToolTip="Show Main Window">
+                    <Path
+                        Height="22"
+                        Data="{StaticResource Icon_Show}"
+                        Fill="{DynamicResource ForeColor}"
+                        Stretch="Uniform" />
                 </ws:Button>
             </ws:WrapPanel>
-            <ws:Button x:Name="CloseBtn"
-                       Width="32"
-                       Height="32"
-                       Margin="8"
-                       HorizontalAlignment="Right"
-                       VerticalAlignment="Top"
-                       Click="CloseBtn_Click"
-                       Content="&#xE8BB;"
-                       FontFamily="Segoe Fluent Icons"
-                       FontSize="10"
-                       Style="{StaticResource SimpleIconButtonStyleForWs}"
-                       ToolTip="Close desktop lyric viewer" />
+            <ws:Button
+                x:Name="CloseBtn"
+                Width="32"
+                Height="32"
+                Margin="8"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Click="CloseBtn_Click"
+                Content="&#xE8BB;"
+                FontFamily="Segoe Fluent Icons"
+                FontSize="10"
+                Style="{StaticResource SimpleIconButtonStyleForWs}"
+                ToolTip="Close desktop lyric viewer" />
         </Grid>
     </ws:BoxPanel>
 </Window>
