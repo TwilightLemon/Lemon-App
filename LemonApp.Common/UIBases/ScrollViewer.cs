@@ -35,6 +35,7 @@ namespace LemonApp.Common.UIBases
         {
             this.IsManipulationEnabled = true;
             this.PanningMode = PanningMode.VerticalOnly;
+            this.IsManipulationEnabled = true;
             //使用此触屏滚动会导致闪屏，先不用了..
             // this.PanningDeceleration = 0; // 禁用默认惯性
             //StylusTouchDevice.SetSimulate(this, true);
