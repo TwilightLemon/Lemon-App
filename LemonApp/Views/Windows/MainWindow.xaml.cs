@@ -147,7 +147,13 @@ namespace LemonApp.Views.Windows
             }
             else
             {
-                if(play)
+                //if no background, pause animation
+                if (_vm.LyricPageBackgroundSource == null)
+                {
+                    LyricImgRTAni.Pause();
+                    return;
+                }
+                if (play)
                 {
                     LyricImgRTAni.Resume();
                 }

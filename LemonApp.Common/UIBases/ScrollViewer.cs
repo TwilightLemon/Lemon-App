@@ -33,54 +33,30 @@ namespace LemonApp.Common.UIBases
 
         public ScrollViewer()
         {
-            _currentOffset = VerticalOffset;
-
+            this.IsManipulationEnabled = true;
             this.PanningMode = PanningMode.VerticalOnly;
             //使用此触屏滚动会导致闪屏，先不用了..
-            // this.IsManipulationEnabled = true;
             // this.PanningDeceleration = 0; // 禁用默认惯性
             //StylusTouchDevice.SetSimulate(this, true);
-
-            DependencyPropertyDescriptor
-                    .FromProperty(VerticalOffsetProperty, typeof(System.Windows.Controls.ScrollViewer))
-                    .AddValueChanged(this, HandleExternalScrollChanged);
-
             Unloaded += ScrollViewer_Unloaded;
         }
         //记录参数
         private int _lastScrollingTick = 0, _lastScrollDelta = 0;
         //private double _lastTouchVelocity = 0;
-        private double _currentOffset = 0;
         private double _targetOffset = 0;
         private double _targetVelocity = 0;
         private long _lastTimestamp = 0;
         //标志位
         private bool _isRenderingHooked = false;
         private bool _isAccuracyControl = false;
-        private bool _isInternalScrollChange = false;
 
         private void ScrollViewer_Unloaded(object sender, RoutedEventArgs e)
         {
-            DependencyPropertyDescriptor
-                .FromProperty(VerticalOffsetProperty, typeof(System.Windows.Controls.ScrollViewer))
-                .RemoveValueChanged(this, HandleExternalScrollChanged);
-
             if (_isRenderingHooked)
             {
                 CompositionTarget.Rendering -= OnRendering;
                 _isRenderingHooked = false;
             }
-        }
-
-        /// <summary>
-        /// 处理外部滚动事件，更新当前偏移量
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void HandleExternalScrollChanged(object? sender, EventArgs e)
-        {
-            if (!_isInternalScrollChange)
-                _currentOffset = VerticalOffset;
         }
 
        /* protected override void OnManipulationDelta(ManipulationDeltaEventArgs e)
@@ -145,7 +121,7 @@ namespace LemonApp.Common.UIBases
             if (_isAccuracyControl)
             {
                 _targetVelocity = 0; // 防止下一次触发缓动模型时继承没有消除的速度，造成滚动异常
-                _targetOffset = Math.Clamp(_currentOffset - e.Delta, 0, ScrollableHeight);
+                _targetOffset = Math.Clamp(VerticalOffset - e.Delta, 0, ScrollableHeight);
             }
             else
                 _targetVelocity += -e.Delta * VelocityFactor;// 鼠标滚动，叠加速度（惯性滚动）
@@ -160,13 +136,13 @@ namespace LemonApp.Common.UIBases
 
         private void OnRendering(object? sender, EventArgs e)
         {
-            // 计算时间增量（deltaTime）
+            // 计算时间增量
             long currentTimestamp = Stopwatch.GetTimestamp();
             double deltaTime = (double)(currentTimestamp - _lastTimestamp) / Stopwatch.Frequency;
             _lastTimestamp = currentTimestamp;
 
             double timeFactor = deltaTime / TargetFrameTime;
-
+            double _currentOffset = VerticalOffset;
             if (_isAccuracyControl)
             {
                 // 精确滚动：Lerp 逼近目标（使用时间因子调整）
@@ -197,16 +173,8 @@ namespace LemonApp.Common.UIBases
                 _currentOffset = Math.Clamp(_currentOffset + _targetVelocity * (timeFactor / 24), 0, ScrollableHeight);
             }
 
-            InternalScrollToVerticalOffset(_currentOffset);
+            ScrollToVerticalOffset(_currentOffset);
         }
-
-        private void InternalScrollToVerticalOffset(double offset)
-        {
-            _isInternalScrollChange = true;
-            ScrollToVerticalOffset(offset);
-            _isInternalScrollChange = false;
-        }
-
 
         private void StopRendering()
         {

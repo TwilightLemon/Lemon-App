@@ -16,29 +16,6 @@ public static class ImageHelper
     private static extern int GdipBitmapApplyEffect(IntPtr bitmap, IntPtr effect, ref Rectangle rectOfInterest,
         bool useAuxData, IntPtr auxData, int auxDataSize);
 
-    /// <summary>
-    /// 获取对象的私有字段的值
-    /// </summary>
-    /// <typeparam name="TResult">字段的类型</typeparam>
-    /// <param name="obj">要从其中获取字段值的对象</param>
-    /// <param name="fieldName">字段的名称.</param>
-    /// <returns>字段的值</returns>
-    /// <exception cref="System.InvalidOperationException">无法找到该字段.</exception>
-    /// 
-    internal static TResult GetPrivateField<TResult>(this object obj, string fieldName)
-    {
-        if (obj == null) return default(TResult);
-        Type ltType = obj.GetType();
-        FieldInfo lfiFieldInfo = ltType.GetField(fieldName,
-            BindingFlags.GetField | BindingFlags.Instance | BindingFlags.NonPublic);
-        if (lfiFieldInfo != null)
-            return (TResult)lfiFieldInfo.GetValue(obj);
-        else
-            throw new InvalidOperationException(string.Format(
-                "Instance field '{0}' could not be located in object of type '{1}'.", fieldName,
-                obj.GetType().FullName));
-    }
-
     [StructLayout(LayoutKind.Sequential)]
     private struct BlurParameters
     {
@@ -54,11 +31,16 @@ public static class ImageHelper
     [DllImport("gdiplus.dll", SetLastError = true, ExactSpelling = true, CharSet = CharSet.Unicode)]
     private static extern int GdipSetEffectParameters(IntPtr effect, IntPtr parameters, uint size);
 
-    public static IntPtr NativeHandle(this Bitmap Bmp)
+
+    public unsafe static IntPtr NativeHandle(this Image Bmp)
     {
-        // 通过反射获取Bitmap的私有字段nativeImage的值，该值为GDI+的内部图像句柄
-        //新版Drawing的Nuget包中字段由 nativeImage变更为_nativeImage
-        return Bmp.GetPrivateField<IntPtr>("_nativeImage");
+        var ptr = IntPtr.Zero;
+        var type = typeof(Image);
+        if( type.GetField("_nativeImage",BindingFlags.GetField | BindingFlags.Instance | BindingFlags.NonPublic) is { } field)
+        {
+            if (field.GetValue(Bmp) is { } ni) ptr = (IntPtr)Pointer.Unbox(ni);
+        }
+        return ptr;
     }
 
     [DllImport("gdiplus.dll", SetLastError = true, ExactSpelling = true, CharSet = CharSet.Unicode)]
