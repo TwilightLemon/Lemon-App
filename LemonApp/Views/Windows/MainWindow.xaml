@@ -269,6 +269,7 @@
                                                   StaysOpen="False" />
                                 <ws:TextBox x:Name="SearchBox"
                                             Padding="6,7,0,0"
+                                            ContextMenu="{DynamicResource DefaultControlContextMenu}"
                                             Background="{DynamicResource MaskColor}"
                                             BorderBrush="{DynamicResource BorderColor}"
                                             CaretBrush="{DynamicResource ForeColor}"

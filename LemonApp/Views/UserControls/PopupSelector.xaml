@@ -11,112 +11,54 @@
              d:DesignWidth="800"
              mc:Ignorable="d">
     <UserControl.Resources>
-        <Style TargetType="base:FluentPopup">
-            <Setter Property="Background" Value="{DynamicResource PopupWndBgColor}" />
-            <Setter Property="ExtPopupAnimation" Value="SlideDown" />
-            <Setter Property="Placement" Value="Mouse" />
-            <Setter Property="StaysOpen" Value="False" />
-            <Setter Property="WindowCorner" Value="RoundSmall" />
-        </Style>
+        <ContextMenu x:Key="DissSelectorMenu" ItemsSource="{Binding MyDissList}">
+            <ContextMenu.ItemContainerStyle>
+                <Style BasedOn="{StaticResource GlobalMenuItemStyle}" TargetType="MenuItem">
+                    <Setter Property="Header" Value="{Binding Name}" />
+                    <Setter Property="Command" Value="{Binding DataContext.SelectDissCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                    <Setter Property="CommandParameter" Value="{Binding}" />
+                </Style>
+            </ContextMenu.ItemContainerStyle>
+        </ContextMenu>
+
+        <ContextMenu x:Key="ArtistSelectorMenu"
+                     ItemsSource="{Binding SingerMenuItems}">
+            <ContextMenu.ItemContainerStyle>
+                <Style BasedOn="{StaticResource GlobalMenuItemStyle}" TargetType="MenuItem">
+                    <Setter Property="Header" Value="{Binding Name}" />
+                    <Setter Property="Command" Value="{Binding DataContext.SelectArtistCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                    <Setter Property="CommandParameter" Value="{Binding}" />
+                </Style>
+            </ContextMenu.ItemContainerStyle>
+        </ContextMenu>
+
+        <ContextMenu x:Key="MusicOptionsMenu">
+            <MenuItem Command="{Binding CheckIfGotoArtistsPopupCommand}"
+                      CommandParameter="{Binding SelectedMusic}"
+                      Header="View Singers"
+                      ItemsSource="{Binding SingerMenuItems}">
+                <MenuItem.ItemContainerStyle>
+                    <Style BasedOn="{StaticResource GlobalMenuItemStyle}" TargetType="MenuItem">
+                        <Setter Property="Header" Value="{Binding Name}" />
+                        <Setter Property="Command" Value="{Binding DataContext.SelectArtistCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                        <Setter Property="CommandParameter" Value="{Binding}" />
+                    </Style>
+                </MenuItem.ItemContainerStyle>
+            </MenuItem>
+            <MenuItem Command="{Binding GoToAlbumPageCommand}"
+                      CommandParameter="{Binding SelectedMusic.Album}"
+                      Header="View Album" />
+            <MenuItem Command="{Binding GoToCommentPageCommand}"
+                      CommandParameter="{Binding SelectedMusic}"
+                      Header="View Comments" />
+            <MenuItem Command="{Binding AddSingleToMyDissCommand}"
+                      CommandParameter="{Binding SelectedMusic}"
+                      Header="Add to Playlist" />
+            <MenuItem Command="{Binding DownloadMusicCommand}"
+                      CommandParameter="{Binding SelectedMusic}"
+                      Header="Download" />
+        </ContextMenu>
     </UserControl.Resources>
     <!--  公共弹窗菜单，由MainWindow单例拥有  -->
-    <Grid>
-        <!--  添加到歌单弹窗  -->
-        <base:FluentPopup IsOpen="{Binding IsShowDissSelector}">
-            <Grid MaxHeight="500">
-                <ws:ListBox Background="Transparent"
-                            BorderThickness="0"
-                            ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}"
-                            ItemsSource="{Binding MyDissList}"
-                            SelectedItem="{Binding SelectedDiss}"
-                            Style="{StaticResource SimpleListBoxStyle}">
-                    <ws:ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Height="40"
-                                  Margin="8,0"
-                                  Background="Transparent">
-                                <TextBlock HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           Text="{Binding Name}" />
-                            </Grid>
-                        </DataTemplate>
-                    </ws:ListBox.ItemTemplate>
-                </ws:ListBox>
-            </Grid>
-        </base:FluentPopup>
-
-        <!--  选择歌手弹窗  -->
-        <base:FluentPopup IsOpen="{Binding ShowCheckArtistsPopup}">
-            <Grid>
-                <ws:ListBox Background="Transparent"
-                            BorderThickness="0"
-                            ItemContainerStyle="{DynamicResource SimpleListBoxItemStyle}"
-                            ItemsSource="{Binding ToChoosenArtists}"
-                            SelectedItem="{Binding ChoosenArtist}">
-                    <ws:ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Height="40"
-                                  Margin="8,0"
-                                  Background="Transparent">
-                                <TextBlock HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           Text="{Binding Name}" />
-                            </Grid>
-                        </DataTemplate>
-                    </ws:ListBox.ItemTemplate>
-                </ws:ListBox>
-            </Grid>
-        </base:FluentPopup>
-
-        <base:FluentPopup ExtPopupAnimation="SlideUp" IsOpen="{Binding IsShowMusicOptionsPopup}">
-            <ws:StackPanel Spacing="2">
-                <!--<ws:Button Padding="12,8"
-                           Background="Transparent"
-                           BorderThickness="0"
-                           Style="{StaticResource SimpleButtonStyleForWs}">
-                    View Music Info
-                </ws:Button>-->
-                <ws:Button Padding="12,8"
-                           Background="Transparent"
-                           BorderThickness="0"
-                           Command="{Binding CheckIfGotoArtistsPopupCommand}"
-                           CommandParameter="{Binding SelectedMusic}"
-                           Style="{StaticResource SimpleButtonStyleForWs}">
-                    View Singers
-                </ws:Button>
-                <ws:Button Padding="12,8"
-                           Background="Transparent"
-                           BorderThickness="0"
-                           Command="{Binding GoToAlbumPageCommand}"
-                           CommandParameter="{Binding SelectedMusic.Album}"
-                           Style="{StaticResource SimpleButtonStyleForWs}">
-                    View Album
-                </ws:Button>
-                <ws:Button Padding="12,8"
-                           Background="Transparent"
-                           BorderThickness="0"
-                           Command="{Binding GoToCommentPageCommand}"
-                           CommandParameter="{Binding SelectedMusic}"
-                           Style="{StaticResource SimpleButtonStyleForWs}">
-                    View Comments
-                </ws:Button>
-                <ws:Button Padding="12,8"
-                           Background="Transparent"
-                           BorderThickness="0"
-                           Command="{Binding AddSingleToMyDissCommand}"
-                           CommandParameter="{Binding SelectedMusic}"
-                           Style="{StaticResource SimpleButtonStyleForWs}">
-                    Add to Playlist
-                </ws:Button>
-                <ws:Button Padding="12,8"
-                           Background="Transparent"
-                           BorderThickness="0"
-                           Command="{Binding DownloadMusicCommand}"
-                           CommandParameter="{Binding SelectedMusic}"
-                           Style="{StaticResource SimpleButtonStyleForWs}">
-                    Download
-                </ws:Button>
-            </ws:StackPanel>
-        </base:FluentPopup>
-    </Grid>
+    <Grid />
 </UserControl>

@@ -115,7 +115,6 @@ namespace LemonApp.Views.Pages
                 if (listBox.SelectedItem != null)
                     _vm.AddToPlayNextSingleCommand.Execute(listBox.SelectedItem);
             }
-            AddtoMenu.IsOpen = false;
         }
 
         private List<Music> SelectedMusic=> listBox.SelectionMode == SelectionMode.Multiple ?
@@ -125,7 +124,6 @@ namespace LemonApp.Views.Pages
         {
             List<Music> selectedItems = SelectedMusic;
             Components.PublicPopupMenuHolder.AddToMyDissCommand?.Execute(selectedItems);
-            AddtoMenu.IsOpen = false;
         }
 
         private void DeleteBtn_Click(object sender, RoutedEventArgs e)
@@ -134,10 +132,12 @@ namespace LemonApp.Views.Pages
                 _vm.DeleteMusicFromDirid(SelectedMusic);
         }
 
-        private async void AddToBtn_Click(object sender, RoutedEventArgs e)
+        private void AddToBtn_Click(object sender, RoutedEventArgs e)
         {
-            await Task.Yield();
-            AddtoMenu.IsOpen = true;
+            if(Resources["AddToMenu"] is ContextMenu menu)
+            {
+                menu.IsOpen = true;
+            }
         }
 
         private void DownloadBtn_Click(object sender, RoutedEventArgs e)

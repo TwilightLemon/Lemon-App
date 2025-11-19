@@ -64,7 +64,7 @@ public static class FluentTooltip
         }else if (sender is ContextMenu menu && menu.Background is SolidColorBrush color)
         {
             var hwnd = menu.GetNativeWindowHwnd();
-            FluentPopupFunc.SetPopupWindowMaterial(hwnd, color.Color, MaterialApis.WindowCorner.RoundSmall);
+            FluentPopupFunc.SetPopupWindowMaterial(hwnd, color.Color, MaterialApis.WindowCorner.Round);
         }
     }
 }
