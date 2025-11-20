@@ -57,14 +57,14 @@ public static class FluentTooltip
 
     private static void Popup_Opened(object sender, RoutedEventArgs e)
     {
-        if(sender is ToolTip tip&& tip.Background is SolidColorBrush cb)
+        if(sender is ToolTip tip)
         {
             var hwnd = tip.GetNativeWindowHwnd();
-            FluentPopupFunc.SetPopupWindowMaterial(hwnd, cb.Color,MaterialApis.WindowCorner.RoundSmall);
-        }else if (sender is ContextMenu menu && menu.Background is SolidColorBrush color)
+            FluentPopupFunc.SetPopupWindowMaterial(hwnd, Colors.Transparent,MaterialApis.WindowCorner.RoundSmall);
+        }else if (sender is ContextMenu menu )
         {
             var hwnd = menu.GetNativeWindowHwnd();
-            FluentPopupFunc.SetPopupWindowMaterial(hwnd, color.Color, MaterialApis.WindowCorner.Round);
+            FluentPopupFunc.SetPopupWindowMaterial(hwnd, Colors.Transparent, MaterialApis.WindowCorner.Round);
         }
     }
 }
