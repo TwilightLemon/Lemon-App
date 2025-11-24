@@ -37,7 +37,7 @@ namespace LemonApp.Views.Pages
         }
         private Storyboard? _hideInfoViewAni, _showInfoViewAni;
         private bool _isHideInfoView = false;
-        private PlaylistPageViewModel _vm= null;
+        private PlaylistPageViewModel _vm = null;
         private void PlaylistPage_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if (e.NewValue is PlaylistPageViewModel { } vm)
@@ -64,7 +64,7 @@ namespace LemonApp.Views.Pages
                         _hideInfoViewAni?.Begin();
                     }
                 }
-                if(e.VerticalOffset<=6)
+                if (e.VerticalOffset <= 6)
                 {
                     if (_showInfoViewAni != null && _isHideInfoView)
                     {
@@ -117,24 +117,24 @@ namespace LemonApp.Views.Pages
             }
         }
 
-        private List<Music> SelectedMusic=> listBox.SelectionMode == SelectionMode.Multiple ?
-                                            [.. listBox.SelectedItems.Cast<Music>()] : [(Music)listBox.SelectedItem];
+        private List<Music>? SelectedMusic => listBox.SelectionMode == SelectionMode.Multiple ?
+                                            [.. listBox.SelectedItems.Cast<Music>()] : (listBox.SelectedItem is null ? null : [(Music)listBox.SelectedItem]);
 
         private void AddToDissBtn_Click(object sender, RoutedEventArgs e)
         {
-            List<Music> selectedItems = SelectedMusic;
-            Components.PublicPopupMenuHolder.AddToMyDissCommand?.Execute(selectedItems);
+            if (SelectedMusic is { } selectedItems)
+                Components.PublicPopupMenuHolder.AddToMyDissCommand?.Execute(selectedItems);
         }
 
         private void DeleteBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (SelectedMusic.Count > 0)
-                _vm.DeleteMusicFromDirid(SelectedMusic);
+            if (SelectedMusic is { } selectedItems)
+                _vm.DeleteMusicFromDirid(selectedItems);
         }
 
         private void AddToBtn_Click(object sender, RoutedEventArgs e)
         {
-            if(Resources["AddToMenu"] is ContextMenu menu)
+            if (Resources["AddToMenu"] is ContextMenu menu && listBox.SelectedItem != null)
             {
                 menu.IsOpen = true;
             }
@@ -142,8 +142,8 @@ namespace LemonApp.Views.Pages
 
         private void DownloadBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (SelectedMusic.Count > 0)
-                _vm.DownloadMusic(SelectedMusic);
+            if (SelectedMusic is { } selectedItems)
+                _vm.DownloadMusic(selectedItems);
         }
 
         private void SelectAllBtn_Click(object sender, RoutedEventArgs e)

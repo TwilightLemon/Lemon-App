@@ -1,17 +1,23 @@
-﻿<UserControl
-    x:Class="LemonApp.Views.UserControls.PopupSelector"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:LemonApp.Views.UserControls"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:ws="https://schemas.elecho.dev/wpfsuite"
-    d:DataContext="{d:DesignInstance Type=local:PopupSelector}"
-    d:DesignHeight="450"
-    d:DesignWidth="800"
-    mc:Ignorable="d">
+﻿<UserControl x:Class="LemonApp.Views.UserControls.PopupSelector"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:LemonApp.Views.UserControls"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ws="https://schemas.elecho.dev/wpfsuite"
+             d:DataContext="{d:DesignInstance Type=local:PopupSelector}"
+             d:DesignHeight="450"
+             d:DesignWidth="800"
+             mc:Ignorable="d">
+    <!--  公共弹窗菜单，由MainWindow单例拥有  -->
     <UserControl.Resources>
+        <Style x:Key="IconPathStyle" TargetType="Path">
+            <Setter Property="Height" Value="12" />
+            <Setter Property="Width" Value="20" />
+            <Setter Property="Fill" Value="{DynamicResource ForeColor}" />
+            <Setter Property="Stretch" Value="Uniform" />
+        </Style>
         <ContextMenu x:Key="DissSelectorMenu" ItemsSource="{Binding MyDissList}">
             <ContextMenu.ItemContainerStyle>
                 <Style BasedOn="{StaticResource GlobalMenuItemStyle}" TargetType="MenuItem">
@@ -33,11 +39,10 @@
         </ContextMenu>
 
         <ContextMenu x:Key="MusicOptionsMenu">
-            <MenuItem
-                Command="{Binding CheckIfGotoArtistsPopupCommand}"
-                CommandParameter="{Binding SelectedMusic}"
-                Header="View Singers"
-                ItemsSource="{Binding SingerMenuItems}">
+            <MenuItem Command="{Binding CheckIfGotoArtistsPopupCommand}"
+                      CommandParameter="{Binding SelectedMusic}"
+                      Header="View Singers"
+                      ItemsSource="{Binding SingerMenuItems}">
                 <MenuItem.ItemContainerStyle>
                     <Style BasedOn="{StaticResource GlobalMenuItemStyle}" TargetType="MenuItem">
                         <Setter Property="Header" Value="{Binding Name}" />
@@ -46,31 +51,42 @@
                     </Style>
                 </MenuItem.ItemContainerStyle>
                 <MenuItem.Icon>
-                    <Path Fill="{DynamicResource ForeColor}"
-                          Height="12"
-                          Width="12"
-                          Stretch="Uniform"
-                          Data="{StaticResource Menu_Singer}" />
+                    <Path Data="{StaticResource Menu_Singer}" Style="{StaticResource IconPathStyle}" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem
-                Command="{Binding GoToAlbumPageCommand}"
-                CommandParameter="{Binding SelectedMusic.Album}"
-                Header="View Album" />
-            <MenuItem
-                Command="{Binding GoToCommentPageCommand}"
-                CommandParameter="{Binding SelectedMusic}"
-                Header="View Comments" />
-            <MenuItem
-                Command="{Binding AddSingleToMyDissCommand}"
-                CommandParameter="{Binding SelectedMusic}"
-                Header="Add to Playlist" />
-            <MenuItem
-                Command="{Binding DownloadMusicCommand}"
-                CommandParameter="{Binding SelectedMusic}"
-                Header="Download" />
+            <MenuItem Command="{Binding GoToAlbumPageCommand}"
+                      CommandParameter="{Binding SelectedMusic.Album}"
+                      Header="View Album">
+                <MenuItem.Icon>
+                    <Path Data="{StaticResource Menu_Platlists}" Style="{StaticResource IconPathStyle}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Command="{Binding GoToCommentPageCommand}"
+                      CommandParameter="{Binding SelectedMusic}"
+                      Header="View Comments">
+                <MenuItem.Icon>
+                    <Path Data="{StaticResource Icon_Comment}" Style="{StaticResource IconPathStyle}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Command="{Binding AddSingleToMyDissCommand}"
+                      CommandParameter="{Binding SelectedMusic}"
+                      Header="Add to Playlist">
+                <MenuItem.Icon>
+                    <TextBlock Width="20"
+                               FontFamily="{StaticResource SegoeFluentIcon}"
+                               FontSize="12"
+                               Foreground="{DynamicResource ForeColor}"
+                               Text="&#xe710;"
+                               TextAlignment="Center" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Command="{Binding DownloadMusicCommand}"
+                      CommandParameter="{Binding SelectedMusic}"
+                      Header="Download">
+                <MenuItem.Icon>
+                    <Path Data="{StaticResource Menu_Download}" Style="{StaticResource IconPathStyle}" />
+                </MenuItem.Icon>
+            </MenuItem>
         </ContextMenu>
     </UserControl.Resources>
-    <!--  公共弹窗菜单，由MainWindow单例拥有  -->
-    <Grid />
 </UserControl>

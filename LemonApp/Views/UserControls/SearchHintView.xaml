@@ -6,7 +6,7 @@
              xmlns:ws="https://schemas.elecho.dev/wpfsuite"
              xmlns:local="clr-namespace:LemonApp.Views.UserControls"
              mc:Ignorable="d"
-             Background="{DynamicResource PopupWndBgColor}"
+             Background="{DynamicResource PopupBackgroundColor}"
              Foreground="{DynamicResource ForeColor}"
              d:DataContext="{d:DesignInstance Type=local:SearchHintView}"
              KeyDown="UserControl_KeyDown"

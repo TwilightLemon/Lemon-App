@@ -1,55 +1,49 @@
-﻿<UserControl
-    x:Class="LemonApp.Views.UserControls.MusicInfoLand"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:LemonApp.Views.UserControls"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:ws="https://schemas.elecho.dev/wpfsuite"
-    Height="20"
-    mc:Ignorable="d">
-    <ws:WrapPanel
-        Margin="4,0"
-        VerticalAlignment="Center"
-        HorizontalSpacing="6"
-        ItemHeight="20"
-        Orientation="Vertical">
-        <ws:Button
-            x:Name="QualityIcon"
-            Width="34"
-            Padding="0"
-            VerticalContentAlignment="Center"
-            BorderBrush="#FFF6B322"
-            BorderThickness="1.5"
-            CornerRadius="6"
-            DisabledBackground="Transparent"
-            DisabledBorderBrush="#FFF6B322"
-            IsEnabled="False"
-            Style="{StaticResource SimpleIconButtonStyleForWs}">
-            <TextBlock
-                x:Name="QualityText"
-                VerticalAlignment="Center"
-                FontSize="12"
-                FontWeight="Bold"
-                Foreground="#FFF6B322"
-                Text="SQ" />
+﻿<UserControl x:Class="LemonApp.Views.UserControls.MusicInfoLand"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:LemonApp.Views.UserControls"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ws="https://schemas.elecho.dev/wpfsuite"
+             Height="20"
+             mc:Ignorable="d">
+    <ws:WrapPanel Margin="4,0"
+                  VerticalAlignment="Center"
+                  HorizontalSpacing="6"
+                  ItemHeight="20"
+                  Orientation="Vertical">
+        <ws:Button x:Name="QualityIcon"
+                   Width="34"
+                   Padding="0"
+                   VerticalContentAlignment="Center"
+                   BorderBrush="#FFF6B322"
+                   BorderThickness="1.5"
+                   CornerRadius="6"
+                   DisabledBackground="Transparent"
+                   DisabledBorderBrush="#FFF6B322"
+                   IsEnabled="False"
+                   Style="{StaticResource SimpleIconButtonStyleForWs}">
+            <TextBlock x:Name="QualityText"
+                       VerticalAlignment="Center"
+                       FontSize="12"
+                       FontWeight="Bold"
+                       Foreground="#FFF6B322"
+                       Text="SQ" />
         </ws:Button>
-        <ws:Button
-            x:Name="MVBtn"
-            Width="34"
-            Padding="0"
-            VerticalContentAlignment="Center"
-            d:Visibility="Visible"
-            BorderBrush="{DynamicResource ForeColor}"
-            BorderThickness="1.5"
-            CornerRadius="6"
-            Style="{StaticResource SimpleIconButtonStyleForWs}"
-            Visibility="Collapsed">
-            <TextBlock
-                VerticalAlignment="Center"
-                FontSize="12"
-                FontWeight="Bold"
-                Text="MV" />
+        <ws:Button x:Name="MVBtn"
+                   Width="34"
+                   Padding="0"
+                   VerticalContentAlignment="Center"
+                   d:Visibility="Visible"
+                   BorderBrush="{DynamicResource ForeColor}"
+                   BorderThickness="1.5"
+                   CornerRadius="6"
+                   Style="{StaticResource SimpleIconButtonStyleForWs}"
+                   Visibility="Collapsed">
+            <TextBlock VerticalAlignment="Center"
+                       FontSize="12"
+                       FontWeight="Bold"
+                       Text="MV" />
         </ws:Button>
     </ws:WrapPanel>
 </UserControl>

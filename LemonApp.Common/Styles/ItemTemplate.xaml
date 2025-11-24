@@ -1,8 +1,7 @@
-﻿<ResourceDictionary
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:base="clr-namespace:LemonApp.Common.UIBases"
-    xmlns:ws="https://schemas.elecho.dev/wpfsuite">
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:base="clr-namespace:LemonApp.Common.UIBases"
+                    xmlns:ws="https://schemas.elecho.dev/wpfsuite">
     <!--  展示歌单  -->
     <Style x:Key="PlaylistItemContainerStyle" TargetType="{x:Type ws:ListBoxItem}">
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
@@ -15,10 +14,9 @@
         <Setter Property="SelectedActiveBackground" Value="{DynamicResource MaskColor}" />
     </Style>
     <ItemsPanelTemplate x:Key="PlaylistItemContainer">
-        <base:AutoUniformGrid
-            Columns="4"
-            MaxItemWidth="240"
-            MinItemWidth="180" />
+        <base:AutoUniformGrid Columns="4"
+                              MaxItemWidth="240"
+                              MinItemWidth="180" />
     </ItemsPanelTemplate>
     <!--  歌曲列表  -->
 </ResourceDictionary>

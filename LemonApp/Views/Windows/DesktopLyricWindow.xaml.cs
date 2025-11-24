@@ -1,4 +1,5 @@
 ﻿using EleCho.WpfSuite;
+using FluentWpfCore.Helpers;
 using LemonApp.Common.Configs;
 using LemonApp.Common.Funcs;
 using LemonApp.Common.UIBases;
@@ -121,7 +122,7 @@ namespace LemonApp.Views.Windows
 
         private void DesktopLyricWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            WindowLongAPI.SetToolWindow(this);
+            WindowFlagsHelper.SetToolWindow(this);
             var c = this.Content as UIElement;
             var layer = AdornerLayer.GetAdornerLayer(c);
             layer.Add(new WindowResizeAdorner(c));
