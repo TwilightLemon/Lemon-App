@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0-windows10.0.17763.0</TargetFramework>
+    <TargetFramework>net10.0-windows10.0.17763.0</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -15,6 +15,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
 	  <PackageReference Include="EleCho.WpfSuite" Version="0.8.1" />
+	  <PackageReference Include="FluentWpfCore" Version="1.0.0.3" />
 	  <PackageReference Include="System.Runtime.Caching" Version="8.0.1" />
 	  <PackageReference Include="Lyricify.Lyrics.Helper" Version="0.1.4" />
   </ItemGroup>

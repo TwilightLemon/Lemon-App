@@ -1,12 +1,10 @@
-﻿<ResourceDictionary
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:av="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:base="clr-namespace:LemonApp.Common.UIBases"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:ws="https://schemas.elecho.dev/wpfsuite"
-    mc:Ignorable="av">
-
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:av="http://schemas.microsoft.com/expression/blend/2008"
+                    xmlns:base="clr-namespace:LemonApp.Common.UIBases"
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                    xmlns:ws="https://schemas.elecho.dev/wpfsuite"
+                    mc:Ignorable="av">
     <!--#region ScrollViewer 模板-->
     <ControlTemplate x:Key="ScrollViewerControlTemplate" TargetType="{x:Type base:ScrollViewer}">
         <ControlTemplate.Resources>
@@ -38,50 +36,46 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Rectangle
-                x:Name="Corner"
-                Grid.Row="1"
-                Grid.Column="1"
-                Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
-            <ScrollContentPresenter
-                x:Name="PART_ScrollContentPresenter"
-                Grid.Row="0"
-                Grid.Column="0"
-                Grid.ColumnSpan="2"
-                Margin="{TemplateBinding Padding}"
-                CanContentScroll="{TemplateBinding CanContentScroll}"
-                CanHorizontallyScroll="False"
-                CanVerticallyScroll="False"
-                Content="{TemplateBinding Content}"
-                ContentTemplate="{TemplateBinding ContentTemplate}" />
-            <ScrollBar
-                x:Name="PART_VerticalScrollBar"
-                Grid.Row="0"
-                Grid.Column="1"
-                Width="10"
-                MinWidth="0"
-                Margin="0,0,2,0"
-                AutomationProperties.AutomationId="VerticalScrollBar"
-                Cursor="Arrow"
-                Maximum="{TemplateBinding ScrollableHeight}"
-                Minimum="0"
-                Opacity="0"
-                Style="{DynamicResource ScrollBarStyle}"
-                ViewportSize="{TemplateBinding ViewportHeight}"
-                Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
-                Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
-            <ScrollBar
-                x:Name="PART_HorizontalScrollBar"
-                Grid.Row="1"
-                Grid.Column="0"
-                AutomationProperties.AutomationId="HorizontalScrollBar"
-                Cursor="Arrow"
-                Maximum="{TemplateBinding ScrollableWidth}"
-                Minimum="0"
-                Orientation="Horizontal"
-                ViewportSize="{TemplateBinding ViewportWidth}"
-                Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"
-                Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
+            <Rectangle x:Name="Corner"
+                       Grid.Row="1"
+                       Grid.Column="1"
+                       Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
+            <ScrollContentPresenter x:Name="PART_ScrollContentPresenter"
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    Grid.ColumnSpan="2"
+                                    Margin="{TemplateBinding Padding}"
+                                    CanContentScroll="{TemplateBinding CanContentScroll}"
+                                    CanHorizontallyScroll="False"
+                                    CanVerticallyScroll="False"
+                                    Content="{TemplateBinding Content}"
+                                    ContentTemplate="{TemplateBinding ContentTemplate}" />
+            <ScrollBar x:Name="PART_VerticalScrollBar"
+                       Grid.Row="0"
+                       Grid.Column="1"
+                       Width="10"
+                       MinWidth="0"
+                       Margin="0,0,2,0"
+                       AutomationProperties.AutomationId="VerticalScrollBar"
+                       Cursor="Arrow"
+                       Maximum="{TemplateBinding ScrollableHeight}"
+                       Minimum="0"
+                       Opacity="0"
+                       Style="{DynamicResource ScrollBarStyle}"
+                       ViewportSize="{TemplateBinding ViewportHeight}"
+                       Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
+                       Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
+            <ScrollBar x:Name="PART_HorizontalScrollBar"
+                       Grid.Row="1"
+                       Grid.Column="0"
+                       AutomationProperties.AutomationId="HorizontalScrollBar"
+                       Cursor="Arrow"
+                       Maximum="{TemplateBinding ScrollableWidth}"
+                       Minimum="0"
+                       Orientation="Horizontal"
+                       ViewportSize="{TemplateBinding ViewportWidth}"
+                       Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"
+                       Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
         </Grid>
     </ControlTemplate>
     <Style x:Key="ScrollBarThumbVertical" TargetType="{x:Type Thumb}">
@@ -90,15 +84,14 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
-                    <Rectangle
-                        x:Name="rectangle"
-                        Width="{TemplateBinding Width}"
-                        Height="{TemplateBinding Height}"
-                        Fill="{DynamicResource ForeColor}"
-                        Opacity="0.6"
-                        RadiusX="5"
-                        RadiusY="5"
-                        SnapsToDevicePixels="True" />
+                    <Rectangle x:Name="rectangle"
+                               Width="{TemplateBinding Width}"
+                               Height="{TemplateBinding Height}"
+                               Fill="{DynamicResource ForeColor}"
+                               Opacity="0.6"
+                               RadiusX="5"
+                               RadiusY="5"
+                               SnapsToDevicePixels="True" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -116,17 +109,15 @@
                             <RowDefinition Height="17*" MaxHeight="{DynamicResource {x:Static SystemParameters.VerticalScrollBarButtonHeightKey}}" />
                         </Grid.RowDefinitions>
                         <Border Grid.Row="1" Background="#00000000" />
-                        <RepeatButton
-                            x:Name="PART_LineUpButton"
-                            Command="{x:Static ScrollBar.LineUpCommand}"
-                            IsEnabled="{TemplateBinding IsMouseOver}"
-                            Visibility="Collapsed" />
-                        <Track
-                            x:Name="PART_Track"
-                            Grid.Row="1"
-                            Width="Auto"
-                            IsDirectionReversed="true"
-                            IsEnabled="{TemplateBinding IsMouseOver}">
+                        <RepeatButton x:Name="PART_LineUpButton"
+                                      Command="{x:Static ScrollBar.LineUpCommand}"
+                                      IsEnabled="{TemplateBinding IsMouseOver}"
+                                      Visibility="Collapsed" />
+                        <Track x:Name="PART_Track"
+                               Grid.Row="1"
+                               Width="Auto"
+                               IsDirectionReversed="true"
+                               IsEnabled="{TemplateBinding IsMouseOver}">
                             <Track.DecreaseRepeatButton>
                                 <RepeatButton Command="{x:Static ScrollBar.PageUpCommand}" Visibility="Collapsed" />
                             </Track.DecreaseRepeatButton>
@@ -137,12 +128,11 @@
                                 <Thumb Style="{StaticResource ScrollBarThumbVertical}" />
                             </Track.Thumb>
                         </Track>
-                        <RepeatButton
-                            x:Name="PART_LineDownButton"
-                            Grid.Row="2"
-                            Command="{x:Static ScrollBar.LineDownCommand}"
-                            IsEnabled="{TemplateBinding IsMouseOver}"
-                            Visibility="Collapsed" />
+                        <RepeatButton x:Name="PART_LineDownButton"
+                                      Grid.Row="2"
+                                      Command="{x:Static ScrollBar.LineDownCommand}"
+                                      IsEnabled="{TemplateBinding IsMouseOver}"
+                                      Visibility="Collapsed" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -150,6 +140,7 @@
     </Style>
     <!--#endregion-->
     <Style x:Key="SelectiveOnlyTextBoxStyle" TargetType="TextBox">
+        <Setter Property="ContextMenu" Value="{DynamicResource DefaultControlContextMenu}" />
         <Setter Property="Foreground" Value="{DynamicResource ForeColor}" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
@@ -162,18 +153,16 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ToggleButton">
-                    <Border
-                        x:Name="bd"
-                        Padding="{TemplateBinding Padding}"
-                        Background="Transparent"
-                        CornerRadius="4">
-                        <Path
-                            x:Name="path"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Data="{TemplateBinding Tag}"
-                            Fill="{DynamicResource ForeColor}"
-                            Stretch="Uniform" />
+                    <Border x:Name="bd"
+                            Padding="{TemplateBinding Padding}"
+                            Background="Transparent"
+                            CornerRadius="4">
+                        <Path x:Name="path"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
+                              Data="{TemplateBinding Tag}"
+                              Fill="{DynamicResource ForeColor}"
+                              Stretch="Uniform" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="False">
@@ -203,19 +192,17 @@
         <Setter Property="Template" Value="{DynamicResource AccentToggleButtonTemplate}" />
     </Style>
     <ControlTemplate x:Key="AccentToggleButtonTemplate" TargetType="{x:Type ToggleButton}">
-        <Border
-            x:Name="border"
-            Background="{DynamicResource HighlightThemeColor}"
-            BorderBrush="{DynamicResource BorderColor}"
-            CornerRadius="8">
-            <ContentPresenter
-                x:Name="contentPresenter"
-                Margin="{TemplateBinding Padding}"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center"
-                Focusable="False"
-                RecognizesAccessKey="True"
-                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+        <Border x:Name="border"
+                Background="{DynamicResource HighlightThemeColor}"
+                BorderBrush="{DynamicResource BorderColor}"
+                CornerRadius="8">
+            <ContentPresenter x:Name="contentPresenter"
+                              Margin="{TemplateBinding Padding}"
+                              HorizontalAlignment="Left"
+                              VerticalAlignment="Center"
+                              Focusable="False"
+                              RecognizesAccessKey="True"
+                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
         </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="IsChecked" Value="False">
@@ -234,12 +221,11 @@
         <Setter Property="Control.Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Rectangle
-                        Margin="2"
-                        SnapsToDevicePixels="true"
-                        Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
-                        StrokeDashArray="1 2"
-                        StrokeThickness="1" />
+                    <Rectangle Margin="2"
+                               SnapsToDevicePixels="true"
+                               Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
+                               StrokeDashArray="1 2"
+                               StrokeThickness="1" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -248,12 +234,11 @@
         <Setter Property="Control.Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Rectangle
-                        Margin="14,0,0,0"
-                        SnapsToDevicePixels="true"
-                        Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
-                        StrokeDashArray="1 2"
-                        StrokeThickness="1" />
+                    <Rectangle Margin="14,0,0,0"
+                               SnapsToDevicePixels="true"
+                               Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
+                               StrokeDashArray="1 2"
+                               StrokeThickness="1" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -265,25 +250,22 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RadioButton}">
-                    <Grid
-                        x:Name="templateRoot"
-                        Background="Transparent"
-                        SnapsToDevicePixels="True">
-                        <ContentPresenter
-                            x:Name="contentPresenter"
-                            Margin="{TemplateBinding Padding}"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Focusable="False"
-                            RecognizesAccessKey="True"
-                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
-                        <Border
-                            x:Name="checkedTab"
-                            Height="4"
-                            Margin="4,0"
-                            VerticalAlignment="Bottom"
-                            Background="{DynamicResource HighlightThemeColor}"
-                            CornerRadius="2" />
+                    <Grid x:Name="templateRoot"
+                          Background="Transparent"
+                          SnapsToDevicePixels="True">
+                        <ContentPresenter x:Name="contentPresenter"
+                                          Margin="{TemplateBinding Padding}"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          Focusable="False"
+                                          RecognizesAccessKey="True"
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        <Border x:Name="checkedTab"
+                                Height="4"
+                                Margin="4,0"
+                                VerticalAlignment="Bottom"
+                                Background="{DynamicResource HighlightThemeColor}"
+                                CornerRadius="2" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="true">
@@ -335,32 +317,29 @@
                         </Storyboard>
                     </ControlTemplate.Resources>
                     <Grid Background="Transparent">
-                        <ContentPresenter
-                            x:Name="contentPresenter"
-                            Margin="{TemplateBinding Padding}"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Center"
-                            Focusable="False"
-                            RecognizesAccessKey="True"
-                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
-                        <Border
-                            x:Name="border"
-                            Width="48"
-                            Height="24"
-                            Margin="0,0,20,0"
-                            HorizontalAlignment="Right"
-                            Background="Transparent"
-                            BorderBrush="{DynamicResource FocusMaskColor}"
-                            BorderThickness="1"
-                            CornerRadius="12">
-                            <Ellipse
-                                x:Name="ellipse"
-                                Width="16"
-                                Height="16"
-                                Margin="4,0,0,0"
-                                HorizontalAlignment="Left"
-                                Fill="{DynamicResource ForeColor}"
-                                Opacity="0.8" />
+                        <ContentPresenter x:Name="contentPresenter"
+                                          Margin="{TemplateBinding Padding}"
+                                          HorizontalAlignment="Left"
+                                          VerticalAlignment="Center"
+                                          Focusable="False"
+                                          RecognizesAccessKey="True"
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        <Border x:Name="border"
+                                Width="48"
+                                Height="24"
+                                Margin="0,0,20,0"
+                                HorizontalAlignment="Right"
+                                Background="Transparent"
+                                BorderBrush="{DynamicResource FocusMaskColor}"
+                                BorderThickness="1"
+                                CornerRadius="12">
+                            <Ellipse x:Name="ellipse"
+                                     Width="16"
+                                     Height="16"
+                                     Margin="4,0,0,0"
+                                     HorizontalAlignment="Left"
+                                     Fill="{DynamicResource ForeColor}"
+                                     Opacity="0.8" />
                         </Border>
                     </Grid>
                     <ControlTemplate.Triggers>
@@ -392,17 +371,15 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ws:ListBox}">
-                    <Border
-                        x:Name="Bd"
-                        Padding="1"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        SnapsToDevicePixels="true">
-                        <base:ScrollViewer
-                            Padding="{TemplateBinding Padding}"
-                            Focusable="false"
-                            Style="{StaticResource SimpleVerticalScrollViewerStyle}">
+                    <Border x:Name="Bd"
+                            Padding="1"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            SnapsToDevicePixels="true">
+                        <base:ScrollViewer Padding="{TemplateBinding Padding}"
+                                           Focusable="false"
+                                           Style="{StaticResource SimpleVerticalScrollViewerStyle}">
                             <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                         </base:ScrollViewer>
                     </Border>
@@ -439,51 +416,46 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type CheckBox}">
-                    <Grid
-                        x:Name="templateRoot"
-                        Background="Transparent"
-                        SnapsToDevicePixels="True">
+                    <Grid x:Name="templateRoot"
+                          Background="Transparent"
+                          SnapsToDevicePixels="True">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Border
-                            x:Name="checkBoxBorder"
-                            Width="16"
-                            Height="16"
-                            Margin="1"
-                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="2">
+                        <Border x:Name="checkBoxBorder"
+                                Width="16"
+                                Height="16"
+                                Margin="1"
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="2">
                             <Grid x:Name="markGrid">
-                                <Path
-                                    x:Name="optionMark"
-                                    Margin="1"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    Data="F1 M 9.97498,1.22334L 4.6983,9.09834L 4.52164,9.09834L 0,5.19331L 1.27664,3.52165L 4.255,6.08833L 8.33331,1.52588e-005L 9.97498,1.22334 Z "
-                                    Fill="{DynamicResource ForeColor}"
-                                    Opacity="0"
-                                    Stretch="None" />
-                                <Rectangle
-                                    x:Name="indeterminateMark"
-                                    Margin="2"
-                                    Fill="{DynamicResource ForeColor}"
-                                    Opacity="0" />
+                                <Path x:Name="optionMark"
+                                      Margin="1"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      Data="F1 M 9.97498,1.22334L 4.6983,9.09834L 4.52164,9.09834L 0,5.19331L 1.27664,3.52165L 4.255,6.08833L 8.33331,1.52588e-005L 9.97498,1.22334 Z "
+                                      Fill="{DynamicResource ForeColor}"
+                                      Opacity="0"
+                                      Stretch="None" />
+                                <Rectangle x:Name="indeterminateMark"
+                                           Margin="2"
+                                           Fill="{DynamicResource ForeColor}"
+                                           Opacity="0" />
                             </Grid>
                         </Border>
-                        <ContentPresenter
-                            x:Name="contentPresenter"
-                            Grid.Column="1"
-                            Margin="{TemplateBinding Padding}"
-                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                            Focusable="False"
-                            RecognizesAccessKey="True"
-                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        <ContentPresenter x:Name="contentPresenter"
+                                          Grid.Column="1"
+                                          Margin="{TemplateBinding Padding}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Focusable="False"
+                                          RecognizesAccessKey="True"
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="HasContent" Value="true">
@@ -513,24 +485,23 @@
         </Setter>
     </Style>
     <Style x:Key="SimpleTextBoxStyle" TargetType="{x:Type TextBox}">
+        <Setter Property="ContextMenu" Value="{DynamicResource DefaultControlContextMenu}" />
         <Setter Property="Background" Value="{DynamicResource MaskColor}" />
         <Setter Property="Foreground" Value="{DynamicResource ForeColor}" />
         <Setter Property="CaretBrush" Value="{DynamicResource ForeColor}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TextBox}">
-                    <Border
-                        x:Name="border"
-                        Background="{TemplateBinding Background}"
-                        CornerRadius="10,10,10,10"
-                        SnapsToDevicePixels="True">
-                        <ScrollViewer
-                            x:Name="PART_ContentHost"
-                            Margin="8,0,0,0"
-                            VerticalAlignment="Center"
-                            Focusable="false"
-                            HorizontalScrollBarVisibility="Hidden"
-                            VerticalScrollBarVisibility="Hidden" />
+                    <Border x:Name="border"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="10,10,10,10"
+                            SnapsToDevicePixels="True">
+                        <ScrollViewer x:Name="PART_ContentHost"
+                                      Margin="8,0,0,0"
+                                      VerticalAlignment="Center"
+                                      Focusable="false"
+                                      HorizontalScrollBarVisibility="Hidden"
+                                      VerticalScrollBarVisibility="Hidden" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="false">
@@ -551,6 +522,7 @@
         </Style.Triggers>
     </Style>
     <Style x:Key="SimpleTextBoxStyleForWs" TargetType="{x:Type ws:TextBox}">
+        <Setter Property="ContextMenu" Value="{DynamicResource DefaultControlContextMenu}" />
         <Setter Property="Background" Value="{DynamicResource MaskColor}" />
         <Setter Property="Foreground" Value="{DynamicResource ForeColor}" />
         <Setter Property="CaretBrush" Value="{DynamicResource ForeColor}" />
@@ -644,41 +616,39 @@
                     <Grid Background="{TemplateBinding Background}">
                         <ContentPresenter />
                         <Grid Height="48" VerticalAlignment="Top">
-                            <ws:Button
-                                x:Name="CloseBtn"
-                                Width="48"
-                                Height="48"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Top"
-                                Background="Transparent"
-                                BorderThickness="0"
-                                Content="&#xE8BB;"
-                                Cursor="Hand"
-                                FontFamily="{StaticResource SegoeFluentIcon}"
-                                FontSize="10"
-                                Foreground="{DynamicResource ForeColor}"
-                                HoverBackground="#FFE32820"
-                                PressedBackground="#FFEF1E15"
-                                WindowChrome.IsHitTestVisibleInChrome="True" />
-                            <ws:Button
-                                x:Name="MaxmizeBtn"
-                                Width="48"
-                                Height="48"
-                                Margin="0,0,48,0"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Top"
-                                ws:WindowOption.IsMaximumButton="True"
-                                Background="Transparent"
-                                BorderThickness="0"
-                                Cursor="Hand"
-                                DisabledBackground="Transparent"
-                                DisabledForeground="{DynamicResource FocusMaskColor}"
-                                FontFamily="{StaticResource SegoeFluentIcon}"
-                                FontSize="10"
-                                Foreground="{DynamicResource ForeColor}"
-                                HoverBackground="{DynamicResource MaskColor}"
-                                PressedBackground="{DynamicResource FocusMaskColor}"
-                                WindowChrome.IsHitTestVisibleInChrome="True">
+                            <ws:Button x:Name="CloseBtn"
+                                       Width="48"
+                                       Height="48"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Top"
+                                       Background="Transparent"
+                                       BorderThickness="0"
+                                       Content="&#xE8BB;"
+                                       Cursor="Hand"
+                                       FontFamily="{StaticResource SegoeFluentIcon}"
+                                       FontSize="10"
+                                       Foreground="{DynamicResource ForeColor}"
+                                       HoverBackground="#FFE32820"
+                                       PressedBackground="#FFEF1E15"
+                                       WindowChrome.IsHitTestVisibleInChrome="True" />
+                            <ws:Button x:Name="MaxmizeBtn"
+                                       Width="48"
+                                       Height="48"
+                                       Margin="0,0,48,0"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Top"
+                                       ws:WindowOption.IsMaximumButton="True"
+                                       Background="Transparent"
+                                       BorderThickness="0"
+                                       Cursor="Hand"
+                                       DisabledBackground="Transparent"
+                                       DisabledForeground="{DynamicResource FocusMaskColor}"
+                                       FontFamily="{StaticResource SegoeFluentIcon}"
+                                       FontSize="10"
+                                       Foreground="{DynamicResource ForeColor}"
+                                       HoverBackground="{DynamicResource MaskColor}"
+                                       PressedBackground="{DynamicResource FocusMaskColor}"
+                                       WindowChrome.IsHitTestVisibleInChrome="True">
                                 <ws:ConditionalControl Condition="{TemplateBinding WindowState, Converter={x:Static ws:NotEqualConverter.Instance}, ConverterParameter={x:Static WindowState.Maximized}}">
                                     <ws:ConditionalControl.ContentWhenTrue>
                                         <TextBlock Text="&#xE922;" />
@@ -688,23 +658,22 @@
                                     </ws:ConditionalControl.ContentWhenFalse>
                                 </ws:ConditionalControl>
                             </ws:Button>
-                            <ws:Button
-                                x:Name="MinimizeBtn"
-                                Width="48"
-                                Height="48"
-                                Margin="0,0,96,0"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Top"
-                                Background="Transparent"
-                                BorderThickness="0"
-                                Content="&#xE921;"
-                                Cursor="Hand"
-                                FontFamily="{StaticResource SegoeFluentIcon}"
-                                FontSize="10"
-                                Foreground="{DynamicResource ForeColor}"
-                                HoverBackground="{DynamicResource MaskColor}"
-                                PressedBackground="{DynamicResource FocusMaskColor}"
-                                WindowChrome.IsHitTestVisibleInChrome="True" />
+                            <ws:Button x:Name="MinimizeBtn"
+                                       Width="48"
+                                       Height="48"
+                                       Margin="0,0,96,0"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Top"
+                                       Background="Transparent"
+                                       BorderThickness="0"
+                                       Content="&#xE921;"
+                                       Cursor="Hand"
+                                       FontFamily="{StaticResource SegoeFluentIcon}"
+                                       FontSize="10"
+                                       Foreground="{DynamicResource ForeColor}"
+                                       HoverBackground="{DynamicResource MaskColor}"
+                                       PressedBackground="{DynamicResource FocusMaskColor}"
+                                       WindowChrome.IsHitTestVisibleInChrome="True" />
                         </Grid>
                     </Grid>
                 </ControlTemplate>
@@ -722,20 +691,18 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
-                    <Border
-                        Width="{TemplateBinding Width}"
-                        Height="{TemplateBinding Height}"
-                        Background="{TemplateBinding Background}" />
+                    <Border Width="{TemplateBinding Width}"
+                            Height="{TemplateBinding Height}"
+                            Background="{TemplateBinding Background}" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
     <!--  滑块Thumb  -->
     <ControlTemplate x:Key="SliderThumbHorizontalDefault" TargetType="{x:Type Thumb}">
-        <Ellipse
-            x:Name="ellipse"
-            Fill="{DynamicResource FocusAccentColor}"
-            SnapsToDevicePixels="True" />
+        <Ellipse x:Name="ellipse"
+                 Fill="{DynamicResource FocusAccentColor}"
+                 SnapsToDevicePixels="True" />
     </ControlTemplate>
     <!--  Slider左侧高亮  -->
     <Style x:Key="SliderLeftStyle" TargetType="{x:Type RepeatButton}">
@@ -747,56 +714,51 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
                     <Border Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
-                        <Border
-                            Height="4"
-                            Background="{TemplateBinding Background}"
-                            CornerRadius="2" />
+                        <Border Height="4"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="2" />
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
     <ControlTemplate x:Key="SliderHorizontal" TargetType="{x:Type Slider}">
-        <Border
-            x:Name="border"
-            Background="{TemplateBinding Background}"
-            BorderBrush="{TemplateBinding BorderBrush}"
-            BorderThickness="{TemplateBinding BorderThickness}"
-            SnapsToDevicePixels="True">
+        <Border x:Name="border"
+                Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                SnapsToDevicePixels="True">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" MinHeight="{TemplateBinding MinHeight}" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <Border
-                    x:Name="TrackBackground"
-                    Grid.Row="1"
-                    Height="4"
-                    VerticalAlignment="center"
-                    Background="{DynamicResource FocusMaskColor}"
-                    CornerRadius="2" />
+                <Border x:Name="TrackBackground"
+                        Grid.Row="1"
+                        Height="4"
+                        VerticalAlignment="center"
+                        Background="{DynamicResource FocusMaskColor}"
+                        CornerRadius="2" />
                 <Track x:Name="PART_Track" Grid.Row="1">
                     <Track.DecreaseRepeatButton>
-                        <RepeatButton
-                            Background="{DynamicResource HighlightThemeColor}"
-                            Command="{x:Static Slider.DecreaseLarge}"
-                            Style="{StaticResource SliderLeftStyle}" />
+                        <RepeatButton Background="{DynamicResource HighlightThemeColor}"
+                                      Command="{x:Static Slider.DecreaseLarge}"
+                                      Style="{StaticResource SliderLeftStyle}" />
                     </Track.DecreaseRepeatButton>
                     <Track.IncreaseRepeatButton>
                         <RepeatButton Command="{x:Static Slider.IncreaseLarge}" Style="{StaticResource RepeatButtonTransparent}" />
                     </Track.IncreaseRepeatButton>
                     <Track.Thumb>
-                        <Thumb
-                            x:Name="Thumb"
-                            Width="16"
-                            Height="16"
-                            Margin="-8,0,-8,0"
-                            VerticalAlignment="Center"
-                            Focusable="False"
-                            Opacity="0"
-                            OverridesDefaultStyle="True"
-                            Template="{StaticResource SliderThumbHorizontalDefault}" />
+                        <Thumb x:Name="Thumb"
+                               Width="16"
+                               Height="16"
+                               Margin="-8,0,-8,0"
+                               VerticalAlignment="Center"
+                               Focusable="False"
+                               Opacity="0"
+                               OverridesDefaultStyle="True"
+                               Template="{StaticResource SliderThumbHorizontalDefault}" />
                     </Track.Thumb>
                 </Track>
             </Grid>
@@ -806,22 +768,20 @@
                 <Trigger.EnterActions>
                     <BeginStoryboard>
                         <Storyboard>
-                            <DoubleAnimation
-                                Storyboard.TargetName="Thumb"
-                                Storyboard.TargetProperty="Opacity"
-                                To="1"
-                                Duration="0:0:0.2" />
+                            <DoubleAnimation Storyboard.TargetName="Thumb"
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="1"
+                                             Duration="0:0:0.2" />
                         </Storyboard>
                     </BeginStoryboard>
                 </Trigger.EnterActions>
                 <Trigger.ExitActions>
                     <BeginStoryboard>
                         <Storyboard>
-                            <DoubleAnimation
-                                Storyboard.TargetName="Thumb"
-                                Storyboard.TargetProperty="Opacity"
-                                To="0"
-                                Duration="0:0:0.2" />
+                            <DoubleAnimation Storyboard.TargetName="Thumb"
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="0"
+                                             Duration="0:0:0.2" />
                         </Storyboard>
                     </BeginStoryboard>
                 </Trigger.ExitActions>

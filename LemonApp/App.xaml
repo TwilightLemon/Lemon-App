@@ -1,14 +1,15 @@
-﻿<Application
-    x:Class="LemonApp.App"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
-    xmlns:component="clr-namespace:LemonApp.Components"
-    xmlns:local="clr-namespace:LemonApp"
-    xmlns:ws="https://schemas.elecho.dev/wpfsuite">
+﻿<Application x:Class="LemonApp.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
+             xmlns:component="clr-namespace:LemonApp.Components"
+             xmlns:fluent="https://github.com/TwilightLemon/FluentWpfCore"
+             xmlns:local="clr-namespace:LemonApp"
+             xmlns:ws="https://schemas.elecho.dev/wpfsuite">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/FluentWpfCore;component/Themes/Generic.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/LemonApp.Common;component/Styles/ThemeColor_Dark.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/LemonApp.Common;component/Styles/UITemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/LemonApp.Common;component/Styles/ItemTemplate.xaml" />
@@ -26,8 +27,8 @@
             <Style TargetType="{x:Type ToolTip}">
                 <Style.Setters>
                     <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
-                    <Setter Property="base:FluentTooltip.UseFluentStyle" Value="True" />
-                    <Setter Property="Background" Value="{DynamicResource PopupWndBgColor}" />
+                    <Setter Property="fluent:FluentStyle.UseFluentStyle" Value="True" />
+                    <Setter Property="Background" Value="{DynamicResource PopupBackgroundColor}" />
                     <Setter Property="Foreground" Value="{DynamicResource ForeColor}" />
                 </Style.Setters>
             </Style>
@@ -35,32 +36,30 @@
                 <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
             </Style>
             <!--  全局ContextMenu样式  -->
-            <Style TargetType="{x:Type ContextMenu}">
-                <Style.Setters>
-                    <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
-                    <Setter Property="base:FluentTooltip.UseFluentStyle" Value="True" />
-                    <Setter Property="Background" Value="{DynamicResource BackgroundColor}" />
-                    <Setter Property="Foreground" Value="{DynamicResource ForeColor}" />
-                    <Setter Property="HasDropShadow" Value="False" />
-                    <Setter Property="ItemsPanel">
-                        <Setter.Value>
-                            <ItemsPanelTemplate>
-                                <ws:StackPanel Margin="-20,0,0,-1" Background="{StaticResource BackgroundColor}" />
-                            </ItemsPanelTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style.Setters>
+            <Style x:Key="GlobalContextMenuStyle"
+                   BasedOn="{StaticResource FluentContextMenuStyle}"
+                   TargetType="{x:Type ContextMenu}">
+                <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
+                <Setter Property="fluent:FluentStyle.UseFluentStyle" Value="True" />
+                <Setter Property="Background" Value="{DynamicResource PopupBackgroundColor}" />
+                <Setter Property="Foreground" Value="{DynamicResource ForeColor}" />
             </Style>
-            <Style TargetType="MenuItem">
-                <Setter Property="BorderThickness" Value="0" />
-                <Setter Property="Height" Value="32" />
+            <Style x:Key="GlobalMenuItemStyle"
+                   BasedOn="{StaticResource FluentMenuItemStyle}"
+                   TargetType="MenuItem">
+                <Setter Property="Foreground" Value="{DynamicResource ForeColor}" />
+                <Setter Property="Height" Value="36" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
             </Style>
+
+            <Style BasedOn="{StaticResource GlobalContextMenuStyle}" TargetType="{x:Type ContextMenu}" />
+            <Style BasedOn="{StaticResource GlobalMenuItemStyle}" TargetType="MenuItem" />
+
             <ContextMenu x:Key="AddToQuickGotoMenu">
-                <MenuItem
-                    Command="{x:Static component:PublicPopupMenuHolder.AddToQuickAccessCommand}"
-                    CommandParameter="{Binding}"
-                    Header="Add to Quick Access"
-                    Icon="{x:Null}" />
+                <MenuItem Command="{x:Static component:PublicPopupMenuHolder.AddToQuickAccessCommand}"
+                          CommandParameter="{Binding}"
+                          Header="Add to Quick Access"
+                          Icon="{x:Null}" />
             </ContextMenu>
             <!--  涟漪点击效果  -->
             <!--<Style TargetType="{x:Type ws:Button}">

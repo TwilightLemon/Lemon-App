@@ -4,6 +4,7 @@
       xmlns:base="clr-namespace:LemonApp.Common.UIBases;assembly=LemonApp.Common"
       xmlns:beh="clr-namespace:LemonApp.Common.Behaviors;assembly=LemonApp.Common"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:fluent="https://github.com/TwilightLemon/FluentWpfCore"
       xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
       xmlns:local="clr-namespace:LemonApp.Views.Pages"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -145,11 +146,11 @@
                               ItemsSource="{Binding Data.NewComments}" />
             </ws:StackPanel>
         </base:ScrollViewer>
-        <base:FluentPopup Background="{DynamicResource PopupWndBgColor}"
-                          ExtPopupAnimation="SlideUp"
-                          IsOpen="{Binding IsCommentSelected}"
-                          Placement="Center"
-                          StaysOpen="False">
+        <fluent:FluentPopup Background="{DynamicResource PopupBackgroundColor}"
+                            ExtPopupAnimation="Slide"
+                            IsOpen="{Binding IsCommentSelected}"
+                            Placement="Center"
+                            StaysOpen="False">
             <Grid Width="580">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="130" />
@@ -220,6 +221,6 @@
                     </ws:WrapPanel>
                 </ws:FlexPanel>
             </Grid>
-        </base:FluentPopup>
+        </fluent:FluentPopup>
     </ws:BoxPanel>
 </Page>

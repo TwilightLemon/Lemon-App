@@ -4,6 +4,8 @@ using System.Windows.Shell;
 using Microsoft.Xaml.Behaviors;
 using LemonApp.Common.WinAPI;
 using LemonApp.Common.Configs;
+using FluentWpfCore.AttachedProperties;
+using FluentWpfCore.Interop;
 
 namespace LemonApp.Common.Behaviors;
 

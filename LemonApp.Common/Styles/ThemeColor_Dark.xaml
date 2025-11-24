@@ -3,7 +3,7 @@
     <!--  主窗口背景色 对于Mica材质不适用  -->
     <SolidColorBrush x:Key="WindowBackgroundColor" Color="#9F000000" />
     <!--  弹窗背景色 全为Acrylic材质  -->
-    <SolidColorBrush x:Key="PopupWndBgColor" Color="#9F000000" />
+    <SolidColorBrush x:Key="PopupBackgroundColor" Color="#D01E1E1E" />
     <!--  标签页背景色  -->
     <SolidColorBrush x:Key="TabMaskColor" Color="#7C000000" />
     <!--  前景色  -->

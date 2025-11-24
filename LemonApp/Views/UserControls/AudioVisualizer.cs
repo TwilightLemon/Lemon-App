@@ -88,7 +88,8 @@ public class AudioVisualizer : FrameworkElement
         {
             var highFreqBrush = newBrush.Clone();
             highFreqBrush.Opacity = 0.6;
-            highFreqBrush.Freeze();
+            if (highFreqBrush.CanFreeze)
+                highFreqBrush.Freeze();
             visualizer._highFreqFill = highFreqBrush;
         }
     }

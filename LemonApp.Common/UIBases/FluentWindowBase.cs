@@ -7,6 +7,8 @@ using LemonApp.Common.WinAPI;
 using wsButton = EleCho.WpfSuite.Controls.Button;
 using System.ComponentModel;
 using System.Windows.Media;
+using FluentWpfCore.Interop;
+using FluentWpfCore.AttachedProperties;
 
 namespace LemonApp.Common.UIBases
 {
@@ -39,7 +41,7 @@ namespace LemonApp.Common.UIBases
             if (osVersion >= windows11)
             {
                 WindowOption.SetCorner(this, WindowCorner.Round);
-                WindowLongAPI.SetDwmAnimation(this, true);
+                DwmAnimation.SetEnableDwmAnimation(this, true);
             }
 
             _behaviors = Interaction.GetBehaviors(this);

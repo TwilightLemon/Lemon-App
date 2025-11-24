@@ -64,7 +64,7 @@ namespace LemonApp.Views.Windows
             {
                 ChunkCount = 4,
                 ParallelDownload = true,
-                MaxTryAgainOnFailover = 10,
+                MaxTryAgainOnFailure = 10,
                 ClearPackageOnCompletionWithFailure = true
             }, null);
             downloader.DownloadProgressChanged += (_, e) => {

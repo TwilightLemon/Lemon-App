@@ -9,7 +9,7 @@
              xmlns:viewmodel="clr-namespace:LemonApp.ViewModels"
              d:DataContext="{d:DesignInstance Type=viewmodel:UserMenuViewModel}"
              mc:Ignorable="d"
-             Background="{DynamicResource PopupWndBgColor}"
+             Background="{DynamicResource PopupBackgroundColor}"
              Foreground="{DynamicResource ForeColor}"
              Width="240">
     <StackPanel x:Name="Body" VerticalAlignment="Top">

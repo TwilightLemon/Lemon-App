@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using FluentWpfCore.Interop;
 using LemonApp.Common.Behaviors;
 using LemonApp.Common.Configs;
 using LemonApp.Common.Funcs;
@@ -75,7 +76,7 @@ public class UIResourceService(
         var accentColor=dt?.GetAccentColor();
         var focusColor= dt?.GetFocusAccentColor();
         if (accentColor.HasValue&&focusColor.HasValue){
-            App.Current.Resources["HighlightThemeColor"]=new SolidColorBrush(accentColor.Value);
+            App.Current.Resources["AccentColor"]=App.Current.Resources["HighlightThemeColor"]=new SolidColorBrush(accentColor.Value);
             App.Current.Resources["AccentColorKey"] = accentColor.Value;
             App.Current.Resources["FocusAccentColor"]=new SolidColorBrush(focusColor.Value);
         }
@@ -92,21 +93,21 @@ public class UIResourceService(
         switch (mgr.Data.BackgroundMode)
         {
             case Appearance.BackgroundType.Acrylic:
-                mw.Mode=Common.WinAPI.MaterialType.Acrylic;
+                mw.Mode=MaterialType.Acrylic;
                 mw.SetResourceReference(Control.BackgroundProperty, "WindowBackgroundColor");
                 break;
             case Appearance.BackgroundType.Mica:
-                mw.Mode = Common.WinAPI.MaterialType.Mica;
+                mw.Mode = MaterialType.Mica;
                 mw.Background = Brushes.Transparent;
                 break;
             case Appearance.BackgroundType.MicaAlt:
-                mw.Mode = Common.WinAPI.MaterialType.MicaAlt;
+                mw.Mode = MaterialType.MicaAlt;
                 mw.Background = Brushes.Transparent;
                 break;
             case Appearance.BackgroundType.Image:
                 if (System.IO.Path.Exists(mgr.Data.BackgroundPath))
                 {
-                    mw.Mode = Common.WinAPI.MaterialType.None;
+                    mw.Mode = MaterialType.None;
                     mw.Background = new ImageBrush(new BitmapImage(new Uri(mgr.Data.BackgroundPath))) { Stretch = Stretch.UniformToFill };
                     mw.Container.SetResourceReference(Control.BackgroundProperty, "WindowBackgroundColor");
                     mw.MusicControlBgPresenter.UpdateBackground();
@@ -114,11 +115,11 @@ public class UIResourceService(
                 }
                 break;
             case Appearance.BackgroundType.Color:
-                mw.Mode = Common.WinAPI.MaterialType.None;
+                mw.Mode = MaterialType.None;
                 mw.SetResourceReference(Window.BackgroundProperty, "BackgroundColor");
                 break;
             case Appearance.BackgroundType.Music:
-                mw.Mode = Common.WinAPI.MaterialType.None;
+                mw.Mode = MaterialType.None;
                 var brush = new ImageBrush();
                 BindingOperations.SetBinding(brush, ImageBrush.ImageSourceProperty, new Binding("LyricPageBackgroundSource"));
                 mw.Background = brush;
