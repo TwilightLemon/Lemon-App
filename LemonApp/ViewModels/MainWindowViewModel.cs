@@ -878,10 +878,12 @@ public partial class MainWindowViewModel : ObservableObject
     {
         if (CurrentPlaying == null) return;
         var hc = () => _serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(App.PublicClientFlag);
-        var cover = await ImageCacheService.FetchData(await CoverGetter.GetCoverImgUrl(hc, _userProfileService.GetAuth(), CurrentPlaying));
+        var imgurl = await CoverGetter.GetCoverImgUrl(hc, _userProfileService.GetAuth(), CurrentPlaying);
+        var cover = await ImageCacheService.FetchData(imgurl);
         if (cover != null)
         {
             CurrentPlayingCover = new ImageBrush(cover);
+            _mediaPlayerService.SMTC.Info.SetThumbnail(imgurl).Update();
            var mica= await Task.Run(() =>
             {
                 var bitmap = cover.ToBitmap();

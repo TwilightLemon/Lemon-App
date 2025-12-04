@@ -61,7 +61,14 @@ public class SMTCCreator:IDisposable
         _smtc.IsPreviousEnabled = true;
         //响应系统播放器的命令
         _smtc.ButtonPressed += _smtc_ButtonPressed;
+        _smtc.PlaybackPositionChangeRequested += Smtc_PlaybackPositionChangeRequested;
     }
+
+    private void Smtc_PlaybackPositionChangeRequested(SystemMediaTransportControls sender, PlaybackPositionChangeRequestedEventArgs args)
+    {
+        SeekRequested?.Invoke(args.RequestedPlaybackPosition);
+    }
+
     public void Dispose()
     {
         _smtc.IsEnabled = false;
@@ -69,6 +76,7 @@ public class SMTCCreator:IDisposable
     }
     public SMTCUpdater Info { get => _updater; }
     public event EventHandler? PlayOrPause, Previous, Next;
+    public event Action<TimeSpan>? SeekRequested;
     public void SetMediaStatus(SMTCMediaStatus status)
     {
         _smtc.PlaybackStatus = status switch

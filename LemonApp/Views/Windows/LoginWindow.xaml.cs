@@ -91,7 +91,7 @@ namespace LemonApp.Views.Windows
             {
                 pskey = TextHelper.FindTextByAB(url, "&code=", "&", 0);
             }
-            if (url.Contains("y.qq.com/n/ryqq/profile/like/song"))
+            if (url.Contains("/profile/like/song"))
             {
                 var cookie = await wb.CoreWebView2.CookieManager.GetCookiesAsync("https://y.qq.com");
                 Dictionary<string, string> cookieDict = [];

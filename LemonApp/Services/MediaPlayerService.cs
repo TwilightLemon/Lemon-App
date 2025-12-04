@@ -28,6 +28,7 @@ public class MediaPlayerService(UserProfileService userProfileService,
     private readonly HttpClient hc= httpClientFactory.CreateClient(App.PublicClientFlag);
     //private readonly SharedLaClient _sharedLaClient = sharedLaClient;
 
+    public SMTCCreator SMTC => _smtc;
     public AudioGetter? AudioGetter { get; private set; }
     public MusicPlayer Player { get => _player; }
     public Music? CurrentMusic { get; private set; }
@@ -51,7 +52,13 @@ public class MediaPlayerService(UserProfileService userProfileService,
         _smtc.Next += Smtc_Next;
         _smtc.Previous += Smtc_Previous;
         _smtc.PlayOrPause += Smtc_PlayOrPause;
+        _smtc.SeekRequested += Smtc_SeekRequested;
         App.Services.GetRequiredService<MyToolBarLyricClient>().Connect();
+    }
+
+    private void Smtc_SeekRequested(TimeSpan pos)
+    {
+        Position = pos;
     }
 
     private void Smtc_PlayOrPause(object? sender, EventArgs e)
@@ -97,15 +104,15 @@ public class MediaPlayerService(UserProfileService userProfileService,
     {
         return LoadMusic(music, _playingMgr.Data.Quality);
     }
-    public async void RewriteMusicMetadata(Music music)
+    public void RewriteMusicMetadata(Music music)
     {
         CurrentMusic = music;
-        _smtc.SetMediaStatus(SMTCMediaStatus.Playing);
+        _smtc.SetMediaStatus(SMTCMediaStatus.Paused);
         _smtc.Info.SetTitle(music.MusicName)
                         .SetArtist(music.SingerText)
-                        .SetThumbnail(await CoverGetter.GetCoverImgUrl(() => hc, _userProfileService.GetAuth(), music))
+                        .SetAlbumTitle(music.Album?.Name?? "")
+                        //.SetThumbnail(await CoverGetter.GetCoverImgUrl(() => hc, _userProfileService.GetAuth(), music))
                         .Update();
-        _smtc.SetMediaStatus(SMTCMediaStatus.Paused);
 
         OnLoaded?.Invoke(music);
     }
