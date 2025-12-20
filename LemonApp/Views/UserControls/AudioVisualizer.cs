@@ -4,227 +4,222 @@ using System.Windows;
 using System.Windows.Media;
 
 namespace LemonApp.Views.UserControls;
-public class AudioVisualizer : FrameworkElement
+
+public sealed class AudioVisualizer : FrameworkElement
 {
     static AudioVisualizer()
     {
-        DefaultStyleKeyProperty.OverrideMetadata(typeof(AudioVisualizer), new FrameworkPropertyMetadata(typeof(AudioVisualizer)));
+        DefaultStyleKeyProperty.OverrideMetadata(
+            typeof(AudioVisualizer),
+            new FrameworkPropertyMetadata(typeof(AudioVisualizer)));
     }
-    private readonly DrawingVisual _lowFreqVisual = new();
-    private readonly DrawingVisual _highFreqVisual = new();
+
+    #region Visuals
+
+    private readonly DrawingVisual _lowVisual = new();
+    private readonly DrawingVisual _highVisual = new();
     private readonly VisualCollection _children;
+
+    protected override int VisualChildrenCount => 2;
+
+    protected override Visual GetVisualChild(int index) => index switch
+    {
+        0 => _highVisual,
+        1 => _lowVisual,
+        _ => throw new ArgumentOutOfRangeException(nameof(index))
+    };
+
+    #endregion
+
     public AudioVisualizer()
     {
-        this.IsVisibleChanged += AudioVisualizer_IsVisibleChanged;
-        _children = new(this)
+        _children = new VisualCollection(this)
         {
-            _highFreqVisual,
-            _lowFreqVisual
+            _highVisual,
+            _lowVisual
+        };
+
+        IsVisibleChanged += (_, _) =>
+        {
+            if (IsVisible && IsPlaying) Start();
+            else Stop();
         };
     }
 
-    // 必须重写这两个方法以支持视觉子元素
-    protected override int VisualChildrenCount => 2;
-    protected override Visual GetVisualChild(int index)
-    {
-        return index switch
-        {
-            0 => _highFreqVisual,
-            1 => _lowFreqVisual,
-            _ => throw new ArgumentOutOfRangeException(nameof(index)),
-        };
-    }
+    #region Public API
 
-    private void AudioVisualizer_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
-    {
-        if (e.NewValue is true && IsPlaying)
-            Start();
-        else Stop();
-    }
-
-    internal void Start()
-    {
-        if (_isRunning || Player == null) return;
-        CompositionTarget.Rendering += CompositionTarget_Rendering;
-        _isRunning = true;
-    }
-
-    internal void Stop()
-    {
-        if (!_isRunning) return;
-        CompositionTarget.Rendering -= CompositionTarget_Rendering;
-        _isRunning = false;
-    }
-
-    #region Properties
-    public MusicPlayer Player;
-
-    private bool _isRunning = false;
-    private readonly float[] _spectrumData = new float[512];
-    private readonly float[] _displayValues = new float[512];
-    private Brush _highFreqFill;
+    public MusicPlayer? Player;
 
     public int StripCount
     {
-        get { return (int)GetValue(StripCountProperty); }
-        set { SetValue(StripCountProperty, value); }
+        get => (int)GetValue(StripCountProperty);
+        set => SetValue(StripCountProperty, value);
     }
 
     public static readonly DependencyProperty StripCountProperty =
-        DependencyProperty.Register("StripCount",
-            typeof(int), typeof(AudioVisualizer), new PropertyMetadata(128));
+        DependencyProperty.Register(
+            nameof(StripCount),
+            typeof(int),
+            typeof(AudioVisualizer),
+            new PropertyMetadata(128, OnStripCountChanged));
 
     public Brush Fill
     {
-        get { return (Brush)GetValue(FillProperty); }
-        set { SetValue(FillProperty, value); }
+        get => (Brush)GetValue(FillProperty);
+        set => SetValue(FillProperty, value);
     }
-    public static readonly DependencyProperty FillProperty =
-        DependencyProperty.Register("Fill", typeof(Brush), typeof(AudioVisualizer), new PropertyMetadata(Brushes.LightBlue, OnFillChanged));
 
-    private static void OnFillChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        if (d is AudioVisualizer visualizer && e.NewValue is Brush newBrush)
-        {
-            var highFreqBrush = newBrush.Clone();
-            highFreqBrush.Opacity = 0.6;
-            if (highFreqBrush.CanFreeze)
-                highFreqBrush.Freeze();
-            visualizer._highFreqFill = highFreqBrush;
-        }
-    }
+    public static readonly DependencyProperty FillProperty =
+        DependencyProperty.Register(
+            nameof(Fill),
+            typeof(Brush),
+            typeof(AudioVisualizer),
+            new PropertyMetadata(Brushes.LightBlue, OnFillChanged));
 
     public bool IsPlaying
     {
-        get { return (bool)GetValue(IsPlayingProperty); }
-        set { SetValue(IsPlayingProperty, value); }
+        get => (bool)GetValue(IsPlayingProperty);
+        set => SetValue(IsPlayingProperty, value);
     }
 
     public static readonly DependencyProperty IsPlayingProperty =
-        DependencyProperty.Register("IsPlaying", typeof(bool), typeof(AudioVisualizer), new PropertyMetadata(false, OnIsPlayingChanged));
+        DependencyProperty.Register(
+            nameof(IsPlaying),
+            typeof(bool),
+            typeof(AudioVisualizer),
+            new PropertyMetadata(false, OnIsPlayingChanged));
 
-    private static void OnIsPlayingChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
+    #endregion
+
+    #region Internal State
+
+    private bool _running;
+    private AudioVisualizerProcessor? _processor;
+
+
+    // Bezier 点缓存
+    private Point[] _points = Array.Empty<Point>();
+
+    private Brush? _highFill;
+
+    #endregion
+
+    #region Lifecycle
+
+    private void Start()
     {
-        if (o is AudioVisualizer visualizer)
-        {
-            if (e.NewValue is true && visualizer.IsVisible)
-            {
-                visualizer.Start();
-            }
-            else
-            {
-                visualizer.Stop();
-            }
-        }
+        if (_running || Player is null) return;
+
+        _processor ??= new AudioVisualizerProcessor(Player, StripCount);
+        _processor.Start();
+
+        CompositionTarget.Rendering += OnRender;
+        _running = true;
+    }
+
+    private void Stop()
+    {
+        if (!_running) return;
+
+        CompositionTarget.Rendering -= OnRender;
+        _processor?.Dispose();
+        _processor = null;
+
+        _running = false;
+    }
+
+    private static void OnIsPlayingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        var v = (AudioVisualizer)d;
+        if ((bool)e.NewValue && v.IsVisible) v.Start();
+        else v.Stop();
+    }
+
+    private static void OnStripCountChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+      ((AudioVisualizer)d).ResizeBuffers();
+    }
+    private void ResizeBuffers()
+    {
+        int n = Math.Max(1, StripCount);
+        _points = new Point[n];
+    }
+
+
+    private static void OnFillChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        var v = (AudioVisualizer)d;
+        if (e.NewValue is not Brush b) return;
+
+        var hf = b.Clone();
+        hf.Opacity = 0.6;
+        if (hf.CanFreeze) hf.Freeze();
+        v._highFill = hf;
     }
 
     #endregion
 
-    private void CompositionTarget_Rendering(object? sender, EventArgs e)
+    #region Rendering Pipeline
+
+    private void OnRender(object? sender, EventArgs e)
     {
-        if (Player == null) return;
-        Player.GetFFTData(_spectrumData);
+        if (_processor is null)
+            return;
 
-        int stripCount = StripCount;
-        int actualHeight = (int)ActualHeight;
-        if (stripCount <= 0) return;
+        var data = _processor.Current;
 
-        float[] processedData = new float[stripCount];
-        int dataLen = _spectrumData.Length / 2; // We only use the first half of the spectrum data (real part)
-
-        // Logarithmic scaling
-        double logMin = Math.Log(1);
-        double logMax = Math.Log(dataLen);
-        double logRange = logMax - logMin;
-
-        for (int i = 0; i < stripCount; i++)
-        {
-            double logI = logMin + (logRange / stripCount) * i;
-            double linearI = Math.Exp(logI);
-            int index = (int)Math.Round(linearI);
-            if (index >= dataLen) index = dataLen - 1;
-
-            float value = (float)Math.Log10(1 + actualHeight * _spectrumData[index]);
-            processedData[i] = value;
-        }
-
-        // Improved smoothing
-        const float attack = 0.25f; // Faster rise
-        const float decay = 0.08f;  // Slower fall
-
-        for (int i = 0; i < stripCount; i++)
-        {
-            float newValue = processedData[i];
-            float oldValue = _displayValues[i];
-
-            if (newValue > oldValue)
-            {
-                _displayValues[i] += (newValue - oldValue) * attack;
-            }
-            else
-            {
-                _displayValues[i] += (newValue - oldValue) * decay;
-            }
-        }
-
-        using (DrawingContext dcHigh = _highFreqVisual.RenderOpen())
-        {
-            DrawStrips(dcHigh,  _highFreqFill, true);
-        }
-        using (DrawingContext dcLow = _lowFreqVisual.RenderOpen())
-        {
-            DrawStrips(dcLow,  Fill, false);
-        }
+        Draw(_highVisual, _highFill!, data, true);
+        Draw(_lowVisual, Fill, data, false);
     }
 
-    private void DrawStrips(DrawingContext drawingContext,   Brush fill, bool reversed)
+    private void Draw(
+        DrawingVisual visual,
+        Brush fill,
+        ReadOnlySpan<float> data,
+        bool reversed)
     {
-        int stripCount = StripCount;
-        if (stripCount <= 0) return;
-        int actualHeight = (int)ActualHeight;
+        int n = data.Length;
+        if (n < 2) return;
 
-        // 构建点集
-        Point[] points = new Point[stripCount];
-        int total = stripCount > 1 ? stripCount - 1 : 1;
-        for (int i = 0; i < stripCount; i++)
+        double w = ActualWidth;
+        double h = ActualHeight;
+        int last = n - 1;
+
+        var pts = _points.AsSpan();
+
+        for (int i = 0; i < n; i++)
         {
-            int displayIndex = i;
-            double x;
-            if (reversed)
-            {
-                x = (double)i / total * ActualWidth;
-            }
-            else
-            {
-                x = (1.0d - (double)i / total) * ActualWidth;
-            }
-            double y = actualHeight * (1 - _displayValues[displayIndex]);
-            points[i] = new Point(x, y);
+            double x = reversed
+                ? i * w / last
+                : (last - i) * w / last;
+
+            double y = h * (1 - data[i]);
+            pts[i] = new Point(x, y);
         }
 
-        // 绘制几何图形
-        var geometry = new StreamGeometry();
-        using (var ctx = geometry.Open())
-        {
-            ctx.BeginFigure(points[0], true, true);
+        using var dc = visual.RenderOpen();
+        var geo = new StreamGeometry();
 
-            for (int i = 1; i < stripCount - 2; i++)
+        using (var g = geo.Open())
+        {
+            g.BeginFigure(pts[0], true, true);
+
+            for (int i = 1; i < n - 1; i++)
             {
                 var mid = new Point(
-                    (points[i].X + points[i + 1].X) / 2,
-                    (points[i].Y + points[i + 1].Y) / 2
-                );
-                ctx.QuadraticBezierTo(points[i], mid, true, false);
+                    (pts[i].X + pts[i + 1].X) * 0.5,
+                    (pts[i].Y + pts[i + 1].Y) * 0.5);
+
+                g.QuadraticBezierTo(pts[i], mid, true, false);
             }
-            if (stripCount > 1)
-            {
-                ctx.LineTo(points[stripCount - 1], true, false);
-            }
-            ctx.LineTo(new Point(points[stripCount - 1].X, actualHeight), true, false);
-            ctx.LineTo(new Point(points[0].X, actualHeight), true, false);
-            ctx.LineTo(points[0], true, false);
+
+            g.LineTo(new Point(pts[last].X, h), true, false);
+            g.LineTo(new Point(pts[0].X, h), true, false);
         }
-        geometry.Freeze();
-        drawingContext.DrawGeometry(fill, null, geometry);
+
+        geo.Freeze();
+        dc.DrawGeometry(fill, null, geo);
     }
+
+    #endregion
 }

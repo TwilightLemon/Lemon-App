@@ -236,8 +236,8 @@ namespace LemonApp.Views.UserControls
                     Type=LyricType.Wyy,
                     Id = m.MusicID,
                     Lyric = data.Yrc?.Lyric ?? data.Lrc.Lyric,
-                    Trans = data.Tlyric.Lyric,
-                    Romaji = data.Romalrc.Lyric
+                    Trans = data.Tlyric?.Lyric,
+                    Romaji = data.Romalrc?.Lyric
                 };
                 if(data.Yrc?.Lyric == null && data.Lrc.Lyric != null)
                 {
