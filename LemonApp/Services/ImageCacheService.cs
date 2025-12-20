@@ -71,7 +71,7 @@ public class ImageCacheService
         catch { }
         return null;
     }
-    private static string GetLocalFilePath(string url)
+    public static string GetLocalFilePath(string url)
     {
         var fileName = TextHelper.MD5Hash(url) + ".jpg";
         return Path.Combine(CacheManager.GetCachePath(CacheManager.CacheType.Image), fileName);
