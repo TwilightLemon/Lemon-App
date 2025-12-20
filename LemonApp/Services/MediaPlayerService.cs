@@ -107,7 +107,7 @@ public class MediaPlayerService(UserProfileService userProfileService,
     public void RewriteMusicMetadata(Music music)
     {
         CurrentMusic = music;
-        _smtc.SetMediaStatus(SMTCMediaStatus.Paused);
+        _smtc.SetMediaStatus(_isPlaying ? SMTCMediaStatus.Playing : SMTCMediaStatus.Paused);
         _smtc.Info.SetTitle(music.MusicName)
                         .SetArtist(music.SingerText)
                         .SetAlbumTitle(music.Album?.Name?? "")

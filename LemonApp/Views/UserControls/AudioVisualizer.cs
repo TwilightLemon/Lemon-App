@@ -168,7 +168,8 @@ public sealed class AudioVisualizer : FrameworkElement
 
         var data = _processor.Current;
 
-        Draw(_highVisual, _highFill!, data, true);
+        if (_highFill != null)
+            Draw(_highVisual, _highFill, data, true);
         Draw(_lowVisual, Fill, data, false);
     }
 

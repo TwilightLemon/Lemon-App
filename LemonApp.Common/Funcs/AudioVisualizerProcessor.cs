@@ -28,7 +28,7 @@ public sealed class AudioVisualizerProcessor : IDisposable
         _thread = new Thread(Worker)
         {
             IsBackground = true,
-            Priority = ThreadPriority.AboveNormal
+            Priority = ThreadPriority.BelowNormal
         };
     }
 
