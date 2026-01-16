@@ -73,11 +73,23 @@ public partial class LyricHost : UserControl
     private ILineInfo? currentLrc,notifiedLrc;
     private bool _isPureLrc = false;
     private DateTime _interruptedTime;
+    private bool _isLoading = false;
+    private List<SelectiveLyricLine>? _animatingLines = null;
+    private double _pendingTargetOffset = 0;
 
     public event Action<LrcLine> OnNextLrcReached;
 
     public void Reset()
     {
+        // 停止所有正在进行的动画
+        foreach (var child in LrcContainer.Children)
+        {
+            if (child is SelectiveLyricLine line && line.RenderTransform is TranslateTransform t)
+            {
+                t.BeginAnimation(TranslateTransform.YProperty, null);
+                t.Y = 0;
+            }
+        }
         lrcs.Clear();
         currentLrc = null;
         LrcContainer.Children.Clear();
@@ -120,6 +132,7 @@ public partial class LyricHost : UserControl
     private Thickness lyricSpacing= new(0, 0, 0, 30);
     public void Load(LyricsData lyricsData,LyricsData? trans=null,LyricsData? romaji=null,bool isPureLrc=false)
     {
+        _isLoading = true;
         _isPureLrc= isPureLrc;
         LrcContainer.Children.Clear();
         lrcs.Clear();
@@ -161,10 +174,12 @@ public partial class LyricHost : UserControl
                     lrc.Value.LyricLine.LoadPlainRomaji(pure.Text);
             }
         }
+        _isLoading = false;
     }
 
     public void UpdateTime(int ms)
     {
+        if (_isLoading) return;
         {
             if (currentLrc != null && lrcs.TryGetValue(currentLrc, out var lrc))
                 lrc.LyricLine.UpdateTime(ms);
@@ -219,19 +234,130 @@ public partial class LyricHost : UserControl
 
     public void ScrollToCurrent()
     {
-        //被打断的xs内不再滚动
+        //加载中或被打断的xs内不再滚动
+        if (_isLoading) return;
         if ((DateTime.Now - _interruptedTime).TotalSeconds < 5) return;
         try
         {
             if (currentLrc == null) return;
-            GeneralTransform gf = lrcs[currentLrc].TransformToVisual(LrcContainer);
+            var currentControl = lrcs[currentLrc];
+
+            // 如果有动画正在进行，使用其目标位置作为当前基准，否则使用实际滚动位置
+            double baseOffset = _animatingLines != null ? _pendingTargetOffset : scrollviewer.VerticalOffset;
+
+            // 停止所有正在进行的动画并应用之前的目标位置
+            StopCurrentAnimations();
+
+            // 计算目标滚动位置（基于上一个动画的目标位置）
+            GeneralTransform gf = currentControl.TransformToVisual(LrcContainer);
             Point p = gf.Transform(new Point(0, 0));
-            double os = p.Y - (scrollviewer.ActualHeight / 2) + 120;
-            var da = new DoubleAnimation(scrollviewer.VerticalOffset,os, TimeSpan.FromMilliseconds(500));
-            da.EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut };
-            scrollviewer.BeginAnimation(ScrollViewerUtils.VerticalOffsetProperty, da);
+            double targetOffset = p.Y - (scrollviewer.ActualHeight / 2d) + currentControl.ActualHeight / 2d;
+            double scrollDelta = targetOffset - baseOffset;
+
+            //如果滚动距离过大，直接跳转
+            if (Math.Abs(scrollDelta) > scrollviewer.ActualHeight)
+            {
+                scrollviewer.ScrollToVerticalOffset(targetOffset);
+                return;
+            }
+
+            // 获取当前可见范围内的歌词行（向下扩展scrollDelta以包含动画后会出现的行）
+            double viewportTop = scrollviewer.VerticalOffset;
+            double viewportBottom = viewportTop + scrollviewer.ActualHeight + Math.Max(0, scrollDelta*2);
+
+            var visibleLines = new List<SelectiveLyricLine>();
+            foreach (var child in LrcContainer.Children)
+            {
+                if (child is SelectiveLyricLine line)
+                {
+                    GeneralTransform transform = line.TransformToVisual(LrcContainer);
+                    Point linePos = transform.Transform(new Point(0, 0));
+                    double lineTop = linePos.Y;
+                    double lineBottom = lineTop + line.ActualHeight;
+
+                    if (lineBottom >= viewportTop && lineTop <= viewportBottom)
+                    {
+                        visibleLines.Add(line);
+                    }
+                }
+            }
+
+            // 记录当前动画状态
+            _animatingLines = visibleLines;
+            _pendingTargetOffset = targetOffset;
+
+            // 为每一行可见歌词依次应用跳动动画
+            int delayStep = 50; // 每行延迟的毫秒数
+            for (int i = 0; i < visibleLines.Count; i++)
+            {
+                var line = visibleLines[i];
+                var translateTransform = line.RenderTransform as TranslateTransform;
+                if (translateTransform == null)
+                {
+                    translateTransform = new TranslateTransform();
+                    line.RenderTransform = translateTransform;
+                }
+
+                // 从当前位置跳动到目标位置（向上移动scrollDelta）
+                var animation = new DoubleAnimation
+                {
+                    From = 0,
+                    To = -scrollDelta,
+                    Duration = TimeSpan.FromMilliseconds(400),
+                    BeginTime = TimeSpan.FromMilliseconds(i * delayStep),
+                    EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+                };
+
+                // 动画完成后重置Transform并更新实际滚动位置
+                if (i == visibleLines.Count - 1)
+                {
+                    var capturedLines = visibleLines;
+                    var capturedOffset = targetOffset;
+                    animation.Completed += (s, e) =>
+                    {
+                        // 只有当这组动画仍然是当前动画时才处理完成逻辑
+                        if (_animatingLines == capturedLines)
+                        {
+                            FinalizeAnimation(capturedLines, capturedOffset);
+                        }
+                    };
+                }
+
+                translateTransform.BeginAnimation(TranslateTransform.YProperty, animation);
+            }
         }
         catch { }
+    }
+
+    private void StopCurrentAnimations()
+    {
+        if (_animatingLines != null)
+        {
+            foreach (var line in _animatingLines)
+            {
+                if (line.RenderTransform is TranslateTransform t)
+                {
+                    t.BeginAnimation(TranslateTransform.YProperty, null);
+                    t.Y = 0;
+                }
+            }
+            scrollviewer.ScrollToVerticalOffset(_pendingTargetOffset);
+            _animatingLines = null;
+        }
+    }
+
+    private void FinalizeAnimation(List<SelectiveLyricLine> lines, double targetOffset)
+    {
+        foreach (var l in lines)
+        {
+            if (l.RenderTransform is TranslateTransform t)
+            {
+                t.BeginAnimation(TranslateTransform.YProperty, null);
+                t.Y = 0;
+            }
+        }
+        scrollviewer.ScrollToVerticalOffset(targetOffset);
+        _animatingLines = null;
     }
 
     private void scrollviewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)

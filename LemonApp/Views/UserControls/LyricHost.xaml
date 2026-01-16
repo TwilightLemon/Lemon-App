@@ -14,6 +14,9 @@
                        HorizontalScrollBarVisibility="Hidden"
                        PreviewMouseWheel="scrollviewer_PreviewMouseWheel"
                        VerticalScrollBarVisibility="Hidden">
-        <VirtualizingStackPanel x:Name="LrcContainer" Width="{Binding ActualWidth, ElementName=scrollviewer}" />
+        <VirtualizingStackPanel x:Name="LrcContainer"
+                                Width="{Binding ActualWidth, ElementName=scrollviewer}"
+                                VirtualizingPanel.CacheLength="2"
+                                VirtualizingPanel.CacheLengthUnit="Item" />
     </base:ScrollViewer>
 </UserControl>

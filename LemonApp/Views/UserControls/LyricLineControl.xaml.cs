@@ -19,13 +19,13 @@ public partial class LyricLineControl : UserControl
     private int EmphasisThreshold { get; set; } = 1800; // 高亮抬起分词的阈值ms,在LoadMainLrc时会重新计算
     private readonly Dictionary<ISyllableInfo, TextBlock> mainSyllableLrcs = [], romajiSyllableLrcs = [];
     private const int InActiveLrcBlurRadius = 6;
-    private int ActiveLrcLiftupHeight = -4;
+    private int ActiveLrcLiftupHeight => (int)(-FontSize / 4);
     private double AverageWordDuration = 0.0;
     public SyllableLineInfo? RomajiSyllables { get; private set; }
     public ILineInfo? MainLineInfo { get; private set; }
     public Dictionary<ISyllableInfo, TextBlock> MainSyllableLrcs => mainSyllableLrcs;
     private readonly EasingFunctionBase _lrcAnimationEasing = new ExponentialEase()
-    { EasingMode = EasingMode.EaseIn, Exponent = 3 };
+    { EasingMode = EasingMode.EaseIn, Exponent = 4 };
 
     private bool _isPlainLrc = false;
 
@@ -97,7 +97,7 @@ public partial class LyricLineControl : UserControl
         mainSyllableLrcs.Clear();
         ClearHighlighter();
         //计算EmphasisThreshold
-        var aver = AverageWordDuration = words.Select(w => w.Duration).Average();
+        var aver = AverageWordDuration = words.Average(w => w.Duration);
         if (aver > 0)
         {
             EmphasisThreshold = (int)(aver * 2);
@@ -178,8 +178,8 @@ public partial class LyricLineControl : UserControl
                     // 已经过了，直接填满
                     EnsureBrush(textBlock, syllable, 1.0);
                     mainSyllableAnimated[syllable] = true;
-                    //lift-up
-                    if (textBlock.RenderTransform is TranslateTransform trans)
+                    //lift-up: 如果动画正在执行则不强制设置，确保歌词流畅性
+                    if (textBlock.RenderTransform is TranslateTransform trans && !trans.HasAnimatedProperties)
                     {
                         trans.Y = ActiveLrcLiftupHeight;
                     }
@@ -225,7 +225,7 @@ public partial class LyricLineControl : UserControl
                         if (syllable.Duration >= EmphasisThreshold)
                         {
                             //highlight
-                            var fontColor = CustomHighlighterColor?.Color ?? ((SolidColorBrush)FindResource("ForeColor")).Color;
+                            var fontColor = CustomHighlighterColor?.Color ?? ((SolidColorBrush)FindResource("ActiveLrcForeground")).Color;
                             var lighter = new DropShadowEffect() { BlurRadius = 20, Color = fontColor, Direction = 0, ShadowDepth = 0 };
                             textBlock.Effect = lighter;
                             lighter.BeginAnimation(DropShadowEffect.OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(syllable.Duration * 0.8)));
@@ -237,7 +237,7 @@ public partial class LyricLineControl : UserControl
                             };
 
                             var easing = new CubicEase();
-                            var up = -6;
+                            var up = ActiveLrcLiftupHeight;
                             //高亮分词逐字抬起动画
                             if (textBlock.Inlines.Count > 1)
                             {
@@ -329,7 +329,7 @@ public partial class LyricLineControl : UserControl
             {
                 var syllable = kvp.Key;
                 var textBlock = kvp.Value;
-                if (syllable.StartTime <= ms && syllable.EndTime >= ms)
+                if ((syllable.StartTime-200) <= ms && (syllable.EndTime +200) >= ms)
                 {
                     //textBlock.SetResourceReference(ForegroundProperty, "HighlightThemeColor");
                     if (textBlock.Tag is not true)
@@ -342,9 +342,9 @@ public partial class LyricLineControl : UserControl
                         {
                             KeyFrames =
                             [
-                                new EasingColorKeyFrame(fontColor, KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(0))),
-                            new EasingColorKeyFrame(highlightColor, KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(syllable.Duration/2))),
-                            new EasingColorKeyFrame(fontColor, KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(syllable.Duration+2000)))
+                                new EasingColorKeyFrame(highlightColor, KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(0))),
+                                new EasingColorKeyFrame(highlightColor, KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(syllable.Duration))),
+                                new EasingColorKeyFrame(fontColor, KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(syllable.Duration+1000)))
                             ]
                         };
                         brush.BeginAnimation(SolidColorBrush.ColorProperty, ani);
@@ -364,7 +364,11 @@ public partial class LyricLineControl : UserControl
     {
         if (!mainSyllableBrushes.TryGetValue(syllable, out var brush))
         {
-            brush = CreateBrush(progress);
+            // 测量 TextBlock 宽度以使用绝对映射模式
+            textBlock.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+            var width = textBlock.DesiredSize.Width;
+
+            brush = CreateBrush(progress, width);
             mainSyllableBrushes[syllable] = brush;
             textBlock.Foreground = brush;
         }
@@ -403,12 +407,12 @@ public partial class LyricLineControl : UserControl
             new PropertyMetadata(null));
 
 
-    private LinearGradientBrush CreateBrush(double progress)
+    private LinearGradientBrush CreateBrush(double progress, double width = 0)
     {
-        var fontColor = ((SolidColorBrush)FindResource("ForeColor")).Color;
+        var fontColor = ((SolidColorBrush)FindResource("ActiveLrcForeground")).Color;
         var highlightColor = CustomHighlighterColor?.Color ?? fontColor;
         var normalColor = CustomNormalColor?.Color ?? ((SolidColorBrush)FindResource("InActiveLrcForeground")).Color;
-        return new LinearGradientBrush
+        var brush = new LinearGradientBrush
         {
             StartPoint = new Point(0, 0.5),
             EndPoint = new Point(1, 0.5),
@@ -420,6 +424,16 @@ public partial class LyricLineControl : UserControl
                     new GradientStop(normalColor, 1)
             ]
         };
+
+        // 使用绝对映射模式避免文本分段渐变问题
+        if (width > 0)
+        {
+            brush.MappingMode = BrushMappingMode.Absolute;
+            brush.StartPoint = new Point(0, 0);
+            brush.EndPoint = new Point(width, 0);
+        }
+
+        return brush;
     }
 
     public void ClearHighlighter(bool animated = false)
@@ -427,7 +441,7 @@ public partial class LyricLineControl : UserControl
         mainSyllableBrushes.Clear();
         mainSyllableAnimated.Clear();
         var inactiveColor = CustomNormalColor?.Color ?? ((SolidColorBrush)FindResource("InActiveLrcForeground")).Color;
-        var foreColor = ((SolidColorBrush)FindResource("ForeColor")).Color;
+        var foreColor = ((SolidColorBrush)FindResource("ActiveLrcForeground")).Color;
         foreach (var lrc in mainSyllableLrcs)
         {
             if (animated)
@@ -496,7 +510,7 @@ public partial class LyricLineControl : UserControl
 
             if (control._isPlainLrc)
             {
-                var fontColor = (SolidColorBrush)control.FindResource("ForeColor");
+                var fontColor = (SolidColorBrush)control.FindResource("ActiveLrcForeground");
                 var highlightColor = control.CustomHighlighterColor ?? fontColor;
                 if (control.MainLrcContainer.Children[0] is TextBlock tb)
                 {
