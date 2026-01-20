@@ -72,9 +72,9 @@ public partial class DesktopLyricWindowViewModel:ObservableObject
         _lyricControl.MainLrcContainer.HorizontalAlignment = HorizontalAlignment.Center;
         _lyricControl.RomajiLrcContainer.HorizontalAlignment = HorizontalAlignment.Center;
 
-        _lyricControl.CustomNormalColor = NormalLrcColor;
-        _lyricControl.TranslationLrc.Foreground = NormalLrcColor;
-        _lyricControl.SetResourceReference(LyricLineControl.CustomHighlighterColorProperty, "HighlightThemeColor");
+        _lyricControl.SetValue(HighlightTextBlock.UseAdditiveProperty, false);
+        _lyricControl.Resources["InActiveLrcForeground"] = NormalLrcColor;
+        _lyricControl.SetResourceReference(LyricLineControl.CustomHighlightColorBrushProperty, "HighlightThemeColor");
 #pragma warning restore MVVMTK0034
     }
 

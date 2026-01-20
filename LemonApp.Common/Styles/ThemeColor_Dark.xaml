@@ -22,4 +22,5 @@
     <SolidColorBrush x:Key="ButtonPureColor" Color="#454545" />
     <!--  LyricPage  -->
     <SolidColorBrush x:Key="InActiveLrcForeground" Color="#28FFFFFF" />
+    <Color x:Key="ActiveLrcForegroundColor">#B2FFFFFF</Color>
 </ResourceDictionary>
