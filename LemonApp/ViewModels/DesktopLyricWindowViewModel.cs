@@ -61,7 +61,7 @@ public partial class DesktopLyricWindowViewModel:ObservableObject
     private void _mediaPlayerService_OnLoaded(Music obj)
     {
         //有新的歌曲加载时，先清除当前歌词
-        LyricControl.ClearAll();
+        LyricControl.Dispatcher.Invoke(LyricControl.ClearAll);
     }
     private static readonly SolidColorBrush NormalLrcColor = new SolidColorBrush(Color.FromRgb(0xEF, 0xEF, 0xEF));
     private void CustomLyricControlStyle()

@@ -180,6 +180,7 @@ public partial class MainWindowViewModel : ObservableObject
 
     private void Timer_Elapsed(object? sender, ElapsedEventArgs e)
     {
+        if (!IsPlaying) return;
         var dur = _mediaPlayerService.Duration;
         CurrentPlayingDuration = dur.TotalMilliseconds;
         CurrentPlayingDurationText = $"{dur.Minutes:D2}:{dur.Seconds:D2}";
@@ -282,6 +283,7 @@ public partial class MainWindowViewModel : ObservableObject
 
     private void MediaPlayerService_OnEnd()
     {
+        MediaPlayerService_OnPaused(null!);
         if (CircleMode == PlayingPreference.CircleMode.Single)
         {
             CurrentPlayingPosition = 0;
@@ -853,12 +855,11 @@ public partial class MainWindowViewModel : ObservableObject
         _windowBasicComponent.UpdateThumbButtonState();
     }
 
-    partial void OnPlaylistChoosenChanged(Music? value)
+     async partial void OnPlaylistChoosenChanged(Music? value)
     {
         if (value != null&&value.MusicID!=CurrentPlaying?.MusicID)
         {
-            
-            _=_mediaPlayerService.LoadThenPlay(value);
+            await _mediaPlayerService.LoadThenPlay(value);
         }
     }
 
