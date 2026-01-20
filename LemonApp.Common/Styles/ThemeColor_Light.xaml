@@ -7,7 +7,7 @@
     <!--  标签页背景色  -->
     <SolidColorBrush x:Key="TabMaskColor" Color="#8CFFFFFF" />
     <!--  前景色  -->
-    <SolidColorBrush x:Key="ForeColor" Color="#2F2C52" />
+    <SolidColorBrush x:Key="ForeColor" Color="#FF1B1934" />
     <!--  提示前景色  -->
     <SolidColorBrush x:Key="HintForeColor" Color="#6F6F6F" />
     <!--  蒙罩背景色  -->
@@ -21,5 +21,6 @@
     <SolidColorBrush x:Key="BackgroundColor" Color="#FFF0F0F0" />
     <SolidColorBrush x:Key="ButtonPureColor" Color="#FFF" />
     <!--  LyricPage  -->
-    <SolidColorBrush x:Key="InActiveLrcForeground" Color="#5E000000" />
+    <SolidColorBrush x:Key="InActiveLrcForeground" Color="#5E1B1934" />
+    <Color x:Key="ActiveLrcForegroundColor">#B21B1934</Color>
 </ResourceDictionary>

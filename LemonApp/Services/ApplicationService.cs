@@ -29,9 +29,11 @@ namespace LemonApp.Services
             Encoding.RegisterProvider(provider);
 
             //异常捕获+写日志
+#if !DEBUG
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             App.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+#endif
 
             //register handler for Hyperlink in Settings->About.
             EventManager.RegisterClassHandler(typeof(Hyperlink), Hyperlink.RequestNavigateEvent, new RequestNavigateEventHandler((sender, e) =>

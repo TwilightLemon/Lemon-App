@@ -13,11 +13,15 @@
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <None Remove="Shaders\TextGlow.ps" />
+	</ItemGroup>
+
 
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 		<PackageReference Include="Downloader" Version="4.0.3" />
-		<PackageReference Include="FluentWpfCore" Version="1.0.0.3" />
+		<PackageReference Include="FluentWpfCore" Version="1.0.3" />
 		<PackageReference Include="Lyricify.Lyrics.Helper" Version="0.1.4" />
 		<PackageReference Include="EleCho.WpfSuite" Version="0.8.1" />
 		<PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5" />
@@ -40,6 +44,7 @@
 
 	<ItemGroup>
 		<Resource Include="Resources\icon.ico" />
+		<Resource Include="Shaders\TextGlow.ps" />
 	</ItemGroup>
 
 	<ItemGroup>

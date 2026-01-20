@@ -13,6 +13,7 @@
                        FocusVisualStyle="{x:Null}"
                        HorizontalScrollBarVisibility="Hidden"
                        PreviewMouseWheel="scrollviewer_PreviewMouseWheel"
+                       PreviewMouseDown="scrollviewer_PreviewMouseDown"
                        VerticalScrollBarVisibility="Hidden">
         <VirtualizingStackPanel x:Name="LrcContainer"
                                 Width="{Binding ActualWidth, ElementName=scrollviewer}"

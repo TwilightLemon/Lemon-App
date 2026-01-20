@@ -26,14 +26,23 @@ namespace LemonApp.Views.UserControls
     public partial class LyricView : UserControl
     {
         private readonly SettingsMgr<LyricOption> _settings;
+        private readonly UIResourceService uiResourceService;
 
-        public LyricView(AppSettingService appSettingsService)
+        public LyricView(AppSettingService appSettingsService,UIResourceService uiResourceService)
         {
             InitializeComponent();
 
             _settings = appSettingsService.GetConfigMgr<LyricOption>();
             _settings.OnDataChanged += Settings_OnDataChanged;
             Loaded += LyricView_Loaded;
+            this.uiResourceService = uiResourceService;
+            uiResourceService.OnColorModeChanged += UiResourceService_OnColorModeChanged;
+        }
+
+        private void UiResourceService_OnColorModeChanged()
+        {
+            bool isdark = uiResourceService.GetIsDarkMode();
+            Dispatcher.Invoke(() => LrcHost.SetValue(HighlightTextBlock.UseAdditiveProperty, isdark));
         }
 
 
@@ -59,6 +68,7 @@ namespace LemonApp.Views.UserControls
                 IsShowRomaji = _settings?.Data?.ShowRomaji is true;
                 SetFontSize(_settings?.Data?.FontSize ?? (int)LyricFontSize);
                 this.FontFamily = new FontFamily(_settings?.Data?.FontFamily ?? "Segou UI");
+                LrcHost.SetValue(HighlightTextBlock.UseAdditiveProperty, uiResourceService.GetIsDarkMode());
             });
         }
 
@@ -134,6 +144,7 @@ namespace LemonApp.Views.UserControls
         public static readonly DependencyProperty IsShowRomajiProperty =
             DependencyProperty.Register("IsShowRomaji", typeof(bool), typeof(LyricView), new PropertyMetadata(true, OnIsShowRomajiChanged));
 
+
         private static void OnIsShowRomajiChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is LyricView view)
@@ -152,7 +163,7 @@ namespace LemonApp.Views.UserControls
             _settings.Data.ShowRomaji = show;
             LrcHost.SetShowRomaji(show);
         }
-        public event Action<(LyricsData? lrc, LyricsData? trans, LyricsData? romaji, bool isPureLrc)> OnLyricLoaded;
+        public event Action<(LyricsData? lrc, LyricsData? trans, LyricsData? romaji, bool isPureLrc)> OnLyricLoaded = delegate { };
 
         private string? _handlingMusic = null;
         public void LoadFromMusic(Music m)
