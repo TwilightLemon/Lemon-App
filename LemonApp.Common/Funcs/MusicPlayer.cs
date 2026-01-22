@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using Un4seen.Bass;
 namespace LemonApp.Common.Funcs;
@@ -75,6 +76,7 @@ public class MusicPlayer
         Bass.BASS_ChannelSetAttribute(stream, BASSAttribute.BASS_ATTRIB_VOL, _vol);
     }
     public List<BASSDL> BassdlList = [];
+    public Action? finish;
     /// <summary>
     /// 从URL中加载
     /// </summary>
@@ -82,9 +84,9 @@ public class MusicPlayer
     /// <param name="url"></param>
     /// <param name="proc">下载进度回调 all/now</param>
     /// <param name="finish">下载结束回调</param>
-    public void LoadUrl(string path, string url, Action<long, long>? proc, Action? finish)
+    public void LoadUrl(string path, string url, Action<long, long>? proc , Action? finish)
     {
-        //TODO: 修复 在缓冲时切歌可能造成Bass抛异常
+        this.finish = finish;
         try
         {
             Stop();
@@ -93,20 +95,7 @@ public class MusicPlayer
             var Bassdl = new BASSDL(path);
             BassdlList.Add(Bassdl);
             Bassdl.ProgressChanged = proc;
-            Bassdl.DownloadSucceeded = (dl) => {
-                BassdlList.Remove(dl);
-                finish?.Invoke();
-            };
-            Bassdl.DownloadFailed = Bassdl.DownloadCancelled = (dl) =>
-            {
-                if (dl.CanStop)
-                {
-                    BassdlList.Remove(dl);
-                    Bass.BASS_ChannelStop(dl.stream);
-                    Bass.BASS_StreamFree(dl.stream);
-                }
-                finish?.Invoke();
-            };
+            Bassdl.DownloadFinished += Bassdl_DownloadFinished; 
 
             stream = Bass.BASS_StreamCreateURL(url + "\r\n"
                                            + "Accept-Encoding: identity;q=1, *;q=0\r\n"
@@ -115,10 +104,22 @@ public class MusicPlayer
                                            + "Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6"
                            , 0, BASSFlag.BASS_SAMPLE_FLOAT, Bassdl.DownloadDelegate, user);
             Bassdl.stream = stream;
-
+            Debug.WriteLine("NEW: "+stream);
             Bass.BASS_ChannelSetAttribute(stream, BASSAttribute.BASS_ATTRIB_VOL, _vol);
         }
         catch { }
+    }
+
+    private void Bassdl_DownloadFinished(BASSDL dl)
+    {
+        BassdlList.Remove(dl);
+        if (dl.CanStop && dl.stream != stream)
+        {
+            Bass.BASS_ChannelStop(dl.stream);
+            Bass.BASS_StreamFree(dl.stream);
+        }
+        if (dl.stream == stream)
+            finish?.Invoke();
     }
 
     public void Play()
@@ -155,28 +156,7 @@ public class MusicPlayer
     {
         Bass.BASS_ChannelGetData(stream, fft, (int)(BASSData.BASS_DATA_FFT1024 | BASSData.BASS_DATA_FFT_REMOVEDC));
     }
-    /// <summary>
-    /// 更新设备
-    /// </summary>
-    public void UpdateDevice()
-    {
-        var data = Bass.BASS_GetDeviceInfos();
-        int index = -1;
-        for (int i = 0; i < data.Length; i++)
-            if (data[i].IsDefault)
-            {
-                index = i;
-                break;
-            }
-        if (!data[index].IsInitialized)
-            Bass.BASS_Init(index, 44100, BASSInit.BASS_DEVICE_CPSPEAKERS, IntPtr.Zero);
-        var a = Bass.BASS_ChannelGetDevice(stream);
-        if (a != index)
-        {
-            Bass.BASS_ChannelSetDevice(stream, index);
-            Bass.BASS_SetDevice(index);
-        }
-    }
+
     /// <summary>
     /// 释放Bass解码器
     /// </summary>
@@ -195,15 +175,14 @@ public class MusicPlayer
     public void Stop()
     {
         if (stream == -1024) return;
-        if (BassdlList.LastOrDefault() is { } last && last.stream == stream)
+        if (BassdlList.LastOrDefault() is { } last)
         {
-            //如果stream指向网络流，并且还在加载中，则只打上关闭标记，资源释放在LoadFromURL中已经处理
             last.SetClose();
-        }
-        else
-        {
-            Bass.BASS_ChannelStop(stream);
-            Bass.BASS_StreamFree(stream);
+            if (last.CanStop)
+            {
+                Bass.BASS_ChannelStop(last.stream);
+                Bass.BASS_StreamFree(last.stream);
+            }
         }
     }
 }
@@ -221,10 +200,8 @@ public class BASSDL
 
     public DOWNLOADPROC DownloadDelegate;
     public Action<long, long>? ProgressChanged = null;
-    public Action<BASSDL>? DownloadSucceeded = null;
-    public Action<BASSDL>? DownloadFailed = null;
-    public Action<BASSDL>? DownloadCancelled = null;
-    public bool CanStop { get; private set; } = true;
+    public event Action<BASSDL>? DownloadFinished = null;
+    public bool CanStop { get; private set; } = false;
     public int stream;
     public BASSDL(string file)
     {
@@ -238,10 +215,7 @@ public class BASSDL
     /// </summary>
     public void SetClose()
     {
-        CanStop = false;
         ProgressChanged = null;
-        DownloadSucceeded = null;
-        DownloadCancelled?.Invoke(this);
     }
     /// <summary>
     /// 由Bass调用   传来下载数据时 将数据保存到缓存文件中
@@ -264,18 +238,16 @@ public class BASSDL
             _fs = null;
             CanStop = true;
             FileInfo fi = new(_cacheFileName);
-            if (_length>_downloaded)
+            if (_length > _downloaded)
             {
                 //下载不完整
                 fi.Delete();
-                //没有被停止而是链接下载失败
-                DownloadFailed?.Invoke(this);
             }
             else
             {
                 fi.MoveTo(_downloadFile, true);
-                DownloadSucceeded?.Invoke(this);
             }
+            DownloadFinished?.Invoke(this);
         }
         else
         {

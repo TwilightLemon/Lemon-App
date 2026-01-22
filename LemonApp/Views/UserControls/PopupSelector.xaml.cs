@@ -125,6 +125,7 @@ namespace LemonApp.Views.UserControls
             }
             else
             {
+                SingerMenuItems.Clear();
                 foreach (var s in m.Singer)
                     SingerMenuItems.Add(s);
                 OpenMenu("ArtistSelectorMenu");
