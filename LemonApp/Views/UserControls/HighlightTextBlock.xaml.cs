@@ -8,10 +8,9 @@ using System.Windows.Media;
 
 namespace LemonApp.Views.UserControls;
 
-
 public partial class HighlightTextBlock : UserControl
 {
-    private readonly ProgresiveHighlightEffect _effect;
+    private ProgresiveHighlightEffect? _effect = null;
 
     static HighlightTextBlock()
     {
@@ -34,16 +33,174 @@ public partial class HighlightTextBlock : UserControl
     public HighlightTextBlock(bool isSpiltEnabled)
     {
         InitializeComponent();
-        _effect = new()
+        Loaded += HighlightTextBlock_Loaded;
+        Unloaded += HighlightTextBlock_Unloaded;
+        IsSpiltEnabled = isSpiltEnabled;
+    }
+
+    private void HighlightTextBlock_Unloaded(object sender, RoutedEventArgs e)
+    {
+        Loaded -= HighlightTextBlock_Loaded;
+        Unloaded -= HighlightTextBlock_Unloaded;
+        PART_Rectangle.Effect = null;
+        _effect = null;
+        CleanupOldClip();
+    }
+
+    private void HighlightTextBlock_Loaded(object sender, RoutedEventArgs e)
+    {
+        if (HighlightPos > 0)
+        {
+            InitEffect();
+        }
+    }
+
+    private double _layoutConstraintWidth;
+    private double _layoutConstraintHeight;
+    private bool _clipGeometryDirty = true;
+    private bool _isUpdatingClip = false;
+    private string? _lastClipText = null;
+    private double _lastClipFontSize;
+    private FontFamily? _lastClipFontFamily;
+    private FontWeight _lastClipFontWeight;
+    private FontStyle _lastClipFontStyle;
+    private double _lastClipConstraintWidth;
+    private double _lastClipConstraintHeight;
+
+    protected override Size MeasureOverride(Size availableSize)
+    {
+        if (IsSpiltEnabled)
+        {
+            // 拆分模式：无视容器限制
+            _layoutConstraintWidth = double.PositiveInfinity;
+            _layoutConstraintHeight = double.PositiveInfinity;
+
+            if (_clipGeometryDirty)
+            {
+                UpdateTextClip();
+                _clipGeometryDirty = false;
+            }
+            return base.MeasureOverride(availableSize);
+        }
+        else
+        {
+            _layoutConstraintWidth = availableSize.Width;
+            _layoutConstraintHeight = availableSize.Height;
+
+            // 非拆分模式：不在 Measure 阶段调用 UpdateTextClip，
+            // 否则 PART_Rectangle.Width 被设为文本宽度，导致控件期望尺寸过小，
+            // 父容器只分配文本宽度而不是可用宽度。
+            // Clip 更新延迟到 ArrangeOverride 中进行。
+            if (string.IsNullOrEmpty(Text))
+            {
+                return new Size(0, 0);
+            }
+
+            // 计算文本的自然尺寸，仅用于确定期望高度
+            var formattedText = new FormattedText(
+                Text,
+                CultureInfo.CurrentCulture,
+                FlowDirection,
+                new Typeface(FontFamily, FontStyle, FontWeight, FontStretch),
+                FontSize,
+                Brushes.Black,
+                VisualTreeHelper.GetDpi(this).PixelsPerDip);
+
+            if (!double.IsNaN(LineHeight) && LineHeight > 0)
+                formattedText.LineHeight = LineHeight;
+
+            // 设置换行约束以正确计算高度
+            if (TextWrapping != TextWrapping.NoWrap &&
+                !double.IsInfinity(availableSize.Width) && availableSize.Width > 0)
+            {
+                formattedText.MaxTextWidth = availableSize.Width;
+            }
+
+            var textWidth = formattedText.WidthIncludingTrailingWhitespace;
+            var textHeight = formattedText.Height;
+
+            // 宽度：使用文本自然宽度，但不超过可用宽度
+            // 拉伸填满容器应由父容器的 HorizontalAlignment=Stretch 控制
+            var desiredWidth = !double.IsInfinity(availableSize.Width) && availableSize.Width > 0
+                ? Math.Min(textWidth, availableSize.Width)
+                : textWidth;
+            var desiredHeight = textHeight;
+
+            return new Size(desiredWidth, desiredHeight);
+        }
+    }
+
+    protected override Size ArrangeOverride(Size finalSize)
+    {
+        // 防止 UpdateCompleteTextClip 设置 Width/Height 导致的重入
+        if (_isUpdatingClip)
+            return base.ArrangeOverride(finalSize);
+
+        // 当HighlightTextBlock不可见时，其MeasureOverride/ArrangeOverride可能收到0的可用空间，导致保存了0的约束大小
+        if (!IsSpiltEnabled && !string.IsNullOrEmpty(Text))
+        {
+            bool sizeChanged = Math.Abs(finalSize.Width - _layoutConstraintWidth) > 0.5 ||
+                Math.Abs(finalSize.Height - _layoutConstraintHeight) > 0.5;
+
+            if (sizeChanged)
+            {
+                _layoutConstraintWidth = finalSize.Width;
+                _layoutConstraintHeight = finalSize.Height;
+            }
+
+            // 仅在文本/字体/约束实际变化时重建 Geometry
+            if (sizeChanged || _clipGeometryDirty || NeedsClipUpdate())
+            {
+                _isUpdatingClip = true;
+                try
+                {
+                    CleanupOldClip();
+                    UpdateCompleteTextClip();
+                    SaveClipState();
+                }
+                finally
+                {
+                    _isUpdatingClip = false;
+                }
+                _clipGeometryDirty = false;
+            }
+        }
+        return base.ArrangeOverride(finalSize);
+    }
+
+    private bool NeedsClipUpdate()
+    {
+        return _lastClipText != Text
+            || _lastClipFontSize != FontSize
+            || _lastClipFontFamily != FontFamily
+            || _lastClipFontWeight != FontWeight
+            || _lastClipFontStyle != FontStyle
+            || Math.Abs(_lastClipConstraintWidth - _layoutConstraintWidth) > 0.5
+            || Math.Abs(_lastClipConstraintHeight - _layoutConstraintHeight) > 0.5;
+    }
+
+    private void SaveClipState()
+    {
+        _lastClipText = Text;
+        _lastClipFontSize = FontSize;
+        _lastClipFontFamily = FontFamily;
+        _lastClipFontWeight = FontWeight;
+        _lastClipFontStyle = FontStyle;
+        _lastClipConstraintWidth = _layoutConstraintWidth;
+        _lastClipConstraintHeight = _layoutConstraintHeight;
+    }
+
+    private void InitEffect()
+    {
+        _effect ??= new()
         {
             HighlightColor = HighlightColor,
             HighlightPos = HighlightPos,
-            HighlightWidth = HighlightWidth
+            HighlightWidth = HighlightWidth,
+            HighlightIntensity = GetHighlightIntensity(this),
+            UseAdditive = UseAdditive
         };
         PART_Rectangle.Effect = _effect;
-        Loaded += (_, _) => UpdateTextClip();
-        SizeChanged += (_, _) => UpdateTextClip();
-        IsSpiltEnabled = isSpiltEnabled;
     }
 
     #region Text
@@ -153,7 +310,12 @@ public partial class HighlightTextBlock : UserControl
     {
         if (d is HighlightTextBlock c)
         {
-            c._effect.HighlightPos = (double)e.NewValue;
+            if ((double)e.NewValue > LyricLineControl.InitialHighlightPos && c._effect == null)
+            {
+                c.InitEffect();
+            }
+            if (c._effect != null)
+                c._effect.HighlightPos = (double)e.NewValue;
         }
     }
 
@@ -179,7 +341,7 @@ public partial class HighlightTextBlock : UserControl
 
     private static void OnHighlightWidthChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        if (d is HighlightTextBlock c)
+        if (d is HighlightTextBlock c && c._effect != null)
         {
             c._effect.HighlightWidth = (double)e.NewValue;
         }
@@ -207,7 +369,7 @@ public partial class HighlightTextBlock : UserControl
 
     private static void OnHighlightColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        if (d is HighlightTextBlock c)
+        if (d is HighlightTextBlock c && c._effect != null)
         {
             c._effect.HighlightColor = (Color)e.NewValue;
         }
@@ -231,7 +393,7 @@ public partial class HighlightTextBlock : UserControl
 
     private static void OnUseAdditiveChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        if (d is HighlightTextBlock c)
+        if (d is HighlightTextBlock c && c._effect != null)
         {
             c._effect.UseAdditive = (bool)e.NewValue;
         }
@@ -252,7 +414,7 @@ public partial class HighlightTextBlock : UserControl
 
     private static void OnHighlightIntensityChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        if (d is HighlightTextBlock c)
+        if (d is HighlightTextBlock c && c._effect != null)
         {
             c._effect.HighlightIntensity = (double)e.NewValue;
         }
@@ -271,15 +433,39 @@ public partial class HighlightTextBlock : UserControl
     {
         if (d is HighlightTextBlock control)
         {
-            control.UpdateTextClip();
+            control._clipGeometryDirty = true;
+            control.InvalidateMeasure();
         }
+    }
+
+    private void CleanupOldClip()
+    {
+        try
+        {
+            if (Geometries != null)
+            {
+                foreach (var g in Geometries)
+                {
+                    if (g.Transform != null)
+                    {
+                        g.Transform.BeginAnimation(TranslateTransform.YProperty, null);
+                        g.Transform.BeginAnimation(TranslateTransform.XProperty, null);
+                        g.Transform = null;
+                    }
+                }
+                Geometries = null;
+            }
+        }
+        catch { }
+        PART_Rectangle.Clip = null;
     }
 
     private void UpdateTextClip()
     {
+        CleanupOldClip();
+
         if (string.IsNullOrEmpty(Text))
         {
-            PART_Rectangle.Clip = null;
             PART_Rectangle.Width = 0;
             PART_Rectangle.Height = 0;
             return;
@@ -348,13 +534,25 @@ public partial class HighlightTextBlock : UserControl
             formattedText.LineHeight = LineHeight;
         }
 
-        // 计算约束宽度（用于换行）
-        var constraintWidth = !double.IsNaN(Width) && Width > 0
-            ? Width
-            : (!double.IsInfinity(MaxWidth) && MaxWidth > 0 ? MaxWidth : ActualWidth);
+        // 计算约束宽度（用于换行）：优先使用布局系统提供的约束
+        var constraintWidth = !double.IsInfinity(_layoutConstraintWidth) && _layoutConstraintWidth > 0
+            ? _layoutConstraintWidth : 0;
+        //计算约束高度（用于裁剪）
+        var constraintHeight = !double.IsInfinity(_layoutConstraintHeight) && _layoutConstraintHeight > 0
+            ? _layoutConstraintHeight : 0;
 
-        // 仅在需要换行且有约束宽度时设置 MaxTextWidth
-        if (TextWrapping != TextWrapping.NoWrap && constraintWidth > 0)
+        //当需要裁剪时，设置约束高度
+        if (TextTrimming != TextTrimming.None)
+        {
+            if (constraintHeight < formattedText.Height)
+                constraintHeight = formattedText.Height;
+            formattedText.MaxTextHeight = constraintHeight;
+        }
+
+        // 仅在需要换行(或者不换行，但是需要裁剪)且有约束宽度时设置 MaxTextWidth
+        if ((TextWrapping != TextWrapping.NoWrap ||
+            (TextWrapping == TextWrapping.NoWrap && TextTrimming != TextTrimming.None)) &&
+            constraintWidth > 0)
         {
             formattedText.MaxTextWidth = constraintWidth;
         }
@@ -363,15 +561,20 @@ public partial class HighlightTextBlock : UserControl
         var textWidth = formattedText.WidthIncludingTrailingWhitespace;
         var textHeight = formattedText.Height;
 
-        // 计算容器宽度：NoWrap 时使用文本宽度，换行时使用约束宽度
-        var containerWidth = TextWrapping == TextWrapping.NoWrap
+        // 计算容器宽度：NoWrap且无裁剪时使用文本宽度，换行或裁剪使用约束宽度
+        var containerWidth = TextWrapping == TextWrapping.NoWrap && TextTrimming == TextTrimming.None
             ? textWidth
             : (constraintWidth > 0 ? constraintWidth : textWidth);
+        //计算容器高度：当不换行且无裁剪时使用文本高度，否则使用约束高度
+        var containerHeight = TextWrapping == TextWrapping.NoWrap && TextTrimming == TextTrimming.None
+            ? textHeight
+            : (constraintHeight > 0 ? constraintHeight : textHeight);
 
         var geometry = formattedText.BuildGeometry(new Point(0, 0));
+        if (geometry.CanFreeze) geometry.Freeze();
         PART_Rectangle.Clip = geometry;
         PART_Rectangle.Width = containerWidth;
-        PART_Rectangle.Height = textHeight;
+        PART_Rectangle.Height = containerHeight;
 
         // 根据对齐方式设置 Rectangle 的水平对齐
         PART_Rectangle.HorizontalAlignment = TextAlignment switch
